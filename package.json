@@ -22,6 +22,5 @@
   "bugs": {
     "url": "https://github.com/AckerApple/stripe-angular/issues"
   },
-  "homepage": "https://github.com/AckerApple/stripe-angular#readme",
-  "private": true
+  "homepage": "https://github.com/AckerApple/stripe-angular#readme"
 }
