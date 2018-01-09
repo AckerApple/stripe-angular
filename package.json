@@ -89,5 +89,6 @@
     "watch:css": "Builds one SASS source file into a final css output file",
     "watch": "Employes other watch script to particpate in a combined",
     "test": "Tests angular app using karama and jasmine"
-  }
+  },
+  "private": true
 }
