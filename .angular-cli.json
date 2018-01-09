@@ -1,0 +1,40 @@
+{
+  "project": {
+    "name": "noname"
+  },
+  "apps": [
+    {
+      "root": "test",
+      "outDir": "test",
+      "index": "index.html",
+      "main": "main.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.json",
+      "prefix": "",
+      "mobile": false
+    }
+  ],
+  "addons": [],
+  "packages": [],
+  "test": {
+    "karma": {
+      "config": "karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "css",
+    "prefixInterfaces": false,
+    "inline": {
+      "style": false,
+      "template": false
+    },
+    "spec": {
+      "class": false,
+      "component": true,
+      "directive": true,
+      "module": false,
+      "pipe": true,
+      "service": true
+    }
+  }
+}
