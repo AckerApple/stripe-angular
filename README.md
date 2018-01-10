@@ -9,16 +9,12 @@ Angular to Stripe module containing useful providers, components, and directives
 [![Build Status](https://travis-ci.org/AckerApple/stripe-angular.svg?branch=development)](https://travis-ci.org/AckerApple/stripe-angular)
 [![Dependency Status](https://david-dm.org/ackerapple/stripe-angular.svg)](https://david-dm.org/ackerapple/stripe-angular)
 
-
-<details>
-  <summary>Table of Contents</summary>
+### Table of Contents
 
 - [Install](#install)
 - [Inject](#inject)
 - [Init](#init)
 - [Use](#use)
-
-</details>
 
 ## Install
 From a command terminal type the following
