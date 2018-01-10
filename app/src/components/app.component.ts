@@ -58,7 +58,7 @@ const template=
                     Credit or debit card
                   </label>
                   <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-                    <stripe-card #stripeCard [(token)]="token" (tokenChange)="sending=false" (catch)="lastError=$event"></stripe-card>
+                    <stripe-card #stripeCard [(token)]="token" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event"></stripe-card>
                   </div>
 
                   <div *ngIf="editExtraData">
