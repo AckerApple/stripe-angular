@@ -3,6 +3,13 @@ Angular to Stripe module containing useful providers, components, and directives
 
 [demo page](https://ackerapple.github.io/stripe-angular)
 
+[![npm version](https://badge.fury.io/js/stripe-angular.svg)](http://badge.fury.io/js/stripe-angular)
+[![npm downloads](https://img.shields.io/npm/dm/stripe-angular.svg)](https://npmjs.org/stripe-angular)
+[![Build status](https://ci.appveyor.com/api/projects/status/sq815bogrtky29b8/branch/development?svg=true)](https://ci.appveyor.com/project/AckerApple/stripe-angular/branch/development)
+[![Build Status](https://travis-ci.org/AckerApple/stripe-angular.svg?branch=development)](https://travis-ci.org/AckerApple/stripe-angular)
+[![Dependency Status](https://david-dm.org/ackerapple/stripe-angular.svg)](https://david-dm.org/ackerapple/stripe-angular)
+
+
 <details>
   <summary>Table of Contents</summary>
 

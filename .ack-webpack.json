@@ -59,6 +59,7 @@
     "addScripts": "yes",
     "manageBuildScript": "yes",
     "manageWatchScript": "yes",
-    "runBuildIndex": "yes"
+    "runBuildIndex": "yes",
+    "addStart": "yes"
   }
 }
