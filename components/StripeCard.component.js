@@ -14,7 +14,7 @@ var StripeCard = /** @class */ (function () {
     StripeCard.prototype.ngOnInit = function () {
         this.StripeScriptTag.checkKeyThrow();
         this.stripe = this.StripeScriptTag.StripeInstance;
-        this.elements = this.stripe.elements().create('card');
+        this.elements = this.stripe.elements().create('card', this.options);
         this.elements.mount(this.ElementRef.nativeElement);
     };
     StripeCard.prototype.createToken = function (extraData) {
@@ -43,6 +43,7 @@ var StripeCard = /** @class */ (function () {
         { type: StripeScriptTag_1.StripeScriptTag, },
     ]; };
     StripeCard.propDecorators = {
+        "options": [{ type: core_1.Input },],
         "catcher": [{ type: core_1.Output, args: ["catch",] },],
         "token": [{ type: core_1.Input },],
         "tokenChange": [{ type: core_1.Output },],
