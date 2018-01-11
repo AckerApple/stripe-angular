@@ -44,3 +44,44 @@ export interface StripeToken{
   "type": "card"|string
   "used": boolean
 }
+
+export interface StripeStyle{
+  color          : string
+  fontFamily     : string
+  fontSize       : string
+  fontSmoothing  : string
+  fontStyle      : string
+  fontVariant    : string
+  iconColor      : string
+  lineHeight     : string
+  letterSpacing  : string
+  textAlign      : string
+  textDecoration : string
+  textShadow     : string
+  textTransform  : string
+}
+
+export interface StripeStyling{
+  base:StripeStyle
+  complete:StripeStyle
+  empty:StripeStyle
+  invalid:StripeStyle
+}
+
+export interface StripeClasses{
+  base:string
+  complete:string
+  empty:string
+  focus:string
+  invalid:string
+  webkitAutofill:string
+}
+
+export interface StripeCardOptions{
+  classes:StripeClasses
+  hidePostalCode:boolean
+  hideIcon:boolean
+  iconStyle:string
+  placeholder:string
+  style:StripeStyling
+}

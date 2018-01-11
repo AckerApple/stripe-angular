@@ -1,5 +1,5 @@
 import { Input, Output, EventEmitter, ElementRef, Component } from "@angular/core"
-import { StripeInstance } from "../StripeTypes"
+import { StripeInstance, StripeCardOptions } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { string as template } from "./templates/stripe-card.pug"
 
@@ -9,7 +9,7 @@ import { string as template } from "./templates/stripe-card.pug"
 }) export class StripeCard{
   stripe:StripeInstance
   elements:any
-  
+  @Input() options:StripeCardOptions
   @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
 
   @Input() token:any
@@ -25,7 +25,7 @@ import { string as template } from "./templates/stripe-card.pug"
 
     this.stripe = this.StripeScriptTag.StripeInstance
     
-    this.elements = this.stripe.elements().create('card')
+    this.elements = this.stripe.elements().create('card', this.options)
     this.elements.mount(this.ElementRef.nativeElement)
   }
 
