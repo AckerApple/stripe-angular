@@ -71,9 +71,14 @@ import { StripeToken } from "stripe-angular"
 
 const template=
 `
+<div *ngIf="invalidError" style="color:red">
+  {{ invalidError.message }}
+</div>
+
 <stripe-card
   #stripeCard
-  (catch)   = "onStripeError($event)"
+  (catch) = "onStripeError($event)"
+  ([invalid]) = "invalidError"
   (tokenChange) = "setStripeToken($event)"
 ></stripe-card>
 
@@ -91,6 +96,10 @@ const template=
     "address_line2": null
     "address_state": null
     "address_zip": null
+  }
+
+  onStripeInvalid( error:Error ){
+    console.log('Validation Error', error)
   }
 
   setStripeToken( token:StripeToken ){
