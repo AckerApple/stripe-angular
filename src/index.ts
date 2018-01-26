@@ -7,6 +7,7 @@ import { StripeScriptTag } from "./StripeScriptTag"
 export { StripeScriptTag } from "./StripeScriptTag"
 
 import { StripeCard } from "./components/StripeCard.component"
+export { StripeCard } from "./components/StripeCard.component"
 
 const declarations = [ StripeCard ]
 

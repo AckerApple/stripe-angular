@@ -10,6 +10,8 @@ var StripeScriptTag_1 = require("./StripeScriptTag");
 var StripeScriptTag_2 = require("./StripeScriptTag");
 exports.StripeScriptTag = StripeScriptTag_2.StripeScriptTag;
 var StripeCard_component_1 = require("./components/StripeCard.component");
+var StripeCard_component_2 = require("./components/StripeCard.component");
+exports.StripeCard = StripeCard_component_2.StripeCard;
 var declarations = [StripeCard_component_1.StripeCard];
 var Module = /** @class */ (function () {
     function Module() {
