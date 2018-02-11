@@ -3,6 +3,7 @@ Angular to Stripe module containing useful providers, components, and directives
 
 [demo page](https://ackerapple.github.io/stripe-angular)
 
+[![hire me](https://ackerapple.github.io/resume/assets/images/hire-me-badge.svg)](https://ackerapple.github.io/resume/)
 [![npm version](https://badge.fury.io/js/stripe-angular.svg)](http://badge.fury.io/js/stripe-angular)
 [![npm downloads](https://img.shields.io/npm/dm/stripe-angular.svg)](https://npmjs.org/stripe-angular)
 [![Build status](https://ci.appveyor.com/api/projects/status/sq815bogrtky29b8/branch/master?svg=true)](https://ci.appveyor.com/project/AckerApple/stripe-angular/branch/master)
@@ -71,9 +72,14 @@ import { StripeToken } from "stripe-angular"
 
 const template=
 `
+<div *ngIf="invalidError" style="color:red">
+  {{ invalidError.message }}
+</div>
+
 <stripe-card
   #stripeCard
-  (catch)   = "onStripeError($event)"
+  (catch) = "onStripeError($event)"
+  ([invalid]) = "invalidError"
   (tokenChange) = "setStripeToken($event)"
 ></stripe-card>
 
@@ -91,6 +97,10 @@ const template=
     "address_line2": null
     "address_state": null
     "address_zip": null
+  }
+
+  onStripeInvalid( error:Error ){
+    console.log('Validation Error', error)
   }
 
   setStripeToken( token:StripeToken ){
