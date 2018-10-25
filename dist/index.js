@@ -12,7 +12,13 @@ exports.StripeScriptTag = StripeScriptTag_2.StripeScriptTag;
 var StripeCard_component_1 = require("./components/StripeCard.component");
 var StripeCard_component_2 = require("./components/StripeCard.component");
 exports.StripeCard = StripeCard_component_2.StripeCard;
-var declarations = [StripeCard_component_1.StripeCard];
+var StripeBank_component_1 = require("./components/StripeBank.component");
+var StripeBank_component_2 = require("./components/StripeBank.component");
+exports.StripeBank = StripeBank_component_2.StripeBank;
+var declarations = [
+    StripeCard_component_1.StripeCard,
+    StripeBank_component_1.StripeBank
+];
 var Module = /** @class */ (function () {
     function Module() {
     }

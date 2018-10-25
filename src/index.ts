@@ -9,7 +9,13 @@ export { StripeScriptTag } from "./StripeScriptTag"
 import { StripeCard } from "./components/StripeCard.component"
 export { StripeCard } from "./components/StripeCard.component"
 
-const declarations = [ StripeCard ]
+import { StripeBank } from "./components/StripeBank.component"
+export { StripeBank } from "./components/StripeBank.component"
+
+const declarations = [
+  StripeCard,
+  StripeBank
+]
 
 @NgModule({
   imports:[

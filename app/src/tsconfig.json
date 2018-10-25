@@ -17,7 +17,14 @@
       "dom"
     ]
   },
-  "files": [
+  "include":[
+    "index.ts",
     "typings.d.ts"
-  ]
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "angularCompilerOptions": {
+    "preserveWhitespaces": false
+  }
 }

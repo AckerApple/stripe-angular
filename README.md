@@ -16,6 +16,8 @@ Angular to Stripe module containing useful providers, components, and directives
 - [Inject](#inject)
 - [Init](#init)
 - [Use](#use)
+  - [stripe-card](#stripe-card)
+  - [stripe-bank](#stripe-bank)
 
 ## Install
 From a command terminal type the following
@@ -79,7 +81,7 @@ const template=
 <stripe-card
   #stripeCard
   (catch) = "onStripeError($event)"
-  ([invalid]) = "invalidError"
+  [(invalid)] = "invalidError"
   (tokenChange) = "setStripeToken($event)"
 ></stripe-card>
 
@@ -111,4 +113,27 @@ const template=
     console.error('Stripe error', token)
   }
 }
+```
+
+### stripe-card
+```
+<stripe-card #stripeCard
+  (catch)        = "$event"
+  [(token)]      = "token"
+  [(invalid)]    = "invalidError"
+></stripe-card>
+
+<button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
+```
+
+### stripe-bank
+[see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
+```
+<stripe-bank #stripeBank
+  (catch)        = "$event"
+  [(token)]      = "token"
+  [(invalid)]    = "invalidError"
+></stripe-card>
+
+<button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
 ```

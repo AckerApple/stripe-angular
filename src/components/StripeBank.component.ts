@@ -5,10 +5,10 @@ import { StripeToken } from "../StripeTypes"
 import { string as template } from "./templates/stripe-card.pug"
 
 @Component({
-  selector: "stripe-card",
+  selector: "stripe-bank",
   template:template,
-  exportAs:"StripeCard"
-}) export class StripeCard{
+  exportAs:"StripeBank"
+}) export class StripeBank{
   @Input() options:StripeCardOptions
   @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
 
@@ -28,24 +28,14 @@ import { string as template } from "./templates/stripe-card.pug"
 
   ngOnInit(){
     this.StripeScriptTag.checkKeyThrow()
-
     this.stripe = this.StripeScriptTag.StripeInstance
-    
-    this.elements = this.stripe.elements().create('card', this.options)
-    this.elements.mount(this.ElementRef.nativeElement)
-
-    this.elements.addEventListener('change', function(result) {
-      if( result.error ){
-        this.invalidChange.emit( this.invalid=result.error )
-      }
-    })
   }
 
-  createToken(extraData?):Promise<StripeToken>{
+  createToken( data ){
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
-    return this.stripe.createToken(this.elements, extraData)
+    return this.stripe.createToken('bank_account', data)
     .then(result=>{
       if(result.error){
         if( result.error.type=="validation_error" ){

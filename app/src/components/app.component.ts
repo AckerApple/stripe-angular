@@ -2,7 +2,9 @@ import { Component } from "@angular/core"
 import { string as demoTemplate } from "./templates/app.component.template"
 
 //DEMO REFERENCE TO stripe-angular . USE BELOW
-import { Stripe, StripeScriptTag } from "../../../src/index"
+import {
+  StripeInstance, Stripe, StripeScriptTag
+} from "../../../src/index"
 
 //YOUR REFERENCE TO stripe-angular
 //import { Stripe, StripeScriptTag } from "stripe-angular"
@@ -37,7 +39,7 @@ const template=
 
                 <br />
                 
-                <button type="button" (click)="changekey=!changekey" style="width:100%">change publishable key</button>
+                <button type="button" (click)="changekey=!changekey" style="width:100%">CHANGE PUBLISHABLE KEY</button>
                 
                 <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
                   <br />
@@ -51,14 +53,14 @@ const template=
                 </ng-container>
 
                 <br />
-                <br />
+                <hr />
 
                 <ng-container *ngIf="stripe">
                   <label for="card-like-element">
                     Credit or debit card
                   </label>
                   <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-                    <stripe-card #stripeCard [(token)]="token" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidCatch)="sending=false;lastError=$event"></stripe-card>
+                    <stripe-card #stripeCard [(token)]="token" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-card>
                   </div>
 
                   <div *ngIf="editExtraData">
@@ -70,12 +72,29 @@ const template=
 
                   <div style="text-align:right;">
                     <button type="button" (click)="editExtraData=!editExtraData">edit extra data</button>
-                    <button type="button" (click)="sending=true;stripeCard.createToken(extraData)">createToken</button>
+                    <button type="button" (click)="lastError=null;sending=true;stripeCard.createToken(extraData)">createToken</button>
                   </div>
                   <div *ngIf="token" style="padding:1em;">
                     <strong>Token</strong>
                     <textarea wrap="off" style="width:100%;height:175px">{{ token | json }}</textArea>
                   </div>
+                  <hr />
+
+                  <label for="card-like-element">
+                    Bank Account
+                  </label>
+                  <stripe-bank #stripeBank [(token)]="bankToken" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-bank>
+                  <br />
+                  <textarea wrap="off" style="width:100%;height:175px" (change)="changeBankData($event.target.value)">{{ bankData | json }}</textArea>
+                  <br />
+                  <div style="text-align:right;">
+                    <button type="button" (click)="lastError=null;sending=true;stripeBank.createToken(bankData)">createToken</button>
+                  </div>
+                  <div *ngIf="bankToken" style="padding:1em;">
+                    <strong>Bank Token</strong>
+                    <textarea wrap="off" style="width:100%;height:175px">{{ bankToken | json }}</textArea>
+                  </div>
+
                 </ng-container>
 
                 <ng-container *ngIf="sending">
@@ -130,6 +149,7 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
   token:any
   tempPublishableKey = testKey
   stripe:StripeInstance
+  stripeBank:StripeInstance
   demoTemplate:string = demoTemplate
   extraData = {
     "name": "",
@@ -140,6 +160,15 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
     "address_line2": "",
     "address_state": "",
     "address_zip": ""
+  }
+
+  bankData = {
+    country: 'US',
+    currency: 'usd',
+    routing_number: '110000000',
+    account_number: '000123456789',
+    account_holder_name: 'Jenny Rosen',
+    account_holder_type: 'individual',
   }
 
   constructor(public StripeScriptTag:StripeScriptTag){}
@@ -162,5 +191,9 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
 
   changeExtraData(data:string){
     this.extraData = JSON.parse(data)
+  }
+
+  changeBankData(data:string){
+    this.bankData = JSON.parse(data)
   }
 }

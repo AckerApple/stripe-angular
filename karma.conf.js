@@ -6,7 +6,7 @@ const setup = {
   basePath: 'src',
   frameworks: [
     'jasmine',
-    '@angular/cli'
+    '@angular-devkit/build-angular'
   ],
 
   plugins: [
@@ -34,7 +34,7 @@ if( browserArg=='PhantomJS' ){
   setup.customLaunchers = require('./test/sauce-browsers.js').customLaunchers()
 }
 
-setup.plugins.push( require('@angular/cli/plugins/karma') )
+setup.plugins.push( require('@angular-devkit/build-angular/plugins/karma') )
 
 module.exports = function (config) {
   setup.logLevel = config.LOG_INFO
