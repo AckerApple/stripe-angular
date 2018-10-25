@@ -81,7 +81,7 @@
       }
     },
     "test": {
-      "root": "",
+      "root": "test",
       "sourceRoot": "test",
       "projectType": "application",
       "architect": {
@@ -126,6 +126,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+            "tsConfig": "test/tsconfig.json",
             "main": "test/test.ts",
             "karmaConfig": "karma.conf.js",
             "scripts": [],

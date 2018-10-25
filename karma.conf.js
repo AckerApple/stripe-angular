@@ -1,4 +1,4 @@
-const browserIndex = process.argv.indexOf('--browser')
+const browserIndex = process.argv.indexOf('--browsers')
 const browserArg = browserIndex>=0 ? process.argv[browserIndex+1] : ''
 
 const setup = {

@@ -7,7 +7,9 @@
   "scripts": {
     "update:dist": "node scripts/update-dist-package.js",
     "ack-webpack": "ack-webpack",
+
     "build:dist": "ngc --declaration --project src",
+
     "test:watch": "ng test",
     "build:index": "pug app/src/index.pug --out app/src",
     "compile:templates:app": "ack-pug-bundler app/src/components/pugs app/src/components/templates --outType ts --oneToOne",
@@ -17,7 +19,8 @@
     "watch:templates:app": "npm run compile:templates:app -- --watch",
     "watch:templates:src": "npm run compile:templates:src -- --watch",
     "watch:app-template": "npm run compile:app-template -- --watch",
-    "build:js": "node --max-old-space-size=8192 ./node_modules/ack-webpack/bin/cli app/src/index.prod.ts app/www/assets/scripts/index.js --production --project app/src/tsconfig.json",
+
+    "build:js": "ng build prod --prod --output-hashing=all --source-map=false",
     
     "watch:js": "ack-webpack app/src/index.ts app/www/assets/scripts/index.js --project app/src/tsconfig.json --watch --browser=app/www",
     "watch:js": "ng serve prod --port 4202 --open --configuration=watch",
@@ -27,7 +30,7 @@
     "watch": "npm-run-all --parallel compile:templates watch:css watch:templates watch:js",
     "build": "npm-run-all -s build:dist build:css build:index compile:templates build:js update:dist",
     "compile:app-template": "ack-pug-bundler app/src/components/app.component.ts app/src/components/templates/ --skipRender --oneFile --outType ts --outFileExt .template.ts",
-    "test": "ng test --browser PhantomJS --single-run",
+    "test": "ng test test --browsers PhantomJS --watch=false",
     "start": "ack-reload -d app/www --port 8080"
   },
   "repository": {

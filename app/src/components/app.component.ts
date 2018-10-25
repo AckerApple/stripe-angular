@@ -140,8 +140,9 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
 
 @Component({
   selector:"app",
-  template: template.replace(/\s\s/g,'')//prevent accidentally spacing
+  template: template//.replace(/\s\s/g,'')//prevent accidentally spacing
 }) export class AppComponent{
+  viewcode:boolean
   loaded:boolean
   sending:boolean
   publishableKey = testKey
