@@ -2,7 +2,7 @@ import { EventEmitter, ElementRef } from "@angular/core";
 import { StripeInstance, StripeCardOptions } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 import { StripeToken } from "../StripeTypes";
-export declare class StripeCard {
+export declare class StripeBank {
     ElementRef: ElementRef;
     StripeScriptTag: StripeScriptTag;
     options: StripeCardOptions;
@@ -15,5 +15,5 @@ export declare class StripeCard {
     elements: any;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
-    createToken(extraData?: any): Promise<StripeToken>;
+    createToken(data: any): any;
 }

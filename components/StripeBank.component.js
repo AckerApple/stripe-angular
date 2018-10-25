@@ -12,30 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var StripeScriptTag_1 = require("../StripeScriptTag");
 var stripe_card_pug_1 = require("./templates/stripe-card.pug");
-var StripeCard = /** @class */ (function () {
-    function StripeCard(ElementRef, StripeScriptTag) {
+var StripeBank = /** @class */ (function () {
+    function StripeBank(ElementRef, StripeScriptTag) {
         this.ElementRef = ElementRef;
         this.StripeScriptTag = StripeScriptTag;
         this.catcher = new core_1.EventEmitter();
         this.invalidChange = new core_1.EventEmitter();
         this.tokenChange = new core_1.EventEmitter();
     }
-    StripeCard.prototype.ngOnInit = function () {
+    StripeBank.prototype.ngOnInit = function () {
         this.StripeScriptTag.checkKeyThrow();
         this.stripe = this.StripeScriptTag.StripeInstance;
-        this.elements = this.stripe.elements().create('card', this.options);
-        this.elements.mount(this.ElementRef.nativeElement);
-        this.elements.addEventListener('change', function (result) {
-            if (result.error) {
-                this.invalidChange.emit(this.invalid = result.error);
-            }
-        });
     };
-    StripeCard.prototype.createToken = function (extraData) {
+    StripeBank.prototype.createToken = function (data) {
         var _this = this;
         delete this.invalid;
         this.invalidChange.emit(this.invalid);
-        return this.stripe.createToken(this.elements, extraData)
+        return this.stripe.createToken('bank_account', data)
             .then(function (result) {
             if (result.error) {
                 if (result.error.type == "validation_error") {
@@ -55,37 +48,37 @@ var StripeCard = /** @class */ (function () {
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
-    ], StripeCard.prototype, "options", void 0);
+    ], StripeBank.prototype, "options", void 0);
     __decorate([
         core_1.Output("catch"),
         __metadata("design:type", core_1.EventEmitter)
-    ], StripeCard.prototype, "catcher", void 0);
+    ], StripeBank.prototype, "catcher", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Error)
-    ], StripeCard.prototype, "invalid", void 0);
+    ], StripeBank.prototype, "invalid", void 0);
     __decorate([
         core_1.Output(),
         __metadata("design:type", core_1.EventEmitter)
-    ], StripeCard.prototype, "invalidChange", void 0);
+    ], StripeBank.prototype, "invalidChange", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
-    ], StripeCard.prototype, "token", void 0);
+    ], StripeBank.prototype, "token", void 0);
     __decorate([
         core_1.Output(),
         __metadata("design:type", core_1.EventEmitter)
-    ], StripeCard.prototype, "tokenChange", void 0);
-    StripeCard = __decorate([
+    ], StripeBank.prototype, "tokenChange", void 0);
+    StripeBank = __decorate([
         core_1.Component({
-            selector: "stripe-card",
+            selector: "stripe-bank",
             template: stripe_card_pug_1.string,
-            exportAs: "StripeCard"
+            exportAs: "StripeBank"
         }),
         __metadata("design:paramtypes", [core_1.ElementRef,
             StripeScriptTag_1.StripeScriptTag])
-    ], StripeCard);
-    return StripeCard;
+    ], StripeBank);
+    return StripeBank;
 }());
-exports.StripeCard = StripeCard;
-//# sourceMappingURL=StripeCard.component.js.map
+exports.StripeBank = StripeBank;
+//# sourceMappingURL=StripeBank.component.js.map

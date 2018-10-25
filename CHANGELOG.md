@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.2.0] - (2018-10-25)
+- Added stripe-bank
+
 ## [0.1.0] - (2018-01-26)
 - added [(invalid)] two way binding for when validation fails
 ### Breaking Changes
