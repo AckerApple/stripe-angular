@@ -4,6 +4,15 @@ import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeToken } from "../StripeTypes"
 import { string as template } from "./templates/stripe-card.pug"
 
+export interface bank_account{
+  country             : string
+  currency            : string
+  routing_number      : string
+  account_number      : string
+  account_holder_name : string
+  account_holder_type : string
+}
+
 @Component({
   selector: "stripe-bank",
   template:template,

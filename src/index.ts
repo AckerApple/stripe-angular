@@ -10,7 +10,7 @@ import { StripeCard } from "./components/StripeCard.component"
 export { StripeCard } from "./components/StripeCard.component"
 
 import { StripeBank } from "./components/StripeBank.component"
-export { StripeBank } from "./components/StripeBank.component"
+export { bank_account, StripeBank } from "./components/StripeBank.component"
 
 const declarations = [
   StripeCard,
