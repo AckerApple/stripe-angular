@@ -23,5 +23,5 @@ export declare class StripeBank {
     elements: any;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
-    createToken(data: any): any;
+    createToken(data: any): Promise<StripeToken>;
 }

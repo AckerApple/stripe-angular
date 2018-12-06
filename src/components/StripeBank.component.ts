@@ -40,7 +40,7 @@ export interface bank_account{
     this.stripe = this.StripeScriptTag.StripeInstance
   }
 
-  createToken( data ){
+  createToken( data ):Promise<StripeToken>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 

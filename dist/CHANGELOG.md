@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.2.3] - (2018-12-06)
+- potential fix for race loading issue
+
 ## [0.2.1] - (2018-10-29)
 - Removed hello world from bad stripe id
 - added bank_account type

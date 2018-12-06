@@ -1,6 +1,9 @@
 import { Injectable } from "@angular/core"
 
-import { Stripe, StripeInstance, StripeCard, StripeToken } from "./StripeTypes"
+import {
+  Stripe, StripeInstance
+  //, StripeCard, StripeToken
+} from "./StripeTypes"
 
 @Injectable() export class StripeScriptTag{
   src:string = "https://js.stripe.com/v3/"
@@ -27,7 +30,9 @@ import { Stripe, StripeInstance, StripeCard, StripeToken } from "./StripeTypes"
   }
 
   injectIntoHead():Promise<Stripe>{
-    if( window["Stripe"] )return Promise.resolve( window["Stripe"] )
+    if( window["Stripe"] ){
+      return Promise.resolve( window["Stripe"] )
+    }
 
     return this.promise = new Promise((res,rej)=>{
       const head = this.getTargetTagDropElement()
