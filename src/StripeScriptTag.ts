@@ -27,7 +27,7 @@ import { Stripe, StripeInstance, StripeCard, StripeToken } from "./StripeTypes"
   }
 
   injectIntoHead():Promise<Stripe>{
-    if( window["Stripe"] )return this.promise
+    if( window["Stripe"] )return Promise.resolve( window["Stripe"] )
 
     return this.promise = new Promise((res,rej)=>{
       const head = this.getTargetTagDropElement()
