@@ -29,8 +29,9 @@ var StripeScriptTag = /** @class */ (function () {
     };
     StripeScriptTag.prototype.injectIntoHead = function () {
         var _this = this;
-        if (window["Stripe"])
-            return this.promise;
+        if (window["Stripe"]) {
+            return Promise.resolve(window["Stripe"]);
+        }
         return this.promise = new Promise(function (res, rej) {
             var head = _this.getTargetTagDropElement();
             var script = document.createElement("script");
