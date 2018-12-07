@@ -9,24 +9,36 @@ import {
   src:string = "https://js.stripe.com/v3/"
   Stripe:Stripe
   StripeInstance:StripeInstance
-  promise:Promise<Stripe>
+  load:Promise<any>
+
+  constructor(){
+    this.load = this.injectIntoHead()
+  }
 
   promiseStripe():Promise<Stripe>{
-    return this.injectIntoHead()
+    return this.load
   }
 
-  checkKeyThrow():StripeScriptTag{
-    if( !this.StripeInstance ){
-      const err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()")
-      err["code"] = "STRIPEKEYNOTSET"
-      throw err
-    }
-    return this
-  }
-
-  setPublishableKey(key:string, options?:any):Promise<StripeInstance>{
+  promiseInstance():Promise<StripeInstance>{
     return this.promiseStripe()
-    .then( Stripe=>this.StripeInstance=Stripe(key, options) )
+    .then(stripe=>{    
+      if( !this.StripeInstance ){
+        const err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()")
+        err["code"] = "STRIPEKEYNOTSET"
+        throw err
+        //return Promise.reject( err )
+      }
+
+      return this.StripeInstance
+    })
+  }
+
+  setPublishableKey(
+    key:string,
+    options?:any
+  ):Promise<StripeInstance>{
+    return this.load = this.load
+    .then( ()=>this.StripeInstance=this.Stripe(key, options) )
   }
 
   injectIntoHead():Promise<Stripe>{
@@ -34,7 +46,7 @@ import {
       return Promise.resolve( window["Stripe"] )
     }
 
-    return this.promise = new Promise((res,rej)=>{
+    return new Promise((res,rej)=>{
       const head = this.getTargetTagDropElement()
       const script = document.createElement("script")
       script.setAttribute("src", this.src)

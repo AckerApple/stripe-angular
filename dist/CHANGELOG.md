@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.2.4] - (2018-12-07)
+- correct loading sequence
+
 ## [0.2.3] - (2018-12-06)
 - potential fix for race loading issue
 

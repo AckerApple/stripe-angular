@@ -27,18 +27,20 @@ import { string as template } from "./templates/stripe-card.pug"
   ){}
 
   ngOnInit(){
-    this.StripeScriptTag.checkKeyThrow()
+    this.StripeScriptTag.promiseInstance()
+    .then(i=>{
+      this.stripe = i
+      
+      this.elements = this.stripe.elements().create('card', this.options)
+      this.elements.mount(this.ElementRef.nativeElement)
 
-    this.stripe = this.StripeScriptTag.StripeInstance
-    
-    this.elements = this.stripe.elements().create('card', this.options)
-    this.elements.mount(this.ElementRef.nativeElement)
-
-    this.elements.addEventListener('change', function(result) {
-      if( result.error ){
-        this.invalidChange.emit( this.invalid=result.error )
-      }
+      this.elements.addEventListener('change', function(result) {
+        if( result.error ){
+          this.invalidChange.emit( this.invalid=result.error )
+        }
+      })
     })
+
   }
 
   createToken(extraData?):Promise<StripeToken>{

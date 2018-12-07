@@ -36,8 +36,8 @@ export interface bank_account{
   ){}
 
   ngOnInit(){
-    this.StripeScriptTag.checkKeyThrow()
-    this.stripe = this.StripeScriptTag.StripeInstance
+    this.StripeScriptTag.promiseInstance()
+    .then( i=>this.stripe=i )
   }
 
   createToken( data ):Promise<StripeToken>{
