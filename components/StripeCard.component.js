@@ -21,14 +21,17 @@ var StripeCard = /** @class */ (function () {
         this.tokenChange = new core_1.EventEmitter();
     }
     StripeCard.prototype.ngOnInit = function () {
-        this.StripeScriptTag.checkKeyThrow();
-        this.stripe = this.StripeScriptTag.StripeInstance;
-        this.elements = this.stripe.elements().create('card', this.options);
-        this.elements.mount(this.ElementRef.nativeElement);
-        this.elements.addEventListener('change', function (result) {
-            if (result.error) {
-                this.invalidChange.emit(this.invalid = result.error);
-            }
+        var _this = this;
+        this.StripeScriptTag.promiseInstance()
+            .then(function (i) {
+            _this.stripe = i;
+            _this.elements = _this.stripe.elements().create('card', _this.options);
+            _this.elements.mount(_this.ElementRef.nativeElement);
+            _this.elements.addEventListener('change', function (result) {
+                if (result.error) {
+                    this.invalidChange.emit(this.invalid = result.error);
+                }
+            });
         });
     };
     StripeCard.prototype.createToken = function (extraData) {

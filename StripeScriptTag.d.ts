@@ -3,9 +3,10 @@ export declare class StripeScriptTag {
     src: string;
     Stripe: Stripe;
     StripeInstance: StripeInstance;
-    promise: Promise<Stripe>;
+    load: Promise<any>;
+    constructor();
     promiseStripe(): Promise<Stripe>;
-    checkKeyThrow(): StripeScriptTag;
+    promiseInstance(): Promise<StripeInstance>;
     setPublishableKey(key: string, options?: any): Promise<StripeInstance>;
     injectIntoHead(): Promise<Stripe>;
     getTargetTagDropElement(): HTMLHeadElement;

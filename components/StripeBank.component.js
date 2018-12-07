@@ -21,8 +21,9 @@ var StripeBank = /** @class */ (function () {
         this.tokenChange = new core_1.EventEmitter();
     }
     StripeBank.prototype.ngOnInit = function () {
-        this.StripeScriptTag.checkKeyThrow();
-        this.stripe = this.StripeScriptTag.StripeInstance;
+        var _this = this;
+        this.StripeScriptTag.promiseInstance()
+            .then(function (i) { return _this.stripe = i; });
     };
     StripeBank.prototype.createToken = function (data) {
         var _this = this;
