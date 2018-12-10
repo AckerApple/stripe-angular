@@ -40,7 +40,6 @@ import { string as template } from "./templates/stripe-card.pug"
         }
       })
     })
-
   }
 
   createToken(extraData?):Promise<StripeToken>{

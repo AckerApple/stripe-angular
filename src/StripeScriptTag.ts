@@ -5,7 +5,7 @@ import {
   //, StripeCard, StripeToken
 } from "./StripeTypes"
 
-@Injectable() export class StripeScriptTag{
+@Injectable({providedIn: 'root'}) export class StripeScriptTag{
   src:string = "https://js.stripe.com/v3/"
   Stripe:Stripe
   StripeInstance:StripeInstance

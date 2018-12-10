@@ -33,9 +33,13 @@ import { NgModule } from "@angular/core";
 import { Module as StripeModule } from "stripe-angular"
 
 @NgModule({
-  imports: [ StripeModule ]
+  imports: [ StripeModule.forRoot() ]
 }) export class AppModule {}
 ```
+
+> Please note, you only use `.forRoot()` on your base app module
+>> This ONLY matters if you need to support lazy loading via loadChildren()
+
 
 ## Init
 You must provide your Stripe account's publishableKey

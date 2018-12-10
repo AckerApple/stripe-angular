@@ -8,7 +8,7 @@ import { Module as StripeModule } from "../../src/index"
 @NgModule({
   imports:[
     BrowserModule,
-    StripeModule
+    StripeModule.forRoot()
   ],
   declarations: [
     AppComponent

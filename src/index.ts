@@ -1,6 +1,6 @@
 export * from "./StripeTypes"
 
-import { NgModule } from "@angular/core";
+import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
 import { StripeScriptTag } from "./StripeScriptTag"
@@ -22,7 +22,16 @@ const declarations = [
     CommonModule
   ],
   declarations: declarations,
-  providers: [ StripeScriptTag ],
+ // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
-}) export class Module {}
+}) export class Module {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: Module,
+      providers: [
+        StripeScriptTag
+      ],
+    }
+  }
+}
 

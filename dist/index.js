@@ -24,13 +24,23 @@ var declarations = [
 var Module = /** @class */ (function () {
     function Module() {
     }
-    Module = __decorate([
+    Module_1 = Module;
+    Module.forRoot = function () {
+        return {
+            ngModule: Module_1,
+            providers: [
+                StripeScriptTag_1.StripeScriptTag
+            ],
+        };
+    };
+    var Module_1;
+    Module = Module_1 = __decorate([
         core_1.NgModule({
             imports: [
                 common_1.CommonModule
             ],
             declarations: declarations,
-            providers: [StripeScriptTag_1.StripeScriptTag],
+            // providers: [ StripeScriptTag ],
             exports: declarations.slice()
         })
     ], Module);
