@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.2.4] - (2018-12-10)
+- Support lazy loading with forRoot() module definition
+
 ## [0.2.4] - (2018-12-07)
 - correct loading sequence
 

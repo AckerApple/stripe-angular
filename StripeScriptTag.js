@@ -10,6 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
+var i0 = require("@angular/core");
+var i1 = require("./index");
 var StripeScriptTag = /** @class */ (function () {
     function StripeScriptTag() {
         this.src = "https://js.stripe.com/v3/";
@@ -59,8 +61,9 @@ var StripeScriptTag = /** @class */ (function () {
             return elm[0];
         return document.getElementsByTagName("body")[0];
     };
+    StripeScriptTag.ngInjectableDef = i0.defineInjectable({ factory: function StripeScriptTag_Factory() { return new i1.StripeScriptTag(); }, token: i1.StripeScriptTag, providedIn: "root" });
     StripeScriptTag = __decorate([
-        core_1.Injectable(),
+        core_1.Injectable({ providedIn: 'root' }),
         __metadata("design:paramtypes", [])
     ], StripeScriptTag);
     return StripeScriptTag;
