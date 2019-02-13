@@ -20,7 +20,7 @@ import { string as template } from "./templates/stripe-card.pug"
 
   stripe:StripeInstance
   elements:any
-  
+
   constructor(
     public ElementRef:ElementRef,
     public StripeScriptTag:StripeScriptTag
@@ -30,11 +30,11 @@ import { string as template } from "./templates/stripe-card.pug"
     this.StripeScriptTag.promiseInstance()
     .then(i=>{
       this.stripe = i
-      
+
       this.elements = this.stripe.elements().create('card', this.options)
       this.elements.mount(this.ElementRef.nativeElement)
 
-      this.elements.addEventListener('change', function(result) {
+      this.elements.addEventListener('change', result=>{
         if( result.error ){
           this.invalidChange.emit( this.invalid=result.error )
         }
