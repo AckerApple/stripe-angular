@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.3.2] - (2018-03-25)
+- Fix loading Stripe when its already been loaded before
+
 ## [0.3.1] - (2018-03-25)
 - Fix context of StripeCard component init function
 - updated dependencies

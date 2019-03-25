@@ -37,13 +37,14 @@ import {
     key:string,
     options?:any
   ):Promise<StripeInstance>{
-    return this.load = this.load
-    .then( ()=>this.StripeInstance=this.Stripe(key, options) )
+    return this.load.then( ()=>
+      this.StripeInstance=this.Stripe(key, options)
+    )
   }
 
   injectIntoHead():Promise<Stripe>{
     if( window["Stripe"] ){
-      return Promise.resolve( window["Stripe"] )
+      return Promise.resolve( this.Stripe=window["Stripe"] )
     }
 
     return new Promise((res,rej)=>{
@@ -53,12 +54,16 @@ import {
       script.setAttribute("type", "text/javascript")
       
       script.addEventListener("load",()=>{
-        this.Stripe = window["Stripe"]
-        res( window["Stripe"] )
+        this.Stripe = this.grabStripe()
+        res( this.Stripe )
       })
       
       head.appendChild(script)
     })
+  }
+
+  grabStripe(){
+    return window["Stripe"]
   }
 
   getTargetTagDropElement(){
