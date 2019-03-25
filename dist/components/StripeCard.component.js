@@ -29,7 +29,7 @@ var StripeCard = /** @class */ (function () {
             _this.elements.mount(_this.ElementRef.nativeElement);
             _this.elements.addEventListener('change', function (result) {
                 if (result.error) {
-                    this.invalidChange.emit(this.invalid = result.error);
+                    _this.invalidChange.emit(_this.invalid = result.error);
                 }
             });
         });

@@ -34,7 +34,7 @@ import { string as template } from "./templates/stripe-card.pug"
       this.elements = this.stripe.elements().create('card', this.options)
       this.elements.mount(this.ElementRef.nativeElement)
 
-      this.elements.addEventListener('change', function(result) {
+      this.elements.addEventListener('change', (result)=>{
         if( result.error ){
           this.invalidChange.emit( this.invalid=result.error )
         }
