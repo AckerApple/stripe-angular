@@ -35,13 +35,14 @@ var StripeScriptTag = /** @class */ (function () {
     };
     StripeScriptTag.prototype.setPublishableKey = function (key, options) {
         var _this = this;
-        return this.load = this.load
-            .then(function () { return _this.StripeInstance = _this.Stripe(key, options); });
+        return this.load.then(function () {
+            return _this.StripeInstance = _this.Stripe(key, options);
+        });
     };
     StripeScriptTag.prototype.injectIntoHead = function () {
         var _this = this;
         if (window["Stripe"]) {
-            return Promise.resolve(window["Stripe"]);
+            return Promise.resolve(this.Stripe = window["Stripe"]);
         }
         return new Promise(function (res, rej) {
             var head = _this.getTargetTagDropElement();
@@ -49,11 +50,14 @@ var StripeScriptTag = /** @class */ (function () {
             script.setAttribute("src", _this.src);
             script.setAttribute("type", "text/javascript");
             script.addEventListener("load", function () {
-                _this.Stripe = window["Stripe"];
-                res(window["Stripe"]);
+                _this.Stripe = _this.grabStripe();
+                res(_this.Stripe);
             });
             head.appendChild(script);
         });
+    };
+    StripeScriptTag.prototype.grabStripe = function () {
+        return window["Stripe"];
     };
     StripeScriptTag.prototype.getTargetTagDropElement = function () {
         var elm = document.getElementsByTagName("head");
