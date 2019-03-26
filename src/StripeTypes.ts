@@ -45,6 +45,18 @@ export interface StripeToken{
   "used": boolean
 }
 
+export interface StripeSource {
+  "id": string;
+  "object": string;
+  "card": StripeCard;
+  "client_ip": string;
+  "created": number;
+  "livemode": boolean;
+  "status": string;
+  "type": "card" | string;
+  "usage": string;
+}
+
 export interface StripeStyle{
   color          : string
   fontFamily     : string

@@ -18,6 +18,9 @@ import { string as template } from "./templates/stripe-card.pug"
   @Input() token:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
 
+  @Input() source:StripeSource
+  @Output() sourceChange:EventEmitter<StripeSource> = new EventEmitter()
+
   stripe:StripeInstance
   elements:any
 
@@ -58,6 +61,26 @@ import { string as template } from "./templates/stripe-card.pug"
       }else{
         this.tokenChange.emit(this.token=result.token)
         return result.token
+      }
+    })
+  }
+
+  createSource(extraData?):Promise<StripeToken>{
+    delete this.invalid
+    this.invalidChange.emit(this.invalid)
+
+    return this.stripe.createSource(this.elements, extraData)
+    .then(result=>{
+      if(result.error){
+        if( result.error.type=="validation_error" ){
+          this.invalidChange.emit( this.invalid=result.error )
+        }else{
+          this.catcher.emit(result.error)
+          throw result.error
+        }
+      }else{
+        this.sourceChange.emit(this.token=result.source)
+        return result.source
       }
     })
   }

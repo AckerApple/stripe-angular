@@ -87,6 +87,7 @@ const template=
   (catch) = "onStripeError($event)"
   [(invalid)] = "invalidError"
   (tokenChange) = "setStripeToken($event)"
+  (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
@@ -113,6 +114,10 @@ const template=
     console.log('Stripe token', token)
   }
 
+  setStripeSource( source:StripeSource ){
+    console.log('Stripe source', source)
+  }
+
   onStripeError( error:Error ){
     console.error('Stripe error', token)
   }
@@ -128,6 +133,7 @@ const template=
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
+<button type="button" (click)="stripeCard.createSource(extraData)">createSource</button>
 ```
 
 ### stripe-bank

@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.4.0] - (2019-03-25)
+- Added support for creating sources instead of only tokens
+
 ## [0.3.2] - (2018-03-25)
 - Fix loading Stripe when its already been loaded before
 
