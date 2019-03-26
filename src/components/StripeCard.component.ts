@@ -79,7 +79,7 @@ import { string as template } from "./templates/stripe-card.pug"
           throw result.error
         }
       }else{
-        this.sourceChange.emit(this.token=result.source)
+        this.sourceChange.emit(this.source=result.source)
         return result.source
       }
     })
