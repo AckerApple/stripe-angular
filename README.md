@@ -126,7 +126,7 @@ const template=
 ```
 
 ### stripe-card
-```
+```html
 <stripe-card #stripeCard
   (catch)        = "$event"
   [(token)]      = "token"
@@ -138,7 +138,7 @@ const template=
 
 ### stripe-bank
 [see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
-```
+```html
 <stripe-bank #stripeBank
   (catch)        = "$event"
   [(token)]      = "token"
@@ -149,19 +149,38 @@ const template=
 ```
 
 ### stripe-source
-BETA: This component is NOT complete, not fully documented, nor fully tested
+> BETA: Currently under construction. May not work.
 
-[sources docs](https://stripe.com/docs/sources) [best practices](https://stripe.com/docs/sources/best-practices) [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
+This component is not intended to stand alone but it can. Both stripe-card and stripe-bank extend this component as a stripe source can be any form of payment.
 
-Example:
-```
+- [stripe sources docs](https://stripe.com/docs/sources)
+- [best practices](https://stripe.com/docs/sources/best-practices)
+- [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
+
+```html
+<!-- stripe source not intended to stand alone like this -->
 <stripe-source #stripeSource
   (catch)     = "$event"
   [(source)]  = "source"
   [(invalid)] = "invalidError"
 ></stripe-card>
+<button type="button" (click)="stripeSource.createSource(extraData)">createSource</button>
 
-<button type="button" (click)="stripeSource.createSource(extraData)">createToken</button>
+<!-- stripe-card has source bindings -->
+<stripe-card #stripeCard
+  (catch)     = "$event"
+  [(source)]  = "source"
+  [(invalid)] = "invalidError"
+></stripe-card>
+<button type="button" (click)="stripeCard.createSource(extraData)">createSource</button>
+
+<!-- stripe-card has source bindings -->
+<stripe-bank #stripeBankSource
+  (catch)      = "$event"
+  [(source)]   = "source"
+  [(invalid)]  = "invalidError"
+></stripe-card>
+<button type="button" (click)="stripeBankSource.createSource({...bank_account...})">createSource</button>
 ```
 
 What is a Stripe source?

@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.4.1] - (2019-03-25)
+- Made stripe-source a base component of stripe-bank and stripe-card
+
 ## [0.4.0] - (2019-03-25)
 - BETA: Added support for creating sources as stripe-source component
 
