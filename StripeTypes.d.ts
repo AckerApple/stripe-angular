@@ -4,7 +4,7 @@ export interface Stripe {
 export interface StripeInstance {
     elements: (options?: any) => any;
     createToken: (elements: any, options?: any) => any;
-    createSource: () => any;
+    createSource: (elements: any, options?: any) => any;
     retrieveSource: () => any;
     paymentRequest: () => any;
 }
@@ -40,6 +40,17 @@ export interface StripeToken {
     "livemode": boolean;
     "type": "card" | string;
     "used": boolean;
+}
+export interface StripeSource {
+    "id": string;
+    "object": string;
+    "card": StripeCard;
+    "client_ip": string;
+    "created": number;
+    "livemode": boolean;
+    "status": string;
+    "type": "card" | string;
+    "usage": string;
 }
 export interface StripeStyle {
     color: string;

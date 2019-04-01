@@ -18,6 +18,7 @@ Angular to Stripe module containing useful providers, components, and directives
 - [Use](#use)
   - [stripe-card](#stripe-card)
   - [stripe-bank](#stripe-bank)
+  - [stripe-source](#stripe-source)
 
 ## Install
 From a command terminal type the following
@@ -87,6 +88,7 @@ const template=
   (catch) = "onStripeError($event)"
   [(invalid)] = "invalidError"
   (tokenChange) = "setStripeToken($event)"
+  (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
@@ -111,6 +113,10 @@ const template=
 
   setStripeToken( token:StripeToken ){
     console.log('Stripe token', token)
+  }
+
+  setStripeSource( source:StripeSource ){
+    console.log('Stripe source', source)
   }
 
   onStripeError( error:Error ){
@@ -141,3 +147,26 @@ const template=
 
 <button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
 ```
+
+### stripe-source
+BETA: This component is NOT complete, not fully documented, nor fully tested
+
+[sources docs](https://stripe.com/docs/sources) [best practices](https://stripe.com/docs/sources/best-practices) [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
+
+Example:
+```
+<stripe-source #stripeSource
+  (catch)     = "$event"
+  [(source)]  = "source"
+  [(invalid)] = "invalidError"
+></stripe-card>
+
+<button type="button" (click)="stripeSource.createSource(extraData)">createToken</button>
+```
+
+What is a Stripe source?
+> Source objects allow you to accept a variety of payment methods with a single API. A source represents a customer’s payment instrument, and can be used with the Stripe API to create payments. Sources can be charged directly, or attached to customers for later reuse.
+
+Why use Stripe sources?
+> Stripe sources allows you, the developer, to focus on data differences between payment formats instead using different components for each like stripe-card and stripe-bank
+>> By taking into consideration the flexibility of the Sources API when designing your checkout flow, you can minimize any changes required to support additional payment methods as you add them.

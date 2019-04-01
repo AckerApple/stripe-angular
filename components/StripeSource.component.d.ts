@@ -1,18 +1,18 @@
 import { EventEmitter, ElementRef } from "@angular/core";
-import { StripeToken, StripeInstance, StripeCardOptions } from "../StripeTypes";
+import { StripeToken, StripeSource as StripeSourceType, StripeInstance, StripeCardOptions } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
-export declare class StripeCard {
+export declare class StripeSource {
     ElementRef: ElementRef;
     StripeScriptTag: StripeScriptTag;
     options: StripeCardOptions;
     catcher: EventEmitter<Error>;
     invalid: Error;
     invalidChange: EventEmitter<Error>;
-    token: StripeToken;
-    tokenChange: EventEmitter<StripeToken>;
+    source: StripeSourceType;
+    sourceChange: EventEmitter<StripeSourceType>;
     stripe: StripeInstance;
     elements: any;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
-    createToken(extraData?: any): Promise<StripeToken>;
+    createSource(extraData?: any): Promise<StripeToken>;
 }
