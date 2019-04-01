@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10,21 +23,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
-var StripeScriptTag_1 = require("../StripeScriptTag");
+var StripeSource_component_1 = require("./StripeSource.component");
 var stripe_card_pug_1 = require("./templates/stripe-card.pug");
-var StripeCard = /** @class */ (function () {
-    function StripeCard(ElementRef, StripeScriptTag) {
-        this.ElementRef = ElementRef;
-        this.StripeScriptTag = StripeScriptTag;
-        this.catcher = new core_1.EventEmitter();
-        this.invalidChange = new core_1.EventEmitter();
-        this.tokenChange = new core_1.EventEmitter();
+var StripeCard = /** @class */ (function (_super) {
+    __extends(StripeCard, _super);
+    function StripeCard() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.tokenChange = new core_1.EventEmitter();
+        return _this;
     }
     StripeCard.prototype.ngOnInit = function () {
         var _this = this;
-        this.StripeScriptTag.promiseInstance()
-            .then(function (i) {
-            _this.stripe = i;
+        _super.prototype.init.call(this)
+            .then(function () {
             _this.elements = _this.stripe.elements().create('card', _this.options);
             _this.elements.mount(_this.ElementRef.nativeElement);
             _this.elements.addEventListener('change', function (result) {
@@ -60,18 +71,6 @@ var StripeCard = /** @class */ (function () {
         __metadata("design:type", Object)
     ], StripeCard.prototype, "options", void 0);
     __decorate([
-        core_1.Output("catch"),
-        __metadata("design:type", core_1.EventEmitter)
-    ], StripeCard.prototype, "catcher", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Error)
-    ], StripeCard.prototype, "invalid", void 0);
-    __decorate([
-        core_1.Output(),
-        __metadata("design:type", core_1.EventEmitter)
-    ], StripeCard.prototype, "invalidChange", void 0);
-    __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
     ], StripeCard.prototype, "token", void 0);
@@ -84,11 +83,9 @@ var StripeCard = /** @class */ (function () {
             selector: "stripe-card",
             template: stripe_card_pug_1.string,
             exportAs: "StripeCard"
-        }),
-        __metadata("design:paramtypes", [core_1.ElementRef,
-            StripeScriptTag_1.StripeScriptTag])
+        })
     ], StripeCard);
     return StripeCard;
-}());
+}(StripeSource_component_1.StripeSource));
 exports.StripeCard = StripeCard;
 //# sourceMappingURL=StripeCard.component.js.map

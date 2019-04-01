@@ -1,6 +1,6 @@
-import { EventEmitter, ElementRef } from "@angular/core";
-import { StripeInstance, StripeCardOptions } from "../StripeTypes";
-import { StripeScriptTag } from "../StripeScriptTag";
+import { EventEmitter } from "@angular/core";
+import { StripeCardOptions } from "../StripeTypes";
+import { StripeSource } from "./StripeSource.component";
 import { StripeToken } from "../StripeTypes";
 export interface bank_account {
     country: string;
@@ -10,18 +10,9 @@ export interface bank_account {
     account_holder_name: string;
     account_holder_type: string;
 }
-export declare class StripeBank {
-    ElementRef: ElementRef;
-    StripeScriptTag: StripeScriptTag;
+export declare class StripeBank extends StripeSource {
     options: StripeCardOptions;
-    catcher: EventEmitter<Error>;
-    invalid: Error;
-    invalidChange: EventEmitter<Error>;
     token: StripeToken;
     tokenChange: EventEmitter<StripeToken>;
-    stripe: StripeInstance;
-    elements: any;
-    constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
-    ngOnInit(): void;
     createToken(data: any): Promise<StripeToken>;
 }

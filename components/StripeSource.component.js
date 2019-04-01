@@ -21,18 +21,12 @@ var StripeSource = /** @class */ (function () {
         this.sourceChange = new core_1.EventEmitter();
     }
     StripeSource.prototype.ngOnInit = function () {
+        this.init();
+    };
+    StripeSource.prototype.init = function () {
         var _this = this;
-        this.StripeScriptTag.promiseInstance()
-            .then(function (i) {
-            _this.stripe = i;
-            _this.elements = _this.stripe.elements().create('card', _this.options);
-            _this.elements.mount(_this.ElementRef.nativeElement);
-            _this.elements.addEventListener('change', function (result) {
-                if (result.error) {
-                    _this.invalidChange.emit(_this.invalid = result.error);
-                }
-            });
-        });
+        return this.StripeScriptTag.promiseInstance()
+            .then(function (i) { return _this.stripe = i; });
     };
     StripeSource.prototype.createSource = function (extraData) {
         var _this = this;
@@ -55,10 +49,6 @@ var StripeSource = /** @class */ (function () {
             }
         });
     };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], StripeSource.prototype, "options", void 0);
     __decorate([
         core_1.Output("catch"),
         __metadata("design:type", core_1.EventEmitter)
