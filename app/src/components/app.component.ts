@@ -60,7 +60,7 @@ const template=
                     Credit or debit card
                   </label>
                   <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-                    <stripe-card #stripeCard [(token)]="token" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-card>
+                    <stripe-card #stripeCard [(token)]="token" [(source)]="source" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-card>
                   </div>
 
                   <div *ngIf="editExtraData">
@@ -74,25 +74,47 @@ const template=
                     <button type="button" (click)="editExtraData=!editExtraData">edit extra data</button>
                     <button type="button" (click)="lastError=null;sending=true;stripeCard.createToken(extraData)">createToken</button>
                   </div>
+                  
+                  <br />
+                  
+                  <div style="text-align:right;">
+                    <button type="button" (click)="lastError=null;sending=true;stripeCard.createSource(extraData)">createSource</button>
+                  </div>
+                  
                   <div *ngIf="token" style="padding:1em;">
                     <strong>Token</strong>
                     <textarea wrap="off" style="width:100%;height:175px">{{ token | json }}</textArea>
+                  </div>
+                  
+                  <div *ngIf="source" style="padding:1em;">
+                    <strong>Source</strong>
+                    <textarea wrap="off" style="width:100%;height:175px">{{ source | json }}</textArea>
                   </div>
                   <hr />
 
                   <label for="card-like-element">
                     Bank Account
                   </label>
-                  <stripe-bank #stripeBank [(token)]="bankToken" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-bank>
+                  <stripe-bank #stripeBank [(token)]="bankToken" [(source)]="bankSource" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-bank>
                   <br />
                   <textarea wrap="off" style="width:100%;height:175px" (change)="changeBankData($event.target.value)">{{ bankData | json }}</textArea>
                   <br />
                   <div style="text-align:right;">
                     <button type="button" (click)="lastError=null;sending=true;stripeBank.createToken(bankData)">createToken</button>
                   </div>
+                  <br />
+                  <div style="text-align:right;">
+                    <button type="button" (click)="lastError=null;sending=true;stripeBank.createSource(bankData)">createSource</button>
+                  </div>
+                  
+                  <!-- bank token success output -->
                   <div *ngIf="bankToken" style="padding:1em;">
                     <strong>Bank Token</strong>
                     <textarea wrap="off" style="width:100%;height:175px">{{ bankToken | json }}</textArea>
+                  </div>
+                  <div *ngIf="bankSource" style="padding:1em;">
+                    <strong>Bank Source</strong>
+                    <textarea wrap="off" style="width:100%;height:175px">{{ bankSource | json }}</textArea>
                   </div>
 
                 </ng-container>

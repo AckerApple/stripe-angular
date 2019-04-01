@@ -18,6 +18,7 @@ Angular to Stripe module containing useful providers, components, and directives
 - [Use](#use)
   - [stripe-card](#stripe-card)
   - [stripe-bank](#stripe-bank)
+  - [stripe-source](#stripe-source)
 
 ## Install
 From a command terminal type the following
@@ -87,6 +88,7 @@ const template=
   (catch) = "onStripeError($event)"
   [(invalid)] = "invalidError"
   (tokenChange) = "setStripeToken($event)"
+  (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
@@ -113,6 +115,10 @@ const template=
     console.log('Stripe token', token)
   }
 
+  setStripeSource( source:StripeSource ){
+    console.log('Stripe source', source)
+  }
+
   onStripeError( error:Error ){
     console.error('Stripe error', token)
   }
@@ -120,7 +126,7 @@ const template=
 ```
 
 ### stripe-card
-```
+```html
 <stripe-card #stripeCard
   (catch)        = "$event"
   [(token)]      = "token"
@@ -132,7 +138,7 @@ const template=
 
 ### stripe-bank
 [see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
-```
+```html
 <stripe-bank #stripeBank
   (catch)        = "$event"
   [(token)]      = "token"
@@ -141,3 +147,45 @@ const template=
 
 <button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
 ```
+
+### stripe-source
+> BETA: Currently under construction. May not work.
+
+This component is not intended to stand alone but it can. Both stripe-card and stripe-bank extend this component as a stripe source can be any form of payment.
+
+- [stripe sources docs](https://stripe.com/docs/sources)
+- [best practices](https://stripe.com/docs/sources/best-practices)
+- [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
+
+```html
+<!-- stripe source not intended to stand alone like this -->
+<stripe-source #stripeSource
+  (catch)     = "$event"
+  [(source)]  = "source"
+  [(invalid)] = "invalidError"
+></stripe-card>
+<button type="button" (click)="stripeSource.createSource(extraData)">createSource</button>
+
+<!-- stripe-card has source bindings -->
+<stripe-card #stripeCard
+  (catch)     = "$event"
+  [(source)]  = "source"
+  [(invalid)] = "invalidError"
+></stripe-card>
+<button type="button" (click)="stripeCard.createSource(extraData)">createSource</button>
+
+<!-- stripe-card has source bindings -->
+<stripe-bank #stripeBankSource
+  (catch)      = "$event"
+  [(source)]   = "source"
+  [(invalid)]  = "invalidError"
+></stripe-card>
+<button type="button" (click)="stripeBankSource.createSource({...bank_account...})">createSource</button>
+```
+
+What is a Stripe source?
+> Source objects allow you to accept a variety of payment methods with a single API. A source represents a customer’s payment instrument, and can be used with the Stripe API to create payments. Sources can be charged directly, or attached to customers for later reuse.
+
+Why use Stripe sources?
+> Stripe sources allows you, the developer, to focus on data differences between payment formats instead using different components for each like stripe-card and stripe-bank
+>> By taking into consideration the flexibility of the Sources API when designing your checkout flow, you can minimize any changes required to support additional payment methods as you add them.

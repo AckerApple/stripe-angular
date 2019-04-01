@@ -6,6 +6,9 @@ import { CommonModule } from "@angular/common";
 import { StripeScriptTag } from "./StripeScriptTag"
 export { StripeScriptTag } from "./StripeScriptTag"
 
+import { StripeSource } from "./components/StripeSource.component"
+export { StripeSource } from "./components/StripeSource.component"
+
 import { StripeCard } from "./components/StripeCard.component"
 export { StripeCard } from "./components/StripeCard.component"
 
@@ -13,6 +16,7 @@ import { StripeBank } from "./components/StripeBank.component"
 export { bank_account, StripeBank } from "./components/StripeBank.component"
 
 const declarations = [
+  StripeSource,
   StripeCard,
   StripeBank
 ]

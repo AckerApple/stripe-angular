@@ -1,39 +1,21 @@
-import { Input, Output, EventEmitter, ElementRef, Component } from "@angular/core"
-import { StripeInstance, StripeCardOptions } from "../StripeTypes"
-import { StripeScriptTag } from "../StripeScriptTag"
-import { StripeToken } from "../StripeTypes"
+import { Input, Output, EventEmitter, Component } from "@angular/core"
+import { StripeToken, StripeCardOptions } from "../StripeTypes"
+import { StripeSource } from "./StripeSource.component"
 import { string as template } from "./templates/stripe-card.pug"
 
 @Component({
   selector: "stripe-card",
   template:template,
   exportAs:"StripeCard"
-}) export class StripeCard{
+}) export class StripeCard extends StripeSource{
   @Input() options:StripeCardOptions
-  @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
-
-  @Input() invalid:Error
-  @Output() invalidChange:EventEmitter<Error> = new EventEmitter()
 
   @Input() token:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
 
-  @Input() source:StripeSource
-  @Output() sourceChange:EventEmitter<StripeSource> = new EventEmitter()
-
-  stripe:StripeInstance
-  elements:any
-
-  constructor(
-    public ElementRef:ElementRef,
-    public StripeScriptTag:StripeScriptTag
-  ){}
-
   ngOnInit(){
-    this.StripeScriptTag.promiseInstance()
-    .then(i=>{
-      this.stripe = i
-
+    super.init()
+    .then(()=>{
       this.elements = this.stripe.elements().create('card', this.options)
       this.elements.mount(this.ElementRef.nativeElement)
 
@@ -61,26 +43,6 @@ import { string as template } from "./templates/stripe-card.pug"
       }else{
         this.tokenChange.emit(this.token=result.token)
         return result.token
-      }
-    })
-  }
-
-  createSource(extraData?):Promise<StripeToken>{
-    delete this.invalid
-    this.invalidChange.emit(this.invalid)
-
-    return this.stripe.createSource(this.elements, extraData)
-    .then(result=>{
-      if(result.error){
-        if( result.error.type=="validation_error" ){
-          this.invalidChange.emit( this.invalid=result.error )
-        }else{
-          this.catcher.emit(result.error)
-          throw result.error
-        }
-      }else{
-        this.sourceChange.emit(this.source=result.source)
-        return result.source
       }
     })
   }

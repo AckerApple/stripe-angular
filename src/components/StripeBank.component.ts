@@ -1,6 +1,6 @@
-import { Input, Output, EventEmitter, ElementRef, Component } from "@angular/core"
-import { StripeInstance, StripeCardOptions } from "../StripeTypes"
-import { StripeScriptTag } from "../StripeScriptTag"
+import { Input, Output, EventEmitter, Component } from "@angular/core"
+import { StripeCardOptions } from "../StripeTypes"
+import { StripeSource } from "./StripeSource.component"
 import { StripeToken } from "../StripeTypes"
 import { string as template } from "./templates/stripe-card.pug"
 
@@ -17,28 +17,11 @@ export interface bank_account{
   selector: "stripe-bank",
   template:template,
   exportAs:"StripeBank"
-}) export class StripeBank{
-  @Input() options:StripeCardOptions
-  @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
-
-  @Input() invalid:Error
-  @Output() invalidChange:EventEmitter<Error> = new EventEmitter()
+}) export class StripeBank extends StripeSource{
+  @Input() options:StripeCardOptions//very similar type to card options
 
   @Input() token:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
-
-  stripe:StripeInstance
-  elements:any
-  
-  constructor(
-    public ElementRef:ElementRef,
-    public StripeScriptTag:StripeScriptTag
-  ){}
-
-  ngOnInit(){
-    this.StripeScriptTag.promiseInstance()
-    .then( i=>this.stripe=i )
-  }
 
   createToken( data ):Promise<StripeToken>{
     delete this.invalid

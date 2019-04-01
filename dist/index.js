@@ -11,6 +11,9 @@ var common_1 = require("@angular/common");
 var StripeScriptTag_1 = require("./StripeScriptTag");
 var StripeScriptTag_2 = require("./StripeScriptTag");
 exports.StripeScriptTag = StripeScriptTag_2.StripeScriptTag;
+var StripeSource_component_1 = require("./components/StripeSource.component");
+var StripeSource_component_2 = require("./components/StripeSource.component");
+exports.StripeSource = StripeSource_component_2.StripeSource;
 var StripeCard_component_1 = require("./components/StripeCard.component");
 var StripeCard_component_2 = require("./components/StripeCard.component");
 exports.StripeCard = StripeCard_component_2.StripeCard;
@@ -18,6 +21,7 @@ var StripeBank_component_1 = require("./components/StripeBank.component");
 var StripeBank_component_2 = require("./components/StripeBank.component");
 exports.StripeBank = StripeBank_component_2.StripeBank;
 var declarations = [
+    StripeSource_component_1.StripeSource,
     StripeCard_component_1.StripeCard,
     StripeBank_component_1.StripeBank
 ];
