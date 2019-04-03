@@ -23,12 +23,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
-var StripeSource_component_1 = require("./StripeSource.component");
+var StripeComponent_1 = require("./StripeComponent");
+var StripeScriptTag_1 = require("../StripeScriptTag");
 var stripe_card_pug_1 = require("./templates/stripe-card.pug");
 var StripeBank = /** @class */ (function (_super) {
     __extends(StripeBank, _super);
-    function StripeBank() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function StripeBank(StripeScriptTag) {
+        var _this = _super.call(this, StripeScriptTag) || this;
+        _this.StripeScriptTag = StripeScriptTag;
         _this.tokenChange = new core_1.EventEmitter();
         return _this;
     }
@@ -70,9 +72,10 @@ var StripeBank = /** @class */ (function (_super) {
             selector: "stripe-bank",
             template: stripe_card_pug_1.string,
             exportAs: "StripeBank"
-        })
+        }),
+        __metadata("design:paramtypes", [StripeScriptTag_1.StripeScriptTag])
     ], StripeBank);
     return StripeBank;
-}(StripeSource_component_1.StripeSource));
+}(StripeComponent_1.StripeComponent));
 exports.StripeBank = StripeBank;
 //# sourceMappingURL=StripeBank.component.js.map

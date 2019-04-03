@@ -1,7 +1,10 @@
-import { Input, Output, EventEmitter, Component } from "@angular/core"
+import {
+  Input, Output, EventEmitter, Component
+} from "@angular/core"
 import { StripeCardOptions } from "../StripeTypes"
-import { StripeSource } from "./StripeSource.component"
+import { StripeComponent } from "./StripeComponent"
 import { StripeToken } from "../StripeTypes"
+import { StripeScriptTag } from "../StripeScriptTag"
 import { string as template } from "./templates/stripe-card.pug"
 
 export interface bank_account{
@@ -17,11 +20,17 @@ export interface bank_account{
   selector: "stripe-bank",
   template:template,
   exportAs:"StripeBank"
-}) export class StripeBank extends StripeSource{
+}) export class StripeBank extends StripeComponent{
   @Input() options:StripeCardOptions//very similar type to card options
 
   @Input() token:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
+
+  constructor(
+    public StripeScriptTag:StripeScriptTag
+  ){
+    super(StripeScriptTag)
+  }
 
   createToken( data ):Promise<StripeToken>{
     delete this.invalid

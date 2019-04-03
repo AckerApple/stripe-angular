@@ -16,7 +16,7 @@
             "main": "app/src/index.ts",
             "tsConfig": "app/src/tsconfig.json",
             "assets": [],
-            "styles": [],
+            "styles": ["app/src/styles.scss"],
             "scripts": []
           },
           "configurations": {

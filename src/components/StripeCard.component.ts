@@ -1,5 +1,8 @@
-import { Input, Output, EventEmitter, Component } from "@angular/core"
-import { StripeToken, StripeCardOptions } from "../StripeTypes"
+import {
+  ElementRef, Input, Output, EventEmitter, Component } from "@angular/core"
+import {
+  StripeToken, StripeCardOptions } from "../StripeTypes"
+import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeSource } from "./StripeSource.component"
 import { string as template } from "./templates/stripe-card.pug"
 
@@ -12,6 +15,13 @@ import { string as template } from "./templates/stripe-card.pug"
 
   @Input() token:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
+
+  constructor(
+    public ElementRef:ElementRef,
+    public StripeScriptTag:StripeScriptTag
+  ){
+    super(StripeScriptTag)
+  }
 
   ngOnInit(){
     super.init()
