@@ -1,6 +1,11 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.4.2] - (2019-04-03)
+- Documentation
+- Remove extra data from createSource
+- stripe-bank does NOT work with Stripe source. Removed for now
+
 ## [0.4.1] - (2019-03-25)
 - Made stripe-source a base component of stripe-bank and stripe-card
 

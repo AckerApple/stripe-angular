@@ -149,9 +149,7 @@ const template=
 ```
 
 ### stripe-source
-> BETA: Currently under construction. May not work.
-
-This component is not intended to stand alone but it can. Both stripe-card and stripe-bank extend this component as a stripe source can be any form of payment.
+This component is not intended to stand alone but it could. Component stripe-card extends stripe-source.
 
 - [stripe sources docs](https://stripe.com/docs/sources)
 - [best practices](https://stripe.com/docs/sources/best-practices)
@@ -164,7 +162,7 @@ This component is not intended to stand alone but it can. Both stripe-card and s
   [(source)]  = "source"
   [(invalid)] = "invalidError"
 ></stripe-card>
-<button type="button" (click)="stripeSource.createSource(extraData)">createSource</button>
+<button type="button" (click)="stripeSource.createSource()">createSource</button>
 
 <!-- stripe-card has source bindings -->
 <stripe-card #stripeCard
@@ -172,15 +170,7 @@ This component is not intended to stand alone but it can. Both stripe-card and s
   [(source)]  = "source"
   [(invalid)] = "invalidError"
 ></stripe-card>
-<button type="button" (click)="stripeCard.createSource(extraData)">createSource</button>
-
-<!-- stripe-card has source bindings -->
-<stripe-bank #stripeBankSource
-  (catch)      = "$event"
-  [(source)]   = "source"
-  [(invalid)]  = "invalidError"
-></stripe-card>
-<button type="button" (click)="stripeBankSource.createSource({...bank_account...})">createSource</button>
+<button type="button" (click)="stripeCard.createSource()">createSource</button>
 ```
 
 What is a Stripe source?

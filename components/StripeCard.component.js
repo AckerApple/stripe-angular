@@ -23,12 +23,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
+var StripeScriptTag_1 = require("../StripeScriptTag");
 var StripeSource_component_1 = require("./StripeSource.component");
 var stripe_card_pug_1 = require("./templates/stripe-card.pug");
 var StripeCard = /** @class */ (function (_super) {
     __extends(StripeCard, _super);
-    function StripeCard() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function StripeCard(ElementRef, StripeScriptTag) {
+        var _this = _super.call(this, StripeScriptTag) || this;
+        _this.ElementRef = ElementRef;
+        _this.StripeScriptTag = StripeScriptTag;
         _this.tokenChange = new core_1.EventEmitter();
         return _this;
     }
@@ -83,7 +86,9 @@ var StripeCard = /** @class */ (function (_super) {
             selector: "stripe-card",
             template: stripe_card_pug_1.string,
             exportAs: "StripeCard"
-        })
+        }),
+        __metadata("design:paramtypes", [core_1.ElementRef,
+            StripeScriptTag_1.StripeScriptTag])
     ], StripeCard);
     return StripeCard;
 }(StripeSource_component_1.StripeSource));
