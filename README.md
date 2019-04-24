@@ -126,6 +126,8 @@ const template=
 ```
 
 ### stripe-card
+Builds a display for card intake and then helps tokenize those inputs
+
 ```html
 <stripe-card #stripeCard
   (catch)        = "$event"
@@ -137,6 +139,8 @@ const template=
 ```
 
 ### stripe-bank
+Helps tokenize banking data. Does NOT include display inputs like stripe-card does.
+
 [see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
 ```html
 <stripe-bank #stripeBank
