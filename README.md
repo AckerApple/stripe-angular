@@ -153,7 +153,7 @@ Helps tokenize banking data. Does NOT include display inputs like stripe-card do
 ```
 
 > For stripe-bank input fields, be sure to use the above mentioned link
->> Here is the most commonly used input fields
+>> Here is the most commonly used input fields:
 ```
 country: "US",
 currency: "usd",
