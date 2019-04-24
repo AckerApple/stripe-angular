@@ -152,6 +152,17 @@ Helps tokenize banking data. Does NOT include display inputs like stripe-card do
 <button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
 ```
 
+> For stripe-bank input fields, be sure to use the above mentioned link
+>> Here is the most commonly used input fields
+```
+country: "US",
+currency: "usd",
+routing_number: "110000000",
+account_number: "000123456789",
+account_holder_name: "Jenny Rosen",
+account_holder_type: "individual"
+```
+
 ### stripe-source
 This component is not intended to stand alone but it could. Component stripe-card extends stripe-source.
 
