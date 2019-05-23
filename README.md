@@ -23,7 +23,7 @@ Angular to Stripe module containing useful providers, components, and directives
 ## Install
 From a command terminal type the following
 ```
-npm install stripe-angular --save-dev
+npm install stripe-angular --save
 ```
 
 ## Inject
