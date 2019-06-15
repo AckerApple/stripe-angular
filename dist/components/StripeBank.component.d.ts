@@ -17,5 +17,5 @@ export declare class StripeBank extends StripeComponent {
     token: StripeToken;
     tokenChange: EventEmitter<StripeToken>;
     constructor(StripeScriptTag: StripeScriptTag);
-    createToken(data: any): Promise<StripeToken>;
+    createToken(data?: any): Promise<StripeToken>;
 }

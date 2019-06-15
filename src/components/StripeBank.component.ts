@@ -32,7 +32,7 @@ export interface bank_account{
     super(StripeScriptTag)
   }
 
-  createToken( data ):Promise<StripeToken>{
+  createToken(data?):Promise<StripeToken>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
