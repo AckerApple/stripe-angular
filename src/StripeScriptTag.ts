@@ -7,8 +7,8 @@ import {
 
 @Injectable({providedIn: 'root'}) export class StripeScriptTag{
   src:string = "https://js.stripe.com/v3/"
-  Stripe:Stripe
-  StripeInstance:StripeInstance
+  Stripe!:Stripe//set at runtime
+  StripeInstance!:StripeInstance
   load:Promise<any>
 
   constructor(){

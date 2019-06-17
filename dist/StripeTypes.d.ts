@@ -1,5 +1,5 @@
 export interface Stripe {
-    (string: any, options?: any): StripeInstance;
+    (string: string, options?: any): StripeInstance;
 }
 export interface StripeInstance {
     elements: (options?: any) => any;

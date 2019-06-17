@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "strict": false,
-    "strictPropertyInitialization": false,
+    "strict": true,
+    "strictPropertyInitialization": true,
     "noUnusedLocals": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "rootDir": ".",
     "outDir": "../dist",
     "target": "es5",

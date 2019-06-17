@@ -1,5 +1,5 @@
 export interface Stripe{
-  (string,options?):StripeInstance
+  (string:string,options?:any):StripeInstance
 }
 
 export interface StripeInstance{

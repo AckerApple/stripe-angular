@@ -14,7 +14,7 @@ import { string as template } from "./templates/stripe-source.pug"
   exportAs:"StripeSource"
 }) export class StripeSource extends StripeComponent{
 
-  @Input() source:StripeSourceType
+  @Input() source!:StripeSourceType
   @Output() sourceChange:EventEmitter<StripeSourceType> = new EventEmitter()
 
   elements:any
@@ -32,7 +32,7 @@ import { string as template } from "./templates/stripe-source.pug"
     return this.stripe.createSource(
       this.elements
     )
-    .then(result=>{
+    .then((result:any)=>{
       if(result.error){
         if( result.error.type=="validation_error" ){
           this.invalidChange.emit( this.invalid=result.error )

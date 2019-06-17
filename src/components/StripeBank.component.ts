@@ -21,9 +21,9 @@ export interface bank_account{
   template:template,
   exportAs:"StripeBank"
 }) export class StripeBank extends StripeComponent{
-  @Input() options:StripeCardOptions//very similar type to card options
+  @Input() options!:StripeCardOptions//very similar type to card options
 
-  @Input() token:StripeToken
+  @Input() token!:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
 
   constructor(
@@ -32,12 +32,12 @@ export interface bank_account{
     super(StripeScriptTag)
   }
 
-  createToken(data?):Promise<StripeToken>{
+  createToken( data?:any ):Promise<StripeToken>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
     return this.stripe.createToken('bank_account', data)
-    .then(result=>{
+    .then((result:any)=>{
       if(result.error){
         if( result.error.type=="validation_error" ){
           this.invalidChange.emit( this.invalid=result.error )

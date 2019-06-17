@@ -11,9 +11,9 @@ import { string as template } from "./templates/stripe-card.pug"
   template:template,
   exportAs:"StripeCard"
 }) export class StripeCard extends StripeSource{
-  @Input() options:StripeCardOptions
+  @Input() options!:StripeCardOptions
 
-  @Input() token:StripeToken
+  @Input() token!:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
 
   constructor(
@@ -29,7 +29,7 @@ import { string as template } from "./templates/stripe-card.pug"
       this.elements = this.stripe.elements().create('card', this.options)
       this.elements.mount(this.ElementRef.nativeElement)
 
-      this.elements.addEventListener('change', result=>{
+      this.elements.addEventListener('change', (result:any)=>{
         if( result.error ){
           this.invalidChange.emit( this.invalid=result.error )
         }
@@ -37,12 +37,14 @@ import { string as template } from "./templates/stripe-card.pug"
     })
   }
 
-  createToken(extraData?):Promise<StripeToken>{
+  createToken(
+    extraData?:any
+  ):Promise<StripeToken>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
     return this.stripe.createToken(this.elements, extraData)
-    .then(result=>{
+    .then((result:any)=>{
       if(result.error){
         if( result.error.type=="validation_error" ){
           this.invalidChange.emit( this.invalid=result.error )

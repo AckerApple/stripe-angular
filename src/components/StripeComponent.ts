@@ -9,10 +9,10 @@ import { StripeScriptTag } from "../StripeScriptTag"
 export class StripeComponent{
   @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
 
-  @Input() invalid:Error
+  @Input() invalid!:Error
   @Output() invalidChange:EventEmitter<Error> = new EventEmitter()
 
-  stripe:StripeInstance
+  stripe!:StripeInstance
 
   constructor(
     public StripeScriptTag:StripeScriptTag
