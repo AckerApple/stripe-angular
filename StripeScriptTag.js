@@ -65,7 +65,7 @@ var StripeScriptTag = /** @class */ (function () {
             return elm[0];
         return document.getElementsByTagName("body")[0];
     };
-    StripeScriptTag.ngInjectableDef = i0.defineInjectable({ factory: function StripeScriptTag_Factory() { return new i1.StripeScriptTag(); }, token: i1.StripeScriptTag, providedIn: "root" });
+    StripeScriptTag.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new i1.StripeScriptTag(); }, token: i1.StripeScriptTag, providedIn: "root" });
     StripeScriptTag = __decorate([
         core_1.Injectable({ providedIn: 'root' }),
         __metadata("design:paramtypes", [])

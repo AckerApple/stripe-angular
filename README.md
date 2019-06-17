@@ -23,7 +23,7 @@ Angular to Stripe module containing useful providers, components, and directives
 ## Install
 From a command terminal type the following
 ```
-npm install stripe-angular --save-dev
+npm install stripe-angular --save
 ```
 
 ## Inject
@@ -126,6 +126,8 @@ const template=
 ```
 
 ### stripe-card
+Builds a display for card intake and then helps tokenize those inputs
+
 ```html
 <stripe-card #stripeCard
   (catch)        = "$event"
@@ -137,6 +139,8 @@ const template=
 ```
 
 ### stripe-bank
+Helps tokenize banking data. Does NOT include display inputs like stripe-card does.
+
 [see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
 ```html
 <stripe-bank #stripeBank
@@ -146,6 +150,17 @@ const template=
 ></stripe-card>
 
 <button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
+```
+
+> For stripe-bank input fields, be sure to use the above mentioned link
+>> Here is the most commonly used input fields:
+```
+country: "US",
+currency: "usd",
+routing_number: "110000000",
+account_number: "000123456789",
+account_holder_name: "Jenny Rosen",
+account_holder_type: "individual"
 ```
 
 ### stripe-source
