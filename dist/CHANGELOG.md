@@ -4,6 +4,7 @@ All notable changes to this project will be documented here.
 ## [0.5.0] - (2019-06-07)
 - built in strict mode
 - built on ng8
+- upgraded test process
 
 ## [0.4.2] - (2019-04-03)
 - Documentation

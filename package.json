@@ -21,7 +21,7 @@
     "watch": "npm-run-all --parallel compile:templates watch:templates watch:js",
     "build": "npm-run-all -s build:dist build:index compile:templates build:js update:dist",
     "compile:app-template": "ack-pug-bundler app/src/components/app.component.ts app/src/components/templates/ --skipRender --oneFile --outType ts --outFileExt .template.ts",
-    "test": "ng test test --browsers PhantomJS --watch=false",
+    "test": "ng test src --browsers PhantomJS --watch=false",
     "start": "ack-reload -d app/www --port 8080"
   },
   "repository": {
@@ -54,8 +54,6 @@
     "@angular/platform-browser-dynamic": "~8.0.1",
     "@types/jasmine": "^3.3.13",
     "ack-pug-bundler": "^1.4.7",
-    "classlist-polyfill": "^1.2.0",
-    "core-js": "^3.1.4",
     "jasmine": "^3.4.0",
     "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -71,20 +69,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
     "ts-helpers": "^1.1.2",
-    "typescript": "^3.4.5",
+    "typescript": "3.4.5",
     "zone.js": "~0.9.1"
-  },
-  "scriptsInfo": {
-    "build": "Builds TypeScript files to output folder",
-    "test:watch": "Opens local browser to test angular app",
-    "build:index": "Casts index.pug layout into index.html template to act as app entry file",
-    "compile:templates": "Casts pugs folder, that has layout files like template.pug, into TypeScript compatible template.pug.ts files",
-    "watch:templates": "Watches pugs folder for changes to engage the script compile:templates",
-    "build:js": "Builds one TypeScript source file into a final www output file. Node memory has been increased to cover large app builds",
-    "watch:js": "Builds one TypeScript source file into a final www output file. Node memory has been increased to cover large app builds",
-    "watch": "Employes other watch script to particpate in a combined",
-    "test": "Tests angular app using karama and jasmine",
-    "start": "Opens browser pointed at www folder"
   },
   "private": true
 }
