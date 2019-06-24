@@ -10,6 +10,11 @@ Angular to Stripe module containing useful providers, components, and directives
 [![Build Status](https://travis-ci.org/AckerApple/stripe-angular.svg?branch=master)](https://travis-ci.org/AckerApple/stripe-angular)
 [![Dependency Status](https://david-dm.org/ackerapple/stripe-angular.svg)](https://david-dm.org/ackerapple/stripe-angular)
 
+```
+Version 0.5.0 needs Angular 8.0.0 or highter. If you are using and older version of Angular, please 
+try a version < 0.5.0 of this package.
+```
+
 ### Table of Contents
 
 - [Install](#install)
