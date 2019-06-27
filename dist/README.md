@@ -9,6 +9,8 @@ Angular to Stripe module containing useful providers, components, and directives
 [![Build status](https://ci.appveyor.com/api/projects/status/sq815bogrtky29b8/branch/master?svg=true)](https://ci.appveyor.com/project/AckerApple/stripe-angular/branch/master)
 [![Build Status](https://travis-ci.org/AckerApple/stripe-angular.svg?branch=master)](https://travis-ci.org/AckerApple/stripe-angular)
 [![Dependency Status](https://david-dm.org/ackerapple/stripe-angular.svg)](https://david-dm.org/ackerapple/stripe-angular)
+[![min size](https://badgen.net/bundlephobia/min/stripe-angular)](https://bundlephobia.com/result?p=stripe-angular)
+[![minzip size](https://badgen.net/bundlephobia/minzip/stripe-angular)](https://bundlephobia.com/result?p=stripe-angular)
 
 ### Table of Contents
 
