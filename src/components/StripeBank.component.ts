@@ -5,7 +5,6 @@ import { StripeCardOptions } from "../StripeTypes"
 import { StripeComponent } from "./StripeComponent"
 import { StripeToken } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
-import { string as template } from "./templates/stripe-card.pug"
 
 export interface bank_account{
   country             : string
@@ -18,7 +17,11 @@ export interface bank_account{
 
 @Component({
   selector: "stripe-bank",
-  template:template,
+  template: `
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+          <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
+      </ng-container>
+  `,
   exportAs:"StripeBank"
 }) export class StripeBank extends StripeComponent{
   @Input() options!:StripeCardOptions//very similar type to card options
