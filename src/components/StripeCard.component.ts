@@ -4,11 +4,14 @@ import {
   StripeToken, StripeCardOptions } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeSource } from "./StripeSource.component"
-import { string as template } from "./templates/stripe-card.pug"
 
 @Component({
   selector: "stripe-card",
-  template:template,
+  template: `
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+          <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
+      </ng-container>
+  `,
   exportAs:"StripeCard"
 }) export class StripeCard extends StripeSource{
   @Input() options!:StripeCardOptions
