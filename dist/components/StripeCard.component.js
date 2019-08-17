@@ -25,7 +25,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var StripeScriptTag_1 = require("../StripeScriptTag");
 var StripeSource_component_1 = require("./StripeSource.component");
-var stripe_card_pug_1 = require("./templates/stripe-card.pug");
 var StripeCard = /** @class */ (function (_super) {
     __extends(StripeCard, _super);
     function StripeCard(ElementRef, StripeScriptTag) {
@@ -84,7 +83,7 @@ var StripeCard = /** @class */ (function (_super) {
     StripeCard = __decorate([
         core_1.Component({
             selector: "stripe-card",
-            template: stripe_card_pug_1.string,
+            template: "\n      <ng-container *ngIf=\"!StripeScriptTag.StripeInstance\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
             exportAs: "StripeCard"
         }),
         __metadata("design:paramtypes", [core_1.ElementRef,

@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [0.6.0] - (2019-08-17)
+- move templates into components to just satify Ivy
+
 ## [0.5.0] - (2019-06-07)
 - built in strict mode
 - built on ng8
