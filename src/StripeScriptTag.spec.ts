@@ -6,6 +6,6 @@ describe('StripeScriptTag', () => {
 
   it('inits', ()=>{
     expect(StripeScriptTag).not.toBeNull();
-    expect(new StripeScriptTag('', {})).not.toBeNull();
+    expect(new StripeScriptTag()).not.toBeNull();
   })
 })

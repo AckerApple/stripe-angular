@@ -12,11 +12,11 @@ import {
   load:Promise<any>
 
   constructor(
-    @Inject(STRIPE_PUBLISHABLE_KEY) key: string,
-    @Inject(STRIPE_OPTIONS) options: StripeInstanceOptions
+    @Inject(STRIPE_PUBLISHABLE_KEY) key?: string,
+    @Inject(STRIPE_OPTIONS) options?: StripeInstanceOptions
   ){
     this.load = this.injectIntoHead()
-    this.setPublishableKey(key, options)
+    if (key) this.setPublishableKey(key, options)
   }
 
   promiseStripe():Promise<Stripe>{
