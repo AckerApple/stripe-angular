@@ -28,7 +28,7 @@ const declarations = [
   declarations: declarations,
  // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
-}) export class Module {
+}) export class StripeModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: Module,
@@ -39,3 +39,9 @@ const declarations = [
   }
 }
 
+/**
+ * @deprecated Please import `StripeModule` directly
+ */
+const Module = StripeModule;
+
+export { Module };
