@@ -3,7 +3,7 @@
 import { StripeScriptTag } from "./StripeScriptTag"
 
 describe('StripeScriptTag', () => {
-
+  
   it('inits', ()=>{
     expect(StripeScriptTag).not.toBeNull();
     expect(new StripeScriptTag()).not.toBeNull();
