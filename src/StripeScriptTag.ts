@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core"
 
 import {
-  Stripe, StripeInstance
+  Stripe, StripeInstance, StripeInstanceOptions
   //, StripeCard, StripeToken
 } from "./StripeTypes"
 
@@ -21,7 +21,7 @@ import {
 
   promiseInstance():Promise<StripeInstance>{
     return this.promiseStripe()
-    .then(stripe=>{    
+    .then(stripe=>{
       if( !this.StripeInstance ){
         const err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()")
         err["code"] = "STRIPEKEYNOTSET"
@@ -35,7 +35,7 @@ import {
 
   setPublishableKey(
     key:string,
-    options?:any
+    options?:StripeInstanceOptions
   ):Promise<StripeInstance>{
     return this.load.then( ()=>
       this.StripeInstance=this.Stripe(key, options)
@@ -52,12 +52,12 @@ import {
       const script = document.createElement("script")
       script.setAttribute("src", this.src)
       script.setAttribute("type", "text/javascript")
-      
+
       script.addEventListener("load",()=>{
         this.Stripe = this.grabStripe()
         res( this.Stripe )
       })
-      
+
       head.appendChild(script)
     })
   }
@@ -70,7 +70,7 @@ import {
     let elm = document.getElementsByTagName("head")
 
     if(elm.length)return elm[0]
-    
+
     return document.getElementsByTagName("body")[0]
   }
 }
