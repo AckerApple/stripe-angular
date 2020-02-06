@@ -42,6 +42,6 @@ const declarations = [
 /**
  * @deprecated Please import `StripeModule` directly
  */
-const Module = StripeModule;
+const Module = StripeModule
 
-export { Module };
+export { Module }
