@@ -3,6 +3,8 @@ export * from "./StripeTypes"
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
+import { StripeInstanceOptions, STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY } from './StripeTypes'
+
 import { StripeScriptTag } from "./StripeScriptTag"
 export { StripeScriptTag } from "./StripeScriptTag"
 
@@ -29,11 +31,19 @@ const declarations = [
  // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
 }) export class StripeModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(publishableKey?: string, options?: StripeInstanceOptions): ModuleWithProviders {
     return {
       ngModule: Module,
       providers: [
-        StripeScriptTag
+        StripeScriptTag,
+        {
+          provide: STRIPE_PUBLISHABLE_KEY,
+          useValue: publishableKey
+        },
+        {
+          provide: STRIPE_OPTIONS,
+          useValue: options
+        }
       ],
     }
   }

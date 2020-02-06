@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core"
+import { Injectable, Inject } from "@angular/core"
 
 import {
-  Stripe, StripeInstance, StripeInstanceOptions
+  Stripe, StripeInstance, StripeInstanceOptions, STRIPE_PUBLISHABLE_KEY, STRIPE_OPTIONS
   //, StripeCard, StripeToken
 } from "./StripeTypes"
 
@@ -11,8 +11,12 @@ import {
   StripeInstance!:StripeInstance
   load:Promise<any>
 
-  constructor(){
+  constructor(
+    @Inject(STRIPE_PUBLISHABLE_KEY) key: string,
+    @Inject(STRIPE_OPTIONS) options: StripeInstanceOptions
+  ){
     this.load = this.injectIntoHead()
+    this.setPublishableKey(key, options)
   }
 
   promiseStripe():Promise<Stripe>{
