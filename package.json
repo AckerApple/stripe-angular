@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/AckerApple/stripe-angular#readme",
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.800.4",
+    "@angular-devkit/build-angular": "^0.803.25",
     "@angular/cli": "~8.0.4",
     "@angular/common": "~8.0.3",
     "@angular/compiler": "~8.0.3",
