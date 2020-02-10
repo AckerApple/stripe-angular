@@ -1,12 +1,18 @@
+import { InjectionToken } from '@angular/core';
+export declare const STRIPE_PUBLISHABLE_KEY: InjectionToken<string>;
+export declare const STRIPE_OPTIONS: InjectionToken<StripeInstanceOptions>;
 export interface Stripe {
-    (string: string, options?: any): StripeInstance;
+    (string: string, options?: StripeInstanceOptions): StripeInstance;
 }
 export interface StripeInstance {
     elements: (options?: any) => any;
-    createToken: (elements: any, options?: any) => any;
-    createSource: (elements: any, options?: any) => any;
+    createToken: (elements: any, options?: StripeInstanceOptions) => any;
+    createSource: (elements: any, options?: StripeInstanceOptions) => any;
     retrieveSource: () => any;
     paymentRequest: () => any;
+}
+export interface StripeInstanceOptions {
+    stripeAccount?: string;
 }
 export interface StripeCard {
     id: string;

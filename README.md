@@ -14,13 +14,12 @@ Angular to Stripe module containing useful providers, components, and directives
 
 ### Table of Contents
 
-- [Install](#install)
-- [Inject](#inject)
-- [Init](#init)
-- [Use](#use)
-  - [stripe-card](#stripe-card)
-  - [stripe-bank](#stripe-bank)
-  - [stripe-source](#stripe-source)
+  - [Install](#install)
+  - [Inject](#inject)
+  - [Use](#use)
+    - [stripe-card](#stripe-card)
+    - [stripe-bank](#stripe-bank)
+    - [stripe-source](#stripe-source)
 
 ## Install
 From a command terminal type the following
@@ -33,40 +32,20 @@ Make stripe-angular available throughout your app
 
 ```typescript
 import { NgModule } from "@angular/core";
-import { Module as StripeModule } from "stripe-angular"
+import { StripeModule } from "stripe-angular"
 
 @NgModule({
-  imports: [ StripeModule.forRoot() ]
+  imports: [ StripeModule.forRoot("...YOUR-STRIPE-KEY-HERE...") ]
 }) export class AppModule {}
 ```
 
 > Please note, you only use `.forRoot()` on your base app module
 >> This ONLY matters if you need to support lazy loading via loadChildren()
 
-
-## Init
-You must provide your Stripe account's publishableKey
-
-```typescript
-import { Component } from "@angular/core"
-import { StripeScriptTag } from "stripe-angular"
-
-@Component({
-  selector: "app",
-  template: template
-}) export class AppComponent{
-  private publishableKey:string = "...YOUR-STRIPE-KEY-HERE..."
-
-  constructor(public StripeScriptTag:StripeScriptTag){
-    this.StripeScriptTag.setPublishableKey( this.publishableKey )
-  }
-}
-```
-
-> StripeScriptTag.setPublishableKey performs 3 operations
->> 1. Checks for window.Stripe
+> Three operations are preformed on construction
+>> 1. Checking for window.Stripe
 >>> 1.1 If undefined, head tag is found and script tag with src "https://js.stripe.com/v3/" is added
->> 2. Sets publishableKey in StripeJs library
+>> 2. Seting publishableKey in StripeJs library
 >> 3. All stripe-angular components use the initialized Stripe instance
 
 
