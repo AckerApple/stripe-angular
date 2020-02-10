@@ -53,4 +53,3 @@ const declarations = [
  * @deprecated Please import `StripeModule` directly
  */
 export const Module = StripeModule
-

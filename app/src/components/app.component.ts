@@ -5,6 +5,7 @@ import { string as demoTemplate } from "./templates/app.component.template"
 import {
   StripeInstance, Stripe, StripeScriptTag
 } from "../../../src/index"
+import * as packageJson from "../../../package.json"
 
 //YOUR REFERENCE TO stripe-angular
 //import { Stripe, StripeScriptTag } from "stripe-angular"
@@ -17,7 +18,7 @@ const template=
       <div style="text-align:center;">
         <div style="border-radius:5px;background-color:#888;display:inline-block;text-align:left;width:100%;max-width:400px;">
           <div style="padding:1em;">
-            <h2 style="margin-top:0;">stripe-angular demo</h2>
+            <h2 style="margin-top:0;">stripe-angular {{version}} demo</h2>
             <ng-container *ngIf="!loaded">Loading...</ng-container>
 
             <ng-container *ngIf="loaded">
@@ -166,6 +167,7 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
   selector:"app",
   template: template//.replace(/\s\s/g,'')//prevent accidentally spacing
 }) export class AppComponent{
+  version: string = (packageJson as any).version;
   viewcode:boolean
   loaded:boolean
   sending:boolean

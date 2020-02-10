@@ -47,18 +47,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "noname:build"
+            "browserTarget": "app:build"
           },
           "configurations": {
             "watch": {
-              "browserTarget": "prod:build:watch"
+              "browserTarget": "app:build:watch"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "noname:build"
+            "browserTarget": "app:build"
           }
         },
         "test": {
@@ -82,7 +82,7 @@
         }
       }
     },
-    "prod": {
+    "app": {
       "root": "app",
       "sourceRoot": "app/src",
       "projectType": "application",
@@ -126,18 +126,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "noname:build"
+            "browserTarget": "app:build"
           },
           "configurations": {
             "watch": {
-              "browserTarget": "prod:build:watch"
+              "browserTarget": "app:build:watch"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "noname:build"
+            "browserTarget": "app:build"
           }
         },
         "test": {
@@ -161,13 +161,13 @@
         }
       }
     },
-    "noname-e2e": {
+    "app-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application"
     }
   },
-  "defaultProject": "noname",
+  "defaultProject": "app",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "",
