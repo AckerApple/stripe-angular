@@ -2,7 +2,7 @@
 environment:
   matrix:
     # node.js
-    - nodejs_version: "10.9"
+    - nodejs_version: "10.13"
 
 # Install scripts. (runs after repo cloning)
 install:
