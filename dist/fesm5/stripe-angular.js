@@ -272,9 +272,10 @@ var declarations = [
 var StripeModule = /** @class */ (function () {
     function StripeModule() {
     }
+    StripeModule_1 = StripeModule;
     StripeModule.forRoot = function (publishableKey, options) {
         return {
-            ngModule: Module,
+            ngModule: StripeModule_1,
             providers: [
                 StripeScriptTag,
                 {
@@ -288,7 +289,8 @@ var StripeModule = /** @class */ (function () {
             ],
         };
     };
-    StripeModule = __decorate([
+    var StripeModule_1;
+    StripeModule = StripeModule_1 = __decorate([
         NgModule({
             imports: [
                 CommonModule

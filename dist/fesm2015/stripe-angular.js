@@ -255,15 +255,16 @@ StripeBank = __decorate([
     })
 ], StripeBank);
 
+var StripeModule_1;
 const declarations = [
     StripeSource,
     StripeCard,
     StripeBank
 ];
-let StripeModule = class StripeModule {
+let StripeModule = StripeModule_1 = class StripeModule {
     static forRoot(publishableKey, options) {
         return {
-            ngModule: Module,
+            ngModule: StripeModule_1,
             providers: [
                 StripeScriptTag,
                 {
@@ -278,7 +279,7 @@ let StripeModule = class StripeModule {
         };
     }
 };
-StripeModule = __decorate([
+StripeModule = StripeModule_1 = __decorate([
     NgModule({
         imports: [
             CommonModule
