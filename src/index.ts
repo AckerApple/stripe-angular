@@ -33,7 +33,7 @@ const declarations = [
 }) export class StripeModule {
   static forRoot(publishableKey?: string, options?: StripeInstanceOptions): ModuleWithProviders {
     return {
-      ngModule: Module,
+      ngModule: StripeModule,
       providers: [
         StripeScriptTag,
         {
