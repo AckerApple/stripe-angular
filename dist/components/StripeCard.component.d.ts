@@ -8,6 +8,7 @@ export declare class StripeCard extends StripeSource {
     options: StripeCardOptions;
     token: StripeToken;
     tokenChange: EventEmitter<StripeToken>;
+    cardMounted: EventEmitter<any>;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
     createToken(extraData?: any): Promise<StripeToken>;
