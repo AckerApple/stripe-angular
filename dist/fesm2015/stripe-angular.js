@@ -145,12 +145,14 @@ let StripeCard = class StripeCard extends StripeSource {
         this.ElementRef = ElementRef;
         this.StripeScriptTag = StripeScriptTag;
         this.tokenChange = new EventEmitter();
+        this.cardMounted = new EventEmitter();
     }
     ngOnInit() {
         super.init()
             .then(() => {
             this.elements = this.stripe.elements().create('card', this.options);
             this.elements.mount(this.ElementRef.nativeElement);
+            this.cardMounted.emit(this.elements);
             this.elements.addEventListener('change', (result) => {
                 if (result.error) {
                     this.invalidChange.emit(this.invalid = result.error);
@@ -192,6 +194,9 @@ __decorate([
 __decorate([
     Output()
 ], StripeCard.prototype, "tokenChange", void 0);
+__decorate([
+    Output()
+], StripeCard.prototype, "cardMounted", void 0);
 StripeCard = __decorate([
     Component({
         selector: "stripe-card",

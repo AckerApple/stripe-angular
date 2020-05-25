@@ -19,6 +19,8 @@ import { StripeSource } from "./StripeSource.component"
   @Input() token!:StripeToken
   @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
 
+  @Output() cardMounted:EventEmitter<any> = new EventEmitter()
+
   constructor(
     public ElementRef:ElementRef,
     public StripeScriptTag:StripeScriptTag
@@ -31,6 +33,8 @@ import { StripeSource } from "./StripeSource.component"
     .then(()=>{
       this.elements = this.stripe.elements().create('card', this.options)
       this.elements.mount(this.ElementRef.nativeElement)
+      
+      this.cardMounted.emit(this.elements);
 
       this.elements.addEventListener('change', (result:any)=>{
         if( result.error ){
