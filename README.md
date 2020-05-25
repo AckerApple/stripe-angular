@@ -68,6 +68,7 @@ const template=
   #stripeCard
   (catch) = "onStripeError($event)"
   [(invalid)] = "invalidError"
+  (cardMounted) = "cardReady = 1"
   (tokenChange) = "setStripeToken($event)"
   (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
@@ -79,6 +80,7 @@ const template=
   selector: "app-sub-page",
   template: template
 }) export class AppComponent{
+  cardReady = false;
   extraData = {
     "name": null
     "address_city": null
@@ -86,7 +88,7 @@ const template=
     "address_line2": null
     "address_state": null
     "address_zip": null
-  }
+  };
 
   onStripeInvalid( error:Error ){
     console.log('Validation Error', error)
@@ -114,6 +116,7 @@ Builds a display for card intake and then helps tokenize those inputs
   (catch)        = "$event"
   [(token)]      = "token"
   [(invalid)]    = "invalidError"
+  (cardMounted)  = "cardReady = 1"
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
@@ -162,9 +165,10 @@ This component is not intended to stand alone but it could. Component stripe-car
 
 <!-- stripe-card has source bindings -->
 <stripe-card #stripeCard
-  (catch)     = "$event"
-  [(source)]  = "source"
-  [(invalid)] = "invalidError"
+  (catch)       = "$event"
+  [(source)]    = "source"
+  [(invalid)]   = "invalidError"
+  (cardMounted) = "cardReady = 1"
 ></stripe-card>
 <button type="button" (click)="stripeCard.createSource()">createSource</button>
 ```

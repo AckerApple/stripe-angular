@@ -353,6 +353,7 @@
             _this.ElementRef = ElementRef;
             _this.StripeScriptTag = StripeScriptTag;
             _this.tokenChange = new core.EventEmitter();
+            _this.cardMounted = new core.EventEmitter();
             return _this;
         }
         StripeCard.prototype.ngOnInit = function () {
@@ -361,6 +362,7 @@
                 .then(function () {
                 _this.elements = _this.stripe.elements().create('card', _this.options);
                 _this.elements.mount(_this.ElementRef.nativeElement);
+                _this.cardMounted.emit(_this.elements);
                 _this.elements.addEventListener('change', function (result) {
                     if (result.error) {
                         _this.invalidChange.emit(_this.invalid = result.error);
@@ -402,6 +404,9 @@
         __decorate([
             core.Output()
         ], StripeCard.prototype, "tokenChange", void 0);
+        __decorate([
+            core.Output()
+        ], StripeCard.prototype, "cardMounted", void 0);
         StripeCard = __decorate([
             core.Component({
                 selector: "stripe-card",
