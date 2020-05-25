@@ -61,7 +61,15 @@ const template=
                     Credit or debit card
                   </label>
                   <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-                    <stripe-card #stripeCard [(token)]="token" [(source)]="source" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-card>
+                    <stripe-card
+                      #stripeCard
+                      [(token)]="token"
+                      [(source)]="source"
+                      (tokenChange)="sending=false"
+                      (catch)="sending=false;lastError=$event"
+                      (invalidChange)="sending=false;lastError=$event"
+                      (cardMounted) = "log('card mounted')"
+                    ></stripe-card>
                   </div>
 
                   <div *ngIf="editExtraData">
@@ -210,7 +218,7 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
     })
   }
 
-  apply(key):Promise<StripeInstance>{
+  async apply(key):Promise<StripeInstance>{
     this.publishableKey = key
     return this.StripeScriptTag.setPublishableKey(this.publishableKey)
     .then(StripeInstance=>this.stripe=StripeInstance)
@@ -222,5 +230,9 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
 
   changeBankData(data:string){
     this.bankData = JSON.parse(data)
+  }
+
+  log(message) {
+    console.log(message);
   }
 }
