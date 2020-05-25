@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.1.0] - (2020-05-25)
+- stripe-card now has (cardMounted) output binding
+
 ## [0.6.0] - (2019-08-17)
 - move templates into components to just satify Ivy
 
