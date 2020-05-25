@@ -15,7 +15,7 @@ distCopy('CHANGELOG.md')
 distCopy('README.md')
 distCopy('LICENSE')
 
-console.log('\x1b[33m[angular-file]:\x1b[0m', 'updated dist package version to ', pack.version)
+console.log('\x1b[33m[stripe-angular]:\x1b[0m', 'updated dist package version to ', pack.version)
 
 
 function distCopy(fileName){
