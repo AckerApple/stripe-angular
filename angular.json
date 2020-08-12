@@ -20,7 +20,7 @@
             "scripts": []
           },
           "configurations": {
-            "watch":{
+            "watch": {
               "optimization": false,
               "outputHashing": "none",
               "sourceMap": true,
@@ -95,11 +95,13 @@
             "main": "app/src/index.ts",
             "tsConfig": "app/src/tsconfig.json",
             "assets": [],
-            "styles": ["app/src/styles.scss"],
+            "styles": [
+              "app/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
-            "watch":{
+            "watch": {
               "optimization": false,
               "outputHashing": "none",
               "sourceMap": true,
@@ -176,5 +178,8 @@
     "@schematics/angular:directive": {
       "prefix": ""
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
