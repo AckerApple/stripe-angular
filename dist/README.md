@@ -56,14 +56,14 @@ A practical example to convert card data into a Stripe token
 
 ```typescript
 import { Component } from "@angular/core"
-import { StripeToken } from "stripe-angular"
-
+import { StripeToken, StripeSource } from "stripe-angular"
+ 
 const template=
 `
 <div *ngIf="invalidError" style="color:red">
   {{ invalidError.message }}
 </div>
-
+ 
 <stripe-card
   #stripeCard
   (catch) = "onStripeError($event)"
@@ -72,38 +72,38 @@ const template=
   (tokenChange) = "setStripeToken($event)"
   (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
-
+ 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
 `
-
+ 
 @Component({
   selector: "app-sub-page",
   template: template
 }) export class AppComponent{
   cardReady = false;
   extraData = {
-    "name": null
-    "address_city": null
-    "address_line1": null
-    "address_line2": null
-    "address_state": null
+    "name": null,
+    "address_city": null,
+    "address_line1": null,
+    "address_line2": null,
+    "address_state": null,
     "address_zip": null
   };
-
+ 
   onStripeInvalid( error:Error ){
     console.log('Validation Error', error)
   }
-
+ 
   setStripeToken( token:StripeToken ){
     console.log('Stripe token', token)
   }
-
+ 
   setStripeSource( source:StripeSource ){
     console.log('Stripe source', source)
   }
-
+ 
   onStripeError( error:Error ){
-    console.error('Stripe error', token)
+    console.error('Stripe error', error)
   }
 }
 ```
