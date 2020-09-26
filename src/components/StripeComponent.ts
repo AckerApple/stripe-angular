@@ -1,11 +1,14 @@
 import {
-  Input, Output, EventEmitter
+  Input, Output, EventEmitter, Component
 } from "@angular/core"
 import {
   StripeInstance
 } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 
+@Component({
+  selector: "stripe-component", template: ``
+})
 export class StripeComponent{
   @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
 
