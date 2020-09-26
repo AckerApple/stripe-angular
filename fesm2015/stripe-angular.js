@@ -1,4 +1,4 @@
-import { InjectionToken, ɵɵdefineInjectable, ɵɵinject, Injectable, Inject, EventEmitter, Output, Input, Component, ElementRef, NgModule } from '@angular/core';
+import { InjectionToken, ɵɵdefineInjectable, ɵɵinject, Injectable, Inject, EventEmitter, Component, Output, Input, ElementRef, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 const STRIPE_PUBLISHABLE_KEY = new InjectionToken('Stripe Publishable Key');
@@ -78,6 +78,14 @@ class StripeComponent {
             .then(i => this.stripe = i);
     }
 }
+StripeComponent.decorators = [
+    { type: Component, args: [{
+                selector: "stripe-component", template: ``
+            },] }
+];
+StripeComponent.ctorParameters = () => [
+    { type: StripeScriptTag }
+];
 StripeComponent.propDecorators = {
     catcher: [{ type: Output, args: ["catch",] }],
     invalid: [{ type: Input }],
@@ -242,6 +250,7 @@ StripeBank.propDecorators = {
 };
 
 const declarations = [
+    StripeComponent,
     StripeSource,
     StripeCard,
     StripeBank
@@ -269,7 +278,7 @@ StripeModule.decorators = [
                 imports: [
                     CommonModule
                 ],
-                declarations: declarations,
+                declarations,
                 // providers: [ StripeScriptTag ],
                 exports: [...declarations]
             },] }

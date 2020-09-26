@@ -379,6 +379,15 @@
         };
         return StripeComponent;
     }());
+    StripeComponent.decorators = [
+        { type: i0.Component, args: [{
+                    selector: "stripe-component",
+                    template: ""
+                },] }
+    ];
+    StripeComponent.ctorParameters = function () { return [
+        { type: StripeScriptTag }
+    ]; };
     StripeComponent.propDecorators = {
         catcher: [{ type: i0.Output, args: ["catch",] }],
         invalid: [{ type: i0.Input }],
@@ -544,6 +553,7 @@
     };
 
     var declarations = [
+        StripeComponent,
         StripeSource,
         StripeCard,
         StripeBank
