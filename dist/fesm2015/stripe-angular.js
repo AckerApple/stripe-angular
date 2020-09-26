@@ -1,11 +1,10 @@
-import { __decorate, __param } from 'tslib';
-import { InjectionToken, Inject, ɵɵdefineInjectable, ɵɵinject, Injectable, EventEmitter, Output, Input, Component, ElementRef, NgModule } from '@angular/core';
+import { InjectionToken, ɵɵdefineInjectable, ɵɵinject, Injectable, Inject, EventEmitter, Output, Input, Component, ElementRef, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 const STRIPE_PUBLISHABLE_KEY = new InjectionToken('Stripe Publishable Key');
 const STRIPE_OPTIONS = new InjectionToken('Stripe Options');
 
-let StripeScriptTag = class StripeScriptTag {
+class StripeScriptTag {
     constructor(key, options) {
         this.src = "https://js.stripe.com/v3/";
         this.load = this.injectIntoHead();
@@ -55,17 +54,15 @@ let StripeScriptTag = class StripeScriptTag {
             return elm[0];
         return document.getElementsByTagName("body")[0];
     }
-};
+}
+StripeScriptTag.ɵprov = ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(ɵɵinject(STRIPE_PUBLISHABLE_KEY), ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
+StripeScriptTag.decorators = [
+    { type: Injectable, args: [{ providedIn: 'root' },] }
+];
 StripeScriptTag.ctorParameters = () => [
     { type: String, decorators: [{ type: Inject, args: [STRIPE_PUBLISHABLE_KEY,] }] },
     { type: undefined, decorators: [{ type: Inject, args: [STRIPE_OPTIONS,] }] }
 ];
-StripeScriptTag.ɵprov = ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(ɵɵinject(STRIPE_PUBLISHABLE_KEY), ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
-StripeScriptTag = __decorate([
-    Injectable({ providedIn: 'root' }),
-    __param(0, Inject(STRIPE_PUBLISHABLE_KEY)),
-    __param(1, Inject(STRIPE_OPTIONS))
-], StripeScriptTag);
 
 class StripeComponent {
     constructor(StripeScriptTag) {
@@ -81,17 +78,13 @@ class StripeComponent {
             .then(i => this.stripe = i);
     }
 }
-__decorate([
-    Output("catch")
-], StripeComponent.prototype, "catcher", void 0);
-__decorate([
-    Input()
-], StripeComponent.prototype, "invalid", void 0);
-__decorate([
-    Output()
-], StripeComponent.prototype, "invalidChange", void 0);
+StripeComponent.propDecorators = {
+    catcher: [{ type: Output, args: ["catch",] }],
+    invalid: [{ type: Input }],
+    invalidChange: [{ type: Output }]
+};
 
-let StripeSource = class StripeSource extends StripeComponent {
+class StripeSource extends StripeComponent {
     constructor(StripeScriptTag) {
         super(StripeScriptTag);
         this.StripeScriptTag = StripeScriptTag;
@@ -117,29 +110,27 @@ let StripeSource = class StripeSource extends StripeComponent {
             }
         });
     }
-};
-StripeSource.ctorParameters = () => [
-    { type: StripeScriptTag }
-];
-__decorate([
-    Input()
-], StripeSource.prototype, "source", void 0);
-__decorate([
-    Output()
-], StripeSource.prototype, "sourceChange", void 0);
-StripeSource = __decorate([
-    Component({
-        selector: "stripe-source",
-        template: `
+}
+StripeSource.decorators = [
+    { type: Component, args: [{
+                selector: "stripe-source",
+                template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-        exportAs: "StripeSource"
-    })
-], StripeSource);
+                exportAs: "StripeSource"
+            },] }
+];
+StripeSource.ctorParameters = () => [
+    { type: StripeScriptTag }
+];
+StripeSource.propDecorators = {
+    source: [{ type: Input }],
+    sourceChange: [{ type: Output }]
+};
 
-let StripeCard = class StripeCard extends StripeSource {
+class StripeCard extends StripeSource {
     constructor(ElementRef, StripeScriptTag) {
         super(StripeScriptTag);
         this.ElementRef = ElementRef;
@@ -180,36 +171,30 @@ let StripeCard = class StripeCard extends StripeSource {
             }
         });
     }
-};
-StripeCard.ctorParameters = () => [
-    { type: ElementRef },
-    { type: StripeScriptTag }
-];
-__decorate([
-    Input()
-], StripeCard.prototype, "options", void 0);
-__decorate([
-    Input()
-], StripeCard.prototype, "token", void 0);
-__decorate([
-    Output()
-], StripeCard.prototype, "tokenChange", void 0);
-__decorate([
-    Output()
-], StripeCard.prototype, "cardMounted", void 0);
-StripeCard = __decorate([
-    Component({
-        selector: "stripe-card",
-        template: `
+}
+StripeCard.decorators = [
+    { type: Component, args: [{
+                selector: "stripe-card",
+                template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-        exportAs: "StripeCard"
-    })
-], StripeCard);
+                exportAs: "StripeCard"
+            },] }
+];
+StripeCard.ctorParameters = () => [
+    { type: ElementRef },
+    { type: StripeScriptTag }
+];
+StripeCard.propDecorators = {
+    options: [{ type: Input }],
+    token: [{ type: Input }],
+    tokenChange: [{ type: Output }],
+    cardMounted: [{ type: Output }]
+};
 
-let StripeBank = class StripeBank extends StripeComponent {
+class StripeBank extends StripeComponent {
     constructor(StripeScriptTag) {
         super(StripeScriptTag);
         this.StripeScriptTag = StripeScriptTag;
@@ -235,41 +220,36 @@ let StripeBank = class StripeBank extends StripeComponent {
             }
         });
     }
-};
-StripeBank.ctorParameters = () => [
-    { type: StripeScriptTag }
-];
-__decorate([
-    Input()
-], StripeBank.prototype, "options", void 0);
-__decorate([
-    Input()
-], StripeBank.prototype, "token", void 0);
-__decorate([
-    Output()
-], StripeBank.prototype, "tokenChange", void 0);
-StripeBank = __decorate([
-    Component({
-        selector: "stripe-bank",
-        template: `
+}
+StripeBank.decorators = [
+    { type: Component, args: [{
+                selector: "stripe-bank",
+                template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-        exportAs: "StripeBank"
-    })
-], StripeBank);
+                exportAs: "StripeBank"
+            },] }
+];
+StripeBank.ctorParameters = () => [
+    { type: StripeScriptTag }
+];
+StripeBank.propDecorators = {
+    options: [{ type: Input }],
+    token: [{ type: Input }],
+    tokenChange: [{ type: Output }]
+};
 
-var StripeModule_1;
 const declarations = [
     StripeSource,
     StripeCard,
     StripeBank
 ];
-let StripeModule = StripeModule_1 = class StripeModule {
+class StripeModule {
     static forRoot(publishableKey, options) {
         return {
-            ngModule: StripeModule_1,
+            ngModule: StripeModule,
             providers: [
                 StripeScriptTag,
                 {
@@ -283,17 +263,17 @@ let StripeModule = StripeModule_1 = class StripeModule {
             ],
         };
     }
-};
-StripeModule = StripeModule_1 = __decorate([
-    NgModule({
-        imports: [
-            CommonModule
-        ],
-        declarations: declarations,
-        // providers: [ StripeScriptTag ],
-        exports: [...declarations]
-    })
-], StripeModule);
+}
+StripeModule.decorators = [
+    { type: NgModule, args: [{
+                imports: [
+                    CommonModule
+                ],
+                declarations: declarations,
+                // providers: [ StripeScriptTag ],
+                exports: [...declarations]
+            },] }
+];
 /**
  * @deprecated Please import `StripeModule` directly
  */
