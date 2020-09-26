@@ -4,6 +4,7 @@ import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
 import { StripeInstanceOptions, STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY } from './StripeTypes'
+import { StripeComponent } from "./components/StripeComponent"
 
 import { StripeScriptTag } from "./StripeScriptTag"
 export { StripeScriptTag } from "./StripeScriptTag"
@@ -18,6 +19,7 @@ import { StripeBank } from "./components/StripeBank.component"
 export { bank_account, StripeBank } from "./components/StripeBank.component"
 
 const declarations = [
+  StripeComponent, // ignore do not use (has to be here for extends purposes)
   StripeSource,
   StripeCard,
   StripeBank
@@ -27,7 +29,7 @@ const declarations = [
   imports:[
     CommonModule
   ],
-  declarations: declarations,
+  declarations,
  // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
 }) export class StripeModule {

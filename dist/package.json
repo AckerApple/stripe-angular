@@ -1,0 +1,35 @@
+{
+  "name": "stripe-angular",
+  "version": "1.2.1",
+  "description": "Angular to Stripe module containing useful providers, components, and directives",
+  "main": "bundles/stripe-angular.umd.js",
+  "typings": "stripe-angular.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AckerApple/stripe-angular.git"
+  },
+  "keywords": [
+    "stripe",
+    "angular",
+    "credit",
+    "debit",
+    "card",
+    "payment",
+    "gateway"
+  ],
+  "author": "Acker Apple",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AckerApple/stripe-angular/issues"
+  },
+  "homepage": "https://github.com/AckerApple/stripe-angular#readme",
+  "module": "fesm2015/stripe-angular.js",
+  "es2015": "fesm2015/stripe-angular.js",
+  "esm2015": "esm2015/stripe-angular.js",
+  "fesm2015": "fesm2015/stripe-angular.js",
+  "metadata": "stripe-angular.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}
