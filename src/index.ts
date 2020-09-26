@@ -31,7 +31,7 @@ const declarations = [
  // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
 }) export class StripeModule {
-  static forRoot(publishableKey?: string, options?: StripeInstanceOptions): ModuleWithProviders {
+  static forRoot(publishableKey?: string, options?: StripeInstanceOptions): ModuleWithProviders<StripeModule> {
     return {
       ngModule: StripeModule,
       providers: [
