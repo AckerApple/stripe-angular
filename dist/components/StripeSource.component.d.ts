@@ -1,5 +1,5 @@
 import { EventEmitter } from "@angular/core";
-import { StripeToken, StripeSource as StripeSourceType } from "../StripeTypes";
+import { StripeToken, StripeSource as StripeSourceType, StripeInstanceOptions } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 import { StripeComponent } from "./StripeComponent";
 export declare class StripeSource extends StripeComponent {
@@ -8,5 +8,5 @@ export declare class StripeSource extends StripeComponent {
     sourceChange: EventEmitter<StripeSourceType>;
     elements: any;
     constructor(StripeScriptTag: StripeScriptTag);
-    createSource(): Promise<StripeToken>;
+    createSource(extraData?: StripeInstanceOptions): Promise<StripeToken>;
 }

@@ -2,7 +2,7 @@ import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
 import {
-  StripeToken, StripeSource as StripeSourceType
+  StripeToken, StripeSource as StripeSourceType, StripeInstanceOptions
 } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeComponent } from "./StripeComponent"
@@ -16,11 +16,10 @@ import { StripeComponent } from "./StripeComponent"
   `,
   exportAs:"StripeSource"
 }) export class StripeSource extends StripeComponent{
-
   @Input() source!:StripeSourceType
   @Output() sourceChange:EventEmitter<StripeSourceType> = new EventEmitter()
 
-  elements:any
+  elements:any // For card, its the UI element
 
   constructor(
     public StripeScriptTag:StripeScriptTag
@@ -28,12 +27,12 @@ import { StripeComponent } from "./StripeComponent"
     super(StripeScriptTag)
   }
 
-  createSource():Promise<StripeToken>{
-    delete this.invalid
+  createSource(extraData?: StripeInstanceOptions):Promise<StripeToken>{
+    delete this.invalid;
     this.invalidChange.emit(this.invalid)
 
     return this.stripe.createSource(
-      this.elements
+      this.elements, extraData
     )
     .then((result:any)=>{
       if(result.error){
