@@ -4,7 +4,7 @@ import { StripeScriptTag } from "../StripeScriptTag";
 export declare class StripeComponent {
     StripeScriptTag: StripeScriptTag;
     catcher: EventEmitter<Error>;
-    invalid: Error;
+    invalid?: Error;
     invalidChange: EventEmitter<Error>;
     stripe: StripeInstance;
     constructor(StripeScriptTag: StripeScriptTag);

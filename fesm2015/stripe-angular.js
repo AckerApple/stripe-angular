@@ -98,10 +98,10 @@ class StripeSource extends StripeComponent {
         this.StripeScriptTag = StripeScriptTag;
         this.sourceChange = new EventEmitter();
     }
-    createSource() {
+    createSource(extraData) {
         delete this.invalid;
         this.invalidChange.emit(this.invalid);
-        return this.stripe.createSource(this.elements)
+        return this.stripe.createSource(this.elements, extraData)
             .then((result) => {
             if (result.error) {
                 if (result.error.type == "validation_error") {

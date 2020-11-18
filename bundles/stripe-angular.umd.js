@@ -402,11 +402,11 @@
             _this.sourceChange = new i0.EventEmitter();
             return _this;
         }
-        StripeSource.prototype.createSource = function () {
+        StripeSource.prototype.createSource = function (extraData) {
             var _this = this;
             delete this.invalid;
             this.invalidChange.emit(this.invalid);
-            return this.stripe.createSource(this.elements)
+            return this.stripe.createSource(this.elements, extraData)
                 .then(function (result) {
                 if (result.error) {
                     if (result.error.type == "validation_error") {
