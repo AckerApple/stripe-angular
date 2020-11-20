@@ -102,21 +102,24 @@ class StripeSource extends StripeComponent {
         delete this.invalid;
         this.invalidChange.emit(this.invalid);
         return this.stripe.createSource(this.elements, extraData)
-            .then((result) => {
-            if (result.error) {
-                if (result.error.type == "validation_error") {
-                    this.invalidChange.emit(this.invalid = result.error);
-                }
-                else {
-                    this.catcher.emit(result.error);
-                    throw result.error;
-                }
+            .then((result) => this.processSourceResult(result));
+    }
+    processSourceResult(result) {
+        if (result.error) {
+            const rError = result.error;
+            if (rError.type === "validation_error") {
+                this.invalidChange.emit(this.invalid = rError);
             }
             else {
-                this.sourceChange.emit(this.source = result.source);
-                return result.source;
+                this.catcher.emit(rError);
+                throw rError;
             }
-        });
+        }
+        const source = result.source;
+        if (source) {
+            this.sourceChange.emit(this.source = source);
+            return source;
+        }
     }
 }
 StripeSource.decorators = [
@@ -145,19 +148,33 @@ class StripeCard extends StripeSource {
         this.StripeScriptTag = StripeScriptTag;
         this.tokenChange = new EventEmitter();
         this.cardMounted = new EventEmitter();
+        this.complete = false;
+        this.completeChange = new EventEmitter();
+        this.drawn = false;
     }
     ngOnInit() {
-        super.init()
-            .then(() => {
-            this.elements = this.stripe.elements().create('card', this.options);
-            this.elements.mount(this.ElementRef.nativeElement);
-            this.cardMounted.emit(this.elements);
-            this.elements.addEventListener('change', (result) => {
-                if (result.error) {
-                    this.invalidChange.emit(this.invalid = result.error);
-                }
-            });
+        super.init().then(() => this.redraw());
+    }
+    ngOnChanges(changes) {
+        if (this.drawn && changes.options) {
+            this.redraw();
+        }
+    }
+    redraw() {
+        this.elements = this.stripe.elements().create('card', this.options);
+        this.elements.mount(this.ElementRef.nativeElement);
+        this.cardMounted.emit(this.elements);
+        this.elements.on('change', (result) => {
+            if (result.complete || (this.complete && !result.complete)) {
+                this.completeChange.emit(this.complete = result.complete);
+            }
         });
+        this.elements.addEventListener('change', (result) => {
+            if (result.error) {
+                this.invalidChange.emit(this.invalid = result.error);
+            }
+        });
+        this.drawn = true;
     }
     createToken(extraData) {
         delete this.invalid;
@@ -199,7 +216,9 @@ StripeCard.propDecorators = {
     options: [{ type: Input }],
     token: [{ type: Input }],
     tokenChange: [{ type: Output }],
-    cardMounted: [{ type: Output }]
+    cardMounted: [{ type: Output }],
+    complete: [{ type: Input }],
+    completeChange: [{ type: Output }]
 };
 
 class StripeBank extends StripeComponent {

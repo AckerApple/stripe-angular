@@ -1,6 +1,10 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.4.0] - (2020-11-19)
+- stripe-card now has [(complete)], [complete] and (completeChange) bindings
+- Better typings
+
 ## [1.3.0] - (2020-11-18)
 - built on Angular11
 - creating payment source now accepts parameters
