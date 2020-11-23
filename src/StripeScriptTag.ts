@@ -48,7 +48,7 @@ import {
 
   injectIntoHead():Promise<Stripe>{
     if( window["Stripe"] ){
-      return Promise.resolve( this.Stripe=window["Stripe"] )
+      return Promise.resolve( this.Stripe = window["Stripe"] as any )
     }
 
     return new Promise((res,rej)=>{
@@ -66,8 +66,8 @@ import {
     })
   }
 
-  grabStripe(){
-    return window["Stripe"]
+  grabStripe(): Stripe {
+    return window["Stripe"] as any;
   }
 
   getTargetTagDropElement(){

@@ -1,7 +1,7 @@
 import {
   ElementRef, Input, Output, EventEmitter, Component } from "@angular/core"
 import {
-  StripeToken, StripeCardOptions } from "../StripeTypes"
+  Token, ElementsOptions } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeSource } from "./StripeSource.component"
 
@@ -14,12 +14,17 @@ import { StripeSource } from "./StripeSource.component"
   `,
   exportAs:"StripeCard"
 }) export class StripeCard extends StripeSource{
-  @Input() options!:StripeCardOptions
+  @Input() options!:ElementsOptions
 
-  @Input() token!:StripeToken
-  @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
+  @Input() token!: Token
+  @Output() tokenChange:EventEmitter<Token> = new EventEmitter()
 
   @Output() cardMounted:EventEmitter<any> = new EventEmitter()
+
+  @Input() complete: boolean = false
+  @Output() completeChange:EventEmitter<boolean> = new EventEmitter()
+
+  drawn = false
 
   constructor(
     public ElementRef:ElementRef,
@@ -29,24 +34,39 @@ import { StripeSource } from "./StripeSource.component"
   }
 
   ngOnInit(){
-    super.init()
-    .then(()=>{
-      this.elements = this.stripe.elements().create('card', this.options)
-      this.elements.mount(this.ElementRef.nativeElement)
-      
-      this.cardMounted.emit(this.elements);
+    super.init().then(()=>this.redraw())
+  }
 
-      this.elements.addEventListener('change', (result:any)=>{
-        if( result.error ){
-          this.invalidChange.emit( this.invalid=result.error )
-        }
-      })
+  ngOnChanges( changes:any ){
+    if (this.drawn && changes.options) {
+      this.redraw();
+    }
+  }
+
+  redraw() {
+    this.elements = this.stripe.elements().create('card', this.options)
+    this.elements.mount(this.ElementRef.nativeElement)
+
+    this.cardMounted.emit(this.elements);
+
+    this.elements.on('change', (result: any)=>{
+      if (result.complete || (this.complete && !result.complete)) {
+        this.completeChange.emit(this.complete = result.complete);
+      }
+    });
+
+    this.elements.addEventListener('change', (result:any)=>{
+      if( result.error ){
+        this.invalidChange.emit( this.invalid=result.error )
+      }
     })
+
+    this.drawn = true;
   }
 
   createToken(
     extraData?:any
-  ):Promise<StripeToken>{
+  ):Promise<Token>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 

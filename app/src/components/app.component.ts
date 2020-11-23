@@ -1,244 +1,70 @@
-import { Component } from "@angular/core"
+import { Component, EventEmitter } from "@angular/core"
 import { string as demoTemplate } from "./templates/app.component.template"
-
+import { StripeScriptTag } from "../../../src/index"
 //DEMO REFERENCE TO stripe-angular . USE BELOW
 import {
-  StripeInstance, Stripe, StripeScriptTag
-} from "../../../src/index"
+  BankAccountTokenOptions,
+  StripeInstance, ElementsOptions, Token
+} from "../../../src/StripeTypes"
 import * as packageJson from "../../../package.json"
 
 //YOUR REFERENCE TO stripe-angular
 //import { Stripe, StripeScriptTag } from "stripe-angular"
 
-const template=
-`
-<table *ngIf="!viewcode" cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
-  <tr>
-    <td>
-      <div style="text-align:center;">
-        <div style="border-radius:5px;background-color:#888;display:inline-block;text-align:left;width:100%;max-width:400px;">
-          <div style="padding:1em;">
-            <h2 style="margin-top:0;">stripe-angular {{version}} demo</h2>
-            <ng-container *ngIf="!loaded">Loading...</ng-container>
-
-            <ng-container *ngIf="loaded">
-
-              <div *ngIf="changekey" style="padding:1em;">
-                <form onsubmit="return false" (submit)="apply(tempPublishableKey);changekey=false">
-                  <strong>publishableKey</strong>
-                  <div>
-                    <input (keyup)="tempPublishableKey=$event.target.value" [value]="tempPublishableKey" style="width:100%" />
-                  </div>
-                  <button type="submit">apply</button>
-                </form>
-              </div>
-
-
-              <div *ngIf="!changekey" style="padding:1em;">
-                <strong>publishableKey</strong>
-                <div>{{ publishableKey }}</div>
-
-                <br />
-
-                <button type="button" (click)="changekey=!changekey" style="width:100%">CHANGE PUBLISHABLE KEY</button>
-
-                <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
-                  <br />
-                  <br />
-                  <div style="font-size:0.75em;color:orange;">
-                    <strong>WARNING</strong>: You need to enter your own key above.
-                    <p>
-                      You will NOT be able to perform any additional functionality without doing so. <a href="https://dashboard.stripe.com/register" target="_blank">create account</a>
-                    </p>
-                  </div>
-                </ng-container>
-
-                <br />
-                <hr />
-
-                <ng-container *ngIf="stripe">
-                  <label for="card-like-element">
-                    <small style="float:right">
-                      <a href="https://stripe.com/docs/testing#cards" target="_blank">demo card nums</a>
-                    </small>
-                    Credit or debit card
-                  </label>
-                  <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-                    <stripe-card
-                      #stripeCard
-                      [(token)]="token"
-                      [(source)]="source"
-                      (tokenChange)="sending=false"
-                      (catch)="sending=false;lastError=$event"
-                      (invalidChange)="sending=false;lastError=$event"
-                      (cardMounted) = "log('card mounted')"
-                    ></stripe-card>
-                  </div>
-
-                  <div *ngIf="editRequest">
-                    <br />
-                    <strong><a href="https://stripe.com/docs/api/sources" target="_blank">source data</a></strong>
-                    <textarea wrap="off" style="width:100%;height:175px" (change)="changeRequest($event.target.value)">{{ request | json }}</textArea>
-                  </div>
-
-                  <br />
-
-                  <div style="text-align:right;display:flex;flex-wrap:wrap;">
-                    <button
-                      type="button"
-                      (click)="editRequest=!editRequest"
-                      style="flex-grow:1"
-                    >
-                      source data
-                    </button>
-                    <button
-                      type="button"
-                      (click)="lastError=null;sending=true;stripeCard.createSource(request)"
-                      style="flex-grow:1"
-                    >
-                      createSource
-                    </button>
-                  </div>
-
-                  <br />
-
-                  <div *ngIf="editExtraData">
-                    <br />
-                    <strong title="Card specific way of providing token related info (includes metadata)">
-                      <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
-                    </strong>
-                    <textarea wrap="off" style="width:100%;height:175px" (change)="changeExtraData($event.target.value)">{{ extraData | json }}</textArea>
-                  </div>
-
-                  <div style="text-align:right;display:flex;flex-wrap:wrap;">
-                    <button
-                      type="button"
-                      (click)="editExtraData=!editExtraData"
-                      style="flex-grow:1"
-                    >
-                      token data
-                    </button>
-                    <button
-                      type="button"
-                      (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-                      style="flex-grow:1"
-                    >
-                      createToken
-                    </button>
-                  </div>
-
-                  <br />
-
-                  <div *ngIf="token" style="padding:1em;">
-                    <strong>Token</strong>
-                    <textarea wrap="off" style="width:100%;height:175px">{{ token | json }}</textArea>
-                  </div>
-
-                  <div *ngIf="source" style="padding:1em;">
-                    <strong>Source</strong>
-                    <textarea wrap="off" style="width:100%;height:175px">{{ source | json }}</textArea>
-                  </div>
-                  <hr />
-
-                  <label for="card-like-element">
-                    Bank Account
-                  </label>
-                  <stripe-bank #stripeBank [(token)]="bankToken" (tokenChange)="sending=false" (catch)="sending=false;lastError=$event" (invalidChange)="sending=false;lastError=$event"></stripe-bank>
-                  <br />
-                  <textarea wrap="off" style="width:100%;height:175px" (change)="changeBankData($event.target.value)">{{ bankData | json }}</textArea>
-                  <br />
-                  <div style="text-align:right;">
-                    <button type="button" (click)="lastError=null;sending=true;stripeBank.createToken(bankData)">createToken</button>
-                  </div>
-                  <!--
-                  <br />
-                  <div style="text-align:right;">
-                    <button type="button" (click)="lastError=null;sending=true;stripeBank.createSource()">createSource</button>
-                  </div>
-                  -->
-
-                  <!-- bank token success output -->
-                  <div *ngIf="bankToken" style="padding:1em;">
-                    <strong>Bank Token</strong>
-                    <textarea wrap="off" style="width:100%;height:175px">{{ bankToken | json }}</textArea>
-                  </div>
-                  <div *ngIf="bankSource" style="padding:1em;">
-                    <strong>Bank Source</strong>
-                    <textarea wrap="off" style="width:100%;height:175px">{{ bankSource | json }}</textArea>
-                  </div>
-
-                </ng-container>
-
-                <ng-container *ngIf="sending">
-                  <div>
-                    Sending to Stripe...
-                  </div>
-                </ng-container>
-
-                <div *ngIf="lastError" style="color:red;">
-                  <textarea wrap="off" style="color:red;width:100%;height:175px">{{lastError | json}}</textArea>
-                </div>
-
-                <div *ngIf="!stripe" style="color:red;">
-                  Stripe publishable key has not yet been set
-                </div>
-
-              </div>
-            </ng-container>
-            <br />
-            <div style="text-align:center;display:flex;justify-content: center;">
-              <button
-                type="button"
-                (click)="viewcode=true"
-                style="flex-grow:1"
-              >view code</button>
-              <a
-                href="https://github.com/AckerApple/stripe-angular/blob/master/app/src/components/app.component.ts"
-                target="_blank" style="flex-grow:1"
-              >demo code on github</a>
-              <a
-                href="https://stripe.com/docs/error-codes"
-                target="_blank" style="flex-grow:1"
-              >error-codes</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </td>
-  </tr>
-</table>
-<table *ngIf="viewcode" cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
-  <tbody>
-    <tr>
-      <td style="width:100%;height:100%"><textarea wrap="off" style="width:100%;height:100%">{{ demoTemplate }}</textarea></td>
-    </tr>
-    <tr style="height:30px;">
-      <td style="text-align:center;">
-        <button type="button" (click)="viewcode=false" style="width:100%;height:100%">hide code</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-`
-
-const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+const testKey = localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+const stripeServer = 'https://api.stripe.com/v1/';
 
 @Component({
   selector:"app",
-  template: template//.replace(/\s\s/g,'')//prevent accidentally spacing
+  templateUrl: './app.component.html'//.replace(/\s\s/g,'')//prevent accidentally spacing
 }) export class AppComponent{
   version: string = (packageJson as any).version;
-  viewcode:boolean
-  loaded:boolean
-  sending:boolean
-  publishableKey = testKey
-  lastError:Error
-  token:any
+
+  loaded: boolean
+  sending: boolean
+  cardComplete = false
+  saveKeyLocally = false
+  savePrivateKeyLocally = false
+  enableServerMode?: boolean;
+
   tempPublishableKey = testKey
+  publishableKey = testKey
+  tempPrivateKey = localStorage?.stripeAngularPrivateKey;
+  privateKey?: string = localStorage?.stripeAngularPrivateKey;
+  localStorage = localStorage;
+
+  lastError:Error
+  card: {
+    token?:any
+    source?:any
+  } = {}
   stripe:StripeInstance
   stripeBank:StripeInstance
   demoTemplate:string = demoTemplate
 
+  // card elements options
+  options: ElementsOptions = {
+    classes: {
+      base: '',
+      complete: '',
+      empty: '',
+      focus: '',
+      invalid: '',
+      webkitAutofill: '',
+    },
+    hidePostalCode: false,
+    hideIcon: false,
+    iconStyle: 'solid',
+    style: {},
+    value: {postalCode: ''},
+
+    // TODO: Add this back at later date (avoided due to this package doesn't cover transactions yet)
+    // paymentRequest?: paymentRequest.StripePaymentRequest;
+
+    disabled: false
+  };
+
+  // passed along when token or sources created
   request = {
     owner: {
       "address": {
@@ -260,6 +86,7 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
     }
   }
 
+  // passed along during card token creation
   extraData = {
     name: "",
     address_city: "",
@@ -272,16 +99,58 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
     metadata: this.request.metadata
   }
 
-  bankData = {
-    country: 'US',
-    currency: 'usd',
-    routing_number: '110000000',
-    account_number: '000123456789',
-    account_holder_name: 'Jenny Rosen',
-    account_holder_type: 'individual',
+  // ach token data
+  bank: {
+    data: BankAccountTokenOptions,
+    verify: {amount1?: number, amount2?: number},
+    verifyResponse?: any,
+    token?: any
+  } = {
+    verify: {}, // used during micro deposit verification
+    data: {
+      country: 'US',
+      currency: 'usd',
+      routing_number: '110000000',
+      account_number: '000123456789',
+      account_holder_name: 'Jenny Rosen',
+      account_holder_type: 'individual',
+      metadata: this.request.metadata
+    }
   }
 
-  constructor(public StripeScriptTag:StripeScriptTag){}
+  customer: ISimpleRouteEditor = {
+    $create: new EventEmitter(),
+    data: {
+      description: "some new customer",
+      metadata: this.request.metadata
+    }
+  }
+
+  payintent: ISimpleRouteEditor = {
+    $create: new EventEmitter(),
+    data: {
+      amount: 1099,
+      currency: 'usd',
+      setup_future_usage: 'off_session',
+      metadata: this.request.metadata
+    }
+  }
+
+  charge: ISimpleRouteEditor = {
+    $create: new EventEmitter(),
+    data: {
+      amount: 1099,
+      currency: 'usd',
+      source: 'token-here',
+      metadata: this.request.metadata
+    }
+  }
+
+  constructor(public StripeScriptTag: StripeScriptTag){
+    this.customer.$create.subscribe(data => this.createCustomer(data))
+    this.payintent.$create.subscribe(data => this.createPayIntent(data))
+    this.charge.$create.subscribe(data => this.createCharge(data))
+  }
 
   ngOnInit(){
     //inject script tag onto document and apply publishableKey
@@ -293,10 +162,27 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
     })
   }
 
+  deleteLocalStorage() {
+    localStorage.stripeAngularPrivateKey = null;
+    localStorage.stripeAnguarKey = null;
+
+    delete localStorage.stripeAngularPrivateKey;
+    delete localStorage.stripeAnguarKey;
+  }
+
   async apply(key):Promise<StripeInstance>{
-    this.publishableKey = key
+    if (this.saveKeyLocally) {
+      localStorage.stripeAnguarKey = key;
+    }
+
+    this.privateKey = this.tempPrivateKey;
+    if (this.savePrivateKeyLocally) {
+      localStorage.stripeAngularPrivateKey = this.privateKey;
+    }
+
+    this.publishableKey = key;
     return this.StripeScriptTag.setPublishableKey(this.publishableKey)
-    .then(StripeInstance=>this.stripe=StripeInstance)
+      .then(StripeInstance=>this.stripe=StripeInstance);
   }
 
   changeRequest(data:string){
@@ -306,15 +192,171 @@ const testKey = "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
       this.extraData.metadata = this.request.metadata
     }
   }
+
   changeExtraData(data:string){
     this.extraData = JSON.parse(data)
   }
 
-  changeBankData(data:string){
-    this.bankData = JSON.parse(data)
+  changeOptions(data:string){
+    this.options = JSON.parse(data)
+  }
+
+  changeKey(key: string, value: string) {
+    const keys = key.split('.')
+    var current = this;
+
+    while(keys.length > 1) {
+      current = current[keys.shift()];
+    }
+
+    current[keys[0]] = JSON.parse(value);
   }
 
   log(message) {
     console.log(message);
   }
+
+  toggleServerMode() {
+    this.enableServerMode = !this.enableServerMode;
+
+    if (!this.enableServerMode) {
+      localStorage.stripeAngularPrivateKey = null
+      delete localStorage.stripeAngularPrivateKey
+      delete this.tempPrivateKey
+      delete this.privateKey
+    }
+  }
+
+  createCustomer(data: any) {
+    request({
+      url: stripeServer + 'customers',
+      post: data,
+      authorizationBearer: this.privateKey
+    }).then(res => this.customer.result = tryParse(res));
+  }
+
+  createPayIntent(data: any) {
+    request({
+      url: stripeServer + 'payment_intents',
+      post: data,
+      authorizationBearer: this.privateKey
+    }).then(res => this.payintent.result = tryParse(res));
+  }
+
+  createCharge(data: any) {
+    request({
+      url: stripeServer + 'charges',
+      post: data,
+      authorizationBearer: this.privateKey
+    }).then(res => this.charge.result = tryParse(res));
+  }
+
+  createCustomerByToken(token: Token) {
+    const customer = this.customer.data;
+    customer.source = token.id;
+
+    this.createCustomer(customer);
+  }
+
+  verifyBank() {
+    const base = stripeServer + 'customers/'
+    const cusId = this.customer.result.id;
+    const bankId = this.bank.token.bank_account.id;
+    const url = base + `${cusId}/sources/${bankId}/verify`;
+    request({
+      url,
+      authorizationBearer: this.privateKey,
+      post: {
+        amounts:[
+          this.bank.verify.amount1,
+          this.bank.verify.amount2
+        ]
+      }
+    }).then(result => this.bank.verifyResponse = tryParse(result))
+  }
+}
+
+
+function request(
+  {url, post, authorizationBearer}: {
+    url: string, post: {[x: string]: any}
+    authorizationBearer?: string
+  }
+) {
+  return new Promise((res, rej) => {
+    const req = new XMLHttpRequest();
+    req.open('POST', url, true);
+    req.setRequestHeader('Accept', 'application/json');
+
+    if (authorizationBearer) {
+      req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer);
+    }
+
+    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    req.send( objectToUriForm(post) );
+
+    req.onreadystatechange = () => {
+      if (req.readyState === 4) {
+        res(req.responseText);
+        req.responseText;
+      }
+    }
+  });
+}
+
+function objectToUriForm(
+  ob: {[index: string]: any} | string[],
+  parentKey?: string
+): string {
+  let returnString = '';
+
+  if (!ob) {
+    return returnString;
+  } else if (Array.isArray(ob)) {
+    ob.forEach(value => {
+      returnString += `${parentKey}[]=${encodeURIComponent(value)}&`;
+    });
+  } else {
+    Object.keys(ob).forEach(key => {
+      const value = ob[key]
+      let endKey = key;
+      let stringValue = '';
+
+      switch (typeof(value)) {
+        case 'string':
+        case 'number':
+          stringValue = value.toString();
+          break;
+
+        case 'object':
+          return returnString += objectToUriForm(value, key) + '&';
+      }
+
+      if (parentKey) {
+        endKey = `${parentKey}[${key}]`
+      }
+
+      returnString += `${endKey}=${encodeURIComponent(stringValue)}` + '&'
+    });
+  }
+
+  if (returnString.length) {
+    returnString = returnString.substr(0, returnString.length - 1) // last &
+  }
+
+  return returnString;
+}
+
+function tryParse(data: string | any) {
+  try {
+    return JSON.parse(data);
+  } catch (err) {
+    return data;
+  }
+}
+
+interface ISimpleRouteEditor {
+  data: any
+  result?: any
+  $create: EventEmitter<any>
 }

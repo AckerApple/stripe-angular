@@ -407,21 +407,24 @@
             delete this.invalid;
             this.invalidChange.emit(this.invalid);
             return this.stripe.createSource(this.elements, extraData)
-                .then(function (result) {
-                if (result.error) {
-                    if (result.error.type == "validation_error") {
-                        _this.invalidChange.emit(_this.invalid = result.error);
-                    }
-                    else {
-                        _this.catcher.emit(result.error);
-                        throw result.error;
-                    }
+                .then(function (result) { return _this.processSourceResult(result); });
+        };
+        StripeSource.prototype.processSourceResult = function (result) {
+            if (result.error) {
+                var rError = result.error;
+                if (rError.type === "validation_error") {
+                    this.invalidChange.emit(this.invalid = rError);
                 }
                 else {
-                    _this.sourceChange.emit(_this.source = result.source);
-                    return result.source;
+                    this.catcher.emit(rError);
+                    throw rError;
                 }
-            });
+            }
+            var source = result.source;
+            if (source) {
+                this.sourceChange.emit(this.source = source);
+                return source;
+            }
         };
         return StripeSource;
     }(StripeComponent));
@@ -448,21 +451,36 @@
             _this.StripeScriptTag = StripeScriptTag;
             _this.tokenChange = new i0.EventEmitter();
             _this.cardMounted = new i0.EventEmitter();
+            _this.complete = false;
+            _this.completeChange = new i0.EventEmitter();
+            _this.drawn = false;
             return _this;
         }
         StripeCard.prototype.ngOnInit = function () {
             var _this = this;
-            _super.prototype.init.call(this)
-                .then(function () {
-                _this.elements = _this.stripe.elements().create('card', _this.options);
-                _this.elements.mount(_this.ElementRef.nativeElement);
-                _this.cardMounted.emit(_this.elements);
-                _this.elements.addEventListener('change', function (result) {
-                    if (result.error) {
-                        _this.invalidChange.emit(_this.invalid = result.error);
-                    }
-                });
+            _super.prototype.init.call(this).then(function () { return _this.redraw(); });
+        };
+        StripeCard.prototype.ngOnChanges = function (changes) {
+            if (this.drawn && changes.options) {
+                this.redraw();
+            }
+        };
+        StripeCard.prototype.redraw = function () {
+            var _this = this;
+            this.elements = this.stripe.elements().create('card', this.options);
+            this.elements.mount(this.ElementRef.nativeElement);
+            this.cardMounted.emit(this.elements);
+            this.elements.on('change', function (result) {
+                if (result.complete || (_this.complete && !result.complete)) {
+                    _this.completeChange.emit(_this.complete = result.complete);
+                }
             });
+            this.elements.addEventListener('change', function (result) {
+                if (result.error) {
+                    _this.invalidChange.emit(_this.invalid = result.error);
+                }
+            });
+            this.drawn = true;
         };
         StripeCard.prototype.createToken = function (extraData) {
             var _this = this;
@@ -502,7 +520,9 @@
         options: [{ type: i0.Input }],
         token: [{ type: i0.Input }],
         tokenChange: [{ type: i0.Output }],
-        cardMounted: [{ type: i0.Output }]
+        cardMounted: [{ type: i0.Output }],
+        complete: [{ type: i0.Input }],
+        completeChange: [{ type: i0.Output }]
     };
 
     var StripeBank = /** @class */ (function (_super) {

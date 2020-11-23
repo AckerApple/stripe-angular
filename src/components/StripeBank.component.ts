@@ -1,9 +1,9 @@
 import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
-import { StripeCardOptions } from "../StripeTypes"
+import { SourceOptions, ElementsOptions } from "../StripeTypes"
 import { StripeComponent } from "./StripeComponent"
-import { StripeToken } from "../StripeTypes"
+import { BankAccountTokenOptions, Token } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 
 export interface bank_account{
@@ -24,10 +24,10 @@ export interface bank_account{
   `,
   exportAs:"StripeBank"
 }) export class StripeBank extends StripeComponent{
-  @Input() options!:StripeCardOptions//very similar type to card options
+  @Input() options!: ElementsOptions // very similar type to card options
 
-  @Input() token!:StripeToken
-  @Output() tokenChange:EventEmitter<StripeToken> = new EventEmitter()
+  @Input() token!: Token
+  @Output() tokenChange:EventEmitter<Token> = new EventEmitter()
 
   constructor(
     public StripeScriptTag:StripeScriptTag
@@ -35,12 +35,12 @@ export interface bank_account{
     super(StripeScriptTag)
   }
 
-  createToken( data?:any ):Promise<StripeToken>{
+  createToken( data: BankAccountTokenOptions ):Promise<Token>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
     return this.stripe.createToken('bank_account', data)
-    .then((result:any)=>{
+    .then((result: any) => { // TokenResponse
       if(result.error){
         if( result.error.type=="validation_error" ){
           this.invalidChange.emit( this.invalid=result.error )
@@ -52,6 +52,6 @@ export interface bank_account{
         this.tokenChange.emit(this.token=result.token)
         return result.token
       }
-    })
+    });
   }
 }

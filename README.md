@@ -57,25 +57,26 @@ A practical example to convert card data into a Stripe token
 ```typescript
 import { Component } from "@angular/core"
 import { StripeToken, StripeSource } from "stripe-angular"
- 
+
 const template=
 `
 <div *ngIf="invalidError" style="color:red">
   {{ invalidError.message }}
 </div>
- 
+
 <stripe-card
   #stripeCard
   (catch) = "onStripeError($event)"
+  [(complete)] = "cardDetailsFilledOut"
   [(invalid)] = "invalidError"
   (cardMounted) = "cardReady = 1"
   (tokenChange) = "setStripeToken($event)"
   (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
- 
+
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
 `
- 
+
 @Component({
   selector: "app-sub-page",
   template: template
@@ -89,19 +90,19 @@ const template=
     "address_state": null,
     "address_zip": null
   };
- 
+
   onStripeInvalid( error:Error ){
     console.log('Validation Error', error)
   }
- 
+
   setStripeToken( token:StripeToken ){
     console.log('Stripe token', token)
   }
- 
+
   setStripeSource( source:StripeSource ){
     console.log('Stripe source', source)
   }
- 
+
   onStripeError( error:Error ){
     console.error('Stripe error', error)
   }
@@ -168,7 +169,9 @@ This component is not intended to stand alone but it could. Component stripe-car
   (catch)       = "$event"
   [(source)]    = "source"
   [(invalid)]   = "invalidError"
+  [(complete)]  = "cardDetailsFilledOut"
   (cardMounted) = "cardReady = 1"
+  (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
 <button type="button" (click)="stripeCard.createSource()">createSource</button>
 ```

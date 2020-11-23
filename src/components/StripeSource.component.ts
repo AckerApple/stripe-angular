@@ -2,7 +2,7 @@ import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
 import {
-  StripeToken, StripeSource as StripeSourceType, StripeInstanceOptions
+  SourceResponse, Source, OwnerInfo
 } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeComponent } from "./StripeComponent"
@@ -16,8 +16,8 @@ import { StripeComponent } from "./StripeComponent"
   `,
   exportAs:"StripeSource"
 }) export class StripeSource extends StripeComponent{
-  @Input() source!:StripeSourceType
-  @Output() sourceChange:EventEmitter<StripeSourceType> = new EventEmitter()
+  @Input() source?: Source
+  @Output() sourceChange:EventEmitter<Source> = new EventEmitter()
 
   elements:any // For card, its the UI element
 
@@ -27,25 +27,34 @@ import { StripeComponent } from "./StripeComponent"
     super(StripeScriptTag)
   }
 
-  createSource(extraData?: StripeInstanceOptions):Promise<StripeToken>{
+  createSource(
+    extraData:{ owner?: OwnerInfo, metadata?: any}
+  ):Promise<Source | void>{
     delete this.invalid;
     this.invalidChange.emit(this.invalid)
 
     return this.stripe.createSource(
       this.elements, extraData
     )
-    .then((result:any)=>{
-      if(result.error){
-        if( result.error.type=="validation_error" ){
-          this.invalidChange.emit( this.invalid=result.error )
-        }else{
-          this.catcher.emit(result.error)
-          throw result.error
-        }
+    .then((result:any)=>this.processSourceResult(result))
+  }
+
+  processSourceResult(result: SourceResponse): Source | void {
+    if(result.error){
+      const rError = result.error
+      if( (rError as any).type === "validation_error" ){
+        this.invalidChange.emit( this.invalid = rError )
       }else{
-        this.sourceChange.emit(this.source=result.source)
-        return result.source
+        this.catcher.emit(rError);
+        throw rError;
       }
-    })
+    }
+
+    const source = result.source;
+
+    if (source) {
+      this.sourceChange.emit(this.source=source);
+      return source;
+    }
   }
 }
