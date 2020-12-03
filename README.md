@@ -42,11 +42,13 @@ import { StripeModule } from "stripe-angular"
 > Please note, you only use `.forRoot()` on your base app module
 >> This ONLY matters if you need to support lazy loading via loadChildren()
 
-> Three operations are preformed on construction
->> 1. Checking for window.Stripe
->>> 1.1 If undefined, head tag is found and script tag with src "https://js.stripe.com/v3/" is added
->> 2. Seting publishableKey in StripeJs library
->> 3. All stripe-angular components use the initialized Stripe instance
+
+**NOTE WORTHY**
+Here are the operations preformed on construction on Stripe functionality
+- Checking for window.Stripe existence
+  - If undefined THEN script tag with src `https://js.stripe.com/v3/` is append to html head tag
+- Set publishableKey in StripeJs library
+- All stripe-angular components reuse the same initialized Stripe instance (Injector)
 
 
 ## Use
@@ -56,7 +58,7 @@ A practical example to convert card data into a Stripe token
 
 ```typescript
 import { Component } from "@angular/core"
-import { StripeToken, StripeSource } from "stripe-angular"
+import { Token, StripeSource } from "stripe-angular"
 
 const template=
 `
@@ -91,19 +93,19 @@ const template=
     "address_zip": null
   };
 
-  onStripeInvalid( error:Error ){
+  onStripeInvalid( error: Error ){
     console.log('Validation Error', error)
   }
 
-  setStripeToken( token:StripeToken ){
+  setStripeToken( token: Token ){
     console.log('Stripe token', token)
   }
 
-  setStripeSource( source:StripeSource ){
+  setStripeSource( source: StripeSource ){
     console.log('Stripe source', source)
   }
 
-  onStripeError( error:Error ){
+  onStripeError( error: Error ){
     console.error('Stripe error', error)
   }
 }

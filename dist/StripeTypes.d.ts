@@ -216,6 +216,8 @@ export interface Token {
     type: string;
     used: boolean;
 }
+export interface StripeToken extends Token {
+}
 declare type statusType = 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
 interface BankAccount {
     id: string;

@@ -246,6 +246,9 @@ export interface Token {
   used: boolean;
 }
 
+// LEGACY: Support old naming convention
+export interface StripeToken extends Token {}
+
 type statusType = 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
 interface BankAccount {
   id: string;

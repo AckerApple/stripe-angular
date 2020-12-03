@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
