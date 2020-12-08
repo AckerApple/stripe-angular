@@ -95,7 +95,7 @@
                 </small>
               </div>
               <div class="tool-panel">
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer.data, key:'customer.data', $create:customer.$create, result:customer.result}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer.data, key:'customer.data', $send:customer.$send, result:customer.result}"></ng-container>
               </div>
             </div>
 
@@ -146,7 +146,35 @@
                     use {{customer.result.description}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:charge.data, key:'charge.data', $create:charge.$create, result:charge.result}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:charge.data, key:'charge.data', $send:charge.$send, result:charge.result}"></ng-container>
+              </div>
+            </div>
+
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label>
+                    GET Source by Id
+                  </label>
+                </h2>
+                <small>
+                  <a
+                  href="https://stripe.com/docs/api/sources/retrieve"
+                  style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <small style="display:flex;flex-wrap:wrap;color:white;">
+                  <a
+                    *ngIf="card.source"
+                    (click)="source_get.data.source = card.source.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
+                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                  </a>
+                </small>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:source_get.data, key:'source_get.data', $send:source_get.$send, result:source_get.result}"></ng-container>
               </div>
             </div>
 
@@ -171,7 +199,7 @@
                   </a>
                 </small>
 
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:payintent.data, key:'payintent.data', $create:payintent.$create, result:payintent.result}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:payintent.data, key:'payintent.data', $send:payintent.$send, result:payintent.result}"></ng-container>
               </div>
             </div>
 
@@ -546,7 +574,7 @@
 
 <ng-template #simpleRouteEditor
   let-data="data" let-name="name"
-  let-key="key" let-$create="$create"
+  let-key="key" let-$send="$send"
   let-result="result"
 >
   <textarea
@@ -556,12 +584,12 @@
 
   <button
     type="button"
-    (click)="$create.emit(data)"
-  >create</button>
+    (click)="$send.emit(data)"
+  >send request</button>
 
   <div *ngIf="result">
     <br />
-    <strong>Created</strong>
+    <strong>Result</strong>
     <textarea
       disabled wrap="off" style="width:100%;height:175px"
     >{{ result | json }}</textArea>

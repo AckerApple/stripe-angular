@@ -119,15 +119,23 @@ const stripeServer = 'https://api.stripe.com/v1/';
   }
 
   customer: ISimpleRouteEditor = {
-    $create: new EventEmitter(),
+    $send: new EventEmitter(),
     data: {
       description: "some new customer",
       metadata: this.request.metadata
     }
   }
 
+  source_get: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    data: {
+      description: "get source by id",
+      source: ""
+    }
+  }
+
   payintent: ISimpleRouteEditor = {
-    $create: new EventEmitter(),
+    $send: new EventEmitter(),
     data: {
       amount: 1099,
       currency: 'usd',
@@ -137,7 +145,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
   }
 
   charge: ISimpleRouteEditor = {
-    $create: new EventEmitter(),
+    $send: new EventEmitter(),
     data: {
       amount: 1099,
       currency: 'usd',
@@ -147,9 +155,10 @@ const stripeServer = 'https://api.stripe.com/v1/';
   }
 
   constructor(public StripeScriptTag: StripeScriptTag){
-    this.customer.$create.subscribe(data => this.createCustomer(data))
-    this.payintent.$create.subscribe(data => this.createPayIntent(data))
-    this.charge.$create.subscribe(data => this.createCharge(data))
+    this.source_get.$send.subscribe(data => this.getSource(data.source))
+    this.customer.$send.subscribe(data => this.createCustomer(data))
+    this.payintent.$send.subscribe(data => this.createPayIntent(data))
+    this.charge.$send.subscribe(data => this.createCharge(data))
   }
 
   ngOnInit(){
@@ -227,6 +236,13 @@ const stripeServer = 'https://api.stripe.com/v1/';
     }
   }
 
+  getSource(sourceId: string) {
+    request({
+      url: stripeServer + 'sources/' + sourceId,
+      authorizationBearer: this.privateKey
+    }).then(res => this.source_get.result = tryParse(res));
+  }
+
   createCustomer(data: any) {
     request({
       url: stripeServer + 'customers',
@@ -279,7 +295,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
 
 function request(
   {url, post, authorizationBearer}: {
-    url: string, post: {[x: string]: any}
+    url: string, post?: {[x: string]: any}
     authorizationBearer?: string
   }
 ) {
@@ -358,5 +374,5 @@ function tryParse(data: string | any) {
 interface ISimpleRouteEditor {
   data: any
   result?: any
-  $create: EventEmitter<any>
+  $send: EventEmitter<any>
 }
