@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.4.3] - (2020-11-19)
+- more demo support
+- fixes
 ## [1.4.0] - (2020-11-19)
 - stripe-card now has [(complete)], [complete] and (completeChange) bindings
 - Better typings
