@@ -1,7 +1,6 @@
+/// <reference types="stripe-v3" />
 import { EventEmitter } from "@angular/core";
-import { ElementsOptions } from "../StripeTypes";
 import { StripeComponent } from "./StripeComponent";
-import { BankAccountTokenOptions, Token } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 export interface bank_account {
     country: string;
@@ -13,9 +12,9 @@ export interface bank_account {
 }
 export declare class StripeBank extends StripeComponent {
     StripeScriptTag: StripeScriptTag;
-    options: ElementsOptions;
-    token: Token;
-    tokenChange: EventEmitter<Token>;
+    options: stripe.elements.ElementOptions;
+    token: stripe.Token;
+    tokenChange: EventEmitter<stripe.Token>;
     constructor(StripeScriptTag: StripeScriptTag);
-    createToken(data: BankAccountTokenOptions): Promise<Token>;
+    createToken(data: stripe.BankAccountTokenOptions): Promise<stripe.Token>;
 }

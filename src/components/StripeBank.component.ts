@@ -1,9 +1,7 @@
 import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
-import { SourceOptions, ElementsOptions } from "../StripeTypes"
 import { StripeComponent } from "./StripeComponent"
-import { BankAccountTokenOptions, Token } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 
 export interface bank_account{
@@ -18,16 +16,16 @@ export interface bank_account{
 @Component({
   selector: "stripe-bank",
   template: `
-      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+      <ng-container *ngIf="!StripeScriptTag.stripe">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
   exportAs:"StripeBank"
 }) export class StripeBank extends StripeComponent{
-  @Input() options!: ElementsOptions // very similar type to card options
+  @Input() options!: stripe.elements.ElementOptions // very similar type to card options
 
-  @Input() token!: Token
-  @Output() tokenChange:EventEmitter<Token> = new EventEmitter()
+  @Input() token!: stripe.Token
+  @Output() tokenChange:EventEmitter<stripe.Token> = new EventEmitter()
 
   constructor(
     public StripeScriptTag:StripeScriptTag
@@ -35,7 +33,7 @@ export interface bank_account{
     super(StripeScriptTag)
   }
 
-  createToken( data: BankAccountTokenOptions ):Promise<Token>{
+  createToken( data: stripe.BankAccountTokenOptions):Promise<stripe.Token>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 

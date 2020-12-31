@@ -1,9 +1,6 @@
 import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
-import {
-  StripeInstance
-} from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 
 @Component({
@@ -15,7 +12,7 @@ export class StripeComponent{
   @Input() invalid?:Error
   @Output() invalidChange:EventEmitter<Error> = new EventEmitter()
 
-  stripe!:StripeInstance
+  stripe!:stripe.Stripe
 
   constructor(
     public StripeScriptTag:StripeScriptTag
@@ -25,7 +22,7 @@ export class StripeComponent{
     this.init()
   }
 
-  init():Promise<StripeInstance>{
+  init():Promise<stripe.Stripe>{
     return this.StripeScriptTag.promiseInstance()
     .then( i=>this.stripe=i )
   }

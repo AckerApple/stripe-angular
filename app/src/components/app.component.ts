@@ -4,7 +4,7 @@ import { StripeScriptTag } from "../../../src/index"
 //DEMO REFERENCE TO stripe-angular . USE BELOW
 import {
   BankAccountTokenOptions,
-  StripeInstance, ElementsOptions, Token
+   Token
 } from "../../../src/StripeTypes"
 import * as packageJson from "../../../package.json"
 
@@ -38,12 +38,12 @@ const stripeServer = 'https://api.stripe.com/v1/';
     token?:any
     source?:any
   } = {}
-  stripe:StripeInstance
-  stripeBank:StripeInstance
+  stripe:stripe.Stripe
+  stripeBank:stripe.Stripe
   demoTemplate:string = demoTemplate
 
   // card elements options
-  options: ElementsOptions = {
+  options: stripe.elements.ElementsOptions = {
     classes: {
       base: '',
       complete: '',
@@ -179,7 +179,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
     delete localStorage.stripeAnguarKey;
   }
 
-  async apply(key):Promise<StripeInstance>{
+  async apply(key):Promise<stripe.Stripe>{
     if (this.saveKeyLocally) {
       localStorage.stripeAnguarKey = key;
     }
@@ -191,7 +191,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
 
     this.publishableKey = key;
     return this.StripeScriptTag.setPublishableKey(this.publishableKey)
-      .then(StripeInstance=>this.stripe=StripeInstance);
+      .then(stripe =>this.stripe=stripe);
   }
 
   changeRequest(data:string){

@@ -1,13 +1,14 @@
-import { Stripe, StripeInstance, StripeInstanceOptions } from "./StripeTypes";
+/// <reference types="stripe-v3" />
+import { Stripe } from "./StripeTypes";
 export declare class StripeScriptTag {
     src: string;
     Stripe: Stripe;
-    StripeInstance: StripeInstance;
+    stripe: stripe.Stripe;
     load: Promise<any>;
-    constructor(key?: string, options?: StripeInstanceOptions);
+    constructor(key?: string, options?: stripe.StripeOptions);
     promiseStripe(): Promise<Stripe>;
-    promiseInstance(): Promise<StripeInstance>;
-    setPublishableKey(key: string, options?: StripeInstanceOptions): Promise<StripeInstance>;
+    promiseInstance(): Promise<stripe.Stripe>;
+    setPublishableKey(key: string, options?: stripe.StripeOptions): Promise<stripe.Stripe>;
     injectIntoHead(): Promise<Stripe>;
     grabStripe(): Stripe;
     getTargetTagDropElement(): HTMLHeadElement;

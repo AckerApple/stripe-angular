@@ -1,23 +1,21 @@
 import {
   ElementRef, Input, Output, EventEmitter, Component } from "@angular/core"
-import {
-  Token, ElementsOptions } from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeSource } from "./StripeSource.component"
 
 @Component({
   selector: "stripe-card",
   template: `
-      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+      <ng-container *ngIf="!StripeScriptTag.stripe">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
   exportAs:"StripeCard"
 }) export class StripeCard extends StripeSource{
-  @Input() options!:ElementsOptions
+  @Input() options!:stripe.elements.ElementsOptions
 
-  @Input() token!: Token
-  @Output() tokenChange:EventEmitter<Token> = new EventEmitter()
+  @Input() token!: stripe.Token
+  @Output() tokenChange:EventEmitter<stripe.Token> = new EventEmitter()
 
   @Output() cardMounted:EventEmitter<any> = new EventEmitter()
 
@@ -66,7 +64,7 @@ import { StripeSource } from "./StripeSource.component"
 
   createToken(
     extraData?:any
-  ):Promise<Token>{
+  ):Promise<stripe.Token>{
     delete this.invalid
     this.invalidChange.emit(this.invalid)
 
