@@ -17,17 +17,17 @@ class StripeScriptTag {
     promiseInstance() {
         return this.promiseStripe()
             .then(stripe => {
-            if (!this.stripe) {
+            if (!this.StripeInstance) {
                 const err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()");
                 err["code"] = "STRIPEKEYNOTSET";
                 throw err;
                 //return Promise.reject( err )
             }
-            return this.stripe;
+            return this.StripeInstance;
         });
     }
     setPublishableKey(key, options) {
-        return this.load.then(() => this.stripe = this.Stripe(key, options));
+        return this.load.then(() => this.StripeInstance = this.Stripe(key, options));
     }
     injectIntoHead() {
         if (window["Stripe"]) {
@@ -126,7 +126,7 @@ StripeSource.decorators = [
     { type: Component, args: [{
                 selector: "stripe-source",
                 template: `
-      <ng-container *ngIf="!StripeScriptTag.stripe">
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
@@ -201,7 +201,7 @@ StripeCard.decorators = [
     { type: Component, args: [{
                 selector: "stripe-card",
                 template: `
-      <ng-container *ngIf="!StripeScriptTag.stripe">
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
@@ -252,7 +252,7 @@ StripeBank.decorators = [
     { type: Component, args: [{
                 selector: "stripe-bank",
                 template: `
-      <ng-container *ngIf="!StripeScriptTag.stripe">
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,

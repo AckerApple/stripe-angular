@@ -8,7 +8,7 @@ import {
 @Injectable({providedIn: 'root'}) export class StripeScriptTag{
   src:string = "https://js.stripe.com/v3/"
   Stripe!:Stripe//set at runtime
-  stripe!:stripe.Stripe
+  StripeInstance!:stripe.Stripe
   load:Promise<any>
 
   constructor(
@@ -26,14 +26,14 @@ import {
   promiseInstance():Promise<stripe.Stripe>{
     return this.promiseStripe()
     .then(stripe=>{
-      if( !this.stripe ){
+      if( !this.StripeInstance ){
         const err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()")
         err["code"] = "STRIPEKEYNOTSET"
         throw err
         //return Promise.reject( err )
       }
 
-      return this.stripe
+      return this.StripeInstance
     })
   }
 
@@ -42,7 +42,7 @@ import {
     options?:stripe.StripeOptions
   ):Promise<stripe.Stripe>{
     return this.load.then( ()=>
-      this.stripe = this.Stripe(key, options)
+      this.StripeInstance = this.Stripe(key, options)
     )
   }
 

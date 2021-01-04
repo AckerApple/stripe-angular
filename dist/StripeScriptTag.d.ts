@@ -3,7 +3,7 @@ import { Stripe } from "./StripeTypes";
 export declare class StripeScriptTag {
     src: string;
     Stripe: Stripe;
-    stripe: stripe.Stripe;
+    StripeInstance: stripe.Stripe;
     load: Promise<any>;
     constructor(key?: string, options?: stripe.StripeOptions);
     promiseStripe(): Promise<Stripe>;

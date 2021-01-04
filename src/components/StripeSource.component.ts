@@ -7,7 +7,7 @@ import { StripeComponent } from "./StripeComponent"
 @Component({
   selector: "stripe-source",
   template: `
-      <ng-container *ngIf="!StripeScriptTag.stripe">
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,

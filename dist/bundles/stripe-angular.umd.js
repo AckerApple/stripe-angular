@@ -313,18 +313,18 @@
             var _this = this;
             return this.promiseStripe()
                 .then(function (stripe) {
-                if (!_this.stripe) {
+                if (!_this.StripeInstance) {
                     var err = new Error("Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()");
                     err["code"] = "STRIPEKEYNOTSET";
                     throw err;
                     //return Promise.reject( err )
                 }
-                return _this.stripe;
+                return _this.StripeInstance;
             });
         };
         StripeScriptTag.prototype.setPublishableKey = function (key, options) {
             var _this = this;
-            return this.load.then(function () { return _this.stripe = _this.Stripe(key, options); });
+            return this.load.then(function () { return _this.StripeInstance = _this.Stripe(key, options); });
         };
         StripeScriptTag.prototype.injectIntoHead = function () {
             var _this = this;
@@ -431,7 +431,7 @@
     StripeSource.decorators = [
         { type: i0.Component, args: [{
                     selector: "stripe-source",
-                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.stripe\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
+                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.StripeInstance\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
                     exportAs: "StripeSource"
                 },] }
     ];
@@ -508,7 +508,7 @@
     StripeCard.decorators = [
         { type: i0.Component, args: [{
                     selector: "stripe-card",
-                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.stripe\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
+                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.StripeInstance\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
                     exportAs: "StripeCard"
                 },] }
     ];
@@ -559,7 +559,7 @@
     StripeBank.decorators = [
         { type: i0.Component, args: [{
                     selector: "stripe-bank",
-                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.stripe\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
+                    template: "\n      <ng-container *ngIf=\"!StripeScriptTag.StripeInstance\">\n          <div style=\"color:red;\">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>\n      </ng-container>\n  ",
                     exportAs: "StripeBank"
                 },] }
     ];
