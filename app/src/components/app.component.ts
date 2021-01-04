@@ -1,11 +1,8 @@
 import { Component, EventEmitter } from "@angular/core"
-import { string as demoTemplate } from "./templates/app.component.template"
+import { string as demoTemplate, string } from "./templates/app.component.template"
 import { StripeScriptTag } from "../../../src/index"
+import { BankAccountTokenOptions } from "../../../src/StripeTypes";
 //DEMO REFERENCE TO stripe-angular . USE BELOW
-import {
-  BankAccountTokenOptions,
-   Token
-} from "../../../src/StripeTypes"
 import * as packageJson from "../../../package.json"
 
 //YOUR REFERENCE TO stripe-angular
@@ -101,7 +98,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
 
   // ach token data
   bank: {
-    data: BankAccountTokenOptions,
+    data: stripe.BankAccountTokenOptions,
     verify: {amount1?: number, amount2?: number},
     verifyResponse?: any,
     token?: any
@@ -115,7 +112,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
       account_holder_name: 'Jenny Rosen',
       account_holder_type: 'individual',
       metadata: this.request.metadata
-    }
+    } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
   }
 
   customer: ISimpleRouteEditor = {
@@ -267,7 +264,7 @@ const stripeServer = 'https://api.stripe.com/v1/';
     }).then(res => this.charge.result = tryParse(res));
   }
 
-  createCustomerByToken(token: Token) {
+  createCustomerByToken(token: stripe.Token) {
     const customer = this.customer.data;
     customer.source = token.id;
 

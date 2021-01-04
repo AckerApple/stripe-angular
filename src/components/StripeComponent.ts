@@ -7,10 +7,10 @@ import { StripeScriptTag } from "../StripeScriptTag"
   selector: "stripe-component", template: ``
 })
 export class StripeComponent{
-  @Output("catch") catcher:EventEmitter<Error> = new EventEmitter()
+  @Output("catch") catcher:EventEmitter<stripe.Error> = new EventEmitter()
 
-  @Input() invalid?:Error
-  @Output() invalidChange:EventEmitter<Error> = new EventEmitter()
+  @Input() invalid?:stripe.Error
+  @Output() invalidChange:EventEmitter<stripe.Error> = new EventEmitter()
 
   stripe!:stripe.Stripe
 
