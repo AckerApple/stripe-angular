@@ -1,13 +1,13 @@
+/// <reference types="stripe-v3" />
 import { EventEmitter } from "@angular/core";
-import { StripeInstance } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 export declare class StripeComponent {
     StripeScriptTag: StripeScriptTag;
-    catcher: EventEmitter<Error>;
-    invalid?: Error;
-    invalidChange: EventEmitter<Error>;
-    stripe: StripeInstance;
+    catcher: EventEmitter<stripe.Error>;
+    invalid?: stripe.Error;
+    invalidChange: EventEmitter<stripe.Error>;
+    stripe: stripe.Stripe;
     constructor(StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
-    init(): Promise<StripeInstance>;
+    init(): Promise<stripe.Stripe>;
 }

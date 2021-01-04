@@ -1,19 +1,19 @@
 import { Injectable, Inject } from "@angular/core"
 
 import {
-  Stripe, StripeInstance, StripeInstanceOptions, STRIPE_PUBLISHABLE_KEY, STRIPE_OPTIONS
+  Stripe, STRIPE_PUBLISHABLE_KEY, STRIPE_OPTIONS
   //, StripeCard, StripeToken
 } from "./StripeTypes"
 
 @Injectable({providedIn: 'root'}) export class StripeScriptTag{
   src:string = "https://js.stripe.com/v3/"
   Stripe!:Stripe//set at runtime
-  StripeInstance!:StripeInstance
+  StripeInstance!:stripe.Stripe
   load:Promise<any>
 
   constructor(
     @Inject(STRIPE_PUBLISHABLE_KEY) key?: string,
-    @Inject(STRIPE_OPTIONS) options?: StripeInstanceOptions
+    @Inject(STRIPE_OPTIONS) options?: stripe.StripeOptions
   ){
     this.load = this.injectIntoHead()
     if (key) this.setPublishableKey(key, options)
@@ -23,7 +23,7 @@ import {
     return this.load
   }
 
-  promiseInstance():Promise<StripeInstance>{
+  promiseInstance():Promise<stripe.Stripe>{
     return this.promiseStripe()
     .then(stripe=>{
       if( !this.StripeInstance ){
@@ -39,10 +39,10 @@ import {
 
   setPublishableKey(
     key:string,
-    options?:StripeInstanceOptions
-  ):Promise<StripeInstance>{
+    options?:stripe.StripeOptions
+  ):Promise<stripe.Stripe>{
     return this.load.then( ()=>
-      this.StripeInstance=this.Stripe(key, options)
+      this.StripeInstance = this.Stripe(key, options)
     )
   }
 

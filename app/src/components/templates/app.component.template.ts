@@ -81,7 +81,7 @@ export const string = "import { Component } from \"@angular/core\""+
 "\n  lastError:Error"+
 "\n  token:any"+
 "\n  tempPublishableKey = testKey"+
-"\n  stripe:StripeInstance"+
+"\n  stripe:stripe.Stripe"+
 "\n  constructor(public StripeScriptTag:StripeScriptTag){}"+
 "\n"+
 "\n  ngOnInit(){"+
@@ -90,10 +90,10 @@ export const string = "import { Component } from \"@angular/core\""+
 "\n    .then( ()=>this.loaded=true )"+
 "\n  }"+
 "\n"+
-"\n  apply(key):Promise<StripeInstance>{"+
+"\n  apply(key):Promise<stripe.Stripe>{"+
 "\n    this.publishableKey = key"+
 "\n    return this.StripeScriptTag.setPublishableKey(this.publishableKey)"+
-"\n    .then(StripeInstance=>this.stripe=StripeInstance)"+
+"\n    .then(stripe.Stripe=>this.stripe=stripe.Stripe)"+
 "\n  }"+
 "\n}"+
 "\n"

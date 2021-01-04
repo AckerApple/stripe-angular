@@ -3,7 +3,7 @@ export * from "./StripeTypes"
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
-import { StripeInstanceOptions, STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY } from './StripeTypes'
+import { STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY } from './StripeTypes'
 import { StripeComponent } from "./components/StripeComponent"
 
 import { StripeScriptTag } from "./StripeScriptTag"
@@ -16,7 +16,7 @@ import { StripeCard } from "./components/StripeCard.component"
 export { StripeCard } from "./components/StripeCard.component"
 
 import { StripeBank } from "./components/StripeBank.component"
-export { bank_account, StripeBank } from "./components/StripeBank.component"
+export { StripeBank } from "./components/StripeBank.component"
 
 const declarations = [
   StripeComponent, // ignore do not use (has to be here for extends purposes)
@@ -33,7 +33,7 @@ const declarations = [
  // providers: [ StripeScriptTag ],
   exports:[ ...declarations ]
 }) export class StripeModule {
-  static forRoot(publishableKey?: string, options?: StripeInstanceOptions): ModuleWithProviders<StripeModule> {
+  static forRoot(publishableKey?: string, options?: stripe.StripeOptions): ModuleWithProviders<StripeModule> {
     return {
       ngModule: StripeModule,
       providers: [

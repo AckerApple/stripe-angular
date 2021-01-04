@@ -1,13 +1,13 @@
+/// <reference types="stripe-v3" />
 import { ElementRef, EventEmitter } from "@angular/core";
-import { Token, ElementsOptions } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 import { StripeSource } from "./StripeSource.component";
 export declare class StripeCard extends StripeSource {
     ElementRef: ElementRef;
     StripeScriptTag: StripeScriptTag;
-    options: ElementsOptions;
-    token: Token;
-    tokenChange: EventEmitter<Token>;
+    options: stripe.elements.ElementsOptions;
+    token: stripe.Token;
+    tokenChange: EventEmitter<stripe.Token>;
     cardMounted: EventEmitter<any>;
     complete: boolean;
     completeChange: EventEmitter<boolean>;
@@ -16,5 +16,5 @@ export declare class StripeCard extends StripeSource {
     ngOnInit(): void;
     ngOnChanges(changes: any): void;
     redraw(): void;
-    createToken(extraData?: any): Promise<Token>;
+    createToken(extraData?: any): Promise<stripe.Token>;
 }

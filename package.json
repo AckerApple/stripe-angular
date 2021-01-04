@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -48,6 +48,7 @@
     "@angular/platform-browser": "~11.0.1",
     "@angular/platform-browser-dynamic": "~11.0.1",
     "@types/jasmine": "^3.6.1",
+    "@types/stripe-v3": "^3.1.23",
     "jasmine": "^3.6.3",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",

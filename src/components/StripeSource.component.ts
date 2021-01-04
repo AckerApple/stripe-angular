@@ -1,9 +1,6 @@
 import {
   Input, Output, EventEmitter, Component
 } from "@angular/core"
-import {
-  SourceResponse, Source, OwnerInfo
-} from "../StripeTypes"
 import { StripeScriptTag } from "../StripeScriptTag"
 import { StripeComponent } from "./StripeComponent"
 
@@ -16,8 +13,8 @@ import { StripeComponent } from "./StripeComponent"
   `,
   exportAs:"StripeSource"
 }) export class StripeSource extends StripeComponent{
-  @Input() source?: Source
-  @Output() sourceChange:EventEmitter<Source> = new EventEmitter()
+  @Input() source?: stripe.Source
+  @Output() sourceChange:EventEmitter<stripe.Source> = new EventEmitter()
 
   elements:any // For card, its the UI element
 
@@ -28,8 +25,8 @@ import { StripeComponent } from "./StripeComponent"
   }
 
   createSource(
-    extraData:{ owner?: OwnerInfo, metadata?: any}
-  ):Promise<Source | void>{
+    extraData:{ owner?: stripe.OwnerInfo, metadata?: any}
+  ):Promise<stripe.Source | void>{
     delete this.invalid;
     this.invalidChange.emit(this.invalid)
 
@@ -39,7 +36,7 @@ import { StripeComponent } from "./StripeComponent"
     .then((result:any)=>this.processSourceResult(result))
   }
 
-  processSourceResult(result: SourceResponse): Source | void {
+  processSourceResult(result: stripe.SourceResponse): stripe.Source | void {
     if(result.error){
       const rError = result.error
       if( (rError as any).type === "validation_error" ){
