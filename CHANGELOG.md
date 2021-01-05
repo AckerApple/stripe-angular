@@ -1,6 +1,14 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.5.1] - (2021-01-04)
+- Create Card Payment Method
+- Stripe data typings instead of created ones
+- Demo area has much more testing functionality
+
+## [1.4.3] - (2020-11-19)
+- more demo support
+- fixes
 ## [1.4.0] - (2020-11-19)
 - stripe-card now has [(complete)], [complete] and (completeChange) bindings
 - Better typings

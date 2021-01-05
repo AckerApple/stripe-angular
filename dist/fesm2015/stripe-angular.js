@@ -97,6 +97,7 @@ class StripeSource extends StripeComponent {
         super(StripeScriptTag);
         this.StripeScriptTag = StripeScriptTag;
         this.sourceChange = new EventEmitter();
+        this.paymentMethodChange = new EventEmitter();
     }
     createSource(extraData) {
         delete this.invalid;
@@ -121,6 +122,29 @@ class StripeSource extends StripeComponent {
             return source;
         }
     }
+    createPaymentMethod(extraData) {
+        delete this.invalid;
+        this.invalidChange.emit(this.invalid);
+        return this.stripe.createPaymentMethod('card', this.elements, extraData)
+            .then((result) => this.processPaymentMethodResult(result));
+    }
+    processPaymentMethodResult(result) {
+        if (result.error) {
+            const rError = result.error;
+            if (rError.type === "validation_error") {
+                this.invalidChange.emit(this.invalid = rError);
+            }
+            else {
+                this.catcher.emit(rError);
+                throw rError;
+            }
+        }
+        const paymentMethod = result.paymentMethod;
+        if (paymentMethod) {
+            this.paymentMethodChange.emit(this.paymentMethod = paymentMethod);
+            return paymentMethod;
+        }
+    }
 }
 StripeSource.decorators = [
     { type: Component, args: [{
@@ -138,7 +162,9 @@ StripeSource.ctorParameters = () => [
 ];
 StripeSource.propDecorators = {
     source: [{ type: Input }],
-    sourceChange: [{ type: Output }]
+    sourceChange: [{ type: Output }],
+    paymentMethod: [{ type: Input }],
+    paymentMethodChange: [{ type: Output }]
 };
 
 class StripeCard extends StripeSource {

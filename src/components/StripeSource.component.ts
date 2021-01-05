@@ -16,6 +16,9 @@ import { StripeComponent } from "./StripeComponent"
   @Input() source?: stripe.Source
   @Output() sourceChange:EventEmitter<stripe.Source> = new EventEmitter()
 
+  @Input() paymentMethod?: stripe.paymentMethod.PaymentMethod
+  @Output() paymentMethodChange:EventEmitter<stripe.paymentMethod.PaymentMethod> = new EventEmitter()
+
   elements:any // For card, its the UI element
 
   constructor(
@@ -52,6 +55,39 @@ import { StripeComponent } from "./StripeComponent"
     if (source) {
       this.sourceChange.emit(this.source=source);
       return source;
+    }
+  }
+
+  createPaymentMethod(
+    extraData:{ owner?: stripe.OwnerInfo, metadata?: any}
+  ):Promise<stripe.paymentMethod.PaymentMethod | void>{
+    delete this.invalid;
+    this.invalidChange.emit(this.invalid)
+
+    return this.stripe.createPaymentMethod(
+      'card', this.elements, extraData
+    )
+    .then((result:any)=>this.processPaymentMethodResult(result))
+  }
+
+  processPaymentMethodResult(
+    result: stripe.PaymentMethodResponse
+  ): stripe.paymentMethod.PaymentMethod | void {
+    if(result.error){
+      const rError = result.error
+      if( (rError as any).type === "validation_error" ){
+        this.invalidChange.emit( this.invalid = rError )
+      }else{
+        this.catcher.emit(rError);
+        throw rError;
+      }
+    }
+
+    const paymentMethod = result.paymentMethod;
+
+    if (paymentMethod) {
+      this.paymentMethodChange.emit(this.paymentMethod=paymentMethod);
+      return paymentMethod;
     }
   }
 }

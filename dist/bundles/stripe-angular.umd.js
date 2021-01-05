@@ -400,6 +400,7 @@
             var _this = _super.call(this, StripeScriptTag) || this;
             _this.StripeScriptTag = StripeScriptTag;
             _this.sourceChange = new i0.EventEmitter();
+            _this.paymentMethodChange = new i0.EventEmitter();
             return _this;
         }
         StripeSource.prototype.createSource = function (extraData) {
@@ -426,6 +427,30 @@
                 return source;
             }
         };
+        StripeSource.prototype.createPaymentMethod = function (extraData) {
+            var _this = this;
+            delete this.invalid;
+            this.invalidChange.emit(this.invalid);
+            return this.stripe.createPaymentMethod('card', this.elements, extraData)
+                .then(function (result) { return _this.processPaymentMethodResult(result); });
+        };
+        StripeSource.prototype.processPaymentMethodResult = function (result) {
+            if (result.error) {
+                var rError = result.error;
+                if (rError.type === "validation_error") {
+                    this.invalidChange.emit(this.invalid = rError);
+                }
+                else {
+                    this.catcher.emit(rError);
+                    throw rError;
+                }
+            }
+            var paymentMethod = result.paymentMethod;
+            if (paymentMethod) {
+                this.paymentMethodChange.emit(this.paymentMethod = paymentMethod);
+                return paymentMethod;
+            }
+        };
         return StripeSource;
     }(StripeComponent));
     StripeSource.decorators = [
@@ -440,7 +465,9 @@
     ]; };
     StripeSource.propDecorators = {
         source: [{ type: i0.Input }],
-        sourceChange: [{ type: i0.Output }]
+        sourceChange: [{ type: i0.Output }],
+        paymentMethod: [{ type: i0.Input }],
+        paymentMethodChange: [{ type: i0.Output }]
     };
 
     var StripeCard = /** @class */ (function (_super) {
