@@ -1,16 +1,23 @@
+/// <reference types="stripe-v3" />
 import { EventEmitter } from "@angular/core";
-import { SourceResponse, Source, OwnerInfo } from "../StripeTypes";
 import { StripeScriptTag } from "../StripeScriptTag";
 import { StripeComponent } from "./StripeComponent";
 export declare class StripeSource extends StripeComponent {
     StripeScriptTag: StripeScriptTag;
-    source?: Source;
-    sourceChange: EventEmitter<Source>;
+    source?: stripe.Source;
+    sourceChange: EventEmitter<stripe.Source>;
+    paymentMethod?: stripe.paymentMethod.PaymentMethod;
+    paymentMethodChange: EventEmitter<stripe.paymentMethod.PaymentMethod>;
     elements: any;
     constructor(StripeScriptTag: StripeScriptTag);
     createSource(extraData: {
-        owner?: OwnerInfo;
+        owner?: stripe.OwnerInfo;
         metadata?: any;
-    }): Promise<Source | void>;
-    processSourceResult(result: SourceResponse): Source | void;
+    }): Promise<stripe.Source | void>;
+    processSourceResult(result: stripe.SourceResponse): stripe.Source | void;
+    createPaymentMethod(extraData: {
+        owner?: stripe.OwnerInfo;
+        metadata?: any;
+    }): Promise<stripe.paymentMethod.PaymentMethod | void>;
+    processPaymentMethodResult(result: stripe.PaymentMethodResponse): stripe.paymentMethod.PaymentMethod | void;
 }

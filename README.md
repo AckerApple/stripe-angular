@@ -14,12 +14,14 @@ Angular to Stripe module containing useful providers, components, and directives
 
 ### Table of Contents
 
-  - [Install](#install)
-  - [Inject](#inject)
-  - [Use](#use)
-    - [stripe-card](#stripe-card)
-    - [stripe-bank](#stripe-bank)
-    - [stripe-source](#stripe-source)
+- [Install](#install)
+- [Inject](#inject)
+  - [Async Inject](#async-inject)
+- [Use](#use)
+  - [stripe-card](#stripe-card)
+  - [stripe-bank](#stripe-bank)
+  - [stripe-source](#stripe-source)
+- [Examples](#examples)
 
 ## Install
 From a command terminal type the following
@@ -42,7 +44,6 @@ import { StripeModule } from "stripe-angular"
 > Please note, you only use `.forRoot()` on your base app module
 >> This ONLY matters if you need to support lazy loading via loadChildren()
 
-
 **NOTE WORTHY**
 Here are the operations preformed on construction on Stripe functionality
 - Checking for window.Stripe existence
@@ -50,15 +51,45 @@ Here are the operations preformed on construction on Stripe functionality
 - Set publishableKey in StripeJs library
 - All stripe-angular components reuse the same initialized Stripe instance (Injector)
 
+### Inject Async
+The stripe key can be set asynchronously.
+
+**Step 1**, In app.module.ts set key to empty string
+```typescript
+import { NgModule } from "@angular/core";
+import { StripeModule } from "stripe-angular"
+
+@NgModule({imports: [ StripeModule.forRoot("") ]}) export class AppModule {}
+```
+
+**Step 2**, Where you use Stripe elements, do a variation of this code below, according to your needs.
+```typescript
+import { StripeScriptTag } from "stripe-angular"
+
+class Component {
+  constructor(private stripeScriptTag: StripeScriptTag) {
+    if (!this.stripeScriptTag.StripeInstance) {
+      this.stripeScriptTag.setPublishableKey('');
+    }
+  }
+}
+```
+
+## Capture Payment Method
+
+The Payment Methods API replaces the existing Tokens and Sources APIs as the recommended way for integrations to collect and store payment information.
+
+It is not longer recommended to use Stripe terminologies for "Source" and "Token". Use "Payment Method" instead.
+
+[Read more here](https://stripe.com/docs/payments/payment-methods/transitioning)
 
 ## Use
-A practical example to convert card data into a Stripe token
+A practical example to convert card data into a Stripe Payment Method
 
 > Requires you to have already [initialized Stripe](#init)
 
 ```typescript
 import { Component } from "@angular/core"
-import { Token, StripeSource } from "stripe-angular"
 
 const template=
 `
@@ -66,16 +97,18 @@ const template=
   {{ invalidError.message }}
 </div>
 
-<stripe-card
-  #stripeCard
+<stripe-card #stripeCard
   (catch) = "onStripeError($event)"
   [(complete)] = "cardDetailsFilledOut"
   [(invalid)] = "invalidError"
-  (cardMounted) = "cardReady = 1"
+  (cardMounted) = "cardCaptureReady = 1"
+  (paymentMethodChange) = "setPaymentMethod($event)"
   (tokenChange) = "setStripeToken($event)"
   (sourceChange) = "setStripeSource($event)"
 ></stripe-card>
 
+<button type="button" (click)="stripeCard.createPaymentMethod(extraData)">createPaymentMethod</button>
+<button type="button" (click)="stripeCard.createSource(extraData)">createSource</button>
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
 `
 
@@ -83,30 +116,26 @@ const template=
   selector: "app-sub-page",
   template: template
 }) export class AppComponent{
-  cardReady = false;
-  extraData = {
-    "name": null,
-    "address_city": null,
-    "address_line1": null,
-    "address_line2": null,
-    "address_state": null,
-    "address_zip": null
-  };
+  cardCaptureReady = false
 
   onStripeInvalid( error: Error ){
     console.log('Validation Error', error)
   }
 
-  setStripeToken( token: Token ){
-    console.log('Stripe token', token)
-  }
-
-  setStripeSource( source: StripeSource ){
-    console.log('Stripe source', source)
-  }
-
   onStripeError( error: Error ){
     console.error('Stripe error', error)
+  }
+
+  setPaymentMethod( token: stripe.paymentMethod.PaymentMethod ){
+    console.log('Stripe Payment Method', token)
+  }
+
+  setStripeToken( token: stripe.Token ){
+    console.log('Stripe Token', token)
+  }
+
+  setStripeSource( source: stripe.Source ){
+    console.log('Stripe Source', source)
   }
 }
 ```
@@ -119,7 +148,7 @@ Builds a display for card intake and then helps tokenize those inputs
   (catch)        = "$event"
   [(token)]      = "token"
   [(invalid)]    = "invalidError"
-  (cardMounted)  = "cardReady = 1"
+  (cardMounted)  = "cardCaptureReady = 1"
 ></stripe-card>
 
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
@@ -151,36 +180,42 @@ account_holder_type: "individual"
 ```
 
 ### stripe-source
-This component is not intended to stand alone but it could. Component stripe-card extends stripe-source.
+
+> This approach is not recommended any more and it is instead recommended to use the Payment Method terminology and functionality
+>> [Documentation can be read here](https://stripe.com/docs/payments/payment-methods/transitioning)
 
 - [stripe sources docs](https://stripe.com/docs/sources)
 - [best practices](https://stripe.com/docs/sources/best-practices)
 - [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
 
-```html
-<!-- stripe source not intended to stand alone like this -->
-<stripe-source #stripeSource
-  (catch)     = "$event"
-  [(source)]  = "source"
-  [(invalid)] = "invalidError"
-></stripe-card>
-<button type="button" (click)="stripeSource.createSource()">createSource</button>
+### Examples
 
-<!-- stripe-card has source bindings -->
+**stripe-card payment method bindings**
+```html
 <stripe-card #stripeCard
-  (catch)       = "$event"
-  [(source)]    = "source"
-  [(invalid)]   = "invalidError"
-  [(complete)]  = "cardDetailsFilledOut"
-  (cardMounted) = "cardReady = 1"
-  (sourceChange) = "setStripeSource($event)"
+  (catch)               = "$event"
+  [(invalid)]           = "invalidError"
+  [(complete)]          = "cardDetailsFilledOut"
+  (cardMounted)         = "cardCaptureReady = 1"
+  [(paymentMethod)]     = "source"
+  (paymentMethodChange) = "setPaymentMethod($event)"
 ></stripe-card>
-<button type="button" (click)="stripeCard.createSource()">createSource</button>
+<button type="button" (click)="stripeCard.createPaymentMethod()">createPaymentMethod</button>
 ```
 
-What is a Stripe source?
-> Source objects allow you to accept a variety of payment methods with a single API. A source represents a customer’s payment instrument, and can be used with the Stripe API to create payments. Sources can be charged directly, or attached to customers for later reuse.
+**stripe-card source bindings**
+```html
+<stripe-card #stripeCard
+  [(source)]    = "source"
+  (sourceChange) = "$event"
+></stripe-card>
+<button type="button" (click)="stripeCard.createSource()">createSource</button>
 
-Why use Stripe sources?
-> Stripe sources allows you, the developer, to focus on data differences between payment formats instead using different components for each like stripe-card and stripe-bank
->> By taking into consideration the flexibility of the Sources API when designing your checkout flow, you can minimize any changes required to support additional payment methods as you add them.
+**stripe-card token bindings**
+```html
+<stripe-card #stripeCard
+  [(token)]     = "token"
+  (tokenChange) = "$event"
+></stripe-card>
+<button type="button" (click)="stripeCard.createToken()">createToken</button>
+```
