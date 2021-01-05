@@ -20,6 +20,7 @@ Angular to Stripe module containing useful providers, components, and directives
     - [stripe-card](#stripe-card)
     - [stripe-bank](#stripe-bank)
     - [stripe-source](#stripe-source)
+  - [Recipes](#recipes)
 
 ## Install
 From a command terminal type the following
@@ -184,3 +185,25 @@ What is a Stripe source?
 Why use Stripe sources?
 > Stripe sources allows you, the developer, to focus on data differences between payment formats instead using different components for each like stripe-card and stripe-bank
 >> By taking into consideration the flexibility of the Sources API when designing your checkout flow, you can minimize any changes required to support additional payment methods as you add them.
+
+
+## Recipes
+The stripe key can be set asynchronously.
+In app.module.ts, set key to empty string
+```typescript
+StripeModule.forRoot('')
+```
+And where you use it, do a variation of this, according to your setup.
+```typescript
+  constructor(private stripeScriptTag: StripeScriptTag,
+    private httpClient: HttpClient,
+    service: SiteDataService) {
+    if (!this.stripeScriptTag.StripeInstance) {
+      service.getSettings().valueChanges
+        .pipe(first(setting => !!setting?.data?.setting?.stripe_key))
+        .subscribe(result => {
+          this.stripeScriptTag.setPublishableKey(result.data.setting?.stripe_key ?? '');
+        });
+    }
+  }
+```
