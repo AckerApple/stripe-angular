@@ -84,11 +84,11 @@
           <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label for="card-like-element">
                     Create Customer
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/customers"
@@ -102,15 +102,17 @@
                     *ngIf="card.source"
                     (click)="customer.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer.data.source === card.source.id && '.3'"
                   >
-                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                    use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                   <a
                     *ngIf="card.payment_method"
-                    (click)="customer.data.payment_method = card.payment_method.id"
+                    (click)="setCustomerDefaultPayMethod(customer.data, card.payment_method)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer.data.payment_method === card.payment_method.id && '.3'"
                   >
-                    use {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
+                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
                 </small>
                 <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer.data, key:'customer.data', $send:customer.$send, result:customer.result, resultAt:customer.resultAt}"></ng-container>
@@ -119,11 +121,11 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
                     GET Customer by Id
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/customers/retrieve"
@@ -137,6 +139,7 @@
                     *ngIf="customer.result"
                     (click)="customer_get.data.id = customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer_get.data.id === customer.result.id && '.3'"
                   >
                     use customer {{customer.result.id}}
                   </a>
@@ -147,11 +150,11 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
                     UPDATE Customer by Id
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/customers/update"
@@ -165,6 +168,7 @@
                     *ngIf="customer.result"
                     (click)="customer_update.data = cleanCustomerUpdateData(customer.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer_update.data.id === customer.result.id && '.3'"
                   >
                     use customer {{customer.result.id}}
                   </a>
@@ -174,8 +178,9 @@
                       *ngIf="card.source"
                       (click)="customer_update.data.source = card.source.id"
                       style="text-decoration:underline;cursor:pointer;margin:1em;"
+                      [style.opacity] = "customer_update.data.source === card.source.id && '.3'"
                     >
-                      use {{card.source.card.brand}} {{card.source.card.last4}}
+                      use source {{card.source.card.brand}} {{card.source.card.last4}}
                     </a>
                   </small>
                 </small>
@@ -185,98 +190,40 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Create Charge
-                  </label>
-                </h2>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/charges"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="card.token"
-                    (click)="charge.data.source = card.token.card.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    onclick="alert('WARN: Create a CARD customer record first, for a charge to work more than once. Using token will end in a message about one time use. Use token.id to create customer first.')"
-                  >
-                    use {{card.token.card.brand}} {{card.token.card.last4}}
-                  </a>
-
-                  <a
-                    *ngIf="card.source"
-                    (click)="charge.data.source = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    onclick="alert('WARN: Create a CARD customer record first, for a charge to work more than once. Using SOURCE will end in a message about one time use. Use source.id to create customer first.')"
-                  >
-                    use {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-
-                  <a
-                    *ngIf="bank.token"
-                    (click)="charge.data.source = bank.token.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    onclick="alert('WARN: Create an ACH customer record, for a charge to work. Using token will end in a message about one time use. Use ach token to create customer first.')"
-                  >
-                    use {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
-                  </a>
-
-                  <a *ngIf="customer.result" (click)="charge.data.source=null;charge.data.customer=customer.result.id" style="text-decoration:underline;cursor:pointer;margin:1em;">
-                    use {{customer.result.description}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:charge.data, key:'charge.data', $send:charge.$send, result:charge.result, resultAt:charge.resultAt}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
-                    GET Source by Id
+                    GET Payment Methods
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
-                  href="https://stripe.com/docs/api/sources/retrieve"
-                  style="color:white;" target="_blank"
+                    href = "https://stripe.com/docs/api/payment_methods/list"
+                    style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
-                    *ngIf="card.source"
-                    (click)="source_get.data.id = card.source.id"
+                    *ngIf="customer.result"
+                    (click)="get_paymethods.data.customer = customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "get_paymethods.data.customer === customer.result.id && '.3'"
                   >
-                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                    use customer {{customer.result.id}}
                   </a>
                 </small>
-
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:source_get.data, key:'source_get.data', $send:source_get.$send, result:source_get.result, resultAt:source_get.resultAt}"></ng-container>
-
-                <ng-container *ngIf="source_get.result">
-                  <button
-                    type="button"
-                    (click)="createCustomerByToken(source_get.result)"
-                  >create customer by source</button>
-                </ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:get_paymethods.data, key:'get_paymethods.data', $send:get_paymethods.$send, result:get_paymethods.result, resultAt:get_paymethods.resultAt}"></ng-container>
               </div>
             </div>
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
                     GET Payment Method by Id
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/payment_methods/retrieve"
@@ -290,6 +237,7 @@
                     *ngIf="payment_method_get.result"
                     (click)="payment_method_get.data.id = payment_method_get.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payment_method_get.data.id === payment_method_get.result.id && '.3'"
                   >
                     use type {{payment_method_get.result.type}}
                   </a>
@@ -300,6 +248,7 @@
                   <button
                     type="button"
                     (click)="createCustomerByPaymentMethod(payment_method_get.result)"
+                    [style.opacity]="payment_method_get.result.customer ? '.3' : null"
                   >create customer by payment method</button>
                 </ng-container>
               </div>
@@ -307,11 +256,11 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
                     UPDATE Payment Method by Id
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/payment_methods/update"
@@ -325,6 +274,7 @@
                     *ngIf="payment_method_get.result"
                     (click)="payment_method_update.data = cleanPaymentMethodUpdateData(payment_method_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payment_method_update.data.id === payment_method_get.result.id && '.3'"
                   >
                     use payment method type {{payment_method_get.result.type}}
                   </a>
@@ -335,11 +285,78 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label>
+                    GET Customer Sources by Id
+                  </label>
+                </h3>
+                <small>
+                  <a
+                    href = "https://stripe.com/docs/api/cards/list"
+                    style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <small style="display:flex;flex-wrap:wrap;color:white;">
+                  <a
+                    *ngIf="customer.result"
+                    (click)="customer_get_sources.data.id = customer.result.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer_get_sources.data.id === customer.result.id && '.3'"
+                  >
+                    use customer {{customer.result.id}}
+                  </a>
+                </small>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer_get_sources.data, key:'customer_get_sources.data', $send:customer_get_sources.$send, result:customer_get_sources.result, resultAt:customer_get_sources.resultAt}"></ng-container>
+              </div>
+            </div>
+
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label>
+                    GET Source by Id
+                  </label>
+                </h3>
+                <small>
+                  <a
+                  href="https://stripe.com/docs/api/sources/retrieve"
+                  style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <small style="display:flex;flex-wrap:wrap;color:white;">
+                  <a
+                    *ngIf="card.source"
+                    (click)="source_get.data.id = card.source.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "source_get.data.id === card.source.id && '.3'"
+                  >
+                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                  </a>
+                </small>
+
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:source_get.data, key:'source_get.data', $send:source_get.$send, result:source_get.result, resultAt:source_get.resultAt}"></ng-container>
+
+                <ng-container *ngIf="source_get.result">
+                  <button
+                    type="button"
+                    (click)="createCustomerByToken(source_get.result)"
+                    [style.opacity] = "customer.data.source === source_get.result.id && '.3'"
+                  >create customer by source</button>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label>
                     UPDATE Source by Id
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/sources/update"
@@ -353,6 +370,7 @@
                     *ngIf="source_get.result"
                     (click)="source_update.data = cleanSourceUpdateData(source_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "source_update.data.id === source_get.result.id && '.3'"
                   >
                     use source type {{source_get.result.type}}
                   </a>
@@ -363,11 +381,11 @@
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h2 style="margin:0;padding:0;flex-grow:1;color:white">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                   <label for="card-like-element">
                     Create Pay Intent
                   </label>
-                </h2>
+                </h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/api/payment_intents"
@@ -377,23 +395,37 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="customer.result" (click)="payintent.data.customer=customer.result.id" style="text-decoration:underline;cursor:pointer;margin:1em;">
-                    use {{customer.result.description}}
+                  <a
+                    *ngIf="customer.result"
+                    (click)="payintent.data.customer = customer.result.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payintent.data.customer === customer.result.id && '.3'"
+                  >
+                    use customer {{customer.result.description}}
+                  </a>
+                  <a
+                    *ngIf="card.payment_method"
+                    (click)="payintent.data.payment_method = card.payment_method.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payintent.data.payment_method === card.payment_method.id && '.3'"
+                  >
+                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
                   <a
                     *ngIf="card.source"
                     (click)="payintent.data.payment_method = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payintent.data.payment_method === card.source.id && '.3'"
                   >
-                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                    use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                   <a
                     *ngIf="card.token"
                     (click)="payintent.data.payment_method = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    onclick="alert('WARN: Create a CARD customer record first, for a charge to work more than once. Using token will end in a message about one time use. Use token.id to create customer first.')"
+                    [style.opacity] = "payintent.data.payment_method === card.token.card.id && '.3'"
                   >
-                    use {{card.token.card.brand}} {{card.token.card.last4}}
+                    use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
                 </small>
 
@@ -403,10 +435,10 @@
                   <button type="button" (click)="fetchPayIntentUpdate(payintent)">retrieve update</button>
                 </ng-container>
 
-                <ng-container *ngIf="payintent.result?.next_action.use_stripe_sdk?.stripe_js">
+                <ng-container *ngIf="payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
                   <div>
                     <strong>next action:&nbsp;</strong>
-                    <a [href]="payintent.result.next_action.use_stripe_sdk.stripe_js" target="_blank">secure payment verify link</a>
+                    <a [href]="payintent.result.next_action?.use_stripe_sdk.stripe_js" target="_blank">secure payment verify link</a>
                   </div>
                 </ng-container>
 
@@ -415,6 +447,70 @@
                     wrap="off" style="width:100%;height:175px" disabled
                   >{{ payintent.retrieve | json }}</textArea>
                 </ng-container>
+              </div>
+            </div>
+
+
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label for="card-like-element">
+                    Create Charge
+                  </label>
+                </h3>
+                <small>
+                  <a
+                  href="https://stripe.com/docs/api/charges"
+                  style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <small style="display:flex;flex-wrap:wrap;color:white;">
+                  <a
+                    *ngIf="card.payment_method"
+                    (click)="charge.data.payment_method = card.payment_method.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "charge.data.payment_method === card.payment_method.id && '.3'"
+                  >
+                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
+                  </a>
+
+                  <a
+                    *ngIf="card.token"
+                    (click)="charge.data.source = card.token.card.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
+                    use token {{card.token.card.brand}} {{card.token.card.last4}}
+                  </a>
+
+                  <a
+                    *ngIf="card.source"
+                    (click)="charge.data.source = card.source.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
+                    use source{{card.source.card.brand}} {{card.source.card.last4}}
+                  </a>
+
+                  <a
+                    *ngIf="bank.token"
+                    (click)="charge.data.source = bank.token.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
+                    use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
+                  </a>
+
+                  <a *ngIf="customer.result" (click)="charge.data.customer=customer.result.id" style="text-decoration:underline;cursor:pointer;margin:1em;">
+                    use customer {{customer.result.description}}
+                  </a>
+                </small>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:charge.data, key:'charge.data', $send:charge.$send, result:charge.result, resultAt:charge.resultAt}"></ng-container>
+                <div style="text-align:center;opacity:.5;">
+                  <small>
+                    <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
+                    >prefer pay intents</a>
+                  </small>
+                </div>
               </div>
             </div>
 
@@ -589,14 +685,6 @@
   >
     <button
       type="button"
-      (click)="lastError=null;sending=true;stripeCard.createSource(sourceRequest)"
-      style="flex-grow:1;background-color:#33FFDD;"
-    >
-      create source
-    </button>
-
-    <button
-      type="button"
       (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(paymentMethodRequest)"
       style="flex-grow:1;background-color:#33FFDD;"
     >
@@ -605,8 +693,18 @@
 
     <button
       type="button"
+      (click)="lastError=null;sending=true;stripeCard.createSource(sourceRequest)"
+      style="flex-grow:1;background-color:#99FFFF;"
+      title="Using Payment Method instead is recommended"
+    >
+      create source
+    </button>
+
+    <button
+      type="button"
       (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-      style="flex-grow:1;background-color:#33FFDD;"
+      style="flex-grow:1;background-color:#99FFFF;"
+      title="Using Payment Method instead is recommended"
     >
       create token
     </button>
@@ -628,6 +726,18 @@
     >{{ extraData | json }}</textArea>
   </div>
 
+  <div *ngIf="editPaymentMethodRequest">
+    <br />
+    <strong><a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">payment method data</a></strong>
+    <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ paymentMethodRequest | json }}</textArea>
+  </div>
+
+  <div *ngIf="editSourceRequest">
+    <br />
+    <strong><a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">source data</a></strong>
+    <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ sourceRequest | json }}</textArea>
+  </div>
+
   <div *ngIf="editOptions">
     <br />
     <strong>
@@ -639,28 +749,7 @@
     >{{ options | json }}</textArea>
   </div>
 
-  <div *ngIf="editSourceRequest">
-    <br />
-    <strong><a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">source data</a></strong>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ sourceRequest | json }}</textArea>
-  </div>
-
-  <div *ngIf="editPaymentMethodRequest">
-    <br />
-    <strong><a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">payment method data</a></strong>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ paymentMethodRequest | json }}</textArea>
-  </div>
-
   <div style="text-align:right;display:flex;flex-wrap:wrap;">
-    <button
-      type="button"
-      (click)="editSourceRequest=!editSourceRequest"
-      style="flex-grow:1"
-      [style.background-color] = "editSourceRequest && '#0099CC' || null"
-    >
-      source data
-    </button>
-
     <button
       type="button"
       (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
@@ -672,9 +761,20 @@
 
     <button
       type="button"
+      (click)="editSourceRequest=!editSourceRequest"
+      style="flex-grow:1"
+      [style.background-color] = "editSourceRequest && '#0099CC' || null"
+      title="Using Payment Method instead is recommended"
+    >
+      source data
+    </button>
+
+    <button
+      type="button"
       (click)="editExtraData=!editExtraData"
       style="flex-grow:1"
       [style.background-color] = "editExtraData && '#0099CC' || null"
+      title="Using Payment Method instead is recommended"
     >
       token data
     </button>

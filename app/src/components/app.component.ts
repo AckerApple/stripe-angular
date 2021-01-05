@@ -148,6 +148,20 @@ const sample = {
     }
   }
 
+  get_paymethods: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    data: {
+      customer: "", type: "card"
+    }
+  }
+
+  customer_get_sources: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    data: {
+      id: ""
+    }
+  }
+
   source_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
     data: {
@@ -192,7 +206,6 @@ const sample = {
     data: {
       amount: 1099,
       currency: 'usd',
-      source: 'token-here',
       metadata: sample.metadata
     }
   }
@@ -203,6 +216,8 @@ const sample = {
     this.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
     this.source_get.$send.subscribe(data => this.getSource(data.id))
     this.customer_get.$send.subscribe(data => this.getCustomer(data.id))
+    this.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
+    this.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data))
     this.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
     this.customer.$send.subscribe(data => this.createCustomer(data))
     this.payintent.$send.subscribe(data => this.createPayIntent(data))
@@ -329,6 +344,30 @@ const sample = {
     }).then(res => {
       this.customer_get.result = tryParse(res)
       this.customer_get.resultAt = Date.now()
+    });
+  }
+
+  getPaymentMethods(query: stripe.PaymentMethodData) {
+    const queryString = Object.keys(query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${query[key]}`,'')
+    const url = stripeServer + 'payment_methods?' + queryString
+
+    request({
+      url, method: 'GET',
+      post: query,
+      authorizationBearer: this.privateKey
+    }).then(res => {
+      this.get_paymethods.result = tryParse(res)
+      this.get_paymethods.resultAt = Date.now()
+    });
+  }
+
+  getCustomerSources(id: string) {
+    request({
+      url: stripeServer + 'customers/' + id + '/sources',
+      authorizationBearer: this.privateKey
+    }).then(res => {
+      this.customer_get_sources.result = tryParse(res)
+      this.customer_get_sources.resultAt = Date.now()
     });
   }
 
@@ -464,6 +503,7 @@ const sample = {
 
     const removeKeys = [
       'object', 'client_secret', 'created', 'flow', 'livemode', 'address', 'status', 'type', 'usage',
+      'customer' // you cannot associate customer during source update
     ]
 
     this.cleanCardData(deepClone)
@@ -475,7 +515,7 @@ const sample = {
 
   cleanCardData(data: any) {
     const cardRemoveKeys = [
-      'three_d_secure_usage', 'fingerprint', 'last4', 'country', 'brand', 'address_line1_check', 'address_zip_check', 'cvc_check', 'funding', 'three_d_secure'
+      'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'country', 'brand', 'address_line1_check', 'address_zip_check', 'cvc_check', 'funding', 'three_d_secure'
     ]
     cardRemoveKeys.forEach(key => delete data.card[key])
     if (data.card.networks) {
@@ -488,6 +528,7 @@ const sample = {
 
     const removeKeys = [
       'object', 'address', 'checks', 'available', 'created', 'livemode', 'type',
+      'customer', // you cannot associate customer during pay method update
     ]
 
     removeKeys.forEach(key => delete deepClone[key])
@@ -508,18 +549,28 @@ const sample = {
 
     return deepClone
   }
+
+  setCustomerDefaultPayMethod(
+    customer: any,
+    payment_method: stripe.paymentMethod.PaymentMethod
+  ) {
+    customer.payment_method = payment_method.id
+    customer.invoice_settings = customer.invoice_settings || {}
+    customer.invoice_settings.default_payment_method = payment_method.id
+  }
 }
 
 function request(
-  {url, post, authorizationBearer}: {
-    url: string, post?: {[x: string]: any}
+  {url, method, post, authorizationBearer}: {
+    url: string, method?: 'GET' | 'POST'
+    post?: {[x: string]: any}
     authorizationBearer?: string
   }
 ) {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
-    const method = post ? 'POST' : 'GET'
-    req.open(method, url, true);
+    const endMethod = post ? (method || 'POST') : 'GET'
+    req.open(endMethod, url, true);
     req.setRequestHeader('Accept', 'application/json');
 
     if (authorizationBearer) {
@@ -527,6 +578,7 @@ function request(
     }
 
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
     req.send( objectToUriForm(post) );
 
     req.onreadystatechange = () => {
