@@ -39,7 +39,9 @@ import { StripeComponent } from "./StripeComponent"
     .then((result:any)=>this.processSourceResult(result))
   }
 
-  processSourceResult(result: stripe.SourceResponse): stripe.Source | void {
+  processSourceResult(
+    result: stripe.SourceResponse
+  ): stripe.Source | void {
     if(result.error){
       const rError = result.error
       if( (rError as any).type === "validation_error" ){

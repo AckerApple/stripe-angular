@@ -5,7 +5,6 @@ const packPath = require.resolve('../dist/package.json')
 const pack = require(packPath)
 
 pack.version = rootPack.version
-pack.jsDependencies = rootPack.jsDependencies
 delete pack.private;
 
 fs.writeFileSync(packPath, JSON.stringify(pack, null, 2))
