@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "inlineSources": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmitHelpers": false,
+    "allowJs": true,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ]
+  },
+  "include":[
+    "index.ts",
+    "typings.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "angularCompilerOptions": {
+    "preserveWhitespaces": false
+  }
+}
