@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "bundles/stripe-angular.umd.js",
   "typings": "stripe-angular.d.ts",
@@ -23,6 +23,9 @@
     "url": "https://github.com/AckerApple/stripe-angular/issues"
   },
   "homepage": "https://github.com/AckerApple/stripe-angular#readme",
+  "peerDependencies": {
+    "@types/stripe-v3": "^3.1.23"
+  },
   "module": "fesm2015/stripe-angular.js",
   "es2015": "fesm2015/stripe-angular.js",
   "esm2015": "esm2015/stripe-angular.js",
