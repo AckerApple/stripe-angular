@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -10,6 +10,7 @@
     "build:dist:js": "ng-packagr -p package.json",
     "build:example": "ng build app --prod",
     "test:watch": "ng test",
+    "save": "git add . && git commit -m 'update' && git push",
     "start": "ng serve app --open",
     "watch": "npm-run-all --parallel compile:templates watch:templates watch:js",
     "test": "ng test src --browsers PhantomJS --watch=false",
@@ -38,6 +39,9 @@
     "url": "https://github.com/AckerApple/stripe-angular/issues"
   },
   "homepage": "https://github.com/AckerApple/stripe-angular#readme",
+  "dependencies": {
+    "@types/stripe-v3": "^3.1.23"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1100.5",
     "@angular/cli": "~11.0.5",
@@ -48,7 +52,6 @@
     "@angular/platform-browser": "~11.0.5",
     "@angular/platform-browser-dynamic": "~11.0.5",
     "@types/jasmine": "^3.6.2",
-    "@types/stripe-v3": "^3.1.23",
     "jasmine": "^3.6.3",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
