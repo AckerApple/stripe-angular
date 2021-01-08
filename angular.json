@@ -24,6 +24,7 @@
               }
             ],
             "styles": [
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -43,14 +44,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "demo:build"
+            "browserTarget": "src:build"
           },
           "configurations": {}
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "demo:build"
+            "browserTarget": "src:build"
           }
         },
         "test": {
@@ -61,7 +62,9 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [],
-            "styles": [],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": []
           }
         },
@@ -74,7 +77,7 @@
         }
       }
     },
-    "demo-e2e": {
+    "src-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application"
@@ -85,7 +88,7 @@
       "projectType": "application"
     }
   },
-  "defaultProject": "demo",
+  "defaultProject": "src",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "",

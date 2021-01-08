@@ -674,6 +674,7 @@
   <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
     <stripe-card
       #stripeCard
+      (changed) = "card.changedEvent = $event"
       [options] = "options"
       [(token)]="card.token"
       (tokenChange)="sending=false"
@@ -724,8 +725,6 @@
   <br />
 
   <h3 style="flex-grow:1;margin:0;">Card Controls</h3>
-
-
   <div *ngIf="editExtraData">
     <br />
     <strong title="Card specific way of providing token related info (includes metadata)">
@@ -836,6 +835,14 @@
     <small>
       card complete: <strong>{{ cardComplete }}</strong>
     </small>
+  </div>
+
+  <div *ngIf="card.changedEvent">
+    <strong>Change Event</strong>
+    <textarea
+      wrap="off" style="width:100%;height:175px"
+      (change)="changeExtraData($event.target.value)"
+    >{{ card.changedEvent | json }}</textArea>
   </div>
 </ng-template>
 

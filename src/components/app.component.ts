@@ -3,7 +3,7 @@ import { string as demoTemplate, string } from "./templates/app.component.templa
 import { StripeScriptTag } from "stripe-angular"
 // import { BankAccountTokenOptions } from "stripe-angular/StripeTypes";
 //DEMO REFERENCE TO stripe-angular . USE BELOW
-import * as packageJson from "../../package.json"
+import * as packageJson from "stripe-angular/package.json"
 
 //YOUR REFERENCE TO stripe-angular
 //import { Stripe, StripeScriptTag } from "stripe-angular"
