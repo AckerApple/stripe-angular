@@ -480,6 +480,7 @@
             _this.cardMounted = new i0.EventEmitter();
             _this.complete = false;
             _this.completeChange = new i0.EventEmitter();
+            _this.changed = new i0.EventEmitter();
             _this.drawn = false;
             return _this;
         }
@@ -498,6 +499,7 @@
             this.elements.mount(this.ElementRef.nativeElement);
             this.cardMounted.emit(this.elements);
             this.elements.on('change', function (result) {
+                _this.changed.emit(result);
                 if (result.complete || (_this.complete && !result.complete)) {
                     _this.completeChange.emit(_this.complete = result.complete);
                 }
@@ -549,7 +551,8 @@
         tokenChange: [{ type: i0.Output }],
         cardMounted: [{ type: i0.Output }],
         complete: [{ type: i0.Input }],
-        completeChange: [{ type: i0.Output }]
+        completeChange: [{ type: i0.Output }],
+        changed: [{ type: i0.Output }]
     };
 
     var StripeBank = /** @class */ (function (_super) {
