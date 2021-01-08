@@ -498,9 +498,7 @@
             this.elements = this.stripe.elements().create('card', this.options);
             this.elements.mount(this.ElementRef.nativeElement);
             this.cardMounted.emit(this.elements);
-            console.log(0);
             this.elements.on('change', function (result) {
-                console.log(1, result);
                 _this.changed.emit(result);
                 if (result.complete || (_this.complete && !result.complete)) {
                     _this.completeChange.emit(_this.complete = result.complete);

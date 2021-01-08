@@ -145,8 +145,9 @@ Builds a display for card intake and then helps tokenize those inputs
 
 ```html
 <stripe-card #stripeCard
-  (catch)        = "$event"
   [(token)]      = "token"
+  (catch)        = "$event"
+  (changed)      = "$event"
   [(invalid)]    = "invalidError"
   (cardMounted)  = "cardCaptureReady = 1"
 ></stripe-card>
@@ -194,6 +195,7 @@ account_holder_type: "individual"
 ```html
 <stripe-card #stripeCard
   (catch)               = "$event"
+  (changed)             = "$event"
   [(invalid)]           = "invalidError"
   [(complete)]          = "cardDetailsFilledOut"
   (cardMounted)         = "cardCaptureReady = 1"

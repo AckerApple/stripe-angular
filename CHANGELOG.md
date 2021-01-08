@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.5.3] - (2021-01-04)
+- stripe-card directive now supports (changed) event
+
 ## [1.5.1] - (2021-01-04)
 - Create Card Payment Method
 - Stripe data typings instead of created ones
