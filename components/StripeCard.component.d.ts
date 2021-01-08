@@ -11,6 +11,7 @@ export declare class StripeCard extends StripeSource {
     cardMounted: EventEmitter<any>;
     complete: boolean;
     completeChange: EventEmitter<boolean>;
+    changed: EventEmitter<any>;
     drawn: boolean;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;

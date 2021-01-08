@@ -5,6 +5,7 @@ All notable changes to this project will be documented here.
 - Create Card Payment Method
 - Stripe data typings instead of created ones
 - Demo area has much more testing functionality
+- installing `@types/stripe-v3` is now a required peerDependency
 
 ## [1.4.3] - (2020-11-19)
 - more demo support
