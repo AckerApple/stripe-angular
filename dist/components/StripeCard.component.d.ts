@@ -11,7 +11,7 @@ export declare class StripeCard extends StripeSource {
     cardMounted: EventEmitter<any>;
     complete: boolean;
     completeChange: EventEmitter<boolean>;
-    changed: EventEmitter<any>;
+    changed: EventEmitter<ICardChangeEvent>;
     drawn: boolean;
     constructor(ElementRef: ElementRef, StripeScriptTag: StripeScriptTag);
     ngOnInit(): void;
@@ -19,3 +19,18 @@ export declare class StripeCard extends StripeSource {
     redraw(): void;
     createToken(extraData?: any): Promise<stripe.Token>;
 }
+interface ICardChangeEvent {
+    "elementType": string;
+    error?: {
+        "code": string;
+        "type": string;
+        "message": string;
+    };
+    "value": {
+        "postalCode": string;
+    };
+    "empty": boolean;
+    "complete": boolean;
+    "brand": string;
+}
+export {};

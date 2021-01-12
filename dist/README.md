@@ -77,11 +77,16 @@ class Component {
 
 ## Capture Payment Method
 
+The Payment Methods API allows you to accept a variety of payment methods through a single API. A PaymentMethod object contains the payment method details to create payments. With the Payment Methods API, you can combine a PaymentMethod:
+
+- With a PaymentIntent to accept a payment
+- With a SetupIntent and a Customer to save payment details for later
+
 The Payment Methods API replaces the existing Tokens and Sources APIs as the recommended way for integrations to collect and store payment information.
 
-It is not longer recommended to use Stripe terminologies for "Source" and "Token". Use "Payment Method" instead.
-
 [Read more here](https://stripe.com/docs/payments/payment-methods/transitioning)
+
+> WARNING: At time of this writing "Stripe.createPaymentMethod()" does NOT seem to have a web hook that fires upon success. It is recommended to use "Stripe.createSource()" instead and then on server side associate new source with a customer and it will convert Stripe Source into a payment method WITH all web hooks appropriately firing.
 
 ## Use
 A practical example to convert card data into a Stripe Payment Method
@@ -145,8 +150,9 @@ Builds a display for card intake and then helps tokenize those inputs
 
 ```html
 <stripe-card #stripeCard
-  (catch)        = "$event"
   [(token)]      = "token"
+  (catch)        = "$event"
+  (changed)      = "$event"
   [(invalid)]    = "invalidError"
   (cardMounted)  = "cardCaptureReady = 1"
 ></stripe-card>
@@ -181,9 +187,6 @@ account_holder_type: "individual"
 
 ### stripe-source
 
-> This approach is not recommended any more and it is instead recommended to use the Payment Method terminology and functionality
->> [Documentation can be read here](https://stripe.com/docs/payments/payment-methods/transitioning)
-
 - [stripe sources docs](https://stripe.com/docs/sources)
 - [best practices](https://stripe.com/docs/sources/best-practices)
 - [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
@@ -194,6 +197,7 @@ account_holder_type: "individual"
 ```html
 <stripe-card #stripeCard
   (catch)               = "$event"
+  (changed)             = "$event"
   [(invalid)]           = "invalidError"
   [(complete)]          = "cardDetailsFilledOut"
   (cardMounted)         = "cardCaptureReady = 1"

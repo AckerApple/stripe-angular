@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.5.2",
+  "version": "1.5.4",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -14,7 +14,8 @@
     "test": "ng test src --browsers PhantomJS --watch=false",
     "copy:dist": "cp -R dist/. ../dist",
     "deploy": "npm-run-all build deploy:npm deploy:gh-pages",
-    "deploy:npm": "npm run copy:dist && cd ../dist/ && git add . && git commit -m 'update' && git push && npm publish",
+    "deploy:npm": "npm run save:dist && cd ../dist/ && npm publish",
+    "save:dist": "npm run copy:dist && cd ../dist/ && git add . && git commit -m 'update' && git push",
     "deploy:gh-pages": "cd ../gh-pages && rm -rf node_modules && rm -f package-lock.json && npm install && npm run deploy"
   },
   "repository": {
@@ -40,14 +41,14 @@
     "@types/stripe-v3": "^3.1.23"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.1100.5",
-    "@angular/cli": "~11.0.5",
-    "@angular/common": "~11.0.5",
-    "@angular/compiler": "~11.0.5",
-    "@angular/compiler-cli": "~11.0.5",
-    "@angular/core": "~11.0.5",
-    "@angular/platform-browser": "~11.0.5",
-    "@angular/platform-browser-dynamic": "~11.0.5",
+    "@angular-devkit/build-angular": "^0.1100.6",
+    "@angular/cli": "~11.0.6",
+    "@angular/common": "~11.0.7",
+    "@angular/compiler": "~11.0.7",
+    "@angular/compiler-cli": "~11.0.7",
+    "@angular/core": "~11.0.7",
+    "@angular/platform-browser": "~11.0.7",
+    "@angular/platform-browser-dynamic": "~11.0.7",
     "@types/stripe-v3": "^3.1.23",
     "@types/jasmine": "^3.6.2",
     "jasmine": "^3.6.3",

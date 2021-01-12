@@ -11,7 +11,7 @@ import { StripeSource } from "./StripeSource.component"
       </ng-container>
   `,
   exportAs:"StripeCard"
-}) export class StripeCard extends StripeSource{
+}) export class StripeCard extends StripeSource {
   @Input() options!:stripe.elements.ElementsOptions
 
   @Input() token!: stripe.Token
@@ -22,7 +22,7 @@ import { StripeSource } from "./StripeSource.component"
   @Input() complete: boolean = false
   @Output() completeChange:EventEmitter<boolean> = new EventEmitter()
 
-  @Output() changed:EventEmitter<any> = new EventEmitter()
+  @Output() changed:EventEmitter<ICardChangeEvent> = new EventEmitter()
 
   drawn = false
 
@@ -48,7 +48,6 @@ import { StripeSource } from "./StripeSource.component"
     this.elements.mount(this.ElementRef.nativeElement)
 
     this.cardMounted.emit(this.elements);
-
     this.elements.on('change', (result: any)=>{
       this.changed.emit(result)
       if (result.complete || (this.complete && !result.complete)) {
@@ -86,4 +85,19 @@ import { StripeSource } from "./StripeSource.component"
       }
     })
   }
+}
+
+interface ICardChangeEvent {
+  "elementType": string
+  error?: {
+    "code": string
+    "type": string
+    "message": string
+  },
+  "value": {
+    "postalCode": string
+  },
+  "empty": boolean,
+  "complete": boolean,
+  "brand": string
 }
