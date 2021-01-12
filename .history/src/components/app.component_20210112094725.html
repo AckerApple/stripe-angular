@@ -727,12 +727,9 @@
   <h3 style="flex-grow:1;margin:0;">Card Controls</h3>
   <div *ngIf="editExtraData">
     <br />
-    <div style="display:flex;justify-content:space-between">
-      <strong title="Card specific way of providing token related info (includes metadata)">token data</strong>
-      <small>
-        <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
-      </small>
-    </div>
+    <strong title="Card specific way of providing token related info (includes metadata)">
+      <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
+    </strong>
     <textarea
       wrap="off" style="width:100%;height:175px"
       (change)="changeExtraData($event.target.value)"
@@ -765,14 +762,9 @@
 
   <div *ngIf="editOptions">
     <br />
-    <div style="display:flex;justify-content:space-between">
-      <strong>
-        options
-      </strong>
-      <small>
-        <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
-      </small>
-    </div>
+    <strong>
+      <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">options</a>
+    </strong>
     <textarea
       wrap="off" style="width:100%;height:175px"
       (change)="changeOptions($event.target.value)"

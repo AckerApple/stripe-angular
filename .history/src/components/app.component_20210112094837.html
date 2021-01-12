@@ -765,14 +765,9 @@
 
   <div *ngIf="editOptions">
     <br />
-    <div style="display:flex;justify-content:space-between">
-      <strong>
-        options
-      </strong>
-      <small>
-        <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
-      </small>
-    </div>
+    <strong>
+      <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">options</a>
+    </strong>
     <textarea
       wrap="off" style="width:100%;height:175px"
       (change)="changeOptions($event.target.value)"
