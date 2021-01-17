@@ -17,12 +17,16 @@ export class StripeCard extends StripeSource {
         super.init().then(() => this.redraw());
     }
     ngOnChanges(changes) {
-        if (this.drawn && changes.options) {
+        if (this.drawn && (changes.options || changes.elementsOptions)) {
             this.redraw();
         }
     }
     redraw() {
-        this.elements = this.stripe.elements().create('card', this.options);
+      if (this.drawn) {
+          this.elements.unmount();
+          this.elements.destroy();
+      }
+      this.elements = this.stripe.elements(this.elementsOptions).create('card', this.options);
         this.elements.mount(this.ElementRef.nativeElement);
         this.cardMounted.emit(this.elements);
         this.elements.on('change', (result) => {
@@ -76,6 +80,7 @@ StripeCard.ctorParameters = () => [
 ];
 StripeCard.propDecorators = {
     options: [{ type: Input }],
+    elementsOptions: [{ type: Input }],
     token: [{ type: Input }],
     tokenChange: [{ type: Output }],
     cardMounted: [{ type: Output }],
