@@ -188,11 +188,11 @@ class StripeCard extends StripeSource {
         }
     }
     redraw() {
-      if (this.drawn) {
-          this.elements.unmount();
-          this.elements.destroy();
-      }
-      this.elements = this.stripe.elements(this.createOptions).create('card', this.options);
+        if (this.drawn) {
+            this.elements.unmount();
+            this.elements.destroy();
+        }
+        this.elements = this.stripe.elements(this.createOptions).create('card', this.options);
         this.elements.mount(this.ElementRef.nativeElement);
         this.cardMounted.emit(this.elements);
         this.elements.on('change', (result) => {
@@ -245,8 +245,8 @@ StripeCard.ctorParameters = () => [
     { type: StripeScriptTag }
 ];
 StripeCard.propDecorators = {
-    options: [{ type: Input }],
     createOptions: [{ type: Input }],
+    options: [{ type: Input }],
     token: [{ type: Input }],
     tokenChange: [{ type: Output }],
     cardMounted: [{ type: Output }],

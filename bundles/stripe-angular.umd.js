@@ -489,13 +489,17 @@
             _super.prototype.init.call(this).then(function () { return _this.redraw(); });
         };
         StripeCard.prototype.ngOnChanges = function (changes) {
-            if (this.drawn && changes.options) {
+            if (this.drawn && (changes.options || changes.createOptions)) {
                 this.redraw();
             }
         };
         StripeCard.prototype.redraw = function () {
             var _this = this;
-            this.elements = this.stripe.elements().create('card', this.options);
+            if (this.drawn) {
+                this.elements.unmount();
+                this.elements.destroy();
+            }
+            this.elements = this.stripe.elements(this.createOptions).create('card', this.options);
             this.elements.mount(this.ElementRef.nativeElement);
             this.cardMounted.emit(this.elements);
             this.elements.on('change', function (result) {
@@ -546,6 +550,7 @@
         { type: StripeScriptTag }
     ]; };
     StripeCard.propDecorators = {
+        createOptions: [{ type: i0.Input }],
         options: [{ type: i0.Input }],
         token: [{ type: i0.Input }],
         tokenChange: [{ type: i0.Output }],

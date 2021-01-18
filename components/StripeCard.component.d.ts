@@ -5,8 +5,8 @@ import { StripeSource } from "./StripeSource.component";
 export declare class StripeCard extends StripeSource {
     ElementRef: ElementRef;
     StripeScriptTag: StripeScriptTag;
-    options: stripe.elements.ElementsOptions;
     createOptions: stripe.elements.ElementsCreateOptions;
+    options: stripe.elements.ElementsOptions;
     token: stripe.Token;
     tokenChange: EventEmitter<stripe.Token>;
     cardMounted: EventEmitter<any>;
