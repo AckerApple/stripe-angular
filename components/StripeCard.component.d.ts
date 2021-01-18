@@ -6,7 +6,7 @@ export declare class StripeCard extends StripeSource {
     ElementRef: ElementRef;
     StripeScriptTag: StripeScriptTag;
     options: stripe.elements.ElementsOptions;
-    elementsOptions: stripe.elements.ElementsCreateOptions;
+    createOptions: stripe.elements.ElementsCreateOptions;
     token: stripe.Token;
     tokenChange: EventEmitter<stripe.Token>;
     cardMounted: EventEmitter<any>;
