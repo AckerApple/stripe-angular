@@ -99,6 +99,7 @@
                     (click)="customer.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer.data.source === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -107,6 +108,7 @@
                     (click)="customer.data.payment_method = card.payment_method.id;setCustomerDefaultPayMethod(customer.data, card.payment_method)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
@@ -178,6 +180,7 @@
                     (click)="customer_update.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer_update.data.source === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -250,6 +253,7 @@
                     (click)="payment_method_get.data.id = payment_method_get.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payment_method_get.data.id === payment_method_get.result.id && '.3'"
+                    [title] = "payment_method_get.result.id"
                   >
                     use type {{payment_method_get.result.type}}
                   </a>
@@ -291,6 +295,7 @@
                     (click)="payment_method_update.data = cleanPaymentMethodUpdateData(payment_method_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payment_method_update.data.id === payment_method_get.result.id && '.3'"
+                    [title] = "payment_method_get.result.id"
                   >
                     use pay method type {{payment_method_get.result.type}}
                   </a>
@@ -349,6 +354,7 @@
                     (click)="source_get.data.id = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "source_get.data.id === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -387,6 +393,7 @@
                     (click)="source_update.data = cleanSourceUpdateData(source_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "source_update.data.id === source_get.result.id && '.3'"
+                    [title] = "source_get.result.id"
                   >
                     use source type {{source_get.result.type}}
                   </a>
@@ -424,6 +431,7 @@
                     (click)="payintent.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
@@ -432,6 +440,7 @@
                     (click)="payintent.data.payment_method = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -440,6 +449,7 @@
                     (click)="payintent.data.payment_method = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.token.card.id && '.3'"
+                    [title] = "card.token.id"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
@@ -488,6 +498,7 @@
                     (click)="charge.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "charge.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
@@ -496,6 +507,7 @@
                     *ngIf="card.token"
                     (click)="charge.data.source = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "card.token.id"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
@@ -504,6 +516,7 @@
                     *ngIf="card.source"
                     (click)="charge.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "card.source.id"
                   >
                     use source{{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -512,11 +525,15 @@
                     *ngIf="bank.token"
                     (click)="charge.data.source = bank.token.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "bank.token.id"
                   >
                     use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
                   </a>
 
-                  <a *ngIf="customer.result" (click)="charge.data.customer=customer.result.id" style="text-decoration:underline;cursor:pointer;margin:1em;">
+                  <a *ngIf="customer.result"
+                    (click)="charge.data.customer=customer.result.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
                     use customer {{customer.result.description}}
                   </a>
                 </small>

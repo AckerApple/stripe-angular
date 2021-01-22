@@ -41,5 +41,8 @@
     "rxjs": "^6.6.3",
     "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
     "zone.js": "^0.11.3"
+  },
+  "dependencies": {
+    "form-urlencoded": "^4.2.1"
   }
 }

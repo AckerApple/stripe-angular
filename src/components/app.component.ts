@@ -1,3 +1,4 @@
+import formurlencoded from 'form-urlencoded';
 import { Component, EventEmitter } from "@angular/core"
 import { string as demoTemplate, string } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
@@ -368,6 +369,10 @@ const sample = {
     }).then(res => {
       this.get_paymethods.result = tryParse(res)
       this.get_paymethods.resultAt = Date.now()
+
+      if (!this.payment_method_get.result && this.get_paymethods.result?.data?.length) {
+        this.payment_method_get.result = this.get_paymethods.result.data[0]
+      }
     });
   }
 
@@ -511,25 +516,42 @@ const sample = {
   cleanSourceUpdateData(data: any) {
     const deepClone = JSON.parse(JSON.stringify(data))
 
+    this.cleanCardData(deepClone.card)
+    this.cleanOwnerData(deepClone.owner)
     const removeKeys = [
-      'object', 'client_secret', 'created', 'flow', 'livemode', 'address', 'status', 'type', 'usage',
+      'amount',
+      'object', 'client_secret', 'created', 'flow', 'livemode', 'address', 'status',
+      'type', 'usage', 'currency', 'statement_descriptor',
       'customer' // you cannot associate customer during source update
     ]
 
-    this.cleanCardData(deepClone)
     removeKeys.forEach(key => delete deepClone[key])
 
     return deepClone
   }
 
-  cleanCardData(data: any) {
-    const cardRemoveKeys = [
-      'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'country', 'brand', 'address_line1_check', 'address_zip_check', 'cvc_check', 'funding', 'three_d_secure'
+  cleanOwnerData(data: Record<string, string>) {
+    const removeKeys = [
+      'verified_address', 'verified_email', 'verified_name', 'verified_phone',
     ]
-    cardRemoveKeys.forEach(key => delete data.card[key])
-    if (data.card.networks) {
-      delete data.card.networks.available
+
+    removeKeys.forEach(key => delete data[key])
+
+    return data
+  }
+
+  cleanCardData(data: Record<string, any>) {
+    const cardRemoveKeys = [
+      'wallet', 'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'generated_from',
+      'country', 'brand', 'address_line1_check', 'address_zip_check', 'cvc_check',
+      'funding', 'three_d_secure', 'name', 'tokenization_method', 'dynamic_last4'
+    ]
+    cardRemoveKeys.forEach(key => delete data[key])
+    if (data.networks) {
+      delete data.networks.available
+      delete data.networks.preferred
     }
+    return data
   }
 
   cleanPaymentMethodUpdateData(data: any) {
@@ -541,9 +563,19 @@ const sample = {
     ]
 
     removeKeys.forEach(key => delete deepClone[key])
-    this.cleanCardData(deepClone)
+    this.cleanCardData(deepClone.card)
+
+    if (data.billing_details) {
+      this.cleanBillingDetails(data.billing_details)
+    }
 
     return deepClone
+  }
+
+  cleanBillingDetails(data: Record<string, any>) {
+    if (data.address?.country === null || data.address?.country === 'null') {
+      delete data.address.country
+    }
   }
 
   cleanCustomerUpdateData(data: any) {
@@ -615,7 +647,9 @@ function request(
 
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
-    req.send( objectToUriForm(post) );
+    // const formPost = objectToUriForm(post);
+    const formPost = formurlencoded(post);
+    req.send( formPost );
 
     req.onreadystatechange = () => {
       if (req.readyState === 4) {
