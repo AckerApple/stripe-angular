@@ -13,7 +13,10 @@ interface localSchema {
   key: string
   privateKey: string
   saveRequestsLocal?: boolean
+
+  extraData?: any
   sourceRequest?: any
+  paymentMethodRequest?: any
 }
 
 const stripeServer = 'https://api.stripe.com/v1/';
@@ -103,12 +106,12 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     metadata: sample.metadata
   }
 
-  paymentMethodRequest = {
+  paymentMethodRequest = storage.paymentMethodRequest || {
     metadata: sample.metadata
   }
 
   // passed along during card token creation
-  extraData = {
+  extraData = storage.extraData || {
     name: "",
     address_city: "",
     address_country: "",
@@ -321,10 +324,20 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     if (this.paymentMethodRequest.metadata) {
       this.extraData.metadata = this.paymentMethodRequest.metadata
     }
+
+    if (this.storage.saveRequestsLocal) {
+      this.storage.paymentMethodRequest = this.paymentMethodRequest
+      this.save()
+    }
   }
 
   changeExtraData(data:string){
     this.extraData = JSON.parse(data)
+
+    if (this.storage.saveRequestsLocal) {
+      this.storage.extraData = this.extraData
+      this.save()
+    }
   }
 
   changeOptions(data:string){
