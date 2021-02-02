@@ -9,7 +9,13 @@ import * as packageJson from "stripe-angular/package.json"
 //YOUR REFERENCE TO stripe-angular
 //import { Stripe, StripeScriptTag } from "stripe-angular"
 
-const testKey = localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+interface localSchema {
+  key: string
+  privateKey: string
+  saveRequestsLocal?: boolean
+  sourceRequest?: any
+}
+
 const stripeServer = 'https://api.stripe.com/v1/';
 const sampleAddress = {
   city: 'Coconut Creek',
@@ -32,6 +38,12 @@ const sample = {
   }
 }
 
+const storageString = localStorage?.stripeAngular || '{}'
+const storage: localSchema = JSON.parse(storageString)
+
+// localStorage backwards compatibility
+storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
 @Component({
   selector:"app",
   templateUrl: './app.component.html'//.replace(/\s\s/g,'')//prevent accidentally spacing
@@ -45,11 +57,13 @@ const sample = {
   savePrivateKeyLocally = false
   enableServerMode?: boolean;
 
-  tempPublishableKey = testKey
-  publishableKey = testKey
-  tempPrivateKey = localStorage?.stripeAngularPrivateKey;
-  privateKey?: string = localStorage?.stripeAngularPrivateKey;
-  localStorage = localStorage;
+  tempPublishableKey = storage.key
+  // publishableKey = storage.key
+  tempPrivateKey = storage.privateKey// localStorage?.stripeAngularPrivateKey;
+  // privateKey?: string = localStorage?.stripeAngularPrivateKey;
+
+  storage: localSchema = storage
+  localStorage = localStorage
 
   lastError:Error
   card: {
@@ -84,7 +98,7 @@ const sample = {
   };
 
   // passed along when token or sources created
-  sourceRequest = {
+  sourceRequest = storage.sourceRequest || {
     owner: sample.owner,
     metadata: sample.metadata
   }
@@ -127,6 +141,7 @@ const sample = {
 
   customer: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       description: "some new customer",
       ...sample.owner,
@@ -136,6 +151,7 @@ const sample = {
 
   customer_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: "",
       metadata: sample.metadata
@@ -144,6 +160,7 @@ const sample = {
 
   customer_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -151,6 +168,7 @@ const sample = {
 
   get_paymethods: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       customer: "", type: "card"
     }
@@ -158,16 +176,19 @@ const sample = {
 
   customer_attach_method: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {} // not used currently
   }
 
   customer_detach_method: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {} // not used currently
   }
 
   customer_get_sources: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -175,6 +196,7 @@ const sample = {
 
   source_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -182,6 +204,7 @@ const sample = {
 
   source_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -189,6 +212,7 @@ const sample = {
 
   payment_method_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -196,6 +220,7 @@ const sample = {
 
   payment_method_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       id: ""
     }
@@ -203,6 +228,7 @@ const sample = {
 
   payintent: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       amount: 1099,
       confirm: 'true',
@@ -214,6 +240,7 @@ const sample = {
 
   charge: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    load: 0,
     data: {
       amount: 1099,
       currency: 'usd',
@@ -236,8 +263,8 @@ const sample = {
   }
 
   ngOnInit(){
-    //inject script tag onto document and apply publishableKey
-    this.apply(this.publishableKey)
+    //inject script tag onto document and save
+    this.save()
     .then( ()=>this.loaded=true )
     .catch(e=>{
       this.lastError=e
@@ -246,25 +273,32 @@ const sample = {
   }
 
   deleteLocalStorage() {
-    localStorage.stripeAngularPrivateKey = null;
-    localStorage.stripeAnguarKey = null;
+    localStorage.stripeAngular = null
+    delete localStorage.stripeAngular
 
+    // support old delete
+    localStorage.stripeAngularPrivateKey = null;
+    localStorage.stripeAngularKey = null;
     delete localStorage.stripeAngularPrivateKey;
-    delete localStorage.stripeAnguarKey;
+    delete localStorage.stripeAngularKey;
   }
 
-  async apply(key):Promise<stripe.Stripe>{
+  async save(): Promise<stripe.Stripe>{
     if (this.saveKeyLocally) {
-      localStorage.stripeAnguarKey = key;
+      // localStorage.stripeAngularKey = this.tempPublishableKey || this.publishableKey;
+      this.storage.key = this.tempPublishableKey || this.storage.key
     }
 
-    this.privateKey = this.tempPrivateKey;
     if (this.savePrivateKeyLocally) {
-      localStorage.stripeAngularPrivateKey = this.privateKey;
+      // localStorage.stripeAngularPrivateKey = this.privateKey;
+      this.storage.privateKey = this.storage.privateKey
     }
 
-    this.publishableKey = key;
-    return this.StripeScriptTag.setPublishableKey(this.publishableKey)
+    localStorage.stripeAngular = JSON.stringify(this.storage)
+
+    this.log('saved to localStorage')
+
+    return this.StripeScriptTag.setPublishableKey(this.storage.key)
       .then(stripe =>this.stripe=stripe);
   }
 
@@ -273,6 +307,11 @@ const sample = {
 
     if (this.sourceRequest.metadata) {
       this.extraData.metadata = this.sourceRequest.metadata
+    }
+
+    if (this.storage.saveRequestsLocal) {
+      this.storage.sourceRequest = this.sourceRequest
+      this.save()
     }
   }
 
@@ -292,9 +331,12 @@ const sample = {
     this.options = JSON.parse(data)
   }
 
-  changeKey(key: string, value: string) {
-    const keys = key.split('.')
-    var current = this;
+  changeKey(
+    scope:ISimpleRouteEditor,
+    value: string
+  ) {
+    const keys = ['data']
+    var current = scope;
 
     while(keys.length > 1) {
       current = current[keys.shift()];
@@ -320,22 +362,28 @@ const sample = {
       localStorage.stripeAngularPrivateKey = null
       delete localStorage.stripeAngularPrivateKey
       delete this.tempPrivateKey
-      delete this.privateKey
+      delete this.tempPublishableKey
     }
   }
 
   getSource(sourceId: string) {
+    ++this.source_get.load
     request({
       url: stripeServer + 'sources/' + sourceId,
-      authorizationBearer: this.privateKey
-    }).then(res => this.setSource(res));
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(res => this.setSource(res))
+      .finally(() => --this.source_get.load)
   }
 
   getPaymentMethod(id: string) {
+    ++this.payment_method_get.load
     request({
       url: stripeServer + 'payment_methods/' + id,
-      authorizationBearer: this.privateKey
-    }).then(res => this.setPaymentMethod(res));
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(res => this.setPaymentMethod(res))
+      .finally(() => --this.payment_method_get.load)
   }
 
   setPaymentMethod(res: any) {
@@ -349,23 +397,27 @@ const sample = {
   }
 
   getCustomer(id: string) {
+    ++this.customer_get.load
     request({
       url: stripeServer + 'customers/' + id,
-      authorizationBearer: this.privateKey
-    }).then(res => {
-      this.customer_get.result = tryParse(res)
-      this.customer_get.resultAt = Date.now()
-    });
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(res => {
+        this.customer_get.result = tryParse(res)
+        this.customer_get.resultAt = Date.now()
+      })
+      .finally(() => --this.customer_get.load)
   }
 
   getPaymentMethods(query: stripe.PaymentMethodData) {
     const queryString = Object.keys(query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${query[key]}`,'')
     const url = stripeServer + 'payment_methods?' + queryString
+    ++this.payment_method_get.load
 
     request({
       url, method: 'GET',
       post: query,
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(res => {
       this.get_paymethods.result = tryParse(res)
       this.get_paymethods.resultAt = Date.now()
@@ -373,50 +425,64 @@ const sample = {
       if (!this.payment_method_get.result && this.get_paymethods.result?.data?.length) {
         this.payment_method_get.result = this.get_paymethods.result.data[0]
       }
-    });
+    })
+      .finally(() => --this.payment_method_get.load)
   }
 
   getCustomerSources(id: string) {
+    ++this.customer_get_sources.load
     request({
       url: stripeServer + 'customers/' + id + '/sources',
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(res => {
       this.customer_get_sources.result = tryParse(res)
       this.customer_get_sources.resultAt = Date.now()
-    });
+    })
+      .finally(() => --this.customer_get_sources.load)
   }
 
   createCustomer(data: any) {
+    ++this.customer.load
+
     request({
       url: stripeServer + 'customers',
       post: data,
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(res => {
       this.customer.result = tryParse(res)
       this.customer.resultAt = Date.now()
-    });
+    })
+    .finally(() => --this.customer.load)
   }
 
   createPayIntent(data: any) {
+    ++this.payintent.load
+
     request({
       url: stripeServer + 'payment_intents',
       post: data,
-      authorizationBearer: this.privateKey
-    }).then(res => {
-      this.payintent.result = tryParse(res)
-      this.payintent.resultAt = Date.now()
-    });
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(res => {
+        this.payintent.result = tryParse(res)
+        this.payintent.resultAt = Date.now()
+      })
+      .finally(() => --this.payintent.load)
   }
 
   createCharge(data: any) {
+    ++this.charge.load
+
     request({
       url: stripeServer + 'charges',
       post: data,
-      authorizationBearer: this.privateKey
-    }).then(res => {
-      this.charge.result = tryParse(res)
-      this.charge.resultAt = Date.now()
-    });
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(res => {
+        this.charge.result = tryParse(res)
+        this.charge.resultAt = Date.now()
+      })
+      .finally(() => --this.charge.load)
   }
 
   // a source or token converted into a customer
@@ -440,26 +506,32 @@ const sample = {
     const cusId = this.customer.result.id;
     const bankId = this.bank.token.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
+
     request({
       url,
-      authorizationBearer: this.privateKey,
+      authorizationBearer: this.storage.privateKey,
       post: {
         amounts:[
           this.bank.verify.amount1,
           this.bank.verify.amount2
         ]
       }
-    }).then(result => this.bank.verifyResponse = tryParse(result))
+    })
+      .then(result => this.bank.verifyResponse = tryParse(result))
   }
 
   fetchPayIntentUpdate(config: ISimpleRouteEditor) {
     const base = stripeServer + 'payment_intents/'
     const intentId = config.result.id;
     const url = base + intentId;
+    ++config.load
+
     request({
       url,
-      authorizationBearer: this.privateKey
-    }).then(result => config.retrieve = tryParse(result))
+      authorizationBearer: this.storage.privateKey
+    })
+      .then(result => config.retrieve = tryParse(result))
+      .finally(() => --config.load)
   }
 
   sendSourceUpdate(data: any, id: string) {
@@ -468,15 +540,16 @@ const sample = {
 
     const base = stripeServer + 'sources/'
     const url = base + id;
+    ++this.source_update.load
 
     request({
       url,
       post: shallowClone,
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(result => {
       this.source_update.result = tryParse(result)
       this.source_update.resultAt = Date.now()
-    })
+    }).finally(() => --this.source_update.load)
   }
 
   sendPaymentMethodUpdate(data: any, id: string) {
@@ -485,15 +558,16 @@ const sample = {
 
     const base = stripeServer + 'payment_methods/'
     const url = base + id;
+    ++this.payment_method_update.load
 
     request({
       url,
       post: shallowClone,
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(result => {
       this.payment_method_update.result = tryParse(result)
       this.payment_method_update.resultAt = Date.now()
-    })
+    }).finally(() => --this.payment_method_update.load)
   }
 
   updateCustomer(data: any, id: string) {
@@ -501,16 +575,17 @@ const sample = {
     delete shallowClone.id; // just incase left over from text area
 
     const base = stripeServer + 'customers/'
-    const url = base + id;
+    const url = base + id
+    ++this.customer_update.load
 
     request({
       url,
       post: shallowClone,
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(result => {
       this.customer_update.result = tryParse(result)
       this.customer_update.resultAt = Date.now()
-    })
+    }).finally(() => --this.customer_update.load)
   }
 
   cleanSourceUpdateData(data: any) {
@@ -602,29 +677,32 @@ const sample = {
     customerId: string,
     paymentMethod: stripe.paymentMethod.PaymentMethod
   ) {
+    ++this.customer_attach_method.load
+
     request({
       url: `${stripeServer}payment_methods/${paymentMethod.id}/attach`,
       post: {
         customer: customerId
       },
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(result => {
       this.customer_attach_method.result = tryParse(result)
       this.customer_attach_method.resultAt = Date.now()
-    })
+    }).finally(() => --this.customer_attach_method.load)
   }
 
   detachCustomerPayMethod(
     paymentMethod: stripe.paymentMethod.PaymentMethod
   ) {
+    ++this.customer_detach_method.load
     request({
       url: `${stripeServer}payment_methods/${paymentMethod.id}/detach`,
       method: 'POST',
-      authorizationBearer: this.privateKey
+      authorizationBearer: this.storage.privateKey
     }).then(result => {
       this.customer_detach_method.result = tryParse(result)
       this.customer_detach_method.resultAt = Date.now()
-    })
+    }).finally(() => --this.customer_detach_method.load)
   }
 }
 
@@ -717,6 +795,7 @@ function tryParse(data: string | any) {
 
 interface ISimpleRouteEditor {
   data: any
+  load: number
   result?: any
   resultAt?: number
   retrieve?: any // any update checks that might occur
