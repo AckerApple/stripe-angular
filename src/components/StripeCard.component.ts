@@ -12,6 +12,7 @@ import { StripeSource } from "./StripeSource.component"
   `,
   exportAs:"StripeCard"
 }) export class StripeCard extends StripeSource {
+  @Input() createOptions!:stripe.elements.ElementsCreateOptions
   @Input() options!:stripe.elements.ElementsOptions
 
   @Input() token!: stripe.Token
@@ -38,13 +39,17 @@ import { StripeSource } from "./StripeSource.component"
   }
 
   ngOnChanges( changes:any ){
-    if (this.drawn && changes.options) {
+    if (this.drawn && (changes.options || changes.createOptions)) {
       this.redraw();
     }
   }
 
   redraw() {
-    this.elements = this.stripe.elements().create('card', this.options)
+    if (this.drawn) {
+      this.elements.unmount();
+      this.elements.destroy();
+    }
+    this.elements = this.stripe.elements(this.createOptions).create('card', this.options)
     this.elements.mount(this.ElementRef.nativeElement)
 
     this.cardMounted.emit(this.elements);
