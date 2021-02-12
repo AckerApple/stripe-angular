@@ -1,6 +1,10 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.6.0] - (2021-02-11)
+
+- stripe-card supports createOptions
+
 ## [1.5.3] - (2021-01-04)
 - stripe-card directive now supports (changed) event
 
