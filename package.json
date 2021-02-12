@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "bundles/stripe-angular.umd.js",
   "typings": "stripe-angular.d.ts",

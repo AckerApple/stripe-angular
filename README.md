@@ -143,6 +143,24 @@ const template=
 ### stripe-card
 Builds a display for card intake and then helps tokenize those inputs
 
+| Value | Description | Default |
+| ------------- | ------------- | ------------- |
+| token | `@Output` the generated token hash |  |
+| invalid | `@Output` any invalid error |  |
+| complete | `@Output` card details |  |
+| options | [Card Element options](https://stripe.com/docs/js/elements_object/create_element?type=card#elements_create-options) | ElementsOptions |
+| createOptions | [Elements options](https://stripe.com/docs/js/elements_object/create) | ElementsCreateOptions |
+| tokenChange | `<EventEmitter>`token has been changed |  |
+| invalidChange | `<EventEmitter>`invalid data has been changed |  |
+| completeChange | `<EventEmitter>`details has been completed |  |
+| cardMounted | `<EventEmitter>`card has been mounted |  |
+| changed | `<EventEmitter>`details has been changed |  |
+| catcher | `<EventEmitter>`catch any errors |  |
+
+#### Examples
+
+**stripe-card common example**
+
 ```html
 <stripe-card #stripeCard
   [(token)]      = "token"
@@ -155,19 +173,27 @@ Builds a display for card intake and then helps tokenize those inputs
 <button type="button" (click)="stripeCard.createToken(extraData)">createToken</button>
 ```
 
+**stripe-card token bindings**
+```html
+<stripe-card #stripeCard
+  [(token)]     = "token"
+  (tokenChange) = "$event"
+></stripe-card>
+<button type="button" (click)="stripeCard.createToken()">createToken</button>
+```
+
 ### stripe-bank
 Helps tokenize banking data. Does NOT include display inputs like stripe-card does.
-
 [see stripe docs](https://stripe.com/docs/stripe-js/reference#collecting-bank-account-details)
-```html
-<stripe-bank #stripeBank
-  (catch)        = "$event"
-  [(token)]      = "token"
-  [(invalid)]    = "invalidError"
-></stripe-card>
 
-<button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
-```
+| Value | Description | Default |
+| ------------- | ------------- | ------------- |
+| token | `@Output` the generated token hash |  |
+| invalid | `@Output` any invalid error |  |
+| options | [Card Element options](https://stripe.com/docs/js/elements_object/create_element?type=card#elements_create-options) | ElementsOptions |
+| tokenChange | `<EventEmitter>`token has been changed |  |
+| invalidChange | `<EventEmitter>`invalid data has been changed |  |
+| catcher | `<EventEmitter>`catch any errors |  |
 
 > For stripe-bank input fields, be sure to use the above mentioned link
 >> Here is the most commonly used input fields:
@@ -180,16 +206,49 @@ account_holder_name: "Jenny Rosen",
 account_holder_type: "individual"
 ```
 
+#### Example
+
+```html
+<stripe-bank #stripeBank
+  (catch)        = "$event"
+  [(token)]      = "token"
+  [(invalid)]    = "invalidError"
+></stripe-card>
+
+<button type="button" (click)="stripeBank.createToken({...bank_account...})">createToken</button>
+```
+
 ### stripe-source
 
 > This approach is not recommended any more and it is instead recommended to use the Payment Method terminology and functionality
 >> [Documentation can be read here](https://stripe.com/docs/payments/payment-methods/transitioning)
 
+| Value | Description | Default |
+| ------------- | ------------- | ------------- |
+| source | `@Output` the generated source hash |  |
+| invalid | `@Output` any invalid error |  |
+| paymentMethod | Reference to [Stripe Payment Method](https://stripe.com/docs/api/payment_methods/create) |  |
+| sourceChange | `<EventEmitter>`source has been changed |  |
+| invalidChange | `<EventEmitter>`invalid data has been changed |  |
+| paymentMethodChange | `<EventEmitter>`payment method has been changed |  |
+| catcher | `<EventEmitter>`catch any errors |  |
+
 - [stripe sources docs](https://stripe.com/docs/sources)
 - [best practices](https://stripe.com/docs/sources/best-practices)
 - [api reference](https://stripe.com/docs/stripe-js/reference#stripe-create-source)
 
-### Examples
+#### Example
+
+**stripe-card source bindings**
+```html
+<stripe-card #stripeCard
+  [(source)]    = "source"
+  (sourceChange) = "$event"
+></stripe-card>
+<button type="button" (click)="stripeCard.createSource()">createSource</button>
+```
+
+### Another Examples
 
 **stripe-card payment method bindings**
 ```html
@@ -203,21 +262,4 @@ account_holder_type: "individual"
   (paymentMethodChange) = "setPaymentMethod($event)"
 ></stripe-card>
 <button type="button" (click)="stripeCard.createPaymentMethod()">createPaymentMethod</button>
-```
-
-**stripe-card source bindings**
-```html
-<stripe-card #stripeCard
-  [(source)]    = "source"
-  (sourceChange) = "$event"
-></stripe-card>
-<button type="button" (click)="stripeCard.createSource()">createSource</button>
-
-**stripe-card token bindings**
-```html
-<stripe-card #stripeCard
-  [(token)]     = "token"
-  (tokenChange) = "$event"
-></stripe-card>
-<button type="button" (click)="stripeCard.createToken()">createToken</button>
 ```
