@@ -626,7 +626,7 @@
 
 <ng-template #storageForm>
   <div *ngIf="changekey" style="padding:1em;">
-    <form onsubmit="return false" (submit)="save(tempPublishableKey);changekey=false">
+    <form onsubmit="return false" (submit)="save();changekey=false">
       <strong>publishableKey</strong>
       <div>
         <input
@@ -642,7 +642,7 @@
             <input
               type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
               (change)="saveKeyLocally = !saveKeyLocally"
-              [checked] = "storage.key"
+              [checked] = "saveKeyLocally"
             />
             <span>save Stripe key in localStorage</span>
           </label>
@@ -653,7 +653,7 @@
             <input
               type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
               (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
-              [checked] = "storage.saveRequestsLocal"
+              [checked] = "saveRequestsLocal"
             />
             <span>save requests in localStorage</span>
           </label>

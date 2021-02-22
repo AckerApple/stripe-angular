@@ -22,11 +22,12 @@
           <div class="tool-wrap" style="flex-grow:1">
             <h3 style="margin:0;text-align:left;color:white"
             >Stripe Key</h3>
-            <div style="flex-grow:1;border-radius:5px;background-color:#888;text-align:left;width:100%;padding:1em;">
+            <div style="flex-grow:1;border-radius:5px;background-color:#888;text-align:left;padding:1em;">
               <ng-container *ngTemplateOutlet="keyInfoUi"></ng-container>
             </div>
           </div>
 
+          <!-- hide elements when possibly changing keys -->
           <ng-container *ngIf="stripe && !changekey">
             <div class="tool-wrap">
               <label for="card-like-element" style="display:flex;flex-wrap:wrap;align-items:center;color:white;">
@@ -66,7 +67,7 @@
           </ng-container>
         </div>
 
-        <ng-container *ngIf="privateKey">
+        <ng-container *ngIf="storage.privateKey">
           <br /><br />
 
           <div style="color:white;text-align:center;">
@@ -99,6 +100,7 @@
                     (click)="customer.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer.data.source === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -107,11 +109,12 @@
                     (click)="customer.data.payment_method = card.payment_method.id;setCustomerDefaultPayMethod(customer.data, card.payment_method)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer.data, key:'customer.data', $send:customer.$send, result:customer.result, resultAt:customer.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer}"></ng-container>
 
                 <ng-container *ngIf="card.payment_method && customer.result">
                   <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:customer.result}"></ng-container>
@@ -144,7 +147,7 @@
                     use customer {{customer.result.id}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer_get.data, key:'customer_get.data', $send:customer_get.$send, result:customer_get.result, resultAt:customer_get.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_get}"></ng-container>
               </div>
             </div>
 
@@ -178,6 +181,7 @@
                     (click)="customer_update.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "customer_update.data.source === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -192,7 +196,7 @@
                   </a>
 
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer_update.data, key:'customer_update.data', $send:customer_update.$send, result:customer_update.result, resultAt:customer_update.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_update}"></ng-container>
 
                 <ng-container *ngIf="card.payment_method && customer_update.data.id">
                   <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:customer_update.data}"></ng-container>
@@ -225,7 +229,7 @@
                     use customer {{customer.result.id}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:get_paymethods.data, key:'get_paymethods.data', $send:get_paymethods.$send, result:get_paymethods.result, resultAt:get_paymethods.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:get_paymethods}"></ng-container>
               </div>
             </div>
 
@@ -250,11 +254,12 @@
                     (click)="payment_method_get.data.id = payment_method_get.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payment_method_get.data.id === payment_method_get.result.id && '.3'"
+                    [title] = "payment_method_get.result.id"
                   >
                     use type {{payment_method_get.result.type}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:payment_method_get.data, key:'payment_method_get.data', $send:payment_method_get.$send, result:payment_method_get.result, resultAt:payment_method_get.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payment_method_get}"></ng-container>
 
                 <ng-container *ngIf="payment_method_get.result">
                   <button
@@ -291,11 +296,12 @@
                     (click)="payment_method_update.data = cleanPaymentMethodUpdateData(payment_method_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payment_method_update.data.id === payment_method_get.result.id && '.3'"
+                    [title] = "payment_method_get.result.id"
                   >
                     use pay method type {{payment_method_get.result.type}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:payment_method_update.data, key:'payment_method_update.data', $send:payment_method_update.$send, result:payment_method_update.result, resultAt:payment_method_update.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payment_method_update}"></ng-container>
               </div>
             </div>
 
@@ -324,7 +330,7 @@
                     use customer {{customer.result.id}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:customer_get_sources.data, key:'customer_get_sources.data', $send:customer_get_sources.$send, result:customer_get_sources.result, resultAt:customer_get_sources.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_get_sources}"></ng-container>
               </div>
             </div>
 
@@ -349,12 +355,13 @@
                     (click)="source_get.data.id = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "source_get.data.id === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                 </small>
 
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:source_get.data, key:'source_get.data', $send:source_get.$send, result:source_get.result, resultAt:source_get.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:source_get}"></ng-container>
 
                 <ng-container *ngIf="source_get.result">
                   <button
@@ -387,11 +394,12 @@
                     (click)="source_update.data = cleanSourceUpdateData(source_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "source_update.data.id === source_get.result.id && '.3'"
+                    [title] = "source_get.result.id"
                   >
                     use source type {{source_get.result.type}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:source_update.data, key:'source_update.data', $send:source_update.$send, result:source_update.result, resultAt:source_update.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:source_update}"></ng-container>
               </div>
             </div>
 
@@ -420,10 +428,19 @@
                     use customer {{customer.result.description}}
                   </a>
                   <a
+                    *ngIf="customer_get.data"
+                    (click)="payintent.data.customer = customer_get.data.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payintent.data.customer === customer_get.data.id && '.3'"
+                  >
+                    use GET customer {{customer_get.data.id}}
+                  </a>
+                  <a
                     *ngIf="card.payment_method"
                     (click)="payintent.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
@@ -432,6 +449,7 @@
                     (click)="payintent.data.payment_method = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.source.id && '.3'"
+                    [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -440,12 +458,13 @@
                     (click)="payintent.data.payment_method = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.token.card.id && '.3'"
+                    [title] = "card.token.id"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
                 </small>
 
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:payintent.data, key:'payintent.data', $send:payintent.$send, result:payintent.result, resultAt:payintent.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payintent}"></ng-container>
 
                 <ng-container *ngIf="payintent.result">
                   <button type="button" (click)="fetchPayIntentUpdate(payintent)">retrieve update</button>
@@ -488,6 +507,7 @@
                     (click)="charge.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "charge.data.payment_method === card.payment_method.id && '.3'"
+                    [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
@@ -496,6 +516,7 @@
                     *ngIf="card.token"
                     (click)="charge.data.source = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "card.token.id"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
@@ -504,6 +525,7 @@
                     *ngIf="card.source"
                     (click)="charge.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "card.source.id"
                   >
                     use source{{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
@@ -512,15 +534,19 @@
                     *ngIf="bank.token"
                     (click)="charge.data.source = bank.token.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [title] = "bank.token.id"
                   >
                     use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
                   </a>
 
-                  <a *ngIf="customer.result" (click)="charge.data.customer=customer.result.id" style="text-decoration:underline;cursor:pointer;margin:1em;">
+                  <a *ngIf="customer.result"
+                    (click)="charge.data.customer=customer.result.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                  >
                     use customer {{customer.result.description}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{data:charge.data, key:'charge.data', $send:charge.$send, result:charge.result, resultAt:charge.resultAt}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:charge}"></ng-container>
                 <div style="text-align:center;opacity:.5;">
                   <small>
                     <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
@@ -563,88 +589,16 @@
 
 
 <ng-template #keyInfoUi>
-  <div *ngIf="changekey" style="padding:1em;">
-    <form onsubmit="return false" (submit)="apply(tempPublishableKey);changekey=false">
-      <strong>publishableKey</strong>
-      <div>
-        <input
-          (keyup)="tempPublishableKey=$event.target.value"
-          [value]="tempPublishableKey"
-          style="width:100%"
-        />
-      </div>
-      <div style="padding:.5em;">
-        <label for="saveKeyLocally" style="align-items: center">
-          <input
-            type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
-            (change)="saveKeyLocally = !saveKeyLocally"
-          />
-          <span>save Stripe key in localStorage</span>
-        </label>
-      </div>
-
-      <div *ngIf="enableServerMode || privateKey">
-        <strong style="color:orange;">privateKey</strong>
-        <div>
-          <input
-            type="password"
-            (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
-            [value]="tempPrivateKey"
-            style="width:100%"
-          />
-        </div>
-        <div style="padding:.5em;">
-          <small style="opacity: 70%;">
-            This demo offers helpful server functionality that can really help close knowledge gaps
-          </small>
-        </div>
-        <div style="padding:.5em;">
-          <label for="savePrivateKeyLocally" style="align-items: center">
-            <input
-              type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-              (change)="savePrivateKeyLocally = !savePrivateKeyLocally"
-            />
-            <span>save Stripe private key in localStorage</span>
-          </label>
-        </div>
-      </div>
-
-      <div style="padding:.5em;">
-        <label for="enableServerMode" style="align-items: center">
-          <input
-            type="checkbox" name="enableServerMode" id="enableServerMode"
-            (change)="toggleServerMode()"
-            [checked] = "enableServerMode || tempPrivateKey"
-          />
-          <span>enable server functionality</span>
-        </label>
-      </div>
-      <div style="text-align:right;">
-        <button
-        *ngIf="localStorage.stripeAngularPrivateKey || localStorage.stripeAnguarKey"
-          type="button" (click)="deleteLocalStorage()"
-          style="background-color: black;color:white;"
-        >clear localStorage</button>
-        <button
-          type="button" (click)="changekey = !changekey"
-          style="background-color: black;color:white;"
-        >cancel</button>
-        <button type="submit">apply</button>
-      </div>
-    </form>
-  </div>
-
-
-  <div *ngIf="!changekey">
+  <div *ngIf="!changekey else storageForm">
     <div style="display:flex;flex-wrap:wrap">
       <div style="margin:1em;">
         <strong>publishableKey</strong>
-        <div>{{ publishableKey | slice : 0 : 16 }}...</div>
+        <div>{{ storage.key | slice : 0 : 16 }}...</div>
       </div>
 
-      <div *ngIf="privateKey" style="margin:1em;">
+      <div *ngIf="storage.privateKey" style="margin:1em;">
         <strong>privateKey</strong>
-        <div>{{ privateKey | slice : 0 : 8 }}...</div>
+        <div>{{ storage.privateKey | slice : 0 : 8 }}...</div>
       </div>
     </div>
 
@@ -654,7 +608,7 @@
       type="button"
       (click)="changekey=!changekey"
       style="width:100%"
-    >CHANGE PUBLISHABLE KEY</button>
+    >CHANGE API SETTINGS</button>
 
     <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
       <br />
@@ -667,6 +621,99 @@
         </p>
       </div>
     </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #storageForm>
+  <div *ngIf="changekey" style="padding:1em;">
+    <form onsubmit="return false" (submit)="save();changekey=false">
+      <strong>publishableKey</strong>
+      <div>
+        <input
+          (keyup)="tempPublishableKey=$event.target.value"
+          [value]="tempPublishableKey"
+          style="width:100%"
+        />
+      </div>
+
+      <div style="display:flex;flex-wrap: wrap;">
+        <div style="padding:.5em;">
+          <label for="saveKeyLocally" style="align-items: center">
+            <input
+              type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
+              (change)="saveKeyLocally = !saveKeyLocally"
+              [checked] = "storage.key"
+            />
+            <span>save Stripe key in localStorage</span>
+          </label>
+        </div>
+
+        <div style="padding:.5em;">
+          <label for="saveRequestsLocal" style="align-items: center" title="Greatly assists coming back to this interface">
+            <input
+              type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
+              (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
+              [checked] = "storage.saveRequestsLocal"
+            />
+            <span>save requests in localStorage</span>
+          </label>
+        </div>
+
+        <div style="padding:.5em;">
+          <label for="enableServerMode" style="align-items: center">
+            <input
+              type="checkbox" name="enableServerMode" id="enableServerMode"
+              (change)="toggleServerMode()"
+              [checked] = "enableServerMode || tempPrivateKey"
+            />
+            <span>enable server functionality</span>
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="enableServerMode || storage.privateKey">
+        <strong style="color:orange;">privateKey</strong>
+        <div>
+          <input
+          type="password"
+          (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
+          [value]="tempPrivateKey"
+          style="width:100%"
+          />
+        </div>
+        <div style="padding:.5em;">
+          <small style="opacity: 70%;">
+            This demo offers helpful server functionality that can really help close knowledge gaps
+          </small>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap: wrap;">
+        <div *ngIf="enableServerMode || storage.privateKey" style="padding:.5em;">
+          <label for="savePrivateKeyLocally" style="align-items: center">
+            <input
+              type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
+              (change)="savePrivateKeyLocally = !savePrivateKeyLocally"
+              [checked] = "storage.privateKey"
+            />
+            <span>save Stripe private key in localStorage</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button
+          *ngIf="storage.privateKey || storage.key"
+          type="button" (click)="deleteLocalStorage()"
+          style="background-color: black;color:white;padding:.4em;font-size:.8em;"
+        >clear localStorage</button>
+        <button
+          type="button" (click)="changekey = !changekey"
+          style="background-color: black;color:white;padding:.4em;font-size:.8em;"
+          >cancel</button>
+          <button type="submit" style="padding:.4em;font-size:.8em;">save</button>
+      </div>
+    </form>
   </div>
 </ng-template>
 
@@ -693,12 +740,12 @@
 
   <div
     *ngIf="cardComplete"
-    style="text-align:right;display:flex;flex-wrap:wrap;"
+    style="text-align:right;display:flex;flex-wrap:wrap;font-size:1em;"
   >
     <button
       type="button"
       (click)="lastError=null;sending=true;stripeCard.createSource(sourceRequest)"
-      style="flex-grow:1;background-color:#99FFFF;"
+      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
       title="Using Payment Method instead is recommended"
     >
       create source
@@ -707,7 +754,7 @@
     <button
       type="button"
       (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(paymentMethodRequest)"
-      style="flex-grow:1;background-color:#99FFFF;"
+      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
     >
       create payment method
     </button>
@@ -715,7 +762,7 @@
     <button
       type="button"
       (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-      style="flex-grow:1;background-color:#99FFFF;"
+      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
       title="Using Payment Method instead is recommended"
     >
       create token
@@ -727,9 +774,12 @@
   <h3 style="flex-grow:1;margin:0;">Card Controls</h3>
   <div *ngIf="editExtraData">
     <br />
-    <strong title="Card specific way of providing token related info (includes metadata)">
-      <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
-    </strong>
+    <div style="display:flex;justify-content:space-between">
+      <strong title="Card specific way of providing token related info (includes metadata)">token data</strong>
+      <small>
+        <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
+      </small>
+    </div>
     <textarea
       wrap="off" style="width:100%;height:175px"
       (change)="changeExtraData($event.target.value)"
@@ -746,20 +796,30 @@
       </small>
     </div>
     <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ paymentMethodRequest | json }}</textArea>
-    <div style="opacity: 0.5;font-size:0.7em;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
-  </div>
+      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
+    </div>
 
-  <div *ngIf="editSourceRequest">
-    <br />
-    <strong><a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">source data</a></strong>
+    <div *ngIf="editSourceRequest">
+      <br />
+      <div style="display:flex;justify-content:space-between">
+        <strong>source data</strong>
+        <small>
+          <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
+        </small>
+      </div>
     <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ sourceRequest | json }}</textArea>
   </div>
 
   <div *ngIf="editOptions">
     <br />
-    <strong>
-      <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">options</a>
-    </strong>
+    <div style="display:flex;justify-content:space-between">
+      <strong>
+        options
+      </strong>
+      <small>
+        <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
+      </small>
+    </div>
     <textarea
       wrap="off" style="width:100%;height:175px"
       (change)="changeOptions($event.target.value)"
@@ -857,7 +917,7 @@
   ></stripe-bank>
   <textarea
     wrap="off" style="width:100%;height:175px"
-    (change)="changeKey('bank.data', $event.target.value)"
+    (change)="changeKey(bank, $event.target.value)"
   >{{ bank.data | json }}</textArea>
 
   <br />
@@ -878,7 +938,7 @@
     >{{ bank.token | json }}</textArea>
   </div>
 
-  <ng-container *ngIf="privateKey && bank.token?.bank_account?.id">
+  <ng-container *ngIf="storage.privateKey && bank.token?.bank_account?.id">
     <br />
     <div style="display:flex;flex-wrap: wrap;align-items: baseline;">
       <h3 style="flex-grow:1;color:orange;">Bank Server Functions</h3>
@@ -935,22 +995,22 @@
 </ng-template>
 
 <ng-template #simpleRouteEditor
-  let-data="data" let-name="name"
-  let-key="key" let-$send="$send"
-  let-result="result" let-resultAt="resultAt"
+  let-key="key" let-config="config"
 >
   <textarea
     wrap="off" style="width:100%;height:175px"
-    (change)="changeKey(key, $event.target.value)"
-  >{{ data | json }}</textArea>
+    (change)="changeKey(config, $event.target.value)"
+  >{{ config.data | json }}</textArea>
 
   <button
     type="button"
-    (click)="$send.emit(data)"
+    (click)="config.$send.emit(config.data)"
   >send request</button>
 
-  <ng-container *ngIf="result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: resultAt, result: result}"></div>
+  <ng-container *ngIf="config.load">... loading ...</ng-container>
+
+  <ng-container *ngIf="config.result">
+    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: config.resultAt, result: config.result}"></div>
   </ng-container>
 </ng-template>
 

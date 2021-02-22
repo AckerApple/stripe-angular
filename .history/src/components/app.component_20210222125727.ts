@@ -287,14 +287,12 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
   }
 
   async save(): Promise<stripe.Stripe>{
-    const saveKeyLocally = this.saveKeyLocally
-    const savePrivateKeyLocally = this.savePrivateKeyLocally
-    if (saveKeyLocally) {
+    if (this.saveKeyLocally) {
       // localStorage.stripeAngularKey = this.tempPublishableKey || this.publishableKey;
       this.storage.key = this.tempPublishableKey || this.storage.key
     }
 
-    if (savePrivateKeyLocally) {
+    if (this.savePrivateKeyLocally) {
       // localStorage.stripeAngularPrivateKey = this.privateKey;
       this.storage.privateKey = this.storage.privateKey
     }
@@ -302,9 +300,7 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     const storageString = JSON.stringify(this.storage)
     localStorage.stripeAngular = storageString
 
-    this.log('saved to localStorage', {
-      saveKeyLocally, savePrivateKeyLocally
-    })
+    this.log('saved to localStorage', storageString)
 
     return this.StripeScriptTag.setPublishableKey(this.storage.key)
       .then(stripe =>this.stripe=stripe);
@@ -369,8 +365,8 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     }
   }
 
-  log(...args) {
-    console.log(...args);
+  log(message) {
+    console.log(message);
   }
 
   toggleServerMode() {
