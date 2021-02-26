@@ -303,8 +303,7 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     localStorage.stripeAngular = storageString
 
     this.log('saved to localStorage', {
-      saveKeyLocally, savePrivateKeyLocally,
-      privateKey: this.storage.privateKey?.length // never show
+      saveKeyLocally, savePrivateKeyLocally
     })
 
     return this.StripeScriptTag.setPublishableKey(this.storage.key)
