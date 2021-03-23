@@ -1,12 +1,14 @@
 import { InjectionToken, ɵɵdefineInjectable, ɵɵinject, Injectable, Inject, EventEmitter, Component, Output, Input, ElementRef, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DOCUMENT, CommonModule } from '@angular/common';
 
 const STRIPE_PUBLISHABLE_KEY = new InjectionToken('Stripe Publishable Key');
 const STRIPE_OPTIONS = new InjectionToken('Stripe Options');
 
 class StripeScriptTag {
-    constructor(key, options) {
+    constructor(document, key, options) {
+        this.document = document;
         this.src = "https://js.stripe.com/v3/";
+        this.window = this.document.defaultView;
         this.load = this.injectIntoHead();
         if (key)
             this.setPublishableKey(key, options);
@@ -30,12 +32,12 @@ class StripeScriptTag {
         return this.load.then(() => this.StripeInstance = this.Stripe(key, options));
     }
     injectIntoHead() {
-        if (window["Stripe"]) {
-            return Promise.resolve(this.Stripe = window["Stripe"]);
+        if (this.window && this.window["Stripe"]) {
+            return Promise.resolve(this.Stripe = this.window["Stripe"]);
         }
         return new Promise((res, rej) => {
             const head = this.getTargetTagDropElement();
-            const script = document.createElement("script");
+            const script = this.document.createElement("script");
             script.setAttribute("src", this.src);
             script.setAttribute("type", "text/javascript");
             script.addEventListener("load", () => {
@@ -49,17 +51,18 @@ class StripeScriptTag {
         return window["Stripe"];
     }
     getTargetTagDropElement() {
-        let elm = document.getElementsByTagName("head");
+        let elm = this.document.getElementsByTagName("head");
         if (elm.length)
             return elm[0];
-        return document.getElementsByTagName("body")[0];
+        return this.document.getElementsByTagName("body")[0];
     }
 }
-StripeScriptTag.ɵprov = ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(ɵɵinject(STRIPE_PUBLISHABLE_KEY), ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
+StripeScriptTag.ɵprov = ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(ɵɵinject(DOCUMENT), ɵɵinject(STRIPE_PUBLISHABLE_KEY), ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
 StripeScriptTag.decorators = [
     { type: Injectable, args: [{ providedIn: 'root' },] }
 ];
 StripeScriptTag.ctorParameters = () => [
+    { type: undefined, decorators: [{ type: Inject, args: [DOCUMENT,] }] },
     { type: String, decorators: [{ type: Inject, args: [STRIPE_PUBLISHABLE_KEY,] }] },
     { type: undefined, decorators: [{ type: Inject, args: [STRIPE_OPTIONS,] }] }
 ];
