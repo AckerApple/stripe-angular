@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common'
 import { Injectable, Inject } from "@angular/core"
 
 import {
@@ -5,16 +6,19 @@ import {
   //, StripeCard, StripeToken
 } from "./StripeTypes"
 
-@Injectable({providedIn: 'root'}) export class StripeScriptTag{
+@Injectable({providedIn: 'root'}) export class StripeScriptTag {
   src:string = "https://js.stripe.com/v3/"
   Stripe!:Stripe//set at runtime
   StripeInstance!:stripe.Stripe
   load:Promise<any>
+  window: any
 
   constructor(
+    @Inject(DOCUMENT) private document: any,
     @Inject(STRIPE_PUBLISHABLE_KEY) key?: string,
-    @Inject(STRIPE_OPTIONS) options?: stripe.StripeOptions
+    @Inject(STRIPE_OPTIONS) options?: stripe.StripeOptions,
   ){
+    this.window = this.document.defaultView;
     this.load = this.injectIntoHead()
     if (key) this.setPublishableKey(key, options)
   }
@@ -47,13 +51,13 @@ import {
   }
 
   injectIntoHead():Promise<Stripe>{
-    if( window["Stripe"] ){
-      return Promise.resolve( this.Stripe = window["Stripe"] as any )
+    if( this.window && this.window["Stripe"] ){
+      return Promise.resolve( this.Stripe = this.window["Stripe"] as any )
     }
 
     return new Promise((res,rej)=>{
       const head = this.getTargetTagDropElement()
-      const script = document.createElement("script")
+      const script = this.document.createElement("script")
       script.setAttribute("src", this.src)
       script.setAttribute("type", "text/javascript")
 
@@ -71,10 +75,10 @@ import {
   }
 
   getTargetTagDropElement(){
-    let elm = document.getElementsByTagName("head")
+    let elm = this.document.getElementsByTagName("head")
 
     if(elm.length)return elm[0]
 
-    return document.getElementsByTagName("body")[0]
+    return this.document.getElementsByTagName("body")[0]
   }
 }
