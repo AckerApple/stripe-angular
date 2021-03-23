@@ -1,6 +1,9 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
+## [1.7.0] - (2021-03-23)
+- Support SSR by injecting Document instead of openly using window variable
+
 ## [1.6.0] - (2021-02-11)
 
 - stripe-card supports createOptions
