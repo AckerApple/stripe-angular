@@ -2,7 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common')) :
     typeof define === 'function' && define.amd ? define('stripe-angular', ['exports', '@angular/core', '@angular/common'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global['stripe-angular'] = {}, global.ng.core, global.ng.common));
-}(this, (function (exports, i0, common) { 'use strict';
+}(this, (function (exports, i0, i1) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -300,8 +300,10 @@
     var STRIPE_OPTIONS = new i0.InjectionToken('Stripe Options');
 
     var StripeScriptTag = /** @class */ (function () {
-        function StripeScriptTag(key, options) {
+        function StripeScriptTag(document, key, options) {
+            this.document = document;
             this.src = "https://js.stripe.com/v3/";
+            this.window = this.document.defaultView;
             this.load = this.injectIntoHead();
             if (key)
                 this.setPublishableKey(key, options);
@@ -328,12 +330,12 @@
         };
         StripeScriptTag.prototype.injectIntoHead = function () {
             var _this = this;
-            if (window["Stripe"]) {
-                return Promise.resolve(this.Stripe = window["Stripe"]);
+            if (this.window && this.window["Stripe"]) {
+                return Promise.resolve(this.Stripe = this.window["Stripe"]);
             }
             return new Promise(function (res, rej) {
                 var head = _this.getTargetTagDropElement();
-                var script = document.createElement("script");
+                var script = _this.document.createElement("script");
                 script.setAttribute("src", _this.src);
                 script.setAttribute("type", "text/javascript");
                 script.addEventListener("load", function () {
@@ -347,18 +349,19 @@
             return window["Stripe"];
         };
         StripeScriptTag.prototype.getTargetTagDropElement = function () {
-            var elm = document.getElementsByTagName("head");
+            var elm = this.document.getElementsByTagName("head");
             if (elm.length)
                 return elm[0];
-            return document.getElementsByTagName("body")[0];
+            return this.document.getElementsByTagName("body")[0];
         };
         return StripeScriptTag;
     }());
-    StripeScriptTag.ɵprov = i0.ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(i0.ɵɵinject(STRIPE_PUBLISHABLE_KEY), i0.ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
+    StripeScriptTag.ɵprov = i0.ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(i0.ɵɵinject(i1.DOCUMENT), i0.ɵɵinject(STRIPE_PUBLISHABLE_KEY), i0.ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
     StripeScriptTag.decorators = [
         { type: i0.Injectable, args: [{ providedIn: 'root' },] }
     ];
     StripeScriptTag.ctorParameters = function () { return [
+        { type: undefined, decorators: [{ type: i0.Inject, args: [i1.DOCUMENT,] }] },
         { type: String, decorators: [{ type: i0.Inject, args: [STRIPE_PUBLISHABLE_KEY,] }] },
         { type: undefined, decorators: [{ type: i0.Inject, args: [STRIPE_OPTIONS,] }] }
     ]; };
@@ -637,7 +640,7 @@
     StripeModule.decorators = [
         { type: i0.NgModule, args: [{
                     imports: [
-                        common.CommonModule
+                        i1.CommonModule
                     ],
                     declarations: declarations,
                     // providers: [ StripeScriptTag ],
