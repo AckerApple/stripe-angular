@@ -13,6 +13,7 @@
     "watch": "npm-run-all --parallel compile:templates watch:templates watch:js",
     "test": "ng test src --browsers PhantomJS --watch=false",
     "copy:dist": "cp -R dist/. ../dist",
+    "save:deploy": "npm-run-all save deploy",
     "deploy": "npm-run-all build deploy:npm deploy:gh-pages",
     "deploy:npm": "npm run save:dist && cd ../dist/ && npm publish",
     "save:dist": "npm run copy:dist && cd ../dist/ && git add . && git commit -m 'update' && git push",
