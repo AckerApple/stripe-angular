@@ -284,8 +284,12 @@ const storage: localSchema = getProjectLocalStorage()
     delete storage.savePrivateKeyLocally
     delete storage.saveKeyLocally
 
+    if (storage.privateKey && !confirm('include private server key?')) {
+      delete storage.privateKey
+    }
+
     const storageString = encodeURI(JSON.stringify(storage))
-    const url = window.location.origin + '?storage=' + storageString
+    const url = window.location.href.split('?').shift() + '?storage=' + storageString
     copyText(url)
     alert('copied')
   }
