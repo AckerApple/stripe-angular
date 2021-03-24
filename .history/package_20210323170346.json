@@ -1,0 +1,48 @@
+{
+  "name": "stripe-angular-gh-pages",
+  "version": "0.0.0",
+  "description": "Angular to Stripe module containing useful providers, components, and directives",
+  "scripts": {
+    "start": "ng serve --open",
+    "build": "ng build src --stats-json --prod --output-hashing=none",
+    "save": "git add . && git commit -m 'update' && git push",
+    "deploy": "npm run build && npm run copy:www && npm run save",
+    "copy:www": "cp -R www/. ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AckerApple/stripe-angular.git"
+  },
+  "keywords": [
+    "stripe",
+    "angular",
+    "credit",
+    "debit",
+    "card",
+    "payment",
+    "gateway"
+  ],
+  "author": "Acker Apple",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AckerApple/stripe-angular/issues"
+  },
+  "homepage": "https://github.com/AckerApple/stripe-angular#readme",
+  "private": true,
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.1100.6",
+    "@angular/common": "^11.0.7",
+    "@angular/compiler": "^11.0.7",
+    "@angular/compiler-cli": "^11.0.7",
+    "@angular/core": "^11.0.7",
+    "@angular/platform-browser": "^11.0.7",
+    "@angular/platform-browser-dynamic": "^11.0.7",
+    "@types/stripe-v3": "^3.1.23",
+    "rxjs": "^6.6.3",
+    "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
+    "zone.js": "^0.11.3"
+  },
+  "dependencies": {
+    "form-urlencoded": "^4.2.1"
+  }
+}
