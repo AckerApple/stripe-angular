@@ -13,7 +13,10 @@
   <tr>
     <td>
       <br />
-      <h1 style="text-align: center;margin:1em;color:white">stripe-angular {{version}}</h1>
+      <div style="text-align: center">
+        <h1 style="margin:0;color:white">stripe-angular {{version}}</h1>
+        <p>A dashboard of testing for both Stripe and stripe-angular</p>
+      </div>
       <ng-container *ngIf="!loaded">Loading...</ng-container>
 
       <ng-container *ngIf="loaded">
@@ -578,7 +581,7 @@
         <h2
           style="margin:0;text-align:left;color:white;"
         >Best of Resources</h2>
-        <div style="border-radius:5px;background-color:#888;text-align:left;max-width:600px;padding:1em;">
+        <div style="border-radius:5px;background-color:#888;text-align:left;max-width:900px;padding:1em;">
           <ng-container *ngTemplateOutlet="resources"></ng-container>
         </div>
       </div>
@@ -606,8 +609,13 @@
 
     <button
       type="button"
+      (click)="copyShareUrl()"
+      style="width:50%"
+    >copy share url</button>
+    <button
+      type="button"
       (click)="changekey=!changekey"
-      style="width:100%"
+      style="width:50%"
     >CHANGE API SETTINGS</button>
 
     <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
@@ -641,8 +649,8 @@
           <label for="saveKeyLocally" style="align-items: center">
             <input
               type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
-              (change)="saveKeyLocally = !saveKeyLocally"
-              [checked] = "saveKeyLocally"
+              (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
+              [checked] = "storage.saveKeyLocally"
             />
             <span>save Stripe key in localStorage</span>
           </label>
@@ -653,7 +661,7 @@
             <input
               type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
               (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
-              [checked] = "saveRequestsLocal"
+              [checked] = "storage.saveRequestsLocal"
             />
             <span>save requests in localStorage</span>
           </label>
@@ -693,8 +701,8 @@
           <label for="savePrivateKeyLocally" style="align-items: center">
             <input
               type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-              (change)="savePrivateKeyLocally = !savePrivateKeyLocally"
-              [checked] = "storage.privateKey"
+              (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
+              [checked] = "storage.savePrivateKeyLocally"
             />
             <span>save Stripe private key in localStorage</span>
           </label>
@@ -711,7 +719,8 @@
           type="button" (click)="changekey = !changekey"
           style="background-color: black;color:white;padding:.4em;font-size:.8em;"
           >cancel</button>
-          <button type="submit" style="padding:.4em;font-size:.8em;">save</button>
+          <button type="submit" style="padding:.4em;font-size:.8em;"
+          >save</button>
       </div>
     </form>
   </div>
@@ -738,40 +747,44 @@
 
   <br />
 
-  <div
-    *ngIf="cardComplete"
-    style="text-align:right;display:flex;flex-wrap:wrap;font-size:1em;"
-  >
-    <button
-      type="button"
-      (click)="lastError=null;sending=true;stripeCard.createSource(sourceRequest)"
-      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-      title="Using Payment Method instead is recommended"
-    >
-      create source
-    </button>
+  <div style="display:flex;flex-wrap:wrap;font-size:1em;justify-content: center">
+    <div *ngIf="!cardComplete;else cardCompleteTemplate" style="opacity:50%">
+      ...awaiting card entry form above...
+    </div>
 
-    <button
-      type="button"
-      (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(paymentMethodRequest)"
-      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-    >
-      create payment method
-    </button>
+    <ng-template #cardCompleteTemplate>
+      <button
+        type="button"
+        (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
+        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+        title="Using Payment Method instead is recommended"
+      >
+        create source
+      </button>
 
-    <button
-      type="button"
-      (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-      style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-      title="Using Payment Method instead is recommended"
-    >
-      create token
-    </button>
+      <button
+        type="button"
+        (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
+        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+      >
+        create payment method
+      </button>
+
+      <button
+        type="button"
+        (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
+        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+        title="Using Payment Method instead is recommended"
+      >
+        create token
+      </button>
+    </ng-template>
   </div>
+
 
   <br />
 
-  <h3 style="flex-grow:1;margin:0;">Card Controls</h3>
+  <h3 style="flex-grow:1;margin:0;">Optional Card Controls</h3>
   <div *ngIf="editExtraData">
     <br />
     <div style="display:flex;justify-content:space-between">
@@ -795,19 +808,19 @@
         <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
       </small>
     </div>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ paymentMethodRequest | json }}</textArea>
+    <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
       <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
     </div>
 
     <div *ngIf="editSourceRequest">
       <br />
       <div style="display:flex;justify-content:space-between">
-        <strong>source data</strong>
+        <strong [style.color]="storage.temp.invalidSourceData && 'red'">source data</strong>
         <small>
           <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
         </small>
       </div>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ sourceRequest | json }}</textArea>
+    <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
   </div>
 
   <div *ngIf="editOptions">
@@ -899,9 +912,9 @@
   </div>
 
   <div *ngIf="card.changedEvent">
-    <strong>Change Event</strong>
+    <strong style="opacity: 50%;">INFO: Change Event</strong>
     <textarea
-      wrap="off" style="width:100%;height:175px"
+      wrap="off" style="width:100%;height:175px" disabled
       (change)="changeExtraData($event.target.value)"
     >{{ card.changedEvent | json }}</textArea>
   </div>

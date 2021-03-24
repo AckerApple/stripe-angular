@@ -13,10 +13,16 @@ interface localSchema {
   key: string
   privateKey: string
   saveRequestsLocal?: boolean
+  saveKeyLocally?: boolean
+  savePrivateKeyLocally?: boolean
 
   extraData?: any
-  sourceRequest?: any
-  paymentMethodRequest?: any
+  requests?: {
+    source?: any
+    paymentMethod?: any
+  }
+
+  temp: {[index: string]: any}
 }
 
 const stripeServer = 'https://api.stripe.com/v1/';
@@ -41,12 +47,8 @@ const sample = {
   }
 }
 
-const storageString = localStorage?.stripeAngular || '{}'
-const storage: localSchema = JSON.parse(storageString)
+const storage: localSchema = getProjectLocalStorage()
 
-// localStorage backwards compatibility
-storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
-storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
 @Component({
   selector:"app",
   templateUrl: './app.component.html'//.replace(/\s\s/g,'')//prevent accidentally spacing
@@ -56,8 +58,6 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
   loaded: boolean
   sending: boolean
   cardComplete = false
-  saveKeyLocally = false
-  savePrivateKeyLocally = false
   enableServerMode?: boolean;
 
   tempPublishableKey = storage.key
@@ -99,16 +99,6 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
 
     disabled: false
   };
-
-  // passed along when token or sources created
-  sourceRequest = storage.sourceRequest || {
-    owner: sample.owner,
-    metadata: sample.metadata
-  }
-
-  paymentMethodRequest = storage.paymentMethodRequest || {
-    metadata: sample.metadata
-  }
 
   // passed along during card token creation
   extraData = storage.extraData || {
@@ -286,53 +276,98 @@ storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
     delete localStorage.stripeAngularKey;
   }
 
+  copyShareUrl() {
+    const storage = this.getSaveableStorage()
+
+    // do let next client auto assume saving these
+    delete storage.saveRequestsLocal
+    delete storage.savePrivateKeyLocally
+    delete storage.saveKeyLocally
+
+    const storageString = encodeURI(JSON.stringify(storage))
+    const url = window.location.origin + '?storage=' + storageString
+    copyText(url)
+    alert('copied')
+  }
+
   async save(): Promise<stripe.Stripe>{
-    const saveKeyLocally = this.saveKeyLocally
-    const savePrivateKeyLocally = this.savePrivateKeyLocally
-    if (saveKeyLocally) {
-      // localStorage.stripeAngularKey = this.tempPublishableKey || this.publishableKey;
-      this.storage.key = this.tempPublishableKey || this.storage.key
-    }
+    const saveKeyLocally = this.storage.saveKeyLocally
+    const savePrivateKeyLocally = this.storage.savePrivateKeyLocally
+    this.tempPublishableKey
+    this.storage.key = this.tempPublishableKey || this.storage.key
 
     if (savePrivateKeyLocally) {
       // localStorage.stripeAngularPrivateKey = this.privateKey;
       this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
     }
 
-    const storageString = JSON.stringify(this.storage)
-    localStorage.stripeAngular = storageString
+    const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
+    if (storeLocally) {
+      const cloneStorage = this.getSaveableStorage()
+      const storageString = JSON.stringify(cloneStorage)
+      localStorage.stripeAngular = storageString
 
-    this.log('saved to localStorage', {
-      saveKeyLocally, savePrivateKeyLocally,
-      privateKey: this.storage.privateKey?.length // never show
-    })
+      cloneStorage.privateKey = this.storage.privateKey?.length // never show
+
+      this.log('saved to localStorage', cloneStorage)
+    }
 
     return this.StripeScriptTag.setPublishableKey(this.storage.key)
       .then(stripe =>this.stripe=stripe);
   }
 
-  changeSourceRequest(data:string){
-    this.sourceRequest = JSON.parse(data)
+  getSaveableStorage() {
+    const cloneStorage = JSON.parse(JSON.stringify(this.storage))
+    delete cloneStorage.temp
 
-    if (this.sourceRequest.metadata) {
-      this.extraData.metadata = this.sourceRequest.metadata
+    if (!cloneStorage.saveKeyLocally) {
+      delete cloneStorage.key
+    }
+
+
+    if (!cloneStorage.savePrivateKeyLocally) {
+      delete cloneStorage.privateKey
+    }
+
+    if (!cloneStorage.saveRequestsLocal) {
+      delete cloneStorage.requests
+    }
+
+    return cloneStorage
+  }
+
+  changeSourceRequest(data:string){
+    let source;
+
+    try {
+      source = this.storage.requests.source = JSON.parse(data)
+    } catch (err) {
+      this.storage.temp.invalidSourceData = true
+      this.log(err);
+      return
+    }
+
+    delete this.storage.temp.invalidSourceData
+
+    if (source.metadata) {
+      this.extraData.metadata = source.metadata
     }
 
     if (this.storage.saveRequestsLocal) {
-      this.storage.sourceRequest = this.sourceRequest
+      this.storage.requests.source = source
       this.save()
     }
   }
 
   changePaymentMethodRequest(data:string){
-    this.paymentMethodRequest = JSON.parse(data)
+    const pmr = this.storage.requests.paymentMethod = JSON.parse(data)
 
-    if (this.paymentMethodRequest.metadata) {
-      this.extraData.metadata = this.paymentMethodRequest.metadata
+    if (pmr.metadata) {
+      this.extraData.metadata = pmr.metadata
     }
 
     if (this.storage.saveRequestsLocal) {
-      this.storage.paymentMethodRequest = this.paymentMethodRequest
+      this.storage.requests.paymentMethod = pmr
       this.save()
     }
   }
@@ -819,4 +854,70 @@ interface ISimpleRouteEditor {
   resultAt?: number
   retrieve?: any // any update checks that might occur
   $send: EventEmitter<any>
+}
+
+function getUrlStorage() {
+  const urlQuery = new URLSearchParams(window.location.search)
+  const storageUrlString = urlQuery.get('storage')
+
+  if (!storageUrlString) {
+    return
+  }
+
+  try {
+    return JSON.parse(storageUrlString)
+  } catch (err) {
+    console.error('error parsing url storage', err);
+  }
+}
+
+function getLocalStorage() {
+  const storageString = localStorage?.stripeAngular
+  try {
+    return JSON.parse(storageString)
+  } catch (err) {
+    console.error('error parsing local storage', err);
+  }
+
+}
+
+function getProjectLocalStorage(): localSchema {
+  const storage = getUrlStorage() || getLocalStorage() || {}
+
+  console.log('storage', storage)
+
+  storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+  storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
+
+  storage.requests = storage.requests || {
+    // passed along when token or sources created
+    source: {
+      owner: sample.owner,
+      metadata: sample.metadata
+    },
+    paymentMethod: {
+      metadata: sample.metadata
+    }
+  }
+
+  storage.temp = {}
+
+  return storage
+}
+
+export function copyText(text: string) {
+  /* Get the text field */
+  var copyText = document.createElement('textarea');
+  copyText.value = text
+  document.body.appendChild(copyText)
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  document.body.removeChild(copyText)
+  // copyText.parentNode.removeChild(copyText)
 }
