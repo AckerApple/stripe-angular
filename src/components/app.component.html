@@ -641,14 +641,16 @@
 <ng-template #keyInfoUi>
   <div *ngIf="!changekey else storageForm">
     <div style="display:flex;flex-wrap:wrap">
-      <div style="margin:1em;">
+      <div style="margin:1em;flex-grow: 1;">
         <strong>publishableKey</strong>
-        <div>{{ storage.key | slice : 0 : 16 }}...</div>
+        <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
+        >{{ storage.key | slice : 0 : 16 }}...</div>
       </div>
 
-      <div *ngIf="storage.privateKey" style="margin:1em;">
+      <div *ngIf="storage.privateKey" style="margin:1em;flex-grow: 1;"
+      >
         <strong>privateKey</strong>
-        <div>{{ storage.privateKey | slice : 0 : 8 }}...</div>
+        <div (click)="copyText(storage.privateKey)" class="hover-highlight" style="cursor: pointer;">{{ storage.privateKey | slice : 0 : 8 }}...</div>
       </div>
     </div>
 
