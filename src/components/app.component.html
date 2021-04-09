@@ -15,7 +15,7 @@
       <br />
       <div style="text-align: center">
         <h1 style="margin:0;color:white">stripe-angular {{version}}</h1>
-        <p>A dashboard of testing for both Stripe and stripe-angular</p>
+        <p>A dashboard of testing for both Stripe and stripe-angular, created by Acker Apple</p>
       </div>
       <ng-container *ngIf="!loaded">Loading...</ng-container>
 
@@ -74,9 +74,7 @@
           <br /><br />
 
           <div style="color:white;text-align:center;">
-            <h2
-              style="opacity: 50%;"
-            >Server Functionality</h2>
+            <h2 style="opacity: 50%;">Server Functionality</h2>
             <small>Helpful tools ONLY available in this demo by using entered <strong>privateKey</strong></small>
             <br /><br />
           </div>
@@ -98,6 +96,15 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
+                  <a
+                    *ngIf = "bank.token"
+                    (click) = "customer.data.source = bank.token.id"
+                    style = "text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "customer.data.source === bank.token.id && '.3'"
+                    [title] = "bank.token.id"
+                  >
+                    use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
+                  </a>
                   <a
                     *ngIf="card.source"
                     (click)="customer.data.source = card.source.id"
@@ -414,9 +421,7 @@
                   </label>
                 </h3>
                 <small>
-                  <a
-                  href="https://stripe.com/docs/api/payment_intents"
-                  style="color:white;" target="_blank"
+                  <a href="https://stripe.com/docs/api/payment_intents" style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
@@ -469,9 +474,11 @@
 
                 <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payintent}"></ng-container>
 
-                <ng-container *ngIf="payintent.result">
-                  <button type="button" (click)="fetchPayIntentUpdate(payintent)">retrieve update</button>
-                </ng-container>
+                <!--
+                  <ng-container *ngIf="payintent.result">
+                    <button type="button" (click)="fetchPayIntentUpdate(payintent)">retrieve update</button>
+                  </ng-container>
+                -->
 
                 <ng-container *ngIf="payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
                   <div>
@@ -479,15 +486,45 @@
                     <a [href]="payintent.result.next_action?.use_stripe_sdk.stripe_js" target="_blank">secure payment verify link</a>
                   </div>
                 </ng-container>
-
-                <ng-container *ngIf="payintent.retrieve">
-                  <textarea
-                    wrap="off" style="width:100%;height:175px" disabled
-                  >{{ payintent.retrieve | json }}</textArea>
-                </ng-container>
               </div>
             </div>
 
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label for="card-like-element">
+                    Retrieve Pay Intent
+                  </label>
+                </h3>
+                <small>
+                  <a href="https://stripe.com/docs/api/payment_intents/retrieve" style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <input type="text" maxLength="30" (keyup)="payintent_retrieve.data.id=$event.target.value" style="width:100%"
+                  placeholder="pay_intent.id"
+                />
+                <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{config:payintent_retrieve}"></ng-container>
+              </div>
+            </div>
+
+            <div class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label for="card-like-element">
+                    Cancel Pay Intent
+                  </label>
+                </h3>
+                <small>
+                  <a href="https://stripe.com/docs/api/payment_intents/cancel" style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payintent_cancel}"></ng-container>
+              </div>
+            </div>
 
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
@@ -497,9 +534,7 @@
                   </label>
                 </h3>
                 <small>
-                  <a
-                  href="https://stripe.com/docs/api/charges"
-                  style="color:white;" target="_blank"
+                  <a href="https://stripe.com/docs/api/charges" style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
@@ -520,6 +555,7 @@
                     (click)="charge.data.source = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [title] = "card.token.id"
+                    [style.opacity] = "charge.data.source === card.token.card.id && '.3'"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
@@ -529,25 +565,36 @@
                     (click)="charge.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [title] = "card.source.id"
+                    [style.opacity] = "charge.data.source === card.source.id && '.3'"
                   >
                     use source{{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
 
-                  <a
-                    *ngIf="bank.token"
+                  <a *ngIf="bank.token"
                     (click)="charge.data.source = bank.token.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [title] = "bank.token.id"
+                    [style.opacity] = "charge.data.source === bank.token.id && '.3'"
                   >
                     use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
                   </a>
 
+                  <ng-container *ngFor="let item of customer.result && customer.result?.sources?.data">
+                    <a *ngIf="item.object === 'bank_account'"
+                      (click)="charge.data.source = item.id"
+                      style="text-decoration:underline;cursor:pointer;margin:1em;"
+                      [title] = "item.id"
+                      [style.opacity] = "charge.data.source === item.id && '.3'"
+                    >
+                      use customer bank {{item.bank_name}} {{item.last4}}
+                    </a>
+                  </ng-container>
+
                   <a *ngIf="customer.result"
                     (click)="charge.data.customer=customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                  >
-                    use customer {{customer.result.description}}
-                  </a>
+                    [style.opacity] = "charge.data.customer === customer.result.id && '.3'"
+                  >use customer {{customer.result.description}}</a>
                 </small>
                 <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:charge}"></ng-container>
                 <div style="text-align:center;opacity:.5;">
@@ -663,7 +710,7 @@
               (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
               [checked] = "storage.saveRequestsLocal"
             />
-            <span>save requests in localStorage</span>
+            <span>save request data in localStorage</span>
           </label>
         </div>
 
@@ -682,11 +729,10 @@
       <div *ngIf="enableServerMode || storage.privateKey">
         <strong style="color:orange;">privateKey</strong>
         <div>
-          <input
-          type="password"
-          (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
-          [value]="tempPrivateKey"
-          style="width:100%"
+          <input type="password"
+            (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
+            [value]="tempPrivateKey"
+            style="width:100%"
           />
         </div>
         <div style="padding:.5em;">
@@ -707,6 +753,13 @@
             <span>save Stripe private key in localStorage</span>
           </label>
         </div>
+      </div>
+
+      <div *ngIf="storage.saveRequestsLocal">
+        <strong>Reuse metadata</strong>
+        <textarea wrap="off" style="width:100%;height:175px"
+          (change)="updateStorageMeta($event.target.value)"
+        >{{ storage.metadata | json }}</textArea>
       </div>
 
       <div style="text-align:center;">
@@ -793,8 +846,7 @@
         <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
       </small>
     </div>
-    <textarea
-      wrap="off" style="width:100%;height:175px"
+    <textarea wrap="off" style="width:100%;height:175px"
       (change)="changeExtraData($event.target.value)"
     >{{ extraData | json }}</textArea>
   </div>
@@ -850,14 +902,11 @@
       source data
     </button>
 
-    <button
-      type="button"
+    <button type="button"
       (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
       style="flex-grow:1"
       [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
-    >
-      payment method data
-    </button>
+    >payment method data</button>
 
     <button
       type="button"
@@ -865,9 +914,7 @@
       style="flex-grow:1"
       [style.background-color] = "editExtraData && '#0099CC' || null"
       title="Using Payment Method instead is recommended"
-    >
-      token data
-    </button>
+    >token data</button>
 
     <button
       type="button"
@@ -968,12 +1015,19 @@
       <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
         <h3 style="flex-grow: 1;">Verify customer micro deposits</h3>
         <small>
-          <a style="color:white;" href="https://stripe.com/docs/ach#testing-ach">test data</a>
+          <a style="color:white;" href="https://stripe.com/docs/ach#testing-ach" target="_blank">test data</a>
         </small>
       </div>
       <div style="display:flex;flex-wrap:wrap;">
-        <div style="flex-grow: 1;">
-          <div>Verify Amount 1</div>
+        <div style="flex-grow: 1;margin:0.4em;">
+          <div style="display:flex;justify-content: space-between;align-items: flex-start;">
+            <span>Verify Amount 1</span>
+            <sup>
+              <a (click)="bank.verify.amount1=32"
+                style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
+              >32</a>
+            </sup>
+          </div>
           <input
             style="width:100%" type="number"
             [value]="bank.verify.amount1"
@@ -981,8 +1035,15 @@
             placeholder="Enter 32 here"
           />
         </div>
-        <div style="flex-grow: 1;">
-          <div>Verify Amount 2</div>
+        <div style="flex-grow: 1;margin:0.4em;">
+          <div style="display:flex;justify-content: space-between;align-items: flex-start;">
+            <span>Verify Amount 2</span>
+            <sup>
+              <a (click)="bank.verify.amount2=45"
+                style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
+              >45</a>
+            </sup>
+          </div>
           <input
             style="width:100%" type="number"
             [value]="bank.verify.amount2"
@@ -991,9 +1052,7 @@
           />
         </div>
       </div>
-      <button
-        type="button"
-        (click)="verifyBank()"
+      <button type="button" (click)="verifyBank()"
       >verify</button>
 
       <div *ngIf="bank.verifyResponse">
@@ -1007,14 +1066,21 @@
   </ng-container>
 </ng-template>
 
-<ng-template #simpleRouteEditor
-  let-key="key" let-config="config"
->
+<ng-template #simpleRouteEditor let-key="key" let-config="config">
   <textarea
     wrap="off" style="width:100%;height:175px"
     (change)="changeKey(config, $event.target.value)"
   >{{ config.data | json }}</textArea>
 
+  <textarea
+    *ngIf="config.error" wrap="off" style="width:100%;height:175px"
+    disabled style="background-color:rgba(255, 0, 0, 0.678);"
+  >{{ config.error | json }}</textArea>
+
+  <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{key:key, config:config}"></ng-container>
+</ng-template>
+
+<ng-template #simpleRouteFooter let-key="key" let-config="config">
   <button
     type="button"
     (click)="config.$send.emit(config.data)"
@@ -1031,6 +1097,12 @@
   <br />
   <div style="display:flex;">
     <strong style="flex-grow:1">{{title || 'Result'}}</strong>
+    <small *ngIf="result.id" style="opacity:.5;font-size: 0.8em;">
+      <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
+        class="hover-highlight"
+        (click)="copyText(result.id)"
+      >copy id</a>
+    </small>
     <small *ngIf="resultAt" style="opacity:.5">{{resultAt | date : 'mediumTime' }}</small>
   </div>
   <textarea
@@ -1038,60 +1110,80 @@
   >{{ result | json }}</textArea>
 </ng-template>
 
+<style>
+	.resource-link {
+    flex-grow:1;margin:.3em;text-decoration: none;
+  }
+
+  .hover-highlight:hover {
+    background-color: khaki;
+  }
+
+  .hover-highlight:active {
+    background-color: blue;
+  }
+</style>
+
 <ng-template #resources>
   <div style="text-align:center;display:flex;justify-content: center;flex-wrap:wrap">
     <a
       href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >demo code on github</a>
-    <a
+
+    <a
+      href="https://www.youtube.com/watch?v=_1EX-DrikoA"
+      target="_blank" class="resource-link"
+    >🎥 ACH bank account setup</a>
+
+    <a
       href="https://stripe.com/docs/error-codes"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >error-codes</a>
 
     <a
       href="https://stripe.dev/elements-examples/"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >stripe elements examples</a>
 
     <a
       href="https://stripe.com/docs/js"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >stripe.js docs</a>
 
     <a
       href="https://stripe.com/docs/api/sources/object#source_object-type"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >source types</a>
 
     <a
       href="https://www.youtube.com/watch?v=_1EX-DrikoA"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >Bank ACH YouTube</a>
 
     <a
       href="https://stripe.com/docs/payments/payment-intents/migration/charges"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >Pay Intent API VS. Charges API</a>
 
     <a
       href="https://stripe.com/docs/api/payment_methods/update"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >update payment method</a>
 
     <a
       href="https://stripe.com/docs/api/cards/update"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >update source card</a>
 
     <a
       href="https://stripe.com/docs/api/cards/delete"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >delete source card</a>
 
     <a
       href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
-      target="_blank" style="flex-grow:1;margin:.2em;"
+      target="_blank" class="resource-link"
     >check card valid without charge</a>
   </div>
 </ng-template>

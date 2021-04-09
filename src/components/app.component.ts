@@ -1,51 +1,11 @@
-import formurlencoded from 'form-urlencoded';
 import { Component, EventEmitter } from "@angular/core"
 import { string as demoTemplate, string } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
-// import { BankAccountTokenOptions } from "stripe-angular/StripeTypes";
-//DEMO REFERENCE TO stripe-angular . USE BELOW
 import * as packageJson from "stripe-angular/package.json"
-
-//YOUR REFERENCE TO stripe-angular
-//import { Stripe, StripeScriptTag } from "stripe-angular"
-
-interface localSchema {
-  key: string
-  privateKey: string
-  saveRequestsLocal?: boolean
-  saveKeyLocally?: boolean
-  savePrivateKeyLocally?: boolean
-
-  extraData?: any
-  requests?: {
-    source?: any
-    paymentMethod?: any
-  }
-
-  temp: {[index: string]: any}
-}
-
-const stripeServer = 'https://api.stripe.com/v1/';
-const sampleAddress = {
-  city: 'Coconut Creek',
-  country: null,
-  line1: '1234 sw 1st ct',
-  line2: null,
-  postal_code: '33066',
-  state: 'FL'
-}
-const sample = {
-  metadata: {
-    testedUsing: 'stripe-angular',
-    author: 'Acker Apple'
-  },
-  owner: {
-    email: 'jenny.rosen@example.com',
-    name: 'jenny rosen',
-    phone: '561-561-5611',
-    address: sampleAddress
-  }
-}
+import {
+  request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
+  copyText, tryParse, stripeServer,
+} from "./app.component.utils"
 
 const storage: localSchema = getProjectLocalStorage()
 
@@ -132,6 +92,7 @@ const storage: localSchema = getProjectLocalStorage()
     } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
   }
 
+  // create
   customer: ISimpleRouteEditor = {
     $send: new EventEmitter(),
     load: 0,
@@ -231,6 +192,23 @@ const storage: localSchema = getProjectLocalStorage()
     }
   }
 
+  payintent_retrieve: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    load: 0,
+    data: {
+      id: '',
+    }
+  }
+
+  payintent_cancel: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    load: 0,
+    data: {
+      id: '',
+      cancellation_reason: 'requested_by_customer', // duplicate, fraudulent, requested_by_customer, or abandoned
+    }
+  }
+
   charge: ISimpleRouteEditor = {
     $send: new EventEmitter(),
     load: 0,
@@ -248,11 +226,30 @@ const storage: localSchema = getProjectLocalStorage()
     this.source_get.$send.subscribe(data => this.getSource(data.id))
     this.customer_get.$send.subscribe(data => this.getCustomer(data.id))
     this.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
-    this.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data))
+    this.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
     this.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
     this.customer.$send.subscribe(data => this.createCustomer(data))
     this.payintent.$send.subscribe(data => this.createPayIntent(data))
+    this.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
+    this.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
     this.charge.$send.subscribe(data => this.createCharge(data))
+
+    if (Object.keys(storage.metadata).length) {
+      this.defaultMetadata(storage.metadata)
+    }
+  }
+
+  defaultMetadata(meta: Record<string, any>) {
+    storage.requests.source.metadata = meta
+    storage.requests.paymentMethod.metadata = meta
+
+    this.customer_update.data.metadata = meta
+    this.customer.data.metadata = meta
+    this.payintent.data.metadata = meta
+    this.charge.data.metadata = meta
+
+    this.extraData.metadata = meta;
+    (this.bank.data as any).metadata = meta
   }
 
   ngOnInit(){
@@ -390,9 +387,10 @@ const storage: localSchema = getProjectLocalStorage()
   }
 
   changeKey(
-    scope:ISimpleRouteEditor,
+    scope: ISimpleRouteEditor,
     value: string
   ) {
+    delete scope.error
     const keys = ['data']
     var current = scope;
 
@@ -404,6 +402,7 @@ const storage: localSchema = getProjectLocalStorage()
       // current[keys[0]] = JSON.parse(value);
       eval('current[keys[0]] = ' + value); // allow loose js to be cast to json
     } catch (err) {
+      scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
       console.error(`failed to parse object key ${keys[0]}`);
       throw err
     }
@@ -524,12 +523,45 @@ const storage: localSchema = getProjectLocalStorage()
       .then(res => {
         this.payintent.result = tryParse(res)
         this.payintent.resultAt = Date.now()
+
+        this.payintent_retrieve.result = this.payintent.result
+        this.payintent_retrieve.resultAt = this.payintent.resultAt
       })
       .finally(() => --this.payintent.load)
   }
 
+  retrievePayIntent(id: string) {
+    ++this.payintent_retrieve.load
+    const url = stripeServer + 'payment_intents/' + id
+
+    console.log('url', url)
+
+    request({url, authorizationBearer: this.storage.privateKey})
+      .then((res: string) => {
+        this.payintent_retrieve.result = tryParse(res)
+        this.payintent_retrieve.resultAt = Date.now()
+      })
+      .finally(() => --this.payintent_retrieve.load)
+  }
+
+  cancelPayIntent(id: string) {
+    ++this.payintent_cancel.load
+    const url = `${stripeServer}payment_intents/${id}/cancel`
+
+    request({url, post: {
+      cancellation_reason: this.payintent_cancel.data.cancellation_reason
+    }, authorizationBearer: this.storage.privateKey})
+      .then((res: string) => {
+        this.payintent_cancel.result = tryParse(res)
+        this.payintent_cancel.resultAt = Date.now()
+      })
+      .finally(() => --this.payintent_cancel.load)
+  }
+
   createCharge(data: any) {
     ++this.charge.load
+
+    console.log('data', data)
 
     request({
       url: stripeServer + 'charges',
@@ -578,7 +610,7 @@ const storage: localSchema = getProjectLocalStorage()
       .then(result => this.bank.verifyResponse = tryParse(result))
   }
 
-  fetchPayIntentUpdate(config: ISimpleRouteEditor) {
+  /*fetchPayIntentUpdate(config: ISimpleRouteEditor) {
     const base = stripeServer + 'payment_intents/'
     const intentId = config.result.id;
     const url = base + intentId;
@@ -588,9 +620,9 @@ const storage: localSchema = getProjectLocalStorage()
       url,
       authorizationBearer: this.storage.privateKey
     })
-      .then(result => config.retrieve = tryParse(result))
+      // .then(result => config.retrieve = tryParse(result))
       .finally(() => --config.load)
-  }
+  }*/
 
   sendSourceUpdate(data: any, id: string) {
     const shallowClone = {...data}
@@ -762,166 +794,12 @@ const storage: localSchema = getProjectLocalStorage()
       this.customer_detach_method.resultAt = Date.now()
     }).finally(() => --this.customer_detach_method.load)
   }
-}
 
-function request(
-  {url, method, post, authorizationBearer}: {
-    url: string, method?: 'GET' | 'POST'
-    post?: {[x: string]: any}
-    authorizationBearer?: string
-  }
-) {
-  return new Promise((res, rej) => {
-    const req = new XMLHttpRequest();
-    const endMethod = method || (post ? 'POST' : 'GET')
-    req.open(endMethod, url, true);
-    req.setRequestHeader('Accept', 'application/json');
-
-    if (authorizationBearer) {
-      req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer);
-    }
-
-    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-    // const formPost = objectToUriForm(post);
-    const formPost = formurlencoded(post);
-    req.send( formPost );
-
-    req.onreadystatechange = () => {
-      if (req.readyState === 4) {
-        res(req.responseText);
-        req.responseText;
-      }
-    }
-  });
-}
-function objectToUriForm(
-  ob: {[index: string]: any} | string[],
-  parentKey?: string
-): string {
-  let returnString = '';
-
-  if (!ob) {
-    return returnString;
-  } else if (Array.isArray(ob)) {
-    ob.forEach(value => {
-      returnString += `${parentKey}[]=${encodeURIComponent(value)}&`;
-    });
-  } else {
-    Object.keys(ob).forEach(key => {
-      const value = ob[key]
-      let endKey = key;
-      let stringValue = '';
-
-      if (parentKey) {
-        endKey = `${parentKey}[${key}]`
-      }
-
-      switch (typeof(value)) {
-        case 'string':
-        case 'number':
-          stringValue = value.toString();
-          break;
-
-        case 'object':
-          if (parentKey) {
-            returnString += parentKey;
-            key = '[' + key + ']'
-          }
-
-          return returnString += objectToUriForm(value, key) + '&';
-      }
-
-      returnString += `${endKey}=${encodeURIComponent(stringValue)}` + '&'
-    });
+  copyText(text: string) {
+    copyText(text)
   }
 
-  if (returnString.length) {
-    returnString = returnString.substr(0, returnString.length - 1) // last &
+  updateStorageMeta(stringData: string) {
+    this.storage.metadata = JSON.parse(stringData)
   }
-
-  return returnString;
-}
-
-function tryParse(data: string | any) {
-  try {
-    return JSON.parse(data);
-  } catch (err) {
-    return data;
-  }
-}
-
-interface ISimpleRouteEditor {
-  data: any
-  load: number
-  result?: any
-  resultAt?: number
-  retrieve?: any // any update checks that might occur
-  $send: EventEmitter<any>
-}
-
-function getUrlStorage() {
-  const urlQuery = new URLSearchParams(window.location.search)
-  const storageUrlString = urlQuery.get('storage')
-
-  if (!storageUrlString) {
-    return
-  }
-
-  try {
-    return JSON.parse(storageUrlString)
-  } catch (err) {
-    console.error('error parsing url storage', err);
-  }
-}
-
-function getLocalStorage() {
-  const storageString = localStorage?.stripeAngular
-  try {
-    return JSON.parse(storageString)
-  } catch (err) {
-    console.error('error parsing local storage', err);
-  }
-
-}
-
-function getProjectLocalStorage(): localSchema {
-  const storage = getUrlStorage() || getLocalStorage() || {}
-
-  console.log('storage', storage)
-
-  storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
-  storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
-
-  storage.requests = storage.requests || {
-    // passed along when token or sources created
-    source: {
-      owner: sample.owner,
-      metadata: sample.metadata
-    },
-    paymentMethod: {
-      metadata: sample.metadata
-    }
-  }
-
-  storage.temp = {}
-
-  return storage
-}
-
-export function copyText(text: string) {
-  /* Get the text field */
-  var copyText = document.createElement('textarea');
-  copyText.value = text
-  document.body.appendChild(copyText)
-
-  /* Select the text field */
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); /* For mobile devices */
-
-  /* Copy the text inside the text field */
-  document.execCommand("copy");
-
-  document.body.removeChild(copyText)
-  // copyText.parentNode.removeChild(copyText)
 }
