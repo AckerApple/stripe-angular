@@ -96,6 +96,10 @@ const storage: localSchema = getProjectLocalStorage()
   customer: ISimpleRouteEditor = {
     $send: new EventEmitter(),
     load: 0,
+    request: {
+      method: 'POST',
+      path: 'customers/'
+    },
     data: {
       description: "some new customer",
       ...sample.owner,
@@ -105,6 +109,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   customer_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'customers/${id}'
+    },
     load: 0,
     data: {
       id: "",
@@ -114,6 +122,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   customer_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'customers/${id}'
+    },
     load: 0,
     data: {
       id: ""
@@ -122,6 +134,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   get_paymethods: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_methods/'
+    },
     load: 0,
     data: {
       customer: "", type: "card"
@@ -130,18 +146,30 @@ const storage: localSchema = getProjectLocalStorage()
 
   customer_attach_method: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${paymentMethod.id}/attach'
+    },
     load: 0,
     data: {} // not used currently
   }
 
   customer_detach_method: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${paymentMethod.id}/detach'
+    },
     load: 0,
     data: {} // not used currently
   }
 
   customer_get_sources: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'customers/${id}/sources'
+    },
     load: 0,
     data: {
       id: ""
@@ -150,6 +178,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   source_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'sources/${id}'
+    },
     load: 0,
     data: {
       id: ""
@@ -158,6 +190,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   source_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'sources/${id}'
+    },
     load: 0,
     data: {
       id: ""
@@ -166,6 +202,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   payment_method_get: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_methods/${id}'
+    },
     load: 0,
     data: {
       id: ""
@@ -174,6 +214,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   payment_method_update: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${id}'
+    },
     load: 0,
     data: {
       id: ""
@@ -182,6 +226,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   payintent: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_intents/'
+    },
     load: 0,
     data: {
       amount: 1099,
@@ -194,6 +242,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   payintent_retrieve: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_intents/${id}'
+    },
     load: 0,
     data: {
       id: '',
@@ -202,6 +254,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   payintent_cancel: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_intents/${id}/cancel'
+    },
     load: 0,
     data: {
       id: '',
@@ -211,6 +267,10 @@ const storage: localSchema = getProjectLocalStorage()
 
   charge: ISimpleRouteEditor = {
     $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'charges/'
+    },
     load: 0,
     data: {
       amount: 1099,
@@ -560,8 +620,6 @@ const storage: localSchema = getProjectLocalStorage()
 
   createCharge(data: any) {
     ++this.charge.load
-
-    console.log('data', data)
 
     request({
       url: stripeServer + 'charges',

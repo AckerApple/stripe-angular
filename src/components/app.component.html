@@ -147,16 +147,18 @@
                 </small>
               </div>
               <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="customer.result"
-                    (click)="customer_get.data.id = customer.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer_get.data.id === customer.result.id && '.3'"
-                  >
-                    use customer {{customer.result.id}}
-                  </a>
-                </small>
+                <div style="color:white;">
+                  <small style="display:flex;flex-wrap:wrap;">
+                    <a
+                      *ngIf="customer.result"
+                      (click)="customer_get.data.id = customer.result.id"
+                      style="text-decoration:underline;cursor:pointer;margin:1em;"
+                      [style.opacity] = "customer_get.data.id === customer.result.id && '.3'"
+                    >
+                      use customer {{customer.result.id}}
+                    </a>
+                  </small>
+                </div>
                 <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_get}"></ng-container>
               </div>
             </div>
@@ -1069,6 +1071,8 @@
 </ng-template>
 
 <ng-template #simpleRouteEditor let-key="key" let-config="config">
+  <div style="opacity:.5">{{config.request?.method}}&nbsp;{{config.request?.path}}</div>
+
   <textarea
     wrap="off" style="width:100%;height:175px"
     (change)="changeKey(config, $event.target.value)"

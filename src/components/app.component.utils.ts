@@ -130,6 +130,10 @@ export function tryParse(data: string | any) {
 
 export interface ISimpleRouteEditor {
   data: {[index:string]: any}
+  request?: {
+    method: string
+    path: string
+  }
   load: number
   result?: {[index:string]: any}
   resultAt?: number
