@@ -219,9 +219,7 @@
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
                 <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    GET Payment Methods
-                  </label>
+                  <label>GET Payment Methods</label>
                 </h3>
                 <small>
                   <a
@@ -232,8 +230,7 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="customer.result"
+                  <a *ngIf="customer.result"
                     (click)="get_paymethods.data.customer = customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "get_paymethods.data.customer === customer.result.id && '.3'"
@@ -269,6 +266,15 @@
                     [title] = "payment_method_get.result.id"
                   >
                     use type {{payment_method_get.result.type}}
+                  </a>
+
+                  <a *ngIf="card.source"
+                    (click)="payment_method_get.data.id = card.source.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "payment_method_get.data.id === card.source.id && '.3'"
+                    [title] = "card.source.id + ' - a source can become a payment_method'"
+                  >
+                    use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                 </small>
                 <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payment_method_get}"></ng-container>
@@ -369,7 +375,7 @@
                     [style.opacity] = "source_get.data.id === card.source.id && '.3'"
                     [title] = "card.source.id"
                   >
-                    use {{card.source.card.brand}} {{card.source.card.last4}}
+                    use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                 </small>
 
@@ -429,8 +435,7 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="customer.result"
+                  <a *ngIf="customer.result"
                     (click)="payintent.data.customer = customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.customer === customer.result.id && '.3'"
@@ -445,8 +450,7 @@
                   >
                     use GET customer {{customer_get.data.id}}
                   </a>
-                  <a
-                    *ngIf="card.payment_method"
+                  <a *ngIf="card.payment_method"
                     (click)="payintent.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.payment_method.id && '.3'"
@@ -454,8 +458,7 @@
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
-                  <a
-                    *ngIf="card.source"
+                  <a *ngIf="card.source"
                     (click)="payintent.data.payment_method = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [style.opacity] = "payintent.data.payment_method === card.source.id && '.3'"
@@ -942,15 +945,27 @@
 
   <div *ngIf="card.source">
     <br />
-    <strong>Source Response</strong>
-    <textarea
-      disabled wrap="off" style="width:100%;height:175px"
-    >{{ card.source | json }}</textArea>
+    <div style="display:flex">
+      <strong style="flex-grow:1">Source Response</strong>
+      <small style="opacity:.5;font-size: 0.8em;">
+        <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
+          class="hover-highlight" (click)="copyText(card.source.id)"
+        >copy id</a>
+      </small>
+    </div>
+    <textarea disabled wrap="off" style="width:100%;height:175px">{{ card.source | json }}</textArea>
   </div>
 
   <div *ngIf="card.payment_method">
     <br />
-    <strong>Payment Method Response</strong>
+    <div style="display:flex">
+      <strong>Payment Method Response</strong>
+      <small style="opacity:.5;font-size: 0.8em;">
+        <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
+          class="hover-highlight" (click)="copyText(card.payment_method.id)"
+        >copy id</a>
+      </small>
+    </div>
     <textarea
       disabled wrap="off" style="width:100%;height:175px"
     >{{ card.payment_method | json }}</textArea>
@@ -1118,7 +1133,8 @@
 
 <style>
 	.resource-link {
-    flex-grow:1;margin:.3em;text-decoration: none;
+    flex-grow:1;margin:.3em;padding:.3em;text-decoration: none;
+    border-radius:5px;border:1px solid rgba(233, 233, 233, 0.678);
   }
 
   .hover-highlight:hover {
@@ -1136,57 +1152,50 @@
       href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
       target="_blank" class="resource-link"
     >demo code on github</a>
-
     <a
       href="https://www.youtube.com/watch?v=_1EX-DrikoA"
       target="_blank" class="resource-link"
     >🎥 ACH bank account setup</a>
-
+    <a
+      href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
+      target="_blank" class="resource-link"
+    >🎥 Customer Authentication & 3D Secure</a>
     <a
       href="https://stripe.com/docs/error-codes"
       target="_blank" class="resource-link"
     >error-codes</a>
-
     <a
       href="https://stripe.dev/elements-examples/"
       target="_blank" class="resource-link"
     >stripe elements examples</a>
-
     <a
       href="https://stripe.com/docs/js"
       target="_blank" class="resource-link"
     >stripe.js docs</a>
-
     <a
       href="https://stripe.com/docs/api/sources/object#source_object-type"
       target="_blank" class="resource-link"
     >source types</a>
-
     <a
       href="https://www.youtube.com/watch?v=_1EX-DrikoA"
       target="_blank" class="resource-link"
     >Bank ACH YouTube</a>
-
     <a
       href="https://stripe.com/docs/payments/payment-intents/migration/charges"
       target="_blank" class="resource-link"
     >Pay Intent API VS. Charges API</a>
-
     <a
       href="https://stripe.com/docs/api/payment_methods/update"
       target="_blank" class="resource-link"
     >update payment method</a>
-
     <a
       href="https://stripe.com/docs/api/cards/update"
       target="_blank" class="resource-link"
     >update source card</a>
-
     <a
       href="https://stripe.com/docs/api/cards/delete"
       target="_blank" class="resource-link"
     >delete source card</a>
-
     <a
       href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
       target="_blank" class="resource-link"
