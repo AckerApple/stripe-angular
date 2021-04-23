@@ -137,7 +137,7 @@ export interface ISimpleRouteEditor {
   load: number
   result?: {[index:string]: any}
   resultAt?: number
-  error?: Error
+  error?: any
   // stringResult?: string
   // retrieve?: any // any update checks that might occur
   $send: EventEmitter<{[index:string]: any}>

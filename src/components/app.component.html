@@ -57,8 +57,7 @@
                   </label>
                 </h3>
                 <small>
-                  <a
-                    href="https://stripe.com/docs/ach#testing-ach"
+                  <a href="https://stripe.com/docs/ach#testing-ach"
                     style="color:white;" target="_blank"
                   >demo accounts</a>
                 </small>
@@ -67,7 +66,60 @@
                 <ng-container *ngTemplateOutlet="bankUi"></ng-container>
               </div>
             </div>
+
+            <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
+              <div class="tool-wrap">
+                <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                  <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                    <label for="card-like-element">
+                      Confirm Pay Intent
+                    </label>
+                  </h3>
+                  <small>
+                    <a href="https://stripe.com/docs/payments/3d-secure#confirm-payment-intent"
+                      style="color:white;" target="_blank"
+                    >api docs</a>
+                  </small>
+                </div>
+                <div class="tool-panel">
+                  <small style="display:flex;flex-wrap:wrap;color:white;">
+                    <a *ngIf="api.payintent_retrieve.result?.client_secret"
+                      (click)="api.confirm_pay_intent.data.client_secret = api.payintent_retrieve.result.client_secret"
+                      style="text-decoration:underline;cursor:pointer;margin:1em;"
+                      [style.opacity] = "api.confirm_pay_intent.data.client_secret === api.payintent_retrieve.result.client_secret && '.3'"
+                      [title] = "api.payintent_retrieve.result.client_secret"
+                    >
+                      use pay_intent {{api.payintent_retrieve.result.client_secret}}
+                    </a>
+                    <!--
+                    <div style="display:flex;">
+                      <input type="text" placeholder="PAYMENT_INTENT_CLIENT_SECRET" [value]="paymentIntentClientSecret"
+                        (keyup)="paymentIntentClientSecret===$event.target.value || paymentIntentClientSecret = $event.target.value" style="flex-grow: 1;"
+                      />
+                      <button type="button" (click)="confirmSecurity()">confirm</button>
+                    </div>
+                    -->
+                  </small>
+                  <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.confirm_pay_intent}"></ng-container>
+                  <ng-container *ngIf="api.confirm_pay_intent.result?.paymentIntent?.next_action?.redirect_to_url?.url">
+                    <div>
+                      <ng-container *ngTemplateOutlet="nextActionLink;context:{link: api.confirm_pay_intent.result.paymentIntent.next_action.redirect_to_url.url}"></ng-container>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
           </ng-container>
+        </div>
+
+        <ng-container *ngIf="sending">
+          <div>
+            Sending to Stripe...
+          </div>
+        </ng-container>
+
+        <div *ngIf="lastError" style="color:red;">
+          <textarea wrap="off" style="color:red;width:100%;height:175px">{{lastError | json}}</textArea>
         </div>
 
         <ng-container *ngIf="storage.privateKey">
@@ -97,37 +149,37 @@
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
-                    *ngIf = "bank.token"
-                    (click) = "customer.data.source = bank.token.id"
+                    *ngIf = "api.bank.token"
+                    (click) = "api.customer.data.source = api.bank.token.id"
                     style = "text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer.data.source === bank.token.id && '.3'"
-                    [title] = "bank.token.id"
+                    [style.opacity] = "api.customer.data.source === api.bank.token.id && '.3'"
+                    [title] = "api.bank.token.id"
                   >
-                    use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
+                    use bank {{api.bank.token.bank_account.bank_name}} {{api.bank.token.bank_account.last4}}
                   </a>
                   <a
                     *ngIf="card.source"
-                    (click)="customer.data.source = card.source.id"
+                    (click)="api.customer.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer.data.source === card.source.id && '.3'"
+                    [style.opacity] = "api.customer.data.source === card.source.id && '.3'"
                     [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                   <a
                     *ngIf="card.payment_method"
-                    (click)="customer.data.payment_method = card.payment_method.id;setCustomerDefaultPayMethod(customer.data, card.payment_method)"
+                    (click)="api.customer.data.payment_method = card.payment_method.id;setCustomerDefaultPayMethod(api.customer.data, card.payment_method)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer.data.payment_method === card.payment_method.id && '.3'"
+                    [style.opacity] = "api.customer.data.payment_method === card.payment_method.id && '.3'"
                     [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer}"></ng-container>
 
-                <ng-container *ngIf="card.payment_method && customer.result">
-                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:customer.result}"></ng-container>
+                <ng-container *ngIf="card.payment_method && api.customer.result">
+                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer.result}"></ng-container>
                 </ng-container>
               </div>
             </div>
@@ -140,26 +192,31 @@
                   </label>
                 </h3>
                 <small>
-                  <a
-                  href="https://stripe.com/docs/api/customers/retrieve"
-                  style="color:white;" target="_blank"
+                  <a href="https://stripe.com/docs/api/customers/retrieve"
+                    style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
               <div class="tool-panel">
                 <div style="color:white;">
                   <small style="display:flex;flex-wrap:wrap;">
-                    <a
-                      *ngIf="customer.result"
-                      (click)="customer_get.data.id = customer.result.id"
+                    <a *ngIf="api.customer.result"
+                      (click)="api.customer_get.data.id = api.customer.result.id"
                       style="text-decoration:underline;cursor:pointer;margin:1em;"
-                      [style.opacity] = "customer_get.data.id === customer.result.id && '.3'"
+                      [style.opacity] = "api.customer_get.data.id === api.customer.result.id && '.3'"
+                    >use customer {{api.customer.result.id}}</a>
+
+                    <a *ngIf="api.payment_method_get.result?.customer"
+                      (click)="api.customer_get.data.id = api.payment_method_get.result.customer"
+                      style="text-decoration:underline;cursor:pointer;margin:1em;"
+                      [style.opacity] = "api.customer_get.data.id === api.payment_method_get.result.customer && '.3'"
+                      [title] = "api.payment_method_get.result.customer"
                     >
-                      use customer {{customer.result.id}}
+                      use pay method customer {{api.payment_method_get.result.customer}}
                     </a>
                   </small>
                 </div>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_get}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer_get}"></ng-container>
               </div>
             </div>
 
@@ -180,19 +237,19 @@
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
-                    *ngIf="customer.result"
-                    (click)="customer_update.data = cleanCustomerUpdateData(customer.result)"
+                    *ngIf="api.customer.result"
+                    (click)="customer_update.data = cleanCustomerUpdateData(api.customer.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer_update.data.id === customer.result.id && '.3'"
+                    [style.opacity] = "api.customer_update.data.id === api.customer.result.id && '.3'"
                   >
-                    use customer {{customer.result.id}}
+                    use customer {{api.customer.result.id}}
                   </a>
 
                   <a
                     *ngIf="card.source"
-                    (click)="customer_update.data.source = card.source.id"
+                    (click)="api.customer_update.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer_update.data.source === card.source.id && '.3'"
+                    [style.opacity] = "api.customer_update.data.source === card.source.id && '.3'"
                     [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
@@ -200,18 +257,18 @@
 
                   <a
                     *ngIf="card.payment_method"
-                    (click)="setCustomerDefaultPayMethod(customer_update.data, card.payment_method)"
+                    (click)="setCustomerDefaultPayMethod(api.customer_update.data, card.payment_method)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer_update.data.payment_method === card.payment_method.id && '.3'"
+                    [style.opacity] = "api.customer_update.data.payment_method === card.payment_method.id && '.3'"
                   >
                     default method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
 
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_update}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer_update}"></ng-container>
 
-                <ng-container *ngIf="card.payment_method && customer_update.data.id">
-                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:customer_update.data}"></ng-container>
+                <ng-container *ngIf="card.payment_method && api.customer_update.data.id">
+                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer_update.data}"></ng-container>
                 </ng-container>
               </div>
             </div>
@@ -222,23 +279,22 @@
                   <label>GET Payment Methods</label>
                 </h3>
                 <small>
-                  <a
-                    href = "https://stripe.com/docs/api/payment_methods/list"
+                  <a href = "https://stripe.com/docs/api/payment_methods/list"
                     style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="customer.result"
-                    (click)="get_paymethods.data.customer = customer.result.id"
+                  <a *ngIf="api.customer.result"
+                    (click)="api.get_paymethods.data.customer = api.customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "get_paymethods.data.customer === customer.result.id && '.3'"
+                    [style.opacity] = "api.get_paymethods.data.customer === api.customer.result.id && '.3'"
                   >
-                    use customer {{customer.result.id}}
+                    use customer {{api.customer.result.id}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:get_paymethods}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.get_paymethods}"></ng-container>
               </div>
             </div>
 
@@ -258,32 +314,31 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="payment_method_get.result"
-                    (click)="payment_method_get.data.id = payment_method_get.result.id"
+                  <a *ngIf="api.payment_method_get.result"
+                    (click)="api.payment_method_get.data.id = api.payment_method_get.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payment_method_get.data.id === payment_method_get.result.id && '.3'"
-                    [title] = "payment_method_get.result.id"
+                    [style.opacity] = "api.payment_method_get.data.id === api.payment_method_get.result.id && '.3'"
+                    [title] = "api.payment_method_get.result.id"
                   >
-                    use type {{payment_method_get.result.type}}
+                    use type {{api.payment_method_get.result.type}}
                   </a>
 
                   <a *ngIf="card.source"
-                    (click)="payment_method_get.data.id = card.source.id"
+                    (click)="api.payment_method_get.data.id = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payment_method_get.data.id === card.source.id && '.3'"
+                    [style.opacity] = "api.payment_method_get.data.id === card.source.id && '.3'"
                     [title] = "card.source.id + ' - a source can become a payment_method'"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payment_method_get}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payment_method_get}"></ng-container>
 
-                <ng-container *ngIf="payment_method_get.result">
+                <ng-container *ngIf="api.payment_method_get.result">
                   <button
                     type="button"
-                    (click)="createCustomerByPaymentMethod(payment_method_get.result)"
-                    [style.opacity]="payment_method_get.result.customer ? '.3' : null"
+                    (click)="createCustomerByPaymentMethod(api.payment_method_get.result)"
+                    [style.opacity]="api.payment_method_get.result.customer ? '.3' : null"
                   >create customer by payment method</button>
                 </ng-container>
               </div>
@@ -310,16 +365,16 @@
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
-                    *ngIf="payment_method_get.result"
-                    (click)="payment_method_update.data = cleanPaymentMethodUpdateData(payment_method_get.result)"
+                    *ngIf="api.payment_method_get.result"
+                    (click)="api.payment_method_update.data = cleanPaymentMethodUpdateData(api.payment_method_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payment_method_update.data.id === payment_method_get.result.id && '.3'"
-                    [title] = "payment_method_get.result.id"
+                    [style.opacity] = "api.payment_method_update.data.id === api.payment_method_get.result.id && '.3'"
+                    [title] = "api.payment_method_get.result.id"
                   >
-                    use pay method type {{payment_method_get.result.type}}
+                    use pay method type {{api.payment_method_get.result.type}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payment_method_update}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payment_method_update}"></ng-container>
               </div>
             </div>
 
@@ -331,24 +386,20 @@
                   </label>
                 </h3>
                 <small>
-                  <a
-                    href = "https://stripe.com/docs/api/cards/list"
+                  <a href = "https://stripe.com/docs/api/cards/list"
                     style="color:white;" target="_blank"
                   >api docs</a>
                 </small>
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="customer.result"
-                    (click)="customer_get_sources.data.id = customer.result.id"
+                  <a *ngIf="api.customer.result"
+                    (click)="api.customer_get_sources.data.id = api.customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "customer_get_sources.data.id === customer.result.id && '.3'"
-                  >
-                    use customer {{customer.result.id}}
-                  </a>
+                    [style.opacity] = "api.customer_get_sources.data.id === api.customer.result.id && '.3'"
+                  >use customer {{api.customer.result.id}}</a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:customer_get_sources}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.customer_get_sources}"></ng-container>
               </div>
             </div>
 
@@ -370,22 +421,22 @@
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
                     *ngIf="card.source"
-                    (click)="source_get.data.id = card.source.id"
+                    (click)="api.source_get.data.id = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "source_get.data.id === card.source.id && '.3'"
+                    [style.opacity] = "api.source_get.data.id === card.source.id && '.3'"
                     [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
                 </small>
 
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:source_get}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.source_get}"></ng-container>
 
-                <ng-container *ngIf="source_get.result">
+                <ng-container *ngIf="api.source_get.result">
                   <button
                     type="button"
-                    (click)="createCustomerByToken(source_get.result)"
-                    [style.opacity] = "customer.data.source === source_get.result.id && '.3'"
+                    (click)="createCustomerByToken(api.source_get.result)"
+                    [style.opacity] = "api.customer.data.source === api.source_get.result.id && '.3'"
                   >create customer by source</button>
                 </ng-container>
               </div>
@@ -408,16 +459,16 @@
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
-                    *ngIf="source_get.result"
-                    (click)="source_update.data = cleanSourceUpdateData(source_get.result)"
+                    *ngIf="api.source_get.result"
+                    (click)="api.source_update.data = cleanSourceUpdateData(api.source_get.result)"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "source_update.data.id === source_get.result.id && '.3'"
-                    [title] = "source_get.result.id"
+                    [style.opacity] = "api.source_update.data.id === api.source_get.result.id && '.3'"
+                    [title] = "api.source_get.result.id"
                   >
-                    use source type {{source_get.result.type}}
+                    use source type {{api.source_get.result.type}}
                   </a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:source_update}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.source_update}"></ng-container>
               </div>
             </div>
 
@@ -435,60 +486,73 @@
               </div>
               <div class="tool-panel">
                 <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="customer.result"
-                    (click)="payintent.data.customer = customer.result.id"
+                  <a *ngIf="api.customer.result"
+                    (click)="api.payintent.data.customer = api.customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payintent.data.customer === customer.result.id && '.3'"
+                    [style.opacity] = "api.payintent.data.customer === api.customer.result.id && '.3'"
                   >
-                    use customer {{customer.result.description}}
+                    use customer {{api.customer.result.description}}
                   </a>
-                  <a
-                    *ngIf="customer_get.data"
-                    (click)="payintent.data.customer = customer_get.data.id"
+                  <a *ngIf="api.customer_get.data.id"
+                    (click)="api.payintent.data.customer = api.customer_get.data.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payintent.data.customer === customer_get.data.id && '.3'"
+                    [style.opacity] = "api.payintent.data.customer === api.customer_get.data.id && '.3'"
                   >
-                    use GET customer {{customer_get.data.id}}
+                    use GET customer {{api.customer_get.data.id}}
                   </a>
                   <a *ngIf="card.payment_method"
-                    (click)="payintent.data.payment_method = card.payment_method.id"
+                    (click)="api.payintent.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payintent.data.payment_method === card.payment_method.id && '.3'"
+                    [style.opacity] = "api.payintent.data.payment_method === card.payment_method.id && '.3'"
                     [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
                   </a>
                   <a *ngIf="card.source"
-                    (click)="payintent.data.payment_method = card.source.id"
+                    (click)="api.payintent.data.payment_method = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payintent.data.payment_method === card.source.id && '.3'"
+                    [style.opacity] = "api.payintent.data.payment_method === card.source.id && '.3'"
                     [title] = "card.source.id"
                   >
                     use source {{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
-                  <a
-                    *ngIf="card.token"
-                    (click)="payintent.data.payment_method = card.token.card.id"
+                  <a *ngIf="card.token"
+                    (click)="api.payintent.data.payment_method = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "payintent.data.payment_method === card.token.card.id && '.3'"
+                    [style.opacity] = "api.payintent.data.payment_method === card.token.card.id && '.3'"
                     [title] = "card.token.id"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
+                  <a *ngIf="api.payment_method_get.result"
+                    (click)="api.payintent.data.payment_method = api.payment_method_get.result.id"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "api.payintent.data.payment_method === api.payment_method_get.result.id && '.3'"
+                    [title] = "api.payment_method_get.id"
+                  >
+                    use method {{api.payment_method_get.result.brand}} {{api.payment_method_get.result.last4}}
+                  </a>
+                  <a *ngIf="api.payment_method_get.result?.customer"
+                    (click)="api.payintent.data.customer = api.payment_method_get.result.customer"
+                    style="text-decoration:underline;cursor:pointer;margin:1em;"
+                    [style.opacity] = "api.payintent.data.customer === api.payment_method_get.result.customer && '.3'"
+                    [title] = "api.payment_method_get.result.customer"
+                  >
+                    use pay method customer
+                  </a>
                 </small>
 
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payintent}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payintent}"></ng-container>
 
                 <!--
-                  <ng-container *ngIf="payintent.result">
-                    <button type="button" (click)="fetchPayIntentUpdate(payintent)">retrieve update</button>
+                  <ng-container *ngIf="api.payintent.result">
+                    <button type="button" (click)="fetchPayIntentUpdate(api.payintent)">retrieve update</button>
                   </ng-container>
                 -->
 
-                <ng-container *ngIf="payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
+                <ng-container *ngIf="api.payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
                   <div>
-                    <strong>next action:&nbsp;</strong>
-                    <a [href]="payintent.result.next_action?.use_stripe_sdk.stripe_js" target="_blank">secure payment verify link</a>
+                    <ng-container *ngTemplateOutlet="nextActionLink;context:{link:api.payintent.result.next_action.use_stripe_sdk.stripe_js}"></ng-container>
                   </div>
                 </ng-container>
               </div>
@@ -507,10 +571,10 @@
                 </small>
               </div>
               <div class="tool-panel">
-                <input type="text" maxLength="30" (keyup)="payintent_retrieve.data.id=$event.target.value" style="width:100%"
+                <input type="text" maxLength="30" (keyup)="api.payintent_retrieve.data.id=$event.target.value" style="width:100%"
                   placeholder="pay_intent.id"
                 />
-                <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{config:payintent_retrieve}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{config: api.payintent_retrieve}"></ng-container>
               </div>
             </div>
 
@@ -527,7 +591,7 @@
                 </small>
               </div>
               <div class="tool-panel">
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:payintent_cancel}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payintent_cancel}"></ng-container>
               </div>
             </div>
 
@@ -547,9 +611,9 @@
                 <small style="display:flex;flex-wrap:wrap;color:white;">
                   <a
                     *ngIf="card.payment_method"
-                    (click)="charge.data.payment_method = card.payment_method.id"
+                    (click)="api.charge.data.payment_method = card.payment_method.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "charge.data.payment_method === card.payment_method.id && '.3'"
+                    [style.opacity] = "api.charge.data.payment_method === card.payment_method.id && '.3'"
                     [title] = "card.payment_method.id"
                   >
                     use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
@@ -557,51 +621,51 @@
 
                   <a
                     *ngIf="card.token"
-                    (click)="charge.data.source = card.token.card.id"
+                    (click)="api.charge.data.source = card.token.card.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [title] = "card.token.id"
-                    [style.opacity] = "charge.data.source === card.token.card.id && '.3'"
+                    [style.opacity] = "api.charge.data.source === card.token.card.id && '.3'"
                   >
                     use token {{card.token.card.brand}} {{card.token.card.last4}}
                   </a>
 
                   <a
                     *ngIf="card.source"
-                    (click)="charge.data.source = card.source.id"
+                    (click)="api.charge.data.source = card.source.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
                     [title] = "card.source.id"
-                    [style.opacity] = "charge.data.source === card.source.id && '.3'"
+                    [style.opacity] = "api.charge.data.source === card.source.id && '.3'"
                   >
                     use source{{card.source.card.brand}} {{card.source.card.last4}}
                   </a>
 
-                  <a *ngIf="bank.token"
-                    (click)="charge.data.source = bank.token.id"
+                  <a *ngIf="api.bank.token"
+                    (click)="api.charge.data.source = api.bank.token.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [title] = "bank.token.id"
-                    [style.opacity] = "charge.data.source === bank.token.id && '.3'"
+                    [title] = "api.bank.token.id"
+                    [style.opacity] = "api.charge.data.source === api.bank.token.id && '.3'"
                   >
-                    use bank {{bank.token.bank_account.bank_name}} {{bank.token.bank_account.last4}}
+                    use bank {{api.bank.token.bank_account.bank_name}} {{api.bank.token.bank_account.last4}}
                   </a>
 
-                  <ng-container *ngFor="let item of customer.result && customer.result?.sources?.data">
+                  <ng-container *ngFor="let item of api.customer.result && api.customer.result?.sources?.data">
                     <a *ngIf="item.object === 'bank_account'"
-                      (click)="charge.data.source = item.id"
+                      (click)="api.charge.data.source = item.id"
                       style="text-decoration:underline;cursor:pointer;margin:1em;"
                       [title] = "item.id"
-                      [style.opacity] = "charge.data.source === item.id && '.3'"
+                      [style.opacity] = "api.charge.data.source === item.id && '.3'"
                     >
                       use customer bank {{item.bank_name}} {{item.last4}}
                     </a>
                   </ng-container>
 
-                  <a *ngIf="customer.result"
-                    (click)="charge.data.customer=customer.result.id"
+                  <a *ngIf="api.customer.result"
+                    (click)="api.charge.data.customer = api.customer.result.id"
                     style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "charge.data.customer === customer.result.id && '.3'"
-                  >use customer {{customer.result.description}}</a>
+                    [style.opacity] = "api.charge.data.customer === api.customer.result.id && '.3'"
+                  >use customer {{api.customer.result.description}}</a>
                 </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:charge}"></ng-container>
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.charge}"></ng-container>
                 <div style="text-align:center;opacity:.5;">
                   <small>
                     <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
@@ -613,16 +677,6 @@
 
           </div>
         </ng-container>
-
-        <ng-container *ngIf="sending">
-          <div>
-            Sending to Stripe...
-          </div>
-        </ng-container>
-
-        <div *ngIf="lastError" style="color:red;">
-          <textarea wrap="off" style="color:red;width:100%;height:175px">{{lastError | json}}</textArea>
-        </div>
 
         <div *ngIf="!stripe" style="color:red;">
           Stripe publishable key has not yet been set
@@ -801,7 +855,7 @@
       [(complete)]="cardComplete"
       (catch)="sending=false;lastError=$event"
       (invalidChange)="sending=false;lastError=$event"
-      (cardMounted) = "log('card mounted')"
+      (cardMounted) = "setCardElements($event)"
     ></stripe-card>
   </div>
 
@@ -885,9 +939,7 @@
   <div *ngIf="editOptions">
     <br />
     <div style="display:flex;justify-content:space-between">
-      <strong>
-        options
-      </strong>
+      <strong>options</strong>
       <small>
         <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
       </small>
@@ -923,14 +975,11 @@
       title="Using Payment Method instead is recommended"
     >token data</button>
 
-    <button
-      type="button"
+    <button type="button"
       (click)="editOptions=!editOptions"
       style="flex-grow:1"
       [style.background-color] = "editOptions && '#0099CC' || null"
-    >
-      options
-    </button>
+    >options</button>
   </div>
 
   <br />
@@ -989,35 +1038,35 @@
 <ng-template #bankUi>
   <stripe-bank
     #stripeBank
-    [(token)]="bank.token"
+    [(token)]="api.bank.token"
     (tokenChange)="sending=false"
     (catch)="sending=false;lastError=$event"
     (invalidChange)="sending=false;lastError=$event"
   ></stripe-bank>
   <textarea
     wrap="off" style="width:100%;height:175px"
-    (change)="changeKey(bank, $event.target.value)"
-  >{{ bank.data | json }}</textArea>
+    (change)="changeKey(api.bank, $event.target.value)"
+  >{{ api.bank.data | json }}</textArea>
 
   <br />
 
   <div style="text-align:right;">
     <button
       type="button"
-      (click)="lastError=null;sending=true;stripeBank.createToken(bank.data)"
+      (click)="lastError=null;sending=true;stripeBank.createToken(api.bank.data)"
     >create token</button>
   </div>
 
   <!-- bank token success output -->
-  <div *ngIf="bank.token">
+  <div *ngIf="api.bank.token">
     <br />
     <strong>Bank Token</strong>
     <textarea
     disabled wrap="off" style="width:100%;height:175px"
-    >{{ bank.token | json }}</textArea>
+    >{{ api.bank.token | json }}</textArea>
   </div>
 
-  <ng-container *ngIf="storage.privateKey && bank.token?.bank_account?.id">
+  <ng-container *ngIf="storage.privateKey && api.bank.token?.bank_account?.id">
     <br />
     <div style="display:flex;flex-wrap: wrap;align-items: baseline;">
       <h3 style="flex-grow:1;color:orange;">Bank Server Functions</h3>
@@ -1026,10 +1075,10 @@
 
     <button
       type="button"
-      (click)="createCustomerByToken(bank.token)"
+      (click)="createCustomerByToken(api.bank.token)"
     >create customer by token</button>
 
-    <div *ngIf="customer.result?.id">
+    <div *ngIf="api.customer.result?.id">
       <br />
       <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
         <h3 style="flex-grow: 1;">Verify customer micro deposits</h3>
@@ -1042,15 +1091,15 @@
           <div style="display:flex;justify-content: space-between;align-items: flex-start;">
             <span>Verify Amount 1</span>
             <sup>
-              <a (click)="bank.verify.amount1=32"
+              <a (click)="api.bank.verify.amount1=32"
                 style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
               >32</a>
             </sup>
           </div>
           <input
             style="width:100%" type="number"
-            [value]="bank.verify.amount1"
-            (keyup)="bank.verify.amount1=$event.target.value"
+            [value]="api.bank.verify.amount1"
+            (keyup)="api.bank.verify.amount1=$event.target.value"
             placeholder="Enter 32 here"
           />
         </div>
@@ -1058,15 +1107,15 @@
           <div style="display:flex;justify-content: space-between;align-items: flex-start;">
             <span>Verify Amount 2</span>
             <sup>
-              <a (click)="bank.verify.amount2=45"
+              <a (click)="api.bank.verify.amount2=45"
                 style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
               >45</a>
             </sup>
           </div>
           <input
             style="width:100%" type="number"
-            [value]="bank.verify.amount2"
-            (keyup)="bank.verify.amount2=$event.target.value"
+            [value]="api.bank.verify.amount2"
+            (keyup)="api.bank.verify.amount2=$event.target.value"
             placeholder="Enter 45 here"
           />
         </div>
@@ -1074,12 +1123,12 @@
       <button type="button" (click)="verifyBank()"
       >verify</button>
 
-      <div *ngIf="bank.verifyResponse">
+      <div *ngIf="api.bank.verifyResponse">
         <br />
         <strong>Verification Result</strong>
         <textarea
           disabled wrap="off" style="width:100%;height:175px"
-        >{{ bank.verifyResponse | json }}</textArea>
+        >{{ api.bank.verifyResponse | json }}</textArea>
       </div>
     </div>
   </ng-container>
@@ -1094,16 +1143,15 @@
   >{{ config.data | json }}</textArea>
 
   <textarea
-    *ngIf="config.error" wrap="off" style="width:100%;height:175px"
-    disabled style="background-color:rgba(255, 0, 0, 0.678);"
+    *ngIf="config.error" wrap="off"
+    disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:175px"
   >{{ config.error | json }}</textArea>
 
   <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{key:key, config:config}"></ng-container>
 </ng-template>
 
 <ng-template #simpleRouteFooter let-key="key" let-config="config">
-  <button
-    type="button"
+  <button type="button"
     (click)="config.$send.emit(config.data)"
   >send request</button>
 
@@ -1212,11 +1260,16 @@
     detach method {{payMethod.card.brand}} {{payMethod.card.last4}}
   </button>
 
-  <ng-container *ngIf="customer_attach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: customer_attach_method.resultAt, result: customer_attach_method.result, title: 'Attach Result'}"></div>
+  <ng-container *ngIf="api.customer_attach_method.result">
+    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_attach_method.resultAt, result: api.customer_attach_method.result, title: 'Attach Result'}"></div>
   </ng-container>
 
-  <ng-container *ngIf="customer_detach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: customer_detach_method.resultAt, result: customer_detach_method.result, title: 'Detach Result'}"></div>
+  <ng-container *ngIf="api.customer_detach_method.result">
+    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_detach_method.resultAt, result: api.customer_detach_method.result, title: 'Detach Result'}"></div>
   </ng-container>
+</ng-template>
+
+<ng-template #nextActionLink let-link="link">
+  <strong>next action:&nbsp;</strong>
+  <a [href]="link" target="_blank">secure payment verify link</a>
 </ng-template>

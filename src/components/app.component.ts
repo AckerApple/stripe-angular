@@ -12,7 +12,10 @@ const storage: localSchema = getProjectLocalStorage()
 @Component({
   selector:"app",
   templateUrl: './app.component.html'//.replace(/\s\s/g,'')//prevent accidentally spacing
-}) export class AppComponent{
+}) export class AppComponent {
+  stripe:stripe.Stripe
+  cardElement: any // StripeJs Element (TODO: DataType this)
+
   version: string = (packageJson as any).version;
 
   loaded: boolean
@@ -34,7 +37,6 @@ const storage: localSchema = getProjectLocalStorage()
     source?:any
     payment_method?: stripe.paymentMethod.PaymentMethod
   } = {}
-  stripe:stripe.Stripe
   stripeBank:stripe.Stripe
   demoTemplate:string = demoTemplate
 
@@ -73,226 +75,25 @@ const storage: localSchema = getProjectLocalStorage()
     metadata: sample.metadata
   }
 
-  // ach token data
-  bank: {
-    data: stripe.BankAccountTokenOptions,
-    verify: {amount1?: number, amount2?: number},
-    verifyResponse?: any,
-    token?: any
-  } = {
-    verify: {}, // used during micro deposit verification
-    data: {
-      country: 'US',
-      currency: 'usd',
-      routing_number: '110000000',
-      account_number: '000123456789',
-      account_holder_name: 'Jenny Rosen',
-      account_holder_type: 'individual',
-      metadata: sample.metadata
-    } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
-  }
-
-  // create
-  customer: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    load: 0,
-    request: {
-      method: 'POST',
-      path: 'customers/'
-    },
-    data: {
-      description: "some new customer",
-      ...sample.owner,
-      metadata: sample.metadata
-    }
-  }
-
-  customer_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'customers/${id}'
-    },
-    load: 0,
-    data: {
-      id: "",
-      metadata: sample.metadata
-    }
-  }
-
-  customer_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'customers/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  get_paymethods: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_methods/'
-    },
-    load: 0,
-    data: {
-      customer: "", type: "card"
-    }
-  }
-
-  customer_attach_method: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${paymentMethod.id}/attach'
-    },
-    load: 0,
-    data: {} // not used currently
-  }
-
-  customer_detach_method: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${paymentMethod.id}/detach'
-    },
-    load: 0,
-    data: {} // not used currently
-  }
-
-  customer_get_sources: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'customers/${id}/sources'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  source_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'sources/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  source_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'sources/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  payment_method_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_methods/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  payment_method_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  payintent: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_intents/'
-    },
-    load: 0,
-    data: {
-      amount: 1099,
-      confirm: 'true',
-      currency: 'usd',
-      setup_future_usage: 'off_session',
-      metadata: sample.metadata
-    }
-  }
-
-  payintent_retrieve: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_intents/${id}'
-    },
-    load: 0,
-    data: {
-      id: '',
-    }
-  }
-
-  payintent_cancel: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_intents/${id}/cancel'
-    },
-    load: 0,
-    data: {
-      id: '',
-      cancellation_reason: 'requested_by_customer', // duplicate, fraudulent, requested_by_customer, or abandoned
-    }
-  }
-
-  charge: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'charges/'
-    },
-    load: 0,
-    data: {
-      amount: 1099,
-      currency: 'usd',
-      metadata: sample.metadata
-    }
-  }
+  api = getApis()
 
   constructor(public StripeScriptTag: StripeScriptTag){
-    this.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
-    this.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
-    this.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
-    this.source_get.$send.subscribe(data => this.getSource(data.id))
-    this.customer_get.$send.subscribe(data => this.getCustomer(data.id))
-    this.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
-    this.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
-    this.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
-    this.customer.$send.subscribe(data => this.createCustomer(data))
-    this.payintent.$send.subscribe(data => this.createPayIntent(data))
-    this.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
-    this.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
-    this.charge.$send.subscribe(data => this.createCharge(data))
+    this.api.confirm_pay_intent.$send.subscribe(data => this.confirmPayIntent())
+
+    // server sides?
+    this.api.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
+    this.api.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
+    this.api.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
+    this.api.source_get.$send.subscribe(data => this.getSource(data.id))
+    this.api.customer_get.$send.subscribe(data => this.getCustomer(data.id))
+    this.api.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
+    this.api.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
+    this.api.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
+    this.api.customer.$send.subscribe(data => this.createCustomer(data))
+    this.api.payintent.$send.subscribe(data => this.createPayIntent(data))
+    this.api.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
+    this.api.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
+    this.api.charge.$send.subscribe(data => this.createCharge(data))
 
     if (Object.keys(storage.metadata).length) {
       this.defaultMetadata(storage.metadata)
@@ -303,13 +104,13 @@ const storage: localSchema = getProjectLocalStorage()
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
 
-    this.customer_update.data.metadata = meta
-    this.customer.data.metadata = meta
-    this.payintent.data.metadata = meta
-    this.charge.data.metadata = meta
+    this.api.customer_update.data.metadata = meta
+    this.api.customer.data.metadata = meta
+    this.api.payintent.data.metadata = meta
+    this.api.charge.data.metadata = meta
 
     this.extraData.metadata = meta;
-    (this.bank.data as any).metadata = meta
+    (this.api.bank.data as any).metadata = meta
   }
 
   ngOnInit(){
@@ -484,96 +285,101 @@ const storage: localSchema = getProjectLocalStorage()
   }
 
   getSource(sourceId: string) {
-    ++this.source_get.load
+    ++this.api.source_get.load
     request({
       url: stripeServer + 'sources/' + sourceId,
       authorizationBearer: this.storage.privateKey
     })
       .then(res => this.setSource(res))
-      .finally(() => --this.source_get.load)
+      .finally(() => --this.api.source_get.load)
   }
 
   getPaymentMethod(id: string) {
-    ++this.payment_method_get.load
+    ++this.api.payment_method_get.load
     request({
       url: stripeServer + 'payment_methods/' + id,
       authorizationBearer: this.storage.privateKey
     })
       .then(res => this.setPaymentMethod(res))
-      .finally(() => --this.payment_method_get.load)
+      .finally(() => --this.api.payment_method_get.load)
   }
 
   setPaymentMethod(res: any) {
-    this.payment_method_get.result = tryParse(res)
-    this.payment_method_get.resultAt = Date.now()
+    this.api.payment_method_get.result = tryParse(res)
+    this.api.payment_method_get.resultAt = Date.now()
   }
 
   setSource(res: any) {
-    this.source_get.result = tryParse(res)
-    this.source_get.resultAt = Date.now()
+    this.api.source_get.result = tryParse(res)
+    this.api.source_get.resultAt = Date.now()
   }
 
   getCustomer(id: string) {
-    ++this.customer_get.load
+    ++this.api.customer_get.load
     request({
       url: stripeServer + 'customers/' + id,
       authorizationBearer: this.storage.privateKey
     })
       .then(res => {
-        this.customer_get.result = tryParse(res)
-        this.customer_get.resultAt = Date.now()
+        this.api.customer_get.result = tryParse(res)
+        this.api.customer_get.resultAt = Date.now()
       })
-      .finally(() => --this.customer_get.load)
+      .catch(err => this.api.customer_get.error = err)
+      .finally(() => --this.api.customer_get.load)
   }
 
   getPaymentMethods(query: stripe.PaymentMethodData) {
     const queryString = Object.keys(query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${query[key]}`,'')
     const url = stripeServer + 'payment_methods?' + queryString
-    ++this.payment_method_get.load
+    ++this.api.payment_method_get.load
 
     request({
       url, method: 'GET',
       post: query,
       authorizationBearer: this.storage.privateKey
-    }).then(res => {
-      this.get_paymethods.result = tryParse(res)
-      this.get_paymethods.resultAt = Date.now()
-
-      if (!this.payment_method_get.result && this.get_paymethods.result?.data?.length) {
-        this.payment_method_get.result = this.get_paymethods.result.data[0]
-      }
     })
-      .finally(() => --this.payment_method_get.load)
+      .then(res => {
+        this.api.get_paymethods.result = tryParse(res)
+        this.api.get_paymethods.resultAt = Date.now()
+
+        if (!this.api.payment_method_get.result && this.api.get_paymethods.result?.data?.length) {
+          this.api.payment_method_get.result = this.api.get_paymethods.result.data[0]
+        }
+      })
+      .catch(err => this.api.payment_method_get.error = err)
+      .finally(() => --this.api.payment_method_get.load)
   }
 
   getCustomerSources(id: string) {
-    ++this.customer_get_sources.load
+    ++this.api.customer_get_sources.load
     request({
       url: stripeServer + 'customers/' + id + '/sources',
       authorizationBearer: this.storage.privateKey
     }).then(res => {
-      this.customer_get_sources.result = tryParse(res)
-      this.customer_get_sources.resultAt = Date.now()
+      this.api.customer_get_sources.result = tryParse(res)
+      this.api.customer_get_sources.resultAt = Date.now()
     })
-      .finally(() => --this.customer_get_sources.load)
+      .catch(err => this.api.customer_get_sources.error = err)
+      .finally(() => --this.api.customer_get_sources.load)
   }
 
   createCustomer(data: any) {
-    ++this.customer.load
+    ++this.api.customer.load
 
     request({
       url: stripeServer + 'customers',
       post: data,
       authorizationBearer: this.storage.privateKey
     }).then(res => {
-      this.customer.result = tryParse(res)
-      this.customer.resultAt = Date.now()
+      this.api.customer.result = tryParse(res)
+      this.api.customer.resultAt = Date.now()
     })
-    .finally(() => --this.customer.load)
+    .catch(err => this.api.customer.error = err)
+    .finally(() => --this.api.customer.load)
   }
 
   createPayIntent(data: any) {
-    ++this.payintent.load
+    ++this.api.payintent.load
 
     request({
       url: stripeServer + 'payment_intents',
@@ -581,45 +387,48 @@ const storage: localSchema = getProjectLocalStorage()
       authorizationBearer: this.storage.privateKey
     })
       .then(res => {
-        this.payintent.result = tryParse(res)
-        this.payintent.resultAt = Date.now()
+        this.api.payintent.result = tryParse(res)
+        this.api.payintent.resultAt = Date.now()
 
-        this.payintent_retrieve.result = this.payintent.result
-        this.payintent_retrieve.resultAt = this.payintent.resultAt
+        this.api.payintent_retrieve.result = this.api.payintent.result
+        this.api.payintent_retrieve.resultAt = this.api.payintent.resultAt
       })
-      .finally(() => --this.payintent.load)
+      .catch(err => this.api.payintent.error = err)
+      .finally(() => --this.api.payintent.load)
   }
 
   retrievePayIntent(id: string) {
-    ++this.payintent_retrieve.load
+    ++this.api.payintent_retrieve.load
     const url = stripeServer + 'payment_intents/' + id
 
     console.log('url', url)
 
     request({url, authorizationBearer: this.storage.privateKey})
       .then((res: string) => {
-        this.payintent_retrieve.result = tryParse(res)
-        this.payintent_retrieve.resultAt = Date.now()
+        this.api.payintent_retrieve.result = tryParse(res)
+        this.api.payintent_retrieve.resultAt = Date.now()
       })
-      .finally(() => --this.payintent_retrieve.load)
+      .catch(err => this.api.payintent_retrieve.error = err)
+      .finally(() => --this.api.payintent_retrieve.load)
   }
 
   cancelPayIntent(id: string) {
-    ++this.payintent_cancel.load
+    ++this.api.payintent_cancel.load
     const url = `${stripeServer}payment_intents/${id}/cancel`
 
     request({url, post: {
-      cancellation_reason: this.payintent_cancel.data.cancellation_reason
+      cancellation_reason: this.api.payintent_cancel.data.cancellation_reason
     }, authorizationBearer: this.storage.privateKey})
       .then((res: string) => {
-        this.payintent_cancel.result = tryParse(res)
-        this.payintent_cancel.resultAt = Date.now()
+        this.api.payintent_cancel.result = tryParse(res)
+        this.api.payintent_cancel.resultAt = Date.now()
       })
-      .finally(() => --this.payintent_cancel.load)
+      .catch(err => this.api.payintent_cancel.error = err)
+      .finally(() => --this.api.payintent_cancel.load)
   }
 
   createCharge(data: any) {
-    ++this.charge.load
+    ++this.api.charge.load
 
     request({
       url: stripeServer + 'charges',
@@ -627,15 +436,16 @@ const storage: localSchema = getProjectLocalStorage()
       authorizationBearer: this.storage.privateKey
     })
       .then(res => {
-        this.charge.result = tryParse(res)
-        this.charge.resultAt = Date.now()
+        this.api.charge.result = tryParse(res)
+        this.api.charge.resultAt = Date.now()
       })
-      .finally(() => --this.charge.load)
+      .catch(err => this.api.charge.error = err)
+      .finally(() => --this.api.charge.load)
   }
 
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
-    const customer = this.customer.data;
+    const customer = this.api.customer.data;
     customer.source = token.id;
 
     this.createCustomer(customer);
@@ -643,7 +453,7 @@ const storage: localSchema = getProjectLocalStorage()
 
   // a source or token converted into a customer
   createCustomerByPaymentMethod(data: stripe.paymentMethod.PaymentMethod) {
-    const customer = this.customer.data;
+    const customer = this.api.customer.data;
     customer.payment_method = data.id;
 
     this.createCustomer(customer);
@@ -651,21 +461,21 @@ const storage: localSchema = getProjectLocalStorage()
 
   verifyBank() {
     const base = stripeServer + 'customers/'
-    const cusId = this.customer.result.id;
-    const bankId = this.bank.token.bank_account.id;
+    const cusId = this.api.customer.result.id;
+    const bankId = this.api.bank.token.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
     request({
-      url,
-      authorizationBearer: this.storage.privateKey,
-      post: {
-        amounts:[
-          this.bank.verify.amount1,
-          this.bank.verify.amount2
-        ]
-      }
-    })
-      .then(result => this.bank.verifyResponse = tryParse(result))
+        url, authorizationBearer: this.storage.privateKey,
+        post: {
+          amounts:[
+            this.api.bank.verify.amount1,
+            this.api.bank.verify.amount2
+          ]
+        }
+      })
+      // .catch(err => this.api.bank.error = err)
+      .then(result => this.api.bank.verifyResponse = tryParse(result))
   }
 
   /*fetchPayIntentUpdate(config: ISimpleRouteEditor) {
@@ -688,16 +498,18 @@ const storage: localSchema = getProjectLocalStorage()
 
     const base = stripeServer + 'sources/'
     const url = base + id;
-    ++this.source_update.load
+    ++this.api.source_update.load
 
     request({
       url,
       post: shallowClone,
       authorizationBearer: this.storage.privateKey
     }).then(result => {
-      this.source_update.result = tryParse(result)
-      this.source_update.resultAt = Date.now()
-    }).finally(() => --this.source_update.load)
+      this.api.source_update.result = tryParse(result)
+      this.api.source_update.resultAt = Date.now()
+    })
+      .catch(err => this.api.source_update.error = err)
+      .finally(() => --this.api.source_update.load)
   }
 
   sendPaymentMethodUpdate(data: any, id: string) {
@@ -706,16 +518,18 @@ const storage: localSchema = getProjectLocalStorage()
 
     const base = stripeServer + 'payment_methods/'
     const url = base + id;
-    ++this.payment_method_update.load
+    ++this.api.payment_method_update.load
 
     request({
       url,
       post: shallowClone,
       authorizationBearer: this.storage.privateKey
     }).then(result => {
-      this.payment_method_update.result = tryParse(result)
-      this.payment_method_update.resultAt = Date.now()
-    }).finally(() => --this.payment_method_update.load)
+      this.api.payment_method_update.result = tryParse(result)
+      this.api.payment_method_update.resultAt = Date.now()
+    })
+      .catch(err => this.api.payment_method_update.error = err)
+      .finally(() => --this.api.payment_method_update.load)
   }
 
   updateCustomer(data: any, id: string) {
@@ -724,16 +538,18 @@ const storage: localSchema = getProjectLocalStorage()
 
     const base = stripeServer + 'customers/'
     const url = base + id
-    ++this.customer_update.load
+    ++this.api.customer_update.load
 
     request({
       url,
       post: shallowClone,
       authorizationBearer: this.storage.privateKey
     }).then(result => {
-      this.customer_update.result = tryParse(result)
-      this.customer_update.resultAt = Date.now()
-    }).finally(() => --this.customer_update.load)
+      this.api.customer_update.result = tryParse(result)
+      this.api.customer_update.resultAt = Date.now()
+    })
+      .catch(err => this.api.customer_update.error = err)
+      .finally(() => --this.api.customer_update.load)
   }
 
   cleanSourceUpdateData(data: any) {
@@ -825,7 +641,7 @@ const storage: localSchema = getProjectLocalStorage()
     customerId: string,
     paymentMethod: stripe.paymentMethod.PaymentMethod
   ) {
-    ++this.customer_attach_method.load
+    ++this.api.customer_attach_method.load
 
     request({
       url: `${stripeServer}payment_methods/${paymentMethod.id}/attach`,
@@ -834,23 +650,27 @@ const storage: localSchema = getProjectLocalStorage()
       },
       authorizationBearer: this.storage.privateKey
     }).then(result => {
-      this.customer_attach_method.result = tryParse(result)
-      this.customer_attach_method.resultAt = Date.now()
-    }).finally(() => --this.customer_attach_method.load)
+      this.api.customer_attach_method.result = tryParse(result)
+      this.api.customer_attach_method.resultAt = Date.now()
+    })
+      .catch(err => this.api.customer_attach_method.error = err)
+      .finally(() => --this.api.customer_attach_method.load)
   }
 
   detachCustomerPayMethod(
     paymentMethod: stripe.paymentMethod.PaymentMethod
   ) {
-    ++this.customer_detach_method.load
+    ++this.api.customer_detach_method.load
     request({
       url: `${stripeServer}payment_methods/${paymentMethod.id}/detach`,
       method: 'POST',
       authorizationBearer: this.storage.privateKey
     }).then(result => {
-      this.customer_detach_method.result = tryParse(result)
-      this.customer_detach_method.resultAt = Date.now()
-    }).finally(() => --this.customer_detach_method.load)
+      this.api.customer_detach_method.result = tryParse(result)
+      this.api.customer_detach_method.resultAt = Date.now()
+    })
+      .catch(err => this.api.customer_detach_method.error = err)
+      .finally(() => --this.api.customer_detach_method.load)
   }
 
   copyText(text: string) {
@@ -859,5 +679,283 @@ const storage: localSchema = getProjectLocalStorage()
 
   updateStorageMeta(stringData: string) {
     this.storage.metadata = JSON.parse(stringData)
+  }
+
+  setCardElements(element: any) {
+    this.cardElement = element
+    this.log('card mounted')
+  }
+
+  async confirmPayIntent() {
+    const return_url = this.api.confirm_pay_intent.data.return_url // window.location.href
+
+    try {
+      const result = await this.stripe.confirmCardPayment(
+        this.api.confirm_pay_intent.data.client_secret,
+        {
+          payment_method: {card: this.cardElement}, return_url
+        },
+        // Disable the default next action handling.
+        {handleActions: false}
+      )
+
+      if (result.error) {
+        this.api.confirm_pay_intent.error = result.error
+        if (result.error.code === 'incomplete_number') {
+          this.api.confirm_pay_intent.error.stripe_angular_help = 'You need to fill out the card form to prove card is in hand'
+        }
+        return result
+      }
+
+      this.api.confirm_pay_intent.result = result
+    } catch (err) {
+      this.api.confirm_pay_intent.error = err
+    }
+  }
+}
+
+interface BankData {
+  data: stripe.BankAccountTokenOptions,
+  verify: {amount1?: number, amount2?: number},
+  verifyResponse?: any,
+  token?: any
+}
+
+function getApis () {
+  const confirm_pay_intent: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    load: 0,
+    request: {
+      method: 'POST',
+      path: 'confirm/'
+    },
+    data: {
+      client_secret: "",
+      return_url: window.location.href
+    }
+  }
+
+  // Server side only below
+
+  // ach token data
+  const bank: BankData = {
+    verify: {}, // used during micro deposit verification
+    data: {
+      country: 'US',
+      currency: 'usd',
+      routing_number: '110000000',
+      account_number: '000123456789',
+      account_holder_name: 'Jenny Rosen',
+      account_holder_type: 'individual',
+      metadata: sample.metadata
+    } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
+  }
+
+  // create
+  const customer: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    load: 0,
+    request: {
+      method: 'POST',
+      path: 'customers/'
+    },
+    data: {
+      description: "some new customer",
+      ...sample.owner,
+      metadata: sample.metadata
+    }
+  }
+
+  const customer_update: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'customers/${id}'
+    },
+    load: 0,
+    data: {
+      id: "",
+      metadata: sample.metadata
+    }
+  }
+
+  const customer_get: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'customers/${id}'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const get_paymethods: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_methods/'
+    },
+    load: 0,
+    data: {
+      customer: "", type: "card"
+    }
+  }
+
+  const customer_attach_method: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${paymentMethod.id}/attach'
+    },
+    load: 0,
+    data: {} // not used currently
+  }
+
+  const customer_detach_method: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${paymentMethod.id}/detach'
+    },
+    load: 0,
+    data: {} // not used currently
+  }
+
+  const customer_get_sources: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'customers/${id}/sources'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const source_get: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'sources/${id}'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const source_update: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'sources/${id}'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const payment_method_get: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_methods/${id}'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const payment_method_update: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_methods/${id}'
+    },
+    load: 0,
+    data: {
+      id: ""
+    }
+  }
+
+  const payintent: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_intents/'
+    },
+    load: 0,
+    data: {
+      amount: 1099,
+      confirm: 'true',
+      currency: 'usd',
+      setup_future_usage: 'off_session',
+      metadata: sample.metadata
+    }
+  }
+
+  const payintent_retrieve: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'GET',
+      path: 'payment_intents/${id}'
+    },
+    load: 0,
+    data: {
+      id: '',
+    }
+  }
+
+  const payintent_cancel: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'payment_intents/${id}/cancel'
+    },
+    load: 0,
+    data: {
+      id: '',
+      cancellation_reason: 'requested_by_customer', // duplicate, fraudulent, requested_by_customer, or abandoned
+    }
+  }
+
+  const charge: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    request: {
+      method: 'POST',
+      path: 'charges/'
+    },
+    load: 0,
+    data: {
+      amount: 1099,
+      currency: 'usd',
+      metadata: sample.metadata
+    }
+  }
+
+  return {
+    confirm_pay_intent,
+
+    // server sides
+    bank, customer,
+    customer_update,
+    customer_get,
+    get_paymethods,
+    customer_attach_method,
+    customer_detach_method,
+    customer_get_sources,
+    source_get,
+    source_update,
+    payment_method_get,
+    payment_method_update,
+    payintent,
+    payintent_retrieve,
+    payintent_cancel,
+    charge,
   }
 }
