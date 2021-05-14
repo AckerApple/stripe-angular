@@ -4,14 +4,14 @@ import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
 import {
   request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer,
+  copyText, tryParse, stripeServer, generateTestHeaderString,
 } from "./app.component.utils"
 
 const storage: localSchema = getProjectLocalStorage()
 
 @Component({
   selector:"app",
-  templateUrl: './app.component.html'//.replace(/\s\s/g,'')//prevent accidentally spacing
+  templateUrl: './app.component.html'
 }) export class AppComponent {
   stripe:stripe.Stripe
   cardElement: any // StripeJs Element (TODO: DataType this)
@@ -21,12 +21,11 @@ const storage: localSchema = getProjectLocalStorage()
   loaded: boolean
   sending: boolean
   cardComplete = false
-  enableServerMode?: boolean;
+  enableServerMode?: boolean = storage.privateKey ? true : false;
 
   tempPublishableKey = storage.key
-  // publishableKey = storage.key
+  tempWebhookSigningSecret = storage.webhookSigningSecret
   tempPrivateKey = storage.privateKey// localStorage?.stripeAngularPrivateKey;
-  // privateKey?: string = localStorage?.stripeAngularPrivateKey;
 
   storage: localSchema = storage
   localStorage = localStorage
@@ -94,10 +93,20 @@ const storage: localSchema = getProjectLocalStorage()
     this.api.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
     this.api.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
     this.api.charge.$send.subscribe(data => this.createCharge(data))
+    this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
 
     if (Object.keys(storage.metadata).length) {
       this.defaultMetadata(storage.metadata)
     }
+  }
+
+  createTestHeader(data: any) {
+    const payload = JSON.stringify(data)
+    const result = generateTestHeaderString({
+      payload, secret: this.storage.webhookSigningSecret
+    })
+    // const result = stripe.webhooks.generateTestHeaderString(data)
+    this.api.testHeader.result = {result}
   }
 
   defaultMetadata(meta: Record<string, any>) {
@@ -158,7 +167,9 @@ const storage: localSchema = getProjectLocalStorage()
     this.tempPublishableKey
     this.storage.key = this.tempPublishableKey || this.storage.key
 
+
     if (savePrivateKeyLocally) {
+      this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
       // localStorage.stripeAngularPrivateKey = this.privateKey;
       this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
     }
@@ -400,8 +411,6 @@ const storage: localSchema = getProjectLocalStorage()
   retrievePayIntent(id: string) {
     ++this.api.payintent_retrieve.load
     const url = stripeServer + 'payment_intents/' + id
-
-    console.log('url', url)
 
     request({url, authorizationBearer: this.storage.privateKey})
       .then((res: string) => {
@@ -938,6 +947,12 @@ function getApis () {
     }
   }
 
+  const testHeader: ISimpleRouteEditor = {
+    $send: new EventEmitter(),
+    load: 0,
+    data: {}
+  }
+
   return {
     confirm_pay_intent,
 
@@ -957,5 +972,6 @@ function getApis () {
     payintent_retrieve,
     payintent_cancel,
     charge,
+    testHeader,
   }
 }

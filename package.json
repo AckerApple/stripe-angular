@@ -44,6 +44,7 @@
     "zone.js": "^0.11.3"
   },
   "dependencies": {
+    "crypto-js": "^4.0.0",
     "form-urlencoded": "^4.2.1"
   }
 }

@@ -122,11 +122,39 @@
           <textarea wrap="off" style="color:red;width:100%;height:175px">{{lastError | json}}</textArea>
         </div>
 
+        <ng-container *ngIf="storage.webhookSigningSecret">
+          <br /><br />
+          <div style="color:white;text-align:center;">
+            <h2 style="opacity: 50%;">🪝 Web Hook Functionality</h2>
+            <small>Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
+            <br /><br />
+          </div>
+          <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
+            <div *ngIf="storage.webhookSigningSecret" class="tool-wrap">
+              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+                  <label for="card-like-element">
+                    Generate Test Header String
+                  </label>
+                </h3>
+                <small>
+                  <a href="https://www.npmjs.com/package/stripe#testing-webhook-signing" style="color:white;" target="_blank"
+                  >api docs</a>
+                </small>
+              </div>
+              <div class="tool-panel">
+                Paste your payload below
+                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.testHeader}"></ng-container>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
         <ng-container *ngIf="storage.privateKey">
           <br /><br />
 
           <div style="color:white;text-align:center;">
-            <h2 style="opacity: 50%;">Server Functionality</h2>
+            <h2 style="opacity: 50%;">🔗 Server Functionality</h2>
             <small>Helpful tools ONLY available in this demo by using entered <strong>privateKey</strong></small>
             <br /><br />
           </div>
@@ -701,15 +729,19 @@
   <div *ngIf="!changekey else storageForm">
     <div style="display:flex;flex-wrap:wrap">
       <div style="margin:1em;flex-grow: 1;">
-        <strong>publishableKey</strong>
+        <strong>Publishable Key</strong>
         <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
         >{{ storage.key | slice : 0 : 16 }}...</div>
       </div>
 
-      <div *ngIf="storage.privateKey" style="margin:1em;flex-grow: 1;"
-      >
-        <strong>privateKey</strong>
+      <div *ngIf="storage.privateKey" style="margin:1em;flex-grow: 1;">
+        <strong>Private Key</strong>
         <div (click)="copyText(storage.privateKey)" class="hover-highlight" style="cursor: pointer;">{{ storage.privateKey | slice : 0 : 8 }}...</div>
+      </div>
+
+      <div *ngIf="storage.webhookSigningSecret" style="margin:1em;flex-grow: 1;">
+        <strong>Webhook Signing Secret</strong>
+        <div (click)="copyText(storage.webhookSigningSecret)" class="hover-highlight" style="cursor: pointer;">{{ storage.webhookSigningSecret | slice : 0 : 8 }}...</div>
       </div>
     </div>
 
@@ -780,10 +812,26 @@
             <input
               type="checkbox" name="enableServerMode" id="enableServerMode"
               (change)="toggleServerMode()"
-              [checked] = "enableServerMode || tempPrivateKey"
+              [checked] = "enableServerMode"
             />
             <span>enable server functionality</span>
           </label>
+        </div>
+      </div>
+
+      <div *ngIf="enableServerMode || storage.webhookSigningSecret">
+        <strong style="color:orange;">webhookSigningSecret</strong>
+        <div>
+          <input type="password"
+            (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"
+            [value]="tempWebhookSigningSecret"
+            style="width:100%"
+          />
+        </div>
+        <div style="padding:.5em;">
+          <small style="opacity: 70%;">
+            This demo offers helpful web hook server functionality
+          </small>
         </div>
       </div>
 
@@ -798,7 +846,7 @@
         </div>
         <div style="padding:.5em;">
           <small style="opacity: 70%;">
-            This demo offers helpful server functionality that can really help close knowledge gaps
+            This demo offers helpful server functionality
           </small>
         </div>
       </div>
@@ -821,6 +869,12 @@
         <textarea wrap="off" style="width:100%;height:175px"
           (change)="updateStorageMeta($event.target.value)"
         >{{ storage.metadata | json }}</textArea>
+      </div>
+
+      <div>
+        <strong>Your local storage</strong>
+        <textarea wrap="off" style="width:100%;height:175px" disabled
+        >{{ storage | json }}</textArea>
       </div>
 
       <div style="text-align:center;">
