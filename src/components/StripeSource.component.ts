@@ -19,7 +19,7 @@ import { StripeComponent } from "./StripeComponent"
   @Input() paymentMethod?: stripe.paymentMethod.PaymentMethod
   @Output() paymentMethodChange:EventEmitter<stripe.paymentMethod.PaymentMethod> = new EventEmitter()
 
-  elements:any // For card, its the UI element
+  elements: any // For card, its the UI element
 
   constructor(
     public StripeScriptTag:StripeScriptTag
