@@ -1,0 +1,21 @@
+<div class="tool-wrap">
+  <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+    <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+      <label for="card-like-element">
+        {{api.title}}
+      </label>
+    </h3>
+    <small class="pad-left-xs">
+      <a [href]="api.link" class="text-white" target="_blank"
+      >📕docs</a>
+    </small>
+  </div>
+  <div class="tool-panel">
+    <simple-route-edit [config]="api" [pasteFavs]="pasteFavs">
+      <ng-template #requestHeaderItems>
+        <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
+      </ng-template>
+    </simple-route-edit>
+    <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
+  </div>
+</div>

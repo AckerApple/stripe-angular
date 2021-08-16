@@ -1,13 +1,17 @@
-import { Component, EventEmitter } from "@angular/core"
-import { string as demoTemplate, string } from "./templates/app.component.template"
+import { Component } from "@angular/core"
+import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
+import { BankData, getApis, simpleMenuToSmart } from './getApis.function'
 import {
-  request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString,
+  RequestOptions, request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor,
 } from "./app.component.utils"
+import { serverSide as plaidServerSide } from "./plaid.apis"
 
 const storage: localSchema = getProjectLocalStorage()
+
+declare const Plaid: any
 
 @Component({
   selector:"app",
@@ -20,6 +24,9 @@ const storage: localSchema = getProjectLocalStorage()
 
   loaded: boolean
   sending: boolean
+  showServerMethods: boolean
+  showWebhookMethods: boolean
+  showPlaidMethods: boolean
   cardComplete = false
   enableServerMode?: boolean = storage.privateKey ? true : false;
 
@@ -31,13 +38,11 @@ const storage: localSchema = getProjectLocalStorage()
   localStorage = localStorage
 
   lastError:Error
-  card: {
-    token?:any
-    source?:any
-    payment_method?: stripe.paymentMethod.PaymentMethod
-  } = {}
+  card: CardsData = {}
   stripeBank:stripe.Stripe
   demoTemplate:string = demoTemplate
+
+  localServerActive: boolean
 
   // card elements options
   options: stripe.elements.ElementsOptions = {
@@ -75,8 +80,14 @@ const storage: localSchema = getProjectLocalStorage()
   }
 
   api = getApis()
+  plaidServerApis = simpleMenuToSmart(plaidServerSide)
+
+  changeKey = changeKey
+  copyText = copyText
 
   constructor(public StripeScriptTag: StripeScriptTag){
+    this.checkLocalServer()
+
     this.api.confirm_pay_intent.$send.subscribe(data => this.confirmPayIntent())
 
     // server sides?
@@ -94,10 +105,31 @@ const storage: localSchema = getProjectLocalStorage()
     this.api.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
     this.api.charge.$send.subscribe(data => this.createCharge(data))
     this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
+    this.api.customer_attach_method.$send.subscribe(data => this.stripeRouteRequest(this.api.plaid_linkTokenCreate,data))
+    this.api.customer_attach_source.$send.subscribe(data => this.stripeRouteRequest(this.api.customer_attach_source,data))
+
+    // plaid
+    this.api.plaid_createPublicToken.$send.subscribe(data => this.plaidCreateModal(data))
+
+    Object.values(this.plaidServerApis)
+      .forEach(api =>
+        api.$send.subscribe(data => this.plaidRouteRequest(api,data))
+      )
 
     if (Object.keys(storage.metadata).length) {
       this.defaultMetadata(storage.metadata)
     }
+  }
+
+  checkLocalServer() {
+    return request({url: 'http://localhost:3000/health-check'})
+    .then((res: {name: string}) =>
+      this.localServerActive = res?.name === 'stripe-angular'
+    )
+    .catch(() => {
+      console.warn('Connection to local server unavailable')
+      this.localServerActive = false
+    })
   }
 
   createTestHeader(data: any) {
@@ -112,6 +144,7 @@ const storage: localSchema = getProjectLocalStorage()
   defaultMetadata(meta: Record<string, any>) {
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
+    storage.plaid = storage.plaid || {}
 
     this.api.customer_update.data.metadata = meta
     this.api.customer.data.metadata = meta
@@ -123,10 +156,12 @@ const storage: localSchema = getProjectLocalStorage()
   }
 
   ngOnInit(){
-    //inject script tag onto document and save
+    console.log(22)
+    // inject script tag onto document and save
     this.save()
-    .then( ()=>this.loaded=true )
+    .then( () => this.loaded=true )
     .catch(e=>{
+      console.log(33)
       this.lastError=e
       return Promise.reject(e)
     })
@@ -167,7 +202,6 @@ const storage: localSchema = getProjectLocalStorage()
     this.tempPublishableKey
     this.storage.key = this.tempPublishableKey || this.storage.key
 
-
     if (savePrivateKeyLocally) {
       this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
       // localStorage.stripeAngularPrivateKey = this.privateKey;
@@ -182,9 +216,10 @@ const storage: localSchema = getProjectLocalStorage()
 
       cloneStorage.privateKey = this.storage.privateKey?.length // never show
 
-      this.log('saved to localStorage', cloneStorage)
+      // this.log('saved to localStorage', cloneStorage)
     }
 
+    console.log(483)
     return this.StripeScriptTag.setPublishableKey(this.storage.key)
       .then(stripe =>this.stripe=stripe);
   }
@@ -258,233 +293,178 @@ const storage: localSchema = getProjectLocalStorage()
     this.options = JSON.parse(data)
   }
 
-  changeKey(
-    scope: ISimpleRouteEditor,
-    value: string
-  ) {
-    delete scope.error
-    const keys = ['data']
-    var current = scope;
-
-    while(keys.length > 1) {
-      current = current[keys.shift()];
-    }
-
-    try {
-      // current[keys[0]] = JSON.parse(value);
-      eval('current[keys[0]] = ' + value); // allow loose js to be cast to json
-    } catch (err) {
-      scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
-      console.error(`failed to parse object key ${keys[0]}`);
-      throw err
-    }
-  }
-
   log(...args) {
     console.log(...args);
   }
 
   toggleServerMode() {
-    this.enableServerMode = !this.enableServerMode;
-
-    if (!this.enableServerMode) {
-      localStorage.stripeAngularPrivateKey = null
-      delete localStorage.stripeAngularPrivateKey
-      delete this.tempPrivateKey
-      delete this.tempPublishableKey
+    if (this.enableServerMode) {
+      if (confirm('Confirm to delete secrets and private keys')) {
+        delete this.showServerMethods
+        localStorage.stripeAngularPrivateKey = null
+        delete localStorage.stripeAngularPrivateKey
+        delete this.tempPrivateKey
+        delete this.storage.privateKey
+        delete this.storage.webhookSigningSecret
+        // delete this.tempPublishableKey
+        this.save()
+        return this.enableServerMode = false
+      }
     }
+
+    this.enableServerMode = true
   }
 
   getSource(sourceId: string) {
-    ++this.api.source_get.load
-    request({
-      url: stripeServer + 'sources/' + sourceId,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => this.setSource(res))
-      .finally(() => --this.api.source_get.load)
+    return stripeRequestByRouter(this.api.source_get, {id: sourceId, privateKey: this.storage.privateKey})
   }
 
   getPaymentMethod(id: string) {
-    ++this.api.payment_method_get.load
-    request({
-      url: stripeServer + 'payment_methods/' + id,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => this.setPaymentMethod(res))
-      .finally(() => --this.api.payment_method_get.load)
-  }
-
-  setPaymentMethod(res: any) {
-    this.api.payment_method_get.result = tryParse(res)
-    this.api.payment_method_get.resultAt = Date.now()
-  }
-
-  setSource(res: any) {
-    this.api.source_get.result = tryParse(res)
-    this.api.source_get.resultAt = Date.now()
+    return stripeRequestByRouter(this.api.payment_method_get, {id, privateKey: this.storage.privateKey})
   }
 
   getCustomer(id: string) {
-    ++this.api.customer_get.load
-    request({
-      url: stripeServer + 'customers/' + id,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => {
-        this.api.customer_get.result = tryParse(res)
-        this.api.customer_get.resultAt = Date.now()
-      })
-      .catch(err => this.api.customer_get.error = err)
-      .finally(() => --this.api.customer_get.load)
+    return stripeRequestByRouter(this.api.customer_get, {id, privateKey: this.storage.privateKey})
   }
 
   getPaymentMethods(query: stripe.PaymentMethodData) {
-    const queryString = Object.keys(query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${query[key]}`,'')
-    const url = stripeServer + 'payment_methods?' + queryString
-    ++this.api.payment_method_get.load
-
-    request({
-      url, method: 'GET',
-      post: query,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => {
-        this.api.get_paymethods.result = tryParse(res)
-        this.api.get_paymethods.resultAt = Date.now()
-
+    return stripeRequestByRouter(this.api.get_paymethods, {query: query as any, privateKey: this.storage.privateKey})
+      .then(() => {
         if (!this.api.payment_method_get.result && this.api.get_paymethods.result?.data?.length) {
           this.api.payment_method_get.result = this.api.get_paymethods.result.data[0]
         }
       })
-      .catch(err => this.api.payment_method_get.error = err)
-      .finally(() => --this.api.payment_method_get.load)
   }
 
   getCustomerSources(id: string) {
-    ++this.api.customer_get_sources.load
-    request({
-      url: stripeServer + 'customers/' + id + '/sources',
-      authorizationBearer: this.storage.privateKey
-    }).then(res => {
-      this.api.customer_get_sources.result = tryParse(res)
-      this.api.customer_get_sources.resultAt = Date.now()
-    })
-      .catch(err => this.api.customer_get_sources.error = err)
-      .finally(() => --this.api.customer_get_sources.load)
+    return stripeRequestByRouter(this.api.customer_get_sources, {id, privateKey: this.storage.privateKey})
   }
 
   createCustomer(data: any) {
-    ++this.api.customer.load
-
-    request({
-      url: stripeServer + 'customers',
-      post: data,
-      authorizationBearer: this.storage.privateKey
-    }).then(res => {
-      this.api.customer.result = tryParse(res)
-      this.api.customer.resultAt = Date.now()
-    })
-    .catch(err => this.api.customer.error = err)
-    .finally(() => --this.api.customer.load)
+    return stripeRequestByRouter(this.api.customer, {post: data, privateKey: this.storage.privateKey})
   }
 
   createPayIntent(data: any) {
-    ++this.api.payintent.load
-
-    request({
-      url: stripeServer + 'payment_intents',
-      post: data,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => {
-        this.api.payintent.result = tryParse(res)
-        this.api.payintent.resultAt = Date.now()
-
+    return stripeRequestByRouter(this.api.payintent, {post: data, privateKey: this.storage.privateKey})
+      .then(() => {
+        // mirror result
         this.api.payintent_retrieve.result = this.api.payintent.result
         this.api.payintent_retrieve.resultAt = this.api.payintent.resultAt
       })
-      .catch(err => this.api.payintent.error = err)
-      .finally(() => --this.api.payintent.load)
+  }
+
+  stripeRouteRequest(route: SmartRouteEditor, post: any) {
+    return stripeRequestByRouter(route, {post, privateKey: this.storage.privateKey})
+  }
+
+  // local server communications
+  plaidRouteRequest(route: SmartRouteEditor, data: any) {
+    this.storage.plaid = this.storage.plaid || {}
+
+    const cloneData = {
+      ...data,
+    }
+
+    if (cloneData.data) {
+      cloneData.data = {...cloneData.data}
+      cloneData.data = {
+        client_id: this.storage.plaid.client_id,
+        secret: this.storage.plaid.secret,
+        ...cloneData.data
+      }
+    }
+
+    return requestByRouter(route, {json:cloneData})
+  }
+
+  plaidCreateModal(configs: any) {
+    ++this.api.plaid_createPublicToken.load
+
+    const pasteConfig = {
+      onSuccess: (public_token, metadata) => {
+        --this.api.plaid_createPublicToken.load
+        this.api.plaid_createPublicToken.result = {
+          public_token: public_token,
+          metadata: metadata,
+        }
+      },
+      onExit: (err, metadata) => {
+        --this.api.plaid_createPublicToken.load
+        this.api.plaid_createPublicToken.error = err
+        this.api.plaid_createPublicToken.result = {metadata}
+      },
+      /*
+      onLoad: () => {},
+      onEvent: (eventName, metadata) => {
+      },*/
+    }
+
+    Plaid.create({...pasteConfig, ...configs}).open()
   }
 
   retrievePayIntent(id: string) {
-    ++this.api.payintent_retrieve.load
-    const url = stripeServer + 'payment_intents/' + id
-
-    request({url, authorizationBearer: this.storage.privateKey})
-      .then((res: string) => {
-        this.api.payintent_retrieve.result = tryParse(res)
-        this.api.payintent_retrieve.resultAt = Date.now()
-      })
-      .catch(err => this.api.payintent_retrieve.error = err)
-      .finally(() => --this.api.payintent_retrieve.load)
+    return stripeRequestByRouter(this.api.payintent_retrieve, {id, privateKey: this.storage.privateKey})
   }
 
   cancelPayIntent(id: string) {
-    ++this.api.payintent_cancel.load
-    const url = `${stripeServer}payment_intents/${id}/cancel`
-
-    request({url, post: {
-      cancellation_reason: this.api.payintent_cancel.data.cancellation_reason
-    }, authorizationBearer: this.storage.privateKey})
-      .then((res: string) => {
-        this.api.payintent_cancel.result = tryParse(res)
-        this.api.payintent_cancel.resultAt = Date.now()
-      })
-      .catch(err => this.api.payintent_cancel.error = err)
-      .finally(() => --this.api.payintent_cancel.load)
+    return stripeRequestByRouter(this.api.payintent_cancel, {
+      id, privateKey: this.storage.privateKey,
+      post: {
+        cancellation_reason: this.api.payintent_cancel.data.cancellation_reason
+      }
+    })
   }
 
-  createCharge(data: any) {
-    ++this.api.charge.load
+  createCharge(post: any) {
+    return stripeRequestByRouter(this.api.charge, {post, privateKey: this.storage.privateKey})
+  }
 
-    request({
-      url: stripeServer + 'charges',
-      post: data,
-      authorizationBearer: this.storage.privateKey
-    })
-      .then(res => {
-        this.api.charge.result = tryParse(res)
-        this.api.charge.resultAt = Date.now()
-      })
-      .catch(err => this.api.charge.error = err)
-      .finally(() => --this.api.charge.load)
+  sendSourceUpdate(data: any, id: string) {
+    const shallowClone = {...data}
+    delete shallowClone.id; // just incase left over from text area
+    return stripeRequestByRouter(this.api.source_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
+  }
+
+  sendPaymentMethodUpdate(data: any, id: string) {
+    const shallowClone = {...data}
+    delete shallowClone.id; // just incase left over from text area
+
+    return stripeRequestByRouter(this.api.payment_method_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
+  }
+
+  updateCustomer(data: any, id: string) {
+    const shallowClone = {...data}
+    delete shallowClone.id; // just incase left over from text area
+
+    return stripeRequestByRouter(this.api.customer_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
   }
 
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
     const customer = this.api.customer.data;
     customer.source = token.id;
-
+    // customer.payment_method = token.id; // does NOT work
     this.createCustomer(customer);
   }
 
-  // a source or token converted into a customer
-  createCustomerByPaymentMethod(data: stripe.paymentMethod.PaymentMethod) {
-    const customer = this.api.customer.data;
-    customer.payment_method = data.id;
-
-    this.createCustomer(customer);
-  }
-
+  /** TODO: upgrade to newer simpleRouteEditor */
   verifyBank() {
+    const bankApi: BankData = this.api.bank as any
     const base = stripeServer + 'customers/'
     const cusId = this.api.customer.result.id;
-    const bankId = this.api.bank.token.bank_account.id;
+    const bankId = bankApi.token.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
     request({
         url, authorizationBearer: this.storage.privateKey,
         post: {
           amounts:[
-            this.api.bank.verify.amount1,
-            this.api.bank.verify.amount2
+            bankApi.verify.amount1,
+            bankApi.verify.amount2
           ]
         }
       })
-      // .catch(err => this.api.bank.error = err)
-      .then(result => this.api.bank.verifyResponse = tryParse(result))
+      .then(result => bankApi.verifyResponse = tryParse(result))
   }
 
   /*fetchPayIntentUpdate(config: ISimpleRouteEditor) {
@@ -500,191 +480,6 @@ const storage: localSchema = getProjectLocalStorage()
       // .then(result => config.retrieve = tryParse(result))
       .finally(() => --config.load)
   }*/
-
-  sendSourceUpdate(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-
-    const base = stripeServer + 'sources/'
-    const url = base + id;
-    ++this.api.source_update.load
-
-    request({
-      url,
-      post: shallowClone,
-      authorizationBearer: this.storage.privateKey
-    }).then(result => {
-      this.api.source_update.result = tryParse(result)
-      this.api.source_update.resultAt = Date.now()
-    })
-      .catch(err => this.api.source_update.error = err)
-      .finally(() => --this.api.source_update.load)
-  }
-
-  sendPaymentMethodUpdate(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-
-    const base = stripeServer + 'payment_methods/'
-    const url = base + id;
-    ++this.api.payment_method_update.load
-
-    request({
-      url,
-      post: shallowClone,
-      authorizationBearer: this.storage.privateKey
-    }).then(result => {
-      this.api.payment_method_update.result = tryParse(result)
-      this.api.payment_method_update.resultAt = Date.now()
-    })
-      .catch(err => this.api.payment_method_update.error = err)
-      .finally(() => --this.api.payment_method_update.load)
-  }
-
-  updateCustomer(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-
-    const base = stripeServer + 'customers/'
-    const url = base + id
-    ++this.api.customer_update.load
-
-    request({
-      url,
-      post: shallowClone,
-      authorizationBearer: this.storage.privateKey
-    }).then(result => {
-      this.api.customer_update.result = tryParse(result)
-      this.api.customer_update.resultAt = Date.now()
-    })
-      .catch(err => this.api.customer_update.error = err)
-      .finally(() => --this.api.customer_update.load)
-  }
-
-  cleanSourceUpdateData(data: any) {
-    const deepClone = JSON.parse(JSON.stringify(data))
-
-    this.cleanCardData(deepClone.card)
-    this.cleanOwnerData(deepClone.owner)
-    const removeKeys = [
-      'amount',
-      'object', 'client_secret', 'created', 'flow', 'livemode', 'address', 'status',
-      'type', 'usage', 'currency', 'statement_descriptor',
-      'customer' // you cannot associate customer during source update
-    ]
-
-    removeKeys.forEach(key => delete deepClone[key])
-
-    return deepClone
-  }
-
-  cleanOwnerData(data: Record<string, string>) {
-    const removeKeys = [
-      'verified_address', 'verified_email', 'verified_name', 'verified_phone',
-    ]
-
-    removeKeys.forEach(key => delete data[key])
-
-    return data
-  }
-
-  cleanCardData(data: Record<string, any>) {
-    const cardRemoveKeys = [
-      'wallet', 'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'generated_from',
-      'country', 'brand', 'address_line1_check', 'address_zip_check', 'cvc_check',
-      'funding', 'three_d_secure', 'name', 'tokenization_method', 'dynamic_last4'
-    ]
-    cardRemoveKeys.forEach(key => delete data[key])
-    if (data.networks) {
-      delete data.networks.available
-      delete data.networks.preferred
-    }
-    return data
-  }
-
-  cleanPaymentMethodUpdateData(data: any) {
-    const deepClone = JSON.parse(JSON.stringify(data))
-
-    const removeKeys = [
-      'object', 'checks', 'available', 'created', 'livemode', 'type',
-      'customer', // you cannot associate customer during pay method update
-    ]
-
-    removeKeys.forEach(key => delete deepClone[key])
-    this.cleanCardData(deepClone.card)
-
-    if (data.billing_details) {
-      this.cleanBillingDetails(data.billing_details)
-    }
-
-    return deepClone
-  }
-
-  cleanBillingDetails(data: Record<string, any>) {
-    if (data.address?.country === null || data.address?.country === 'null') {
-      delete data.address.country
-    }
-  }
-
-  cleanCustomerUpdateData(data: any) {
-    const deepClone = JSON.parse(JSON.stringify(data))
-
-    const removeKeys = [
-      'account_balance', 'balance',
-      'object', 'cards', 'created', 'delinquent', 'livemode', 'sources', 'data', 'subscriptions', 'tax_ids'
-    ]
-    removeKeys.forEach(key => delete deepClone[key])
-
-    return deepClone
-  }
-
-  setCustomerDefaultPayMethod(
-    customer: any,
-    payment_method: stripe.paymentMethod.PaymentMethod
-  ) {
-    customer.invoice_settings = customer.invoice_settings || {}
-    customer.invoice_settings.default_payment_method = payment_method.id
-  }
-
-  attachCustomerPayMethod(
-    customerId: string,
-    paymentMethod: stripe.paymentMethod.PaymentMethod
-  ) {
-    ++this.api.customer_attach_method.load
-
-    request({
-      url: `${stripeServer}payment_methods/${paymentMethod.id}/attach`,
-      post: {
-        customer: customerId
-      },
-      authorizationBearer: this.storage.privateKey
-    }).then(result => {
-      this.api.customer_attach_method.result = tryParse(result)
-      this.api.customer_attach_method.resultAt = Date.now()
-    })
-      .catch(err => this.api.customer_attach_method.error = err)
-      .finally(() => --this.api.customer_attach_method.load)
-  }
-
-  detachCustomerPayMethod(
-    paymentMethod: stripe.paymentMethod.PaymentMethod
-  ) {
-    ++this.api.customer_detach_method.load
-    request({
-      url: `${stripeServer}payment_methods/${paymentMethod.id}/detach`,
-      method: 'POST',
-      authorizationBearer: this.storage.privateKey
-    }).then(result => {
-      this.api.customer_detach_method.result = tryParse(result)
-      this.api.customer_detach_method.resultAt = Date.now()
-    })
-      .catch(err => this.api.customer_detach_method.error = err)
-      .finally(() => --this.api.customer_detach_method.load)
-  }
-
-  copyText(text: string) {
-    copyText(text)
-  }
 
   updateStorageMeta(stringData: string) {
     this.storage.metadata = JSON.parse(stringData)
@@ -723,255 +518,120 @@ const storage: localSchema = getProjectLocalStorage()
   }
 }
 
-interface BankData {
-  data: stripe.BankAccountTokenOptions,
-  verify: {amount1?: number, amount2?: number},
-  verifyResponse?: any,
-  token?: any
+export interface CardsData {
+  token?:any
+  source?:any
+  payment_method?: stripe.paymentMethod.PaymentMethod
 }
 
-function getApis () {
-  const confirm_pay_intent: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    load: 0,
-    request: {
-      method: 'POST',
-      path: 'confirm/'
-    },
-    data: {
-      client_secret: "",
-      return_url: window.location.href
+export interface RouterRequestOptions {
+  baseUrl?: string
+  post?: any,
+  json?: any,
+  id?: string,
+  query?: Record<string, string | number>
+  request?: RequestOptions
+}
+
+function resultSetter(
+  route: SmartRouteEditor
+): (res: any) => SmartRouteEditor {
+  return (res) => {
+    const parsed = tryParse(res)
+    route.resultAt = Date.now()
+
+    if (parsed.error) {
+      route.error = parsed.error
+      throw parsed.error
     }
+
+    delete route.error
+    route.result = parsed
+
+    return route
+  }
+}
+
+function replaceStringVars(url: string, data: any): {url:string, data: any} {
+  const regexp = /\$\{\s*[^\}]+\s*\}/g;
+  const array = [...url.matchAll(regexp)]
+
+  for (let index = array.length - 1; index >= 0; --index) {
+    const result = array[index]
+    const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
+    console.log('key', key)
+    const value = data[key];
+    delete data[key] // remove from body data
+    url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
   }
 
-  // Server side only below
+  return {url, data}
+}
 
-  // ach token data
-  const bank: BankData = {
-    verify: {}, // used during micro deposit verification
-    data: {
-      country: 'US',
-      currency: 'usd',
-      routing_number: '110000000',
-      account_number: '000123456789',
-      account_holder_name: 'Jenny Rosen',
-      account_holder_type: 'individual',
-      metadata: sample.metadata
-    } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
-  }
+export function requestByRouter(
+  route: SmartRouteEditor,
+  options: RouterRequestOptions
+) {
+  ++route.load
 
-  // create
-  const customer: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    load: 0,
-    request: {
-      method: 'POST',
-      path: 'customers/'
-    },
-    data: {
-      description: "some new customer",
-      ...sample.owner,
-      metadata: sample.metadata
+  let url: string = options.baseUrl || route.request.host || ''
+
+  if (options.id) {
+    const idSearch = /\$\{\s*id\s*\}/.exec(route.request.path)
+    if (idSearch.length > 0) {
+      url = url + route.request.path.slice(0, idSearch.index) + options.id + route.request.path.slice(idSearch.index + idSearch[0].length, url.length)
+    } else {
+      url = url + options.id
     }
+  } else {
+    url = url + route.request.path
   }
 
-  const customer_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'customers/${id}'
-    },
-    load: 0,
-    data: {
-      id: "",
-      metadata: sample.metadata
-    }
+  const data = options.post || options.json
+  // let cloneData = {...route.data}
+
+  const replaced = replaceStringVars(url, data)
+  url = replaced.url
+
+
+  const reqOptions: RequestOptions = {
+    url, method: route.request.method,
+    authorizationBearer: options.request?.authorizationBearer,
   }
 
-  const customer_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'customers/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
+  if (options.post) {
+    reqOptions.post = data
   }
 
-  const get_paymethods: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_methods/'
-    },
-    load: 0,
-    data: {
-      customer: "", type: "card"
-    }
+  if (options.json) {
+    reqOptions.json = data
   }
 
-  const customer_attach_method: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${paymentMethod.id}/attach'
-    },
-    load: 0,
-    data: {} // not used currently
+  if (options.query) {
+    const queryString = Object.keys(options.query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${options.query[key]}`,'')
+    url = url + '?' + queryString
   }
 
-  const customer_detach_method: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${paymentMethod.id}/detach'
-    },
-    load: 0,
-    data: {} // not used currently
-  }
+  return request(reqOptions)
+    .then(resultSetter(route))
+    .catch(err => {
+      route.error = err
+      console.log('err', err)
+      return Promise.reject(err)
+    })
+    .finally(() => --route.load)
+}
 
-  const customer_get_sources: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'customers/${id}/sources'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
+interface StripeRouterRequestOptions extends RouterRequestOptions {
+  privateKey: string
+}
 
-  const source_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'sources/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  const source_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'sources/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  const payment_method_get: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_methods/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  const payment_method_update: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_methods/${id}'
-    },
-    load: 0,
-    data: {
-      id: ""
-    }
-  }
-
-  const payintent: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_intents/'
-    },
-    load: 0,
-    data: {
-      amount: 1099,
-      confirm: 'true',
-      currency: 'usd',
-      setup_future_usage: 'off_session',
-      metadata: sample.metadata
-    }
-  }
-
-  const payintent_retrieve: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'GET',
-      path: 'payment_intents/${id}'
-    },
-    load: 0,
-    data: {
-      id: '',
-    }
-  }
-
-  const payintent_cancel: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'payment_intents/${id}/cancel'
-    },
-    load: 0,
-    data: {
-      id: '',
-      cancellation_reason: 'requested_by_customer', // duplicate, fraudulent, requested_by_customer, or abandoned
-    }
-  }
-
-  const charge: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    request: {
-      method: 'POST',
-      path: 'charges/'
-    },
-    load: 0,
-    data: {
-      amount: 1099,
-      currency: 'usd',
-      metadata: sample.metadata
-    }
-  }
-
-  const testHeader: ISimpleRouteEditor = {
-    $send: new EventEmitter(),
-    load: 0,
-    data: {}
-  }
-
-  return {
-    confirm_pay_intent,
-
-    // server sides
-    bank, customer,
-    customer_update,
-    customer_get,
-    get_paymethods,
-    customer_attach_method,
-    customer_detach_method,
-    customer_get_sources,
-    source_get,
-    source_update,
-    payment_method_get,
-    payment_method_update,
-    payintent,
-    payintent_retrieve,
-    payintent_cancel,
-    charge,
-    testHeader,
-  }
+export function stripeRequestByRouter(
+  route: SmartRouteEditor,
+  options: StripeRouterRequestOptions
+) {
+  options.baseUrl = stripeServer
+  options.request = options.request || {} as any
+  options.request.authorizationBearer = options.privateKey
+  return requestByRouter(route, options)
 }

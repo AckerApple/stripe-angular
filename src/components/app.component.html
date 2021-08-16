@@ -1,31 +1,21 @@
-<style>
-  .tool-wrap {
-    flex:2 2 20em;
-    margin:2em;display:flex;flex-direction:column;
-  }
-
-  .tool-panel {
-    flex-grow:1;
-    border-radius:5px;background-color:#888;text-align:left;width:100%;padding:1em;
-  }
-</style>
+<!-- 🐠 🔐 💳 👀 🏦 -->
 <table cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
   <tr>
     <td>
       <br />
       <div style="text-align: center">
-        <h1 style="margin:0;color:white">stripe-angular {{version}}</h1>
+        <h1 style="margin:0;color:white">🐠 stripe-angular {{version}}</h1>
         <p>A dashboard of testing for both Stripe and stripe-angular, created by Acker Apple</p>
       </div>
-      <ng-container *ngIf="!loaded">Loading...</ng-container>
+      <ng-container *ngIf="!loaded">⏰ Loading Stripe...</ng-container>
 
       <ng-container *ngIf="loaded">
         <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
 
           <div class="tool-wrap" style="flex-grow:1">
             <h3 style="margin:0;text-align:left;color:white"
-            >Stripe Key</h3>
-            <div style="flex-grow:1;border-radius:5px;background-color:#888;text-align:left;padding:1em;">
+            >⚙️ Settings</h3>
+            <div class="pad text-left flex-1 radius-5" style="background-color:#888;">
               <ng-container *ngTemplateOutlet="keyInfoUi"></ng-container>
             </div>
           </div>
@@ -35,7 +25,7 @@
             <div class="tool-wrap">
               <label for="card-like-element" style="display:flex;flex-wrap:wrap;align-items:center;color:white;">
                 <h3 style="flex-grow:1;margin:0;text-align:left;"
-                >Card Element</h3>
+                >💳 Card Element</h3>
                 <small>
                   <a
                   href="https://stripe.com/docs/testing#cards"
@@ -52,9 +42,7 @@
             <div class="tool-wrap">
               <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
                 <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Bank Account
-                  </label>
+                  <label for="card-like-element">🏦 Bank Account</label>
                 </h3>
                 <small>
                   <a href="https://stripe.com/docs/ach#testing-ach"
@@ -72,7 +60,7 @@
                 <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
                   <h3 style="margin:0;padding:0;flex-grow:1;color:white">
                     <label for="card-like-element">
-                      Confirm Pay Intent
+                      🤝 Confirm Pay Intent
                     </label>
                   </h3>
                   <small>
@@ -100,7 +88,7 @@
                     </div>
                     -->
                   </small>
-                  <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.confirm_pay_intent}"></ng-container>
+                  <simple-route-edit [config]="api.confirm_pay_intent"></simple-route-edit>
                   <ng-container *ngIf="api.confirm_pay_intent.result?.paymentIntent?.next_action?.redirect_to_url?.url">
                     <div>
                       <ng-container *ngTemplateOutlet="nextActionLink;context:{link: api.confirm_pay_intent.result.paymentIntent.next_action.redirect_to_url.url}"></ng-container>
@@ -118,604 +106,200 @@
           </div>
         </ng-container>
 
-        <div *ngIf="lastError" style="color:red;">
-          <textarea wrap="off" style="color:red;width:100%;height:175px">{{lastError | json}}</textArea>
+        <div *ngIf="lastError">
+          <strong>🔴 Last recorded error</strong>
+          <textarea wrap="off" class="bg-danger width-full"
+            style="height:25vh;min-height:200px;"
+          >{{lastError | json}}</textArea>
         </div>
 
-        <ng-container *ngIf="storage.webhookSigningSecret">
-          <br /><br />
-          <div style="color:white;text-align:center;">
-            <h2 style="opacity: 50%;">🪝 Web Hook Functionality</h2>
-            <small>Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
-            <br /><br />
-          </div>
-          <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
-            <div *ngIf="storage.webhookSigningSecret" class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Generate Test Header String
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://www.npmjs.com/package/stripe#testing-webhook-signing" style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                Paste your payload below
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.testHeader}"></ng-container>
-              </div>
-            </div>
-          </div>
-        </ng-container>
+        <br /><br />
 
-        <ng-container *ngIf="storage.privateKey">
-          <br /><br />
+        <div class="text-center text-white">
+          <div class="bg-grey border-bottom pad-xs">
+            <div class="flex-valign-center flex-wrap flex-right">
+              <a (click)="showServerMethods = !showServerMethods">
+                {{ showServerMethods ? '🔽' : '▶️'}}
+              </a>
+              <a class="flex-1" (click)="showServerMethods = !showServerMethods">
+                <h2 class="opacity-half margin-0 pad-0">🔗 Server Functionality</h2>
+                <small class="opacity-70">Helpful tools ONLY available in this demo by Stripe <strong>privateKey</strong></small>
+              </a>
+              <small class="text-xs">
+                <button type="button" (click)="toggleServerMode()"
+                  [class.bg-assertive] = "!enableServerMode"
+                  [class.bg-balanced] = "enableServerMode"
+                >{{ enableServerMode ? 'enabled' : 'disabled' }}</button>
+              </small>
 
-          <div style="color:white;text-align:center;">
-            <h2 style="opacity: 50%;">🔗 Server Functionality</h2>
-            <small>Helpful tools ONLY available in this demo by using entered <strong>privateKey</strong></small>
-            <br /><br />
-          </div>
+              <br />
 
-          <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Create Customer
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/customers"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf = "api.bank.token"
-                    (click) = "api.customer.data.source = api.bank.token.id"
-                    style = "text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer.data.source === api.bank.token.id && '.3'"
-                    [title] = "api.bank.token.id"
-                  >
-                    use bank {{api.bank.token.bank_account.bank_name}} {{api.bank.token.bank_account.last4}}
-                  </a>
-                  <a
-                    *ngIf="card.source"
-                    (click)="api.customer.data.source = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer.data.source === card.source.id && '.3'"
-                    [title] = "card.source.id"
-                  >
-                    use source {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-                  <a
-                    *ngIf="card.payment_method"
-                    (click)="api.customer.data.payment_method = card.payment_method.id;setCustomerDefaultPayMethod(api.customer.data, card.payment_method)"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer.data.payment_method === card.payment_method.id && '.3'"
-                    [title] = "card.payment_method.id"
-                  >
-                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer}"></ng-container>
-
-                <ng-container *ngIf="card.payment_method && api.customer.result">
-                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer.result}"></ng-container>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    GET Customer
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://stripe.com/docs/api/customers/retrieve"
-                    style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <div style="color:white;">
-                  <small style="display:flex;flex-wrap:wrap;">
-                    <a *ngIf="api.customer.result"
-                      (click)="api.customer_get.data.id = api.customer.result.id"
-                      style="text-decoration:underline;cursor:pointer;margin:1em;"
-                      [style.opacity] = "api.customer_get.data.id === api.customer.result.id && '.3'"
-                    >use customer {{api.customer.result.id}}</a>
-
-                    <a *ngIf="api.payment_method_get.result?.customer"
-                      (click)="api.customer_get.data.id = api.payment_method_get.result.customer"
-                      style="text-decoration:underline;cursor:pointer;margin:1em;"
-                      [style.opacity] = "api.customer_get.data.id === api.payment_method_get.result.customer && '.3'"
-                      [title] = "api.payment_method_get.result.customer"
-                    >
-                      use pay method customer {{api.payment_method_get.result.customer}}
-                    </a>
-                  </small>
+              <div *ngIf="showServerMethods">
+                <div class="pad flex-center">
+                  <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+                    <div class="flex">
+                      <div class="flex-1">
+                        <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+                      </div>
+                      <div>
+                        <div class="invisible">🔐</div>
+                        <button type="submit" class="active-bg-balanced">
+                          💾&nbsp;save
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer_get}"></ng-container>
+
+                <br /><br />
+
+                <server-tools [api]="api" [plaidServerApis]="plaidServerApis" [card]="card" [storage]="storage"></server-tools>
+                <br />
+                <button (click)="showServerMethods = false">❌ close</button>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    UPDATE Customer
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/customers/update"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="api.customer.result"
-                    (click)="customer_update.data = cleanCustomerUpdateData(api.customer.result)"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer_update.data.id === api.customer.result.id && '.3'"
-                  >
-                    use customer {{api.customer.result.id}}
-                  </a>
+        <br /><br />
 
-                  <a
-                    *ngIf="card.source"
-                    (click)="api.customer_update.data.source = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer_update.data.source === card.source.id && '.3'"
-                    [title] = "card.source.id"
-                  >
-                    use source {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
+        <div class="bg-grey border-bottom pad-xs text-white">
+          <div class="flex-valign-center flex-right flex-wrap"
+            (click)="showWebhookMethods = !showWebhookMethods"
+          >
+            <a>
+              {{ showWebhookMethods ? '🔽' : '▶️'}}
+            </a>
+            <a class="text-center flex-1">
+              <h2 class="opacity-half margin-0 pad-0">🪝 Web Hook Functionality</h2>
+              <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
+            </a>
+          </div>
 
-                  <a
-                    *ngIf="card.payment_method"
-                    (click)="setCustomerDefaultPayMethod(api.customer_update.data, card.payment_method)"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer_update.data.payment_method === card.payment_method.id && '.3'"
-                  >
-                    default method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
-                  </a>
+          <ng-container *ngIf="showWebhookMethods">
+            <br />
 
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config:api.customer_update}"></ng-container>
-
-                <ng-container *ngIf="card.payment_method && api.customer_update.data.id">
-                  <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer_update.data}"></ng-container>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>GET Payment Methods</label>
-                </h3>
-                <small>
-                  <a href = "https://stripe.com/docs/api/payment_methods/list"
-                    style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="api.customer.result"
-                    (click)="api.get_paymethods.data.customer = api.customer.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.get_paymethods.data.customer === api.customer.result.id && '.3'"
-                  >
-                    use customer {{api.customer.result.id}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.get_paymethods}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    GET Payment Method
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/payment_methods/retrieve"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="api.payment_method_get.result"
-                    (click)="api.payment_method_get.data.id = api.payment_method_get.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payment_method_get.data.id === api.payment_method_get.result.id && '.3'"
-                    [title] = "api.payment_method_get.result.id"
-                  >
-                    use type {{api.payment_method_get.result.type}}
-                  </a>
-
-                  <a *ngIf="card.source"
-                    (click)="api.payment_method_get.data.id = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payment_method_get.data.id === card.source.id && '.3'"
-                    [title] = "card.source.id + ' - a source can become a payment_method'"
-                  >
-                    use source {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payment_method_get}"></ng-container>
-
-                <ng-container *ngIf="api.payment_method_get.result">
-                  <button
-                    type="button"
-                    (click)="createCustomerByPaymentMethod(api.payment_method_get.result)"
-                    [style.opacity]="api.payment_method_get.result.customer ? '.3' : null"
-                  >create customer by payment method</button>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    UPDATE Payment Method
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/payments/checkout/subscriptions/update-payment-details"
-                  style="color:white;" target="_blank"
-                  >checkout docs</a>&nbsp;
-                  <a
-                  href="https://stripe.com/docs/api/payment_methods/update"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="api.payment_method_get.result"
-                    (click)="api.payment_method_update.data = cleanPaymentMethodUpdateData(api.payment_method_get.result)"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payment_method_update.data.id === api.payment_method_get.result.id && '.3'"
-                    [title] = "api.payment_method_get.result.id"
-                  >
-                    use pay method type {{api.payment_method_get.result.type}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payment_method_update}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    GET Customer Sources
-                  </label>
-                </h3>
-                <small>
-                  <a href = "https://stripe.com/docs/api/cards/list"
-                    style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="api.customer.result"
-                    (click)="api.customer_get_sources.data.id = api.customer.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.customer_get_sources.data.id === api.customer.result.id && '.3'"
-                  >use customer {{api.customer.result.id}}</a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.customer_get_sources}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    GET Source
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/sources/retrieve"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="card.source"
-                    (click)="api.source_get.data.id = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.source_get.data.id === card.source.id && '.3'"
-                    [title] = "card.source.id"
-                  >
-                    use source {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-                </small>
-
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.source_get}"></ng-container>
-
-                <ng-container *ngIf="api.source_get.result">
-                  <button
-                    type="button"
-                    (click)="createCustomerByToken(api.source_get.result)"
-                    [style.opacity] = "api.customer.data.source === api.source_get.result.id && '.3'"
-                  >create customer by source</button>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label>
-                    UPDATE Source
-                  </label>
-                </h3>
-                <small>
-                  <a
-                  href="https://stripe.com/docs/api/sources/update"
-                  style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="api.source_get.result"
-                    (click)="api.source_update.data = cleanSourceUpdateData(api.source_get.result)"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.source_update.data.id === api.source_get.result.id && '.3'"
-                    [title] = "api.source_get.result.id"
-                  >
-                    use source type {{api.source_get.result.type}}
-                  </a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.source_update}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Create Pay Intent
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://stripe.com/docs/api/payment_intents" style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a *ngIf="api.customer.result"
-                    (click)="api.payintent.data.customer = api.customer.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.customer === api.customer.result.id && '.3'"
-                  >
-                    use customer {{api.customer.result.description}}
-                  </a>
-                  <a *ngIf="api.customer_get.data.id"
-                    (click)="api.payintent.data.customer = api.customer_get.data.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.customer === api.customer_get.data.id && '.3'"
-                  >
-                    use GET customer {{api.customer_get.data.id}}
-                  </a>
-                  <a *ngIf="card.payment_method"
-                    (click)="api.payintent.data.payment_method = card.payment_method.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.payment_method === card.payment_method.id && '.3'"
-                    [title] = "card.payment_method.id"
-                  >
-                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
-                  </a>
-                  <a *ngIf="card.source"
-                    (click)="api.payintent.data.payment_method = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.payment_method === card.source.id && '.3'"
-                    [title] = "card.source.id"
-                  >
-                    use source {{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-                  <a *ngIf="card.token"
-                    (click)="api.payintent.data.payment_method = card.token.card.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.payment_method === card.token.card.id && '.3'"
-                    [title] = "card.token.id"
-                  >
-                    use token {{card.token.card.brand}} {{card.token.card.last4}}
-                  </a>
-                  <a *ngIf="api.payment_method_get.result"
-                    (click)="api.payintent.data.payment_method = api.payment_method_get.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.payment_method === api.payment_method_get.result.id && '.3'"
-                    [title] = "api.payment_method_get.id"
-                  >
-                    use method {{api.payment_method_get.result.brand}} {{api.payment_method_get.result.last4}}
-                  </a>
-                  <a *ngIf="api.payment_method_get.result?.customer"
-                    (click)="api.payintent.data.customer = api.payment_method_get.result.customer"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.payintent.data.customer === api.payment_method_get.result.customer && '.3'"
-                    [title] = "api.payment_method_get.result.customer"
-                  >
-                    use pay method customer
-                  </a>
-                </small>
-
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payintent}"></ng-container>
-
-                <!--
-                  <ng-container *ngIf="api.payintent.result">
-                    <button type="button" (click)="fetchPayIntentUpdate(api.payintent)">retrieve update</button>
-                  </ng-container>
-                -->
-
-                <ng-container *ngIf="api.payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
-                  <div>
-                    <ng-container *ngTemplateOutlet="nextActionLink;context:{link:api.payintent.result.next_action.use_stripe_sdk.stripe_js}"></ng-container>
+            <div class="pad flex-center">
+              <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+                <div class="flex">
+                  <div class="flex-1">
+                    <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
                   </div>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Retrieve Pay Intent
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://stripe.com/docs/api/payment_intents/retrieve" style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <input type="text" maxLength="30" (keyup)="api.payintent_retrieve.data.id=$event.target.value" style="width:100%"
-                  placeholder="pay_intent.id"
-                />
-                <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{config: api.payintent_retrieve}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Cancel Pay Intent
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://stripe.com/docs/api/payment_intents/cancel" style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.payintent_cancel}"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap">
-              <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-                <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-                  <label for="card-like-element">
-                    Create Charge
-                  </label>
-                </h3>
-                <small>
-                  <a href="https://stripe.com/docs/api/charges" style="color:white;" target="_blank"
-                  >api docs</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <small style="display:flex;flex-wrap:wrap;color:white;">
-                  <a
-                    *ngIf="card.payment_method"
-                    (click)="api.charge.data.payment_method = card.payment_method.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.charge.data.payment_method === card.payment_method.id && '.3'"
-                    [title] = "card.payment_method.id"
-                  >
-                    use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
-                  </a>
-
-                  <a
-                    *ngIf="card.token"
-                    (click)="api.charge.data.source = card.token.card.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [title] = "card.token.id"
-                    [style.opacity] = "api.charge.data.source === card.token.card.id && '.3'"
-                  >
-                    use token {{card.token.card.brand}} {{card.token.card.last4}}
-                  </a>
-
-                  <a
-                    *ngIf="card.source"
-                    (click)="api.charge.data.source = card.source.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [title] = "card.source.id"
-                    [style.opacity] = "api.charge.data.source === card.source.id && '.3'"
-                  >
-                    use source{{card.source.card.brand}} {{card.source.card.last4}}
-                  </a>
-
-                  <a *ngIf="api.bank.token"
-                    (click)="api.charge.data.source = api.bank.token.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [title] = "api.bank.token.id"
-                    [style.opacity] = "api.charge.data.source === api.bank.token.id && '.3'"
-                  >
-                    use bank {{api.bank.token.bank_account.bank_name}} {{api.bank.token.bank_account.last4}}
-                  </a>
-
-                  <ng-container *ngFor="let item of api.customer.result && api.customer.result?.sources?.data">
-                    <a *ngIf="item.object === 'bank_account'"
-                      (click)="api.charge.data.source = item.id"
-                      style="text-decoration:underline;cursor:pointer;margin:1em;"
-                      [title] = "item.id"
-                      [style.opacity] = "api.charge.data.source === item.id && '.3'"
-                    >
-                      use customer bank {{item.bank_name}} {{item.last4}}
-                    </a>
-                  </ng-container>
-
-                  <a *ngIf="api.customer.result"
-                    (click)="api.charge.data.customer = api.customer.result.id"
-                    style="text-decoration:underline;cursor:pointer;margin:1em;"
-                    [style.opacity] = "api.charge.data.customer === api.customer.result.id && '.3'"
-                  >use customer {{api.customer.result.description}}</a>
-                </small>
-                <ng-container *ngTemplateOutlet="simpleRouteEditor;context:{config: api.charge}"></ng-container>
-                <div style="text-align:center;opacity:.5;">
-                  <small>
-                    <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
-                    >prefer pay intents</a>
-                  </small>
+                  <div>
+                    <div class="invisible">🔐</div>
+                    <button type="submit" class="active-bg-balanced">
+                      💾&nbsp;save
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
 
-          </div>
-        </ng-container>
+            <br />
 
-        <div *ngIf="!stripe" style="color:red;">
-          Stripe publishable key has not yet been set
+            <ng-container *ngTemplateOutlet="webhookFunctionality"></ng-container>
+            <br />
+            <button (click)="showWebhookMethods = false">❌ close</button>
+          </ng-container>
         </div>
       </ng-container>
+
+      <br /><br />
+
+      <div class="text-white bg-grey border-bottom pad-xs">
+        <div class="flex-valign-center flex-right flex-wrap"
+          (click)="showPlaidMethods = !showPlaidMethods"
+        >
+          <a>
+            {{ showPlaidMethods ? '🔽' : '▶️'}}
+          </a>
+          <a class="text-center flex-1">
+            <h2 class="opacity-half margin-0 pad-0">🏦 Plaid Functionality</h2>
+            <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>plaidConfig</strong></small>
+          </a>
+        </div>
+
+        <ng-container *ngIf="showPlaidMethods">
+          <div class="pad flex-center">
+            <br />
+            <ng-container *ngIf="localServerActive; else warnNoLocalServer">
+              <form class="flex-1" (submit)="save()" action="javascript:">
+                <div class="flex-1 flex-wrap flex-center flex-valign-center child-margin-xxs">
+                  <div class="flex-1 max-width-800">
+                    <strong style="color:orange;">🆔 CLIENT_ID</strong>
+                    <div>
+                      <input type="password" class="width-full"
+                        (keyup)="storage.plaid.client_id=$event.target.value;"
+                        [value]="storage.plaid.client_id || null"
+                        placeholder="Plaid > Team > Keys > client_id"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="flex-1 max-width-800">
+                    <strong style="color:orange;">👂 SECRET</strong>
+                    <div>
+                      <input type="password" class="width-full"
+                        (keyup)="storage.plaid.secret=$event.target.value;"
+                        [value]="storage.plaid.secret || null"
+                        placeholder="Plaid > Team > Keys > Sandbox"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="invisible">🔐</div>
+                    <button type="submit" class="active-bg-balanced">
+                      💾&nbsp;save
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </ng-container>
+          </div>
+
+          <br />
+
+          <div class="flex-wrap flex-center">
+            <ng-container *ngIf="localServerActive">
+              <tool-wrap [api]="plaidServerApis.plaid_linkTokenCreate"></tool-wrap>
+            </ng-container>
+
+            <tool-wrap [api]="api.plaid_createPublicToken"
+              [pasteFavs] = "[['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']]"
+            ></tool-wrap>
+
+            <ng-container *ngIf="localServerActive">
+              <tool-wrap [api]="plaidServerApis.plaid_publicTokenExchange"
+                [pasteFavs]="[['data.public_token', api.plaid_createPublicToken.result?.public_token]]"
+              ></tool-wrap>
+
+              <tool-wrap [api]="plaidServerApis.plaid_stripeBankCreate"
+                [pasteFavs]="[
+                  ['data.access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token],
+                  ['public_token.accounts[0]', api.plaid_createPublicToken.result?.metadata.accounts && api.plaid_createPublicToken.result.metadata.accounts[0].id,'data.account_id']
+                ]"
+              ></tool-wrap>
+
+              <tool-wrap [api]="plaidServerApis.getAccounts"
+                [pasteFavs]="[
+                  ['data.access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token]
+                ]"
+              ></tool-wrap>
+            </ng-container>
+          </div>
+
+
+        </ng-container>
+      </div>
+
+      <br />
 
       <div class="tool-wrap" style="align-items: center;">
         <h2
           style="margin:0;text-align:left;color:white;"
-        >Best of Resources</h2>
-        <div style="border-radius:5px;background-color:#888;text-align:left;max-width:900px;padding:1em;">
+        >📕 Best of Resources</h2>
+        <div style="border-radius:5px;background-color:#888;text-align:left;padding:1em;">
           <ng-container *ngTemplateOutlet="resources"></ng-container>
         </div>
       </div>
@@ -729,34 +313,32 @@
   <div *ngIf="!changekey else storageForm">
     <div style="display:flex;flex-wrap:wrap">
       <div style="margin:1em;flex-grow: 1;">
-        <strong>Publishable Key</strong>
+        <strong>🗝 Publishable Key</strong>
         <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
         >{{ storage.key | slice : 0 : 16 }}...</div>
       </div>
 
       <div *ngIf="storage.privateKey" style="margin:1em;flex-grow: 1;">
-        <strong>Private Key</strong>
+        <strong>🔐 Private Key</strong>
         <div (click)="copyText(storage.privateKey)" class="hover-highlight" style="cursor: pointer;">{{ storage.privateKey | slice : 0 : 8 }}...</div>
       </div>
 
       <div *ngIf="storage.webhookSigningSecret" style="margin:1em;flex-grow: 1;">
-        <strong>Webhook Signing Secret</strong>
+        <strong>🪝 Webhook Signing Secret</strong>
         <div (click)="copyText(storage.webhookSigningSecret)" class="hover-highlight" style="cursor: pointer;">{{ storage.webhookSigningSecret | slice : 0 : 8 }}...</div>
       </div>
     </div>
 
     <br />
 
-    <button
-      type="button"
-      (click)="copyShareUrl()"
+    <button type="button" (click)="copyShareUrl()"
       style="width:50%"
-    >copy share url</button>
+    >✍️ copy share url</button>
     <button
       type="button"
       (click)="changekey=!changekey"
       style="width:50%"
-    >CHANGE API SETTINGS</button>
+    >🔧 edit</button>
 
     <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
       <br />
@@ -773,122 +355,96 @@
 </ng-template>
 
 <ng-template #storageForm>
-  <div *ngIf="changekey" style="padding:1em;">
-    <form onsubmit="return false" (submit)="save();changekey=false">
-      <strong>publishableKey</strong>
-      <div>
-        <input
-          (keyup)="tempPublishableKey=$event.target.value"
-          [value]="tempPublishableKey"
-          style="width:100%"
-        />
-      </div>
-
-      <div style="display:flex;flex-wrap: wrap;">
-        <div style="padding:.5em;">
-          <label for="saveKeyLocally" style="align-items: center">
-            <input
-              type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
-              (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
-              [checked] = "storage.saveKeyLocally"
-            />
-            <span>save Stripe key in localStorage</span>
-          </label>
+  <div *ngIf="changekey">
+    <form action="javascript:" (submit)="save();changekey=false">
+      <div class="flex-wrap flex-valign-center child-margin">
+        <div class="flex-1">
+          <div>
+            <strong>🗝 publishableKey</strong>
+            <div>
+              <input
+                (keyup)="tempPublishableKey=$event.target.value"
+                [value]="tempPublishableKey"
+                style="width:100%"
+              />
+            </div>
+            <div class="pos-rel text-xxs opacity-70">
+              <div class="pos-abs">
+                <label for="saveKeyLocally" style="align-items: center">
+                  <input
+                    type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
+                    (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
+                    [checked] = "storage.saveKeyLocally"
+                  />
+                  <span>💾 save in localStorage</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style="padding:.5em;">
-          <label for="saveRequestsLocal" style="align-items: center" title="Greatly assists coming back to this interface">
-            <input
-              type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
-              (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
-              [checked] = "storage.saveRequestsLocal"
-            />
-            <span>save request data in localStorage</span>
-          </label>
+        <div *ngIf="enableServerMode || storage.webhookSigningSecret" class="flex-1">
+          <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
         </div>
 
-        <div style="padding:.5em;">
+        <div *ngIf="enableServerMode || storage.privateKey" class="flex-1">
+          <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+        </div>
+
+        <div>
           <label for="enableServerMode" style="align-items: center">
             <input
               type="checkbox" name="enableServerMode" id="enableServerMode"
               (change)="toggleServerMode()"
               [checked] = "enableServerMode"
             />
-            <span>enable server functionality</span>
+            <span> 🔗 enable server functionality</span>
           </label>
         </div>
+
       </div>
 
-      <div *ngIf="enableServerMode || storage.webhookSigningSecret">
-        <strong style="color:orange;">webhookSigningSecret</strong>
+      <br />
+
+      <!-- reusable metadata -->
+      <div>
         <div>
-          <input type="password"
-            (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"
-            [value]="tempWebhookSigningSecret"
-            style="width:100%"
-          />
+          <strong>
+            <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
+              <input
+                type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
+                (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
+                [checked] = "storage.saveRequestsLocal"
+              /> Reuse metadata in all requests
+            </label>
+          </strong>
         </div>
-        <div style="padding:.5em;">
-          <small style="opacity: 70%;">
-            This demo offers helpful web hook server functionality
-          </small>
-        </div>
-      </div>
-
-      <div *ngIf="enableServerMode || storage.privateKey">
-        <strong style="color:orange;">privateKey</strong>
-        <div>
-          <input type="password"
-            (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
-            [value]="tempPrivateKey"
-            style="width:100%"
-          />
-        </div>
-        <div style="padding:.5em;">
-          <small style="opacity: 70%;">
-            This demo offers helpful server functionality
-          </small>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-wrap: wrap;">
-        <div *ngIf="enableServerMode || storage.privateKey" style="padding:.5em;">
-          <label for="savePrivateKeyLocally" style="align-items: center">
-            <input
-              type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-              (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
-              [checked] = "storage.savePrivateKeyLocally"
-            />
-            <span>save Stripe private key in localStorage</span>
-          </label>
-        </div>
-      </div>
-
-      <div *ngIf="storage.saveRequestsLocal">
-        <strong>Reuse metadata</strong>
-        <textarea wrap="off" style="width:100%;height:175px"
+        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
           (change)="updateStorageMeta($event.target.value)"
         >{{ storage.metadata | json }}</textArea>
       </div>
 
+      <br />
+
       <div>
         <strong>Your local storage</strong>
-        <textarea wrap="off" style="width:100%;height:175px" disabled
+        <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
         >{{ storage | json }}</textArea>
       </div>
 
-      <div style="text-align:center;">
+      <div class="flex-wrap child-margin-xs flex-center child-flex-1">
         <button
           *ngIf="storage.privateKey || storage.key"
           type="button" (click)="deleteLocalStorage()"
-          style="background-color: black;color:white;padding:.4em;font-size:.8em;"
-        >clear localStorage</button>
+          style="background-color: black;color:white;"
+        >🗑 clear localStorage</button>
+
         <button
           type="button" (click)="changekey = !changekey"
-          style="background-color: black;color:white;padding:.4em;font-size:.8em;"
-          >cancel</button>
-          <button type="submit" style="padding:.4em;font-size:.8em;"
-          >save</button>
+          class="bg-grey text-white"
+        >❌ cancel</button>
+
+        <button type="submit">💾 save</button>
       </div>
     </form>
   </div>
@@ -903,9 +459,7 @@
       [(token)]="card.token"
       (tokenChange)="sending=false"
       [(source)]="card.source"
-      (sourceChange)="setSource($event)"
       [(paymentMethod)]="card.payment_method"
-      (paymentMethodChange)="setPaymentMethod($event)"
       [(complete)]="cardComplete"
       (catch)="sending=false;lastError=$event"
       (invalidChange)="sending=false;lastError=$event"
@@ -915,125 +469,35 @@
 
   <br />
 
-  <div style="display:flex;flex-wrap:wrap;font-size:1em;justify-content: center">
-    <div *ngIf="!cardComplete;else cardCompleteTemplate" style="opacity:50%">
+  <div style="font-size:1em;">
+    <div *ngIf="!cardComplete;else cardCompleteTemplate" class="opacity-half text-center">
       ...awaiting card entry form above...
     </div>
 
     <ng-template #cardCompleteTemplate>
-      <button
-        type="button"
-        (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
-        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-        title="Using Payment Method instead is recommended"
-      >
-        create source
-      </button>
+      <div class="flex-wrap flex-1">
+        <button type="button" class="flex-1"
+          (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
+          style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+          title="Using Payment Method instead is recommended"
+        >💳 create source</button>
 
-      <button
-        type="button"
-        (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
-        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-      >
-        create payment method
-      </button>
+        <button type="button" class="flex-1"
+          (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
+          style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+        >💳 create payment method</button>
 
-      <button
-        type="button"
-        (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-        style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
-        title="Using Payment Method instead is recommended"
-      >
-        create token
-      </button>
-    </ng-template>
-  </div>
-
-
-  <br />
-
-  <h3 style="flex-grow:1;margin:0;">Optional Card Controls</h3>
-  <div *ngIf="editExtraData">
-    <br />
-    <div style="display:flex;justify-content:space-between">
-      <strong title="Card specific way of providing token related info (includes metadata)">token data</strong>
-      <small>
-        <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
-      </small>
-    </div>
-    <textarea wrap="off" style="width:100%;height:175px"
-      (change)="changeExtraData($event.target.value)"
-    >{{ extraData | json }}</textArea>
-  </div>
-
-  <div *ngIf="editPaymentMethodRequest">
-    <br />
-    <div style="display:flex;justify-content:space-between">
-      <div>payment method data</div>
-      <small>
-        <a href="https://stripe.com/docs/payments/payment-methods/overview" target="_blank">overview</a>&nbsp;
-        <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
-      </small>
-    </div>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
-      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
-    </div>
-
-    <div *ngIf="editSourceRequest">
-      <br />
-      <div style="display:flex;justify-content:space-between">
-        <strong [style.color]="storage.temp.invalidSourceData && 'red'">source data</strong>
-        <small>
-          <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
-        </small>
+        <button type="button" class="flex-1"
+          (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
+          style="font-size:1em;flex-grow:1;background-color:#99FFFF;"
+          title="Using Payment Method instead is recommended"
+        >🪙 create token</button>
       </div>
-    <textarea wrap="off" style="width:100%;height:175px" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
-  </div>
 
-  <div *ngIf="editOptions">
-    <br />
-    <div style="display:flex;justify-content:space-between">
-      <strong>options</strong>
-      <small>
-        <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
-      </small>
-    </div>
-    <textarea
-      wrap="off" style="width:100%;height:175px"
-      (change)="changeOptions($event.target.value)"
-    >{{ options | json }}</textArea>
-  </div>
+      <br />
 
-  <div style="text-align:right;display:flex;flex-wrap:wrap;">
-    <button
-      type="button"
-      (click)="editSourceRequest=!editSourceRequest"
-      style="flex-grow:1"
-      [style.background-color] = "editSourceRequest && '#0099CC' || null"
-      title="Using Payment Method instead is recommended"
-    >
-      source data
-    </button>
-
-    <button type="button"
-      (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
-      style="flex-grow:1"
-      [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
-    >payment method data</button>
-
-    <button
-      type="button"
-      (click)="editExtraData=!editExtraData"
-      style="flex-grow:1"
-      [style.background-color] = "editExtraData && '#0099CC' || null"
-      title="Using Payment Method instead is recommended"
-    >token data</button>
-
-    <button type="button"
-      (click)="editOptions=!editOptions"
-      style="flex-grow:1"
-      [style.background-color] = "editOptions && '#0099CC' || null"
-    >options</button>
+      <ng-container *ngTemplateOutlet="optionalCardControls"></ng-container>
+    </ng-template>
   </div>
 
   <br />
@@ -1042,7 +506,7 @@
     <br />
     <strong>Token Response</strong>
     <textarea
-      disabled wrap="off" style="width:100%;height:175px"
+      disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
     >{{ card.token | json }}</textArea>
   </div>
 
@@ -1053,10 +517,10 @@
       <small style="opacity:.5;font-size: 0.8em;">
         <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
           class="hover-highlight" (click)="copyText(card.source.id)"
-        >copy id</a>
+        >✍️ copy id</a>
       </small>
     </div>
-    <textarea disabled wrap="off" style="width:100%;height:175px">{{ card.source | json }}</textArea>
+    <textarea disabled wrap="off" style="width:100%;height:25vh;min-height:200px;">{{ card.source | json }}</textArea>
   </div>
 
   <div *ngIf="card.payment_method">
@@ -1066,24 +530,25 @@
       <small style="opacity:.5;font-size: 0.8em;">
         <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
           class="hover-highlight" (click)="copyText(card.payment_method.id)"
-        >copy id</a>
+        >✍️ copy id</a>
       </small>
     </div>
     <textarea
-      disabled wrap="off" style="width:100%;height:175px"
+      disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
     >{{ card.payment_method | json }}</textArea>
   </div>
 
   <div style="text-align:right;opacity:70%">
-    <small>
-      card complete: <strong>{{ cardComplete }}</strong>
-    </small>
+    <small
+      [class.text-assertive]="!cardComplete"
+      [class.text-balanced]="cardComplete"
+    >card complete: <strong>{{ cardComplete }}</strong></small>
   </div>
 
   <div *ngIf="card.changedEvent">
     <strong style="opacity: 50%;">INFO: Change Event</strong>
     <textarea
-      wrap="off" style="width:100%;height:175px" disabled
+      wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
       (change)="changeExtraData($event.target.value)"
     >{{ card.changedEvent | json }}</textArea>
   </div>
@@ -1098,7 +563,7 @@
     (invalidChange)="sending=false;lastError=$event"
   ></stripe-bank>
   <textarea
-    wrap="off" style="width:100%;height:175px"
+    wrap="off" style="width:100%;height:25vh;min-height:200px;"
     (change)="changeKey(api.bank, $event.target.value)"
   >{{ api.bank.data | json }}</textArea>
 
@@ -1108,7 +573,7 @@
     <button
       type="button"
       (click)="lastError=null;sending=true;stripeBank.createToken(api.bank.data)"
-    >create token</button>
+    >🪙 create token</button>
   </div>
 
   <!-- bank token success output -->
@@ -1116,7 +581,7 @@
     <br />
     <strong>Bank Token</strong>
     <textarea
-    disabled wrap="off" style="width:100%;height:175px"
+    disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
     >{{ api.bank.token | json }}</textArea>
   </div>
 
@@ -1124,21 +589,43 @@
     <br />
     <div style="display:flex;flex-wrap: wrap;align-items: baseline;">
       <h3 style="flex-grow:1;color:orange;">Bank Server Functions</h3>
-      <small>(using privateKey)</small>
+      <small class="opacity-half text-xs">uses 🔐 privateKey</small>
     </div>
 
-    <button
-      type="button"
-      (click)="createCustomerByToken(api.bank.token)"
-    >create customer by token</button>
+    <table cellPadding="3" cellSpacing="0" border="0" class="width-full">
+      <tHead>
+        <tr>
+          <th class="border-bottom">action</th>
+          <th class="border-bottom">route</th>
+          <th class="border-bottom text-right">docs</th>
+        </tr>
+      </tHead>
+      <tr class="text-xs">
+        <td>
+          <button type="button"
+            (click)="createCustomerByToken(api.bank.token)"
+            title = "Connect the bank token created above with a Stripe customer"
+          >👤 new customer by 🪙 token</button>
+        </td>
+        <td>POST /customers</td>
+        <td class="text-right">
+          <a target="_blank" href="https://stripe.com/docs/ach#manually-collecting-and-verifying-bank-accounts">📄</a>
+        </td>
+      </tr>
+    </table>
 
     <div *ngIf="api.customer.result?.id">
       <br />
       <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
-        <h3 style="flex-grow: 1;">Verify customer micro deposits</h3>
-        <small>
-          <a style="color:white;" href="https://stripe.com/docs/ach#testing-ach" target="_blank">test data</a>
-        </small>
+        <h3 class="margin-0">👀 Verify customer micro deposits</h3>
+        <div class="flex-wrap child-margin">
+          <small class="flex-1">
+            Use privateKey to mimic backend server calls to Stripe to validate verification amounts
+          </small>
+          <small>
+            <a style="color:white;" href="https://stripe.com/docs/ach#testing-ach" target="_blank">test data</a>
+          </small>
+        </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;">
         <div style="flex-grow: 1;margin:0.4em;">
@@ -1181,56 +668,11 @@
         <br />
         <strong>Verification Result</strong>
         <textarea
-          disabled wrap="off" style="width:100%;height:175px"
+          disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
         >{{ api.bank.verifyResponse | json }}</textArea>
       </div>
     </div>
   </ng-container>
-</ng-template>
-
-<ng-template #simpleRouteEditor let-key="key" let-config="config">
-  <div style="opacity:.5">{{config.request?.method}}&nbsp;{{config.request?.path}}</div>
-
-  <textarea
-    wrap="off" style="width:100%;height:175px"
-    (change)="changeKey(config, $event.target.value)"
-  >{{ config.data | json }}</textArea>
-
-  <textarea
-    *ngIf="config.error" wrap="off"
-    disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:175px"
-  >{{ config.error | json }}</textArea>
-
-  <ng-container *ngTemplateOutlet="simpleRouteFooter;context:{key:key, config:config}"></ng-container>
-</ng-template>
-
-<ng-template #simpleRouteFooter let-key="key" let-config="config">
-  <button type="button"
-    (click)="config.$send.emit(config.data)"
-  >send request</button>
-
-  <ng-container *ngIf="config.load">... loading ...</ng-container>
-
-  <ng-container *ngIf="config.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: config.resultAt, result: config.result}"></div>
-  </ng-container>
-</ng-template>
-
-<ng-template #simpleRouteResults let-resultAt="resultAt" let-result="result" let-title="title">
-  <br />
-  <div style="display:flex;">
-    <strong style="flex-grow:1">{{title || 'Result'}}</strong>
-    <small *ngIf="result.id" style="opacity:.5;font-size: 0.8em;">
-      <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
-        class="hover-highlight"
-        (click)="copyText(result.id)"
-      >copy id</a>
-    </small>
-    <small *ngIf="resultAt" style="opacity:.5">{{resultAt | date : 'mediumTime' }}</small>
-  </div>
-  <textarea
-    disabled wrap="off" style="width:100%;height:350px"
-  >{{ result | json }}</textArea>
 </ng-template>
 
 <style>
@@ -1253,35 +695,31 @@
     <a
       href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
       target="_blank" class="resource-link"
-    >demo code on github</a>
-    <a
-      href="https://www.youtube.com/watch?v=_1EX-DrikoA"
-      target="_blank" class="resource-link"
-    >🎥 ACH bank account setup</a>
+    >🐠 demo code on github</a>
     <a
       href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
       target="_blank" class="resource-link"
-    >🎥 Customer Authentication & 3D Secure</a>
+    >🎥 🔐 Customer Authentication & 3D Secure</a>
     <a
       href="https://stripe.com/docs/error-codes"
       target="_blank" class="resource-link"
-    >error-codes</a>
+    >🔴 error codes</a>
     <a
       href="https://stripe.dev/elements-examples/"
       target="_blank" class="resource-link"
-    >stripe elements examples</a>
+    >🎨 stripe elements examples</a>
     <a
       href="https://stripe.com/docs/js"
       target="_blank" class="resource-link"
-    >stripe.js docs</a>
+    >📄 stripe.js docs</a>
     <a
       href="https://stripe.com/docs/api/sources/object#source_object-type"
       target="_blank" class="resource-link"
-    >source types</a>
+    >📄 source types</a>
     <a
       href="https://www.youtube.com/watch?v=_1EX-DrikoA"
       target="_blank" class="resource-link"
-    >Bank ACH YouTube</a>
+    >🎥 🏦 ACH bank account setup</a>
     <a
       href="https://stripe.com/docs/payments/payment-intents/migration/charges"
       target="_blank" class="resource-link"
@@ -1289,41 +727,216 @@
     <a
       href="https://stripe.com/docs/api/payment_methods/update"
       target="_blank" class="resource-link"
-    >update payment method</a>
+    >💳 update payment method</a>
     <a
       href="https://stripe.com/docs/api/cards/update"
       target="_blank" class="resource-link"
-    >update source card</a>
+    >💳 update source card</a>
     <a
       href="https://stripe.com/docs/api/cards/delete"
       target="_blank" class="resource-link"
-    >delete source card</a>
+    >❌ 💳 delete source card</a>
     <a
       href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
       target="_blank" class="resource-link"
-    >check card valid without charge</a>
+    >💳 ✅ check card valid without charge</a>
+    <a
+      href="https://plaid.com/docs/auth/partnerships/stripe/"
+      target="_blank" class="resource-link"
+      title="becoming outdated by beta Plaid but still useful docs"
+    >🏦 Plaid + Stripe</a>
+    <a
+      href="https://plaid.com/docs/quickstart/#how-it-works"
+      target="_blank" class="resource-link"
+    >🏦 Plaid quickstart</a>
+    <a
+      href="https://stripe.com/docs/ach#using-plaid"
+      target="_blank" class="resource-link"
+      title="becoming outdated by beta Plaid but still useful docs"
+    >🏦 Plaid from Stripe POV</a>
+    <a
+      href="https://www.youtube.com/watch?v=aVJz1OUKcIM"
+      target="_blank" class="resource-link"
+      title="becoming outdated by beta Plaid but still useful docs"
+    >🏦 🎥 Plaid + Stripe Youtube</a>
+    <a
+      href="https://plaid.com/docs/api/"
+      target="_blank" class="resource-link"
+    >🏦 Plaid API Overview</a>
   </div>
-</ng-template>
-
-<ng-template #customerPayMethodAttach let-customer="customer" let-payMethod="payMethod">
-  <button (click)="attachCustomerPayMethod(customer.id, payMethod)">
-    attach method {{payMethod.card.brand}} {{payMethod.card.last4}}
-  </button>
-
-  <button (click)="detachCustomerPayMethod(payMethod)">
-    detach method {{payMethod.card.brand}} {{payMethod.card.last4}}
-  </button>
-
-  <ng-container *ngIf="api.customer_attach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_attach_method.resultAt, result: api.customer_attach_method.result, title: 'Attach Result'}"></div>
-  </ng-container>
-
-  <ng-container *ngIf="api.customer_detach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_detach_method.resultAt, result: api.customer_detach_method.result, title: 'Detach Result'}"></div>
-  </ng-container>
 </ng-template>
 
 <ng-template #nextActionLink let-link="link">
   <strong>next action:&nbsp;</strong>
   <a [href]="link" target="_blank">secure payment verify link</a>
+</ng-template>
+
+<ng-template #optionalCardControls>
+  <h3 style="flex-grow:1;margin:0;">Optional Card Controls</h3>
+  <div *ngIf="editExtraData">
+    <br />
+    <div style="display:flex;justify-content:space-between">
+      <strong title="Card specific way of providing token related info (includes metadata)"
+      >🪙 token data</strong>
+      <small>
+        <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
+      </small>
+    </div>
+    <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
+      (change)="changeExtraData($event.target.value)"
+    >{{ extraData | json }}</textArea>
+  </div>
+
+  <div *ngIf="editPaymentMethodRequest">
+    <br />
+    <div style="display:flex;justify-content:space-between">
+      <div>💳 payment method data</div>
+      <small>
+        <a href="https://stripe.com/docs/payments/payment-methods/overview" target="_blank">overview</a>&nbsp;
+        <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
+      </small>
+    </div>
+    <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
+      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
+    </div>
+
+    <div *ngIf="editSourceRequest">
+      <br />
+      <div style="display:flex;justify-content:space-between">
+        <strong [style.color]="storage.temp.invalidSourceData && 'red'">source data</strong>
+        <small>
+          <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
+        </small>
+      </div>
+    <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
+  </div>
+
+  <div *ngIf="editOptions">
+    <br />
+    <div style="display:flex;justify-content:space-between">
+      <strong>options</strong>
+      <small>
+        <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
+      </small>
+    </div>
+    <textarea
+      wrap="off" style="width:100%;height:25vh;min-height:200px;"
+      (change)="changeOptions($event.target.value)"
+    >{{ options | json }}</textArea>
+  </div>
+
+  <div style="text-align:right;display:flex;flex-wrap:wrap;">
+    <button
+      type="button"
+      (click)="editSourceRequest=!editSourceRequest"
+      style="flex-grow:1"
+      [style.background-color] = "editSourceRequest && '#0099CC' || null"
+      title="Using Payment Method instead is recommended"
+    >💳 source data</button>
+
+    <button type="button"
+      (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
+      style="flex-grow:1"
+      [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
+    >💳 payment method data</button>
+
+    <button
+      type="button"
+      (click)="editExtraData=!editExtraData"
+      style="flex-grow:1"
+      [style.background-color] = "editExtraData && '#0099CC' || null"
+      title="Using Payment Method instead is recommended"
+    >🪙 token data</button>
+
+    <button type="button"
+      (click)="editOptions=!editOptions"
+      style="flex-grow:1"
+      [style.background-color] = "editOptions && '#0099CC' || null"
+    >🔧 options</button>
+  </div>
+</ng-template>
+
+<ng-template #editPrivateKey>
+  <strong style="color:orange;"
+    title="This demo offers helpful server functionality"
+  >🔐 privateKey</strong>
+  <div>
+    <input type="password"
+      (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
+      [value]="tempPrivateKey"
+      style="width:100%"
+    />
+  </div>
+  <div class="pos-rel text-xxs opacity-70">
+    <div class="pos-abs">
+      <label for="savePrivateKeyLocally" style="align-items: center">
+        <input
+          type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
+          (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
+          [checked] = "storage.savePrivateKeyLocally"
+        />
+        <span>💾 save in localStorage</span>
+      </label>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #webhookFunctionality>
+  <div class="flex-wrap flex-center">
+    <div *ngIf="storage.webhookSigningSecret" class="tool-wrap">
+      <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+        <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+          <label for="card-like-element">
+            🔬 Generate Test Header String
+          </label>
+        </h3>
+        <small>
+          <a href="https://www.npmjs.com/package/stripe#testing-webhook-signing" style="color:white;" target="_blank"
+          >api docs</a>
+        </small>
+      </div>
+      <div class="tool-panel">
+        Paste your payload below to encode into a signing secret
+        <simple-route-edit [config]="api.testHeader" copy="result"></simple-route-edit>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #editWebhookSecret>
+  <strong style="color:orange;">🪝 webhookSigningSecret</strong>
+  <div>
+    <input type="password"
+      (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"
+      [value]="tempWebhookSigningSecret"
+      style="width:100%"
+    />
+  </div>
+  <div class="pos-rel">
+    <small class="pos-abs opacity-half text-xxs">
+      This demo offers helpful web hook server functionality
+    </small>
+  </div>
+</ng-template>
+
+<ng-template #warnNoLocalServer>
+  <div class="bg-warning pad">
+    <div class="text-dark">
+      <div class="flex-wrap">
+        <span class="flex-1">
+          ⚠️ No 🐠 stripe-angular local server detected.
+        </span>
+        <a (click)="checkLocalServer()">🔄</a>
+      </div>
+      <br /><br />
+      <div>
+        <small class="opacity-70">Additional functionality available, run the following commands in a local terminal:</small>
+      </div>
+    </div>
+<pre class="bg-dark pad-xs margin-0">
+git clone https://github.com/ackerapple/stripe-angular#gh-pages
+cd stripe-angular
+npm run start
+</pre>
+  </div>
 </ng-template>

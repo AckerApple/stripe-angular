@@ -40,39 +40,58 @@ export interface localSchema {
     paymentMethod?: any
   }
 
+  plaid?: {
+    client_id?: string,
+    secret?: string,
+  }
+
   temp: {[index: string]: any}
 }
 
+export interface RequestOptions {
+  url: string, method?: 'GET' | 'POST' | string
+  post?: {[x: string]: any}
+  json?: {[x: string]: any}
+  authorizationBearer?: string
+}
+
 export function request(
-  {url, method, post, authorizationBearer}: {
-    url: string, method?: 'GET' | 'POST'
-    post?: {[x: string]: any}
-    authorizationBearer?: string
-  }
+  {url, method, post, json, authorizationBearer}: RequestOptions
 ) {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
-    const endMethod = method || (post ? 'POST' : 'GET')
-    req.open(endMethod, url, true);
+    const endMethod = method || (post || json ? 'POST' : 'GET')
+
+    // req.open(endMethod, url, true);
+    req.open(endMethod, url);
     req.setRequestHeader('Accept', 'application/json');
 
     if (authorizationBearer) {
       req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer);
     }
 
-    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
     // const formPost = objectToUriForm(post);
-    const formPost = formurlencoded(post);
-    req.send( formPost );
+    if (post) {
+      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      const formPost = formurlencoded(post);
+      req.send( formPost )
+    } else if (json) {
+      const content = JSON.stringify(json)
+      // req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+      req.setRequestHeader("Content-Type", "application/json")
+      // req.setRequestHeader("Content-Length", content.length.toString())
+      req.send(content);
+    } else {
+      req.send()
+    }
+
 
     req.onreadystatechange = () => {
       if (req.readyState === 4) {
-        res(req.responseText);
-        req.responseText;
+        res( tryParse(req.responseText) )
       }
     }
-  });
+  })
 }
 
 function objectToUriForm(
@@ -132,19 +151,31 @@ export function tryParse(data: string | any) {
 }
 
 export interface ISimpleRouteEditor {
+  title?: string
+  hint?: string
+  link?: string // documentation link
   data: {[index:string]: any}
   request?: {
     method: string
+    host?: string // base url example https://sandbox.plaid.com/
     path: string
   }
+  results?: {
+    favKeys: {
+      name: string
+      get?: (data: any) => any
+    }[] // ['link_token']
+  },
+}
+
+export interface SmartRouteEditor extends ISimpleRouteEditor {
   load: number
-  result?: {[index:string]: any}
   resultAt?: number
   error?: any
-  // stringResult?: string
-  // retrieve?: any // any update checks that might occur
+  result?: {[index:string]: any} // runtime paste of result
   $send: EventEmitter<{[index:string]: any}>
 }
+
 
 function getUrlStorage() {
   const urlQuery = new URLSearchParams(window.location.search)
@@ -163,6 +194,11 @@ function getUrlStorage() {
 
 function getLocalStorage() {
   const storageString = localStorage?.stripeAngular
+
+  if (!storageString) {
+    return {}
+  }
+
   try {
     return JSON.parse(storageString)
   } catch (err) {
@@ -250,3 +286,27 @@ function _computeSignature(payload, secret) {
   const hmacDigest = formatHex.stringify({ciphertext:data});
   return hmacDigest
 }
+
+
+export function changeKey(
+  scope: SmartRouteEditor,
+  value: string
+) {
+  delete scope.error
+  const keys = ['data']
+  var current = scope;
+
+  while(keys.length > 1) {
+    current = current[keys.shift()];
+  }
+
+  try {
+    // current[keys[0]] = JSON.parse(value);
+    eval('current[keys[0]] = ' + value); // allow loose js to be cast to json
+  } catch (err) {
+    scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
+    console.error(`failed to parse object key ${keys[0]}`);
+    throw err
+  }
+}
+

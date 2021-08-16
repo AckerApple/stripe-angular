@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -13,7 +13,7 @@
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
     "lib": [
-      "es2015",
+      "es2020",
       "dom"
     ]
   },

@@ -1,0 +1,488 @@
+
+<div class="flex-wrap flex-center">
+
+  <tool-wrap [api]="api.customer"
+    [pasteFavs] = "[
+      ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, $setCustomerDefaultPayMethod],
+      [api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id,'source'],
+      ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
+      ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
+    ]"
+  >
+    <ng-template #footer>
+      <ng-container *ngIf="card.payment_method && api.customer.result">
+        <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer.result}"></ng-container>
+      </ng-container>
+    </ng-template>
+  </tool-wrap>
+
+  <tool-wrap [api]="api.customer_attach_method"
+    [pasteFavs] = "[
+      ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'id']
+    ]"
+  >
+  </tool-wrap>
+
+  <tool-wrap [api]="api.customer_attach_source"
+    [pasteFavs] = "[
+      [api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id,'source'],
+      ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
+      ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source'],
+      ['customer '+api.customer.result?.description, api.customer.result?.id, 'id']
+    ]"
+  >
+  </tool-wrap>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>
+          👤 GET Customer
+        </label>
+      </h3>
+      <small>
+        <a href="https://stripe.com/docs/api/customers/retrieve"
+          style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <div style="color:white;">
+        <small style="display:flex;flex-wrap:wrap;">
+          <a *ngIf="api.customer.result"
+            (click)="api.customer_get.data.id = api.customer.result.id"
+            style="text-decoration:underline;cursor:pointer;margin:1em;"
+            [style.opacity] = "api.customer_get.data.id === api.customer.result.id && '.3'"
+          >use customer {{api.customer.result.id}}</a>
+
+          <a *ngIf="api.payment_method_get.result?.customer"
+            (click)="api.customer_get.data.id = api.payment_method_get.result.customer"
+            style="text-decoration:underline;cursor:pointer;margin:1em;"
+            [style.opacity] = "api.customer_get.data.id === api.payment_method_get.result.customer && '.3'"
+            [title] = "api.payment_method_get.result.customer"
+          >
+            use pay method customer {{api.payment_method_get.result.customer}}
+          </a>
+        </small>
+      </div>
+      <simple-route-edit [config]="api.customer_get"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>
+          👤 UPDATE Customer
+        </label>
+      </h3>
+      <small>
+        <a
+        href="https://stripe.com/docs/api/customers/update"
+        style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a
+          *ngIf="api.customer.result"
+          (click)="customer_update.data = cleanCustomerUpdateData(api.customer.result)"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.customer_update.data.id === api.customer.result.id && '.3'"
+        >
+          use customer {{api.customer.result.id}}
+        </a>
+
+        <a
+          *ngIf="card.source"
+          (click)="api.customer_update.data.source = card.source.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.customer_update.data.source === card.source.id && '.3'"
+          [title] = "card.source.id"
+        >
+          use source {{card.source.card.brand}} {{card.source.card.last4}}
+        </a>
+
+        <a
+          *ngIf="card.payment_method"
+          (click)="setCustomerDefaultPayMethod(api.customer_update.data)"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.customer_update.data.payment_method === card.payment_method.id && '.3'"
+        >
+          default method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
+        </a>
+
+      </small>
+      <simple-route-edit [config]="api.customer_update"></simple-route-edit>
+
+      <ng-container *ngIf="card.payment_method && api.customer_update.data.id">
+        <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:api.customer_update.data}"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>💳 GET Payment Methods</label>
+      </h3>
+      <small>
+        <a href = "https://stripe.com/docs/api/payment_methods/list"
+          style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a *ngIf="api.customer.result"
+          (click)="api.get_paymethods.data.customer = api.customer.result.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.get_paymethods.data.customer === api.customer.result.id && '.3'"
+        >
+          use customer {{api.customer.result.id}}
+        </a>
+      </small>
+      <simple-route-edit [config]="api.get_paymethods"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>💳 GET Payment Method</label>
+      </h3>
+      <small>
+        <a
+        href="https://stripe.com/docs/api/payment_methods/retrieve"
+        style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a *ngIf="api.payment_method_get.result"
+          (click)="api.payment_method_get.data.id = api.payment_method_get.result.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payment_method_get.data.id === api.payment_method_get.result.id && '.3'"
+          [title] = "api.payment_method_get.result.id"
+        >
+          use type {{api.payment_method_get.result.type}}
+        </a>
+
+        <a *ngIf="card.source"
+          (click)="api.payment_method_get.data.id = card.source.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payment_method_get.data.id === card.source.id && '.3'"
+          [title] = "card.source.id + ' - a source can become a payment_method'"
+        >
+          use source {{card.source.card.brand}} {{card.source.card.last4}}
+        </a>
+      </small>
+      <simple-route-edit [config]="api.payment_method_get"></simple-route-edit>
+
+      <ng-container *ngIf="api.payment_method_get.result">
+        <button
+          type="button"
+          (click)="createCustomerByPaymentMethod(api.payment_method_get.result)"
+          [style.opacity]="api.payment_method_get.result.customer ? '.3' : null"
+        >👤 create customer by payment method</button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>💳 UPDATE Payment Method</label>
+      </h3>
+      <small>
+        <a
+        href="https://stripe.com/docs/payments/checkout/subscriptions/update-payment-details"
+        style="color:white;" target="_blank"
+        >checkout docs</a>&nbsp;
+        <a
+        href="https://stripe.com/docs/api/payment_methods/update"
+        style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a
+          *ngIf="api.payment_method_get.result"
+          (click)="api.payment_method_update.data = cleanPaymentMethodUpdateData(api.payment_method_get.result)"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payment_method_update.data.id === api.payment_method_get.result.id && '.3'"
+          [title] = "api.payment_method_get.result.id"
+        >
+          use pay method type {{api.payment_method_get.result.type}}
+        </a>
+      </small>
+      <simple-route-edit [config]="api.payment_method_update"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>
+          👤 💳 GET Customer Sources
+        </label>
+      </h3>
+      <small>
+        <a href = "https://stripe.com/docs/api/cards/list"
+          style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a *ngIf="api.customer.result"
+          (click)="api.customer_get_sources.data.id = api.customer.result.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.customer_get_sources.data.id === api.customer.result.id && '.3'"
+        >use customer {{api.customer.result.id}}</a>
+      </small>
+      <simple-route-edit [config]="api.customer_get_sources"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>💳 GET Source</label>
+      </h3>
+      <small>
+        <a
+        href="https://stripe.com/docs/api/sources/retrieve"
+        style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a
+          *ngIf="card.source"
+          (click)="api.source_get.data.id = card.source.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.source_get.data.id === card.source.id && '.3'"
+          [title] = "card.source.id"
+        >
+          use source {{card.source.card.brand}} {{card.source.card.last4}}
+        </a>
+      </small>
+
+      <simple-route-edit [config]="api.source_get"></simple-route-edit>
+
+      <ng-container *ngIf="api.source_get.result">
+        <button
+          type="button"
+          (click)="createCustomerByToken(api.source_get.result)"
+          [style.opacity] = "api.customer.data.source === api.source_get.result.id && '.3'"
+        >👤 create customer by source</button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label>💳 UPDATE Source</label>
+      </h3>
+      <small>
+        <a
+        href="https://stripe.com/docs/api/sources/update"
+        style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a
+          *ngIf="api.source_get.result"
+          (click)="api.source_update.data = cleanSourceUpdateData(api.source_get.result)"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.source_update.data.id === api.source_get.result.id && '.3'"
+          [title] = "api.source_get.result.id"
+        >
+          use source type {{api.source_get.result.type}}
+        </a>
+      </small>
+      <simple-route-edit [config]="api.source_update"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label for="card-like-element">💸 Create Pay Intent</label>
+      </h3>
+      <small>
+        <a href="https://stripe.com/docs/api/payment_intents" style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <small style="display:flex;flex-wrap:wrap;color:white;">
+        <a *ngIf="api.customer.result"
+          (click)="api.payintent.data.customer = api.customer.result.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.customer === api.customer.result.id && '.3'"
+        >
+          use customer {{api.customer.result.description}}
+        </a>
+        <a *ngIf="api.customer_get.data.id"
+          (click)="api.payintent.data.customer = api.customer_get.data.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.customer === api.customer_get.data.id && '.3'"
+        >
+          use GET customer {{api.customer_get.data.id}}
+        </a>
+        <a *ngIf="card.payment_method"
+          (click)="api.payintent.data.payment_method = card.payment_method.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.payment_method === card.payment_method.id && '.3'"
+          [title] = "card.payment_method.id"
+        >
+          use method {{card.payment_method.card.brand}} {{card.payment_method.card.last4}}
+        </a>
+        <a *ngIf="card.source"
+          (click)="api.payintent.data.payment_method = card.source.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.payment_method === card.source.id && '.3'"
+          [title] = "card.source.id"
+        >
+          use source {{card.source.card.brand}} {{card.source.card.last4}}
+        </a>
+        <a *ngIf="card.token"
+          (click)="api.payintent.data.payment_method = card.token.card.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.payment_method === card.token.card.id && '.3'"
+          [title] = "card.token.id"
+        >
+          use token {{card.token.card.brand}} {{card.token.card.last4}}
+        </a>
+        <a *ngIf="api.payment_method_get.result"
+          (click)="api.payintent.data.payment_method = api.payment_method_get.result.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.payment_method === api.payment_method_get.result.id && '.3'"
+          [title] = "api.payment_method_get.id"
+        >
+          use method {{api.payment_method_get.result.brand}} {{api.payment_method_get.result.last4}}
+        </a>
+        <a *ngIf="api.payment_method_get.result?.customer"
+          (click)="api.payintent.data.customer = api.payment_method_get.result.customer"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [style.opacity] = "api.payintent.data.customer === api.payment_method_get.result.customer && '.3'"
+          [title] = "api.payment_method_get.result.customer"
+        >
+          use pay method customer
+        </a>
+      </small>
+
+      <simple-route-edit [config]="api.payintent"></simple-route-edit>
+
+      <!--
+        <ng-container *ngIf="api.payintent.result">
+          <button type="button" (click)="fetchPayIntentUpdate(api.payintent)">retrieve update</button>
+        </ng-container>
+      -->
+
+      <ng-container *ngIf="api.payintent.result?.next_action?.use_stripe_sdk?.stripe_js">
+        <div>
+          <ng-container *ngTemplateOutlet="nextActionLink;context:{link:api.payintent.result.next_action.use_stripe_sdk.stripe_js}"></ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label for="card-like-element">💸 Retrieve Pay Intent</label>
+      </h3>
+      <small>
+        <a href="https://stripe.com/docs/api/payment_intents/retrieve" style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <simple-route-edit [config]="api.payintent_retrieve"></simple-route-edit>
+    </div>
+  </div>
+
+  <div class="tool-wrap">
+    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
+      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
+        <label for="card-like-element">
+          🚫 💸 Cancel Pay Intent
+        </label>
+      </h3>
+      <small>
+        <a href="https://stripe.com/docs/api/payment_intents/cancel" style="color:white;" target="_blank"
+        >api docs</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <simple-route-edit [config]="api.payintent_cancel"></simple-route-edit>
+    </div>
+  </div>
+
+  <tool-wrap [api]="api.charge"
+    [pasteFavs] = "[
+      ['👤 🏦 bank '+ api.customer_attach_source.result?.bank_name, api.customer_attach_source.result?.id, 'source'],
+      ['💳 method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'payment_method'],
+      ['🪙 token '+card.token?.card.brand+' '+card.token?.card.last4, card.token?.card.id, 'source'],
+      ['💳 source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
+      ['👤 customer '+api.customer.result?.description, api.customer.result?.id, 'customer'],
+      ['👤 💳 source '+(api.customer.result?.sources?.length && api.customer.result.sources[0].object), (api.customer.result?.sources?.length && api.customer.result.sources[0].id), 'source']
+    ]"
+  >
+    <!-- This api only takes customer-to-source associations as "source" (cant just be source.id)
+      ['plaid '+plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
+      ['bank '+ api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id, 'source'],
+    -->
+    <ng-template #requestHeaderItems>
+      <ng-container *ngFor="let item of api.customer.result && api.customer.result?.sources?.data">
+        <a *ngIf="item.object === 'bank_account'"
+          (click)="api.charge.data.source = item.id"
+          style="text-decoration:underline;cursor:pointer;margin:1em;"
+          [title] = "item.id"
+          [style.opacity] = "api.charge.data.source === item.id && '.3'"
+        >
+          use customer bank {{item.bank_name}} {{item.last4}}
+        </a>
+      </ng-container>
+    </ng-template>
+    <ng-template #footer>
+      <div style="text-align:center;opacity:.5;">
+        <small>
+          <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
+          >prefer pay intents</a>
+        </small>
+      </div>
+    </ng-template>
+  </tool-wrap>
+</div>
+
+
+<ng-template #customerPayMethodAttach let-customer="customer" let-payMethod="payMethod">
+  <button *ngIf="customer.invoice_settings?.default_payment_method != payMethod.id"
+    (click)="attachCustomerPayMethod(customer.id, payMethod)"
+  >
+    attach method {{payMethod.card.brand}} {{payMethod.card.last4}}
+  </button>
+
+  <button (click)="detachCustomerPayMethod(payMethod)">
+    detach method {{payMethod.card.brand}} {{payMethod.card.last4}}
+  </button>
+
+  <ng-container *ngIf="api.customer_attach_method.result">
+    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_attach_method.resultAt, result: api.customer_attach_method.result, title: 'Attach Result'}"></div>
+  </ng-container>
+
+  <ng-container *ngIf="api.customer_detach_method.result">
+    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_detach_method.resultAt, result: api.customer_detach_method.result, title: 'Detach Result'}"></div>
+  </ng-container>
+</ng-template>

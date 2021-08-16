@@ -1,0 +1,73 @@
+<div style="opacity:.5" class="flex-wrap">
+  <div class="flex-1">
+    <ng-container *ngIf="config.request">
+      {{config.request.method}}&nbsp;/{{config.request.path}}&nbsp;&nbsp;
+    </ng-container>
+    <ng-container *ngIf="config.hint">{{config.hint}}</ng-container>
+  </div>
+
+  <ng-container *ngFor="let item of pasteFavs || []">
+    <a *ngIf="item[1]" (click)="pasteBy(item)" [title]="item[1]"
+      class="pointer border radius-5 pad-xxs margin-xxs hover-highlight text-xxs"
+    >
+      ✏️ use {{item[0]}}
+    </a>
+  </ng-container>
+
+  <ng-container *ngTemplateOutlet="requestHeaderItems"></ng-container>
+</div>
+
+<textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
+  (change)="changeKey(config, $event.target.value)"
+>{{ config.data | json }}</textArea>
+
+<textarea *ngIf="config.error" wrap="off"
+  disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:200px;"
+>{{ config.error | json }}</textArea>
+
+<button type="button"
+  (click)="config.$send.emit(config.data)"
+>send request</button>
+
+<ng-container *ngIf="config.load">... loading ...</ng-container>
+
+<ng-container *ngIf="config.result">
+  <br />
+  <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: config.resultAt, result: config.result}"></div>
+</ng-container>
+
+<ng-template #simpleRouteResults let-resultAt="resultAt" let-result="result" let-title="title">
+  <br />
+  <div style="display:flex;">
+    <strong style="flex-grow:1"
+      [class.text-assertive] = "result.error"
+    >{{title || 'Result'}}</strong>
+
+    <small *ngIf="result.id" style="opacity:.5;font-size: 0.8em;">
+      <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
+        (click)="copyText(result.id)"
+      >copy id</a>
+    </small>
+
+    <ng-container *ngIf="config.results?.favKeys">
+      <ng-container *ngFor="let copyConfig of config.results.favKeys">
+        <small *ngIf="result && (result[copyConfig.name] || copyConfig.get)" style="opacity:.5;font-size: 0.8em;">
+          <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
+            (click)="copyText( result[copyConfig.name] || copyConfig.get(result) )"
+          >✍️ copy {{copyConfig.name}}</a>
+        </small>
+      </ng-container>
+    </ng-container>
+
+    <small *ngIf="copy && result && result[copy]" style="opacity:.5;font-size: 0.8em;">
+      <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
+        (click)="copyText(result[copy])"
+      >✍️ copy {{copy}}</a>
+    </small>
+    <small *ngIf="resultAt" class="opacity-half text-xs">{{resultAt | date : 'mediumTime' }}</small>
+  </div>
+  <textarea
+    disabled wrap="off" style="width:100%;height:350px"
+    [class.bg-danger] = "result.error"
+  >{{ result | json }}</textArea>
+</ng-template>

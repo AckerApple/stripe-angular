@@ -1,13 +1,17 @@
 {
   "name": "stripe-angular-gh-pages",
   "version": "0.0.0",
+  "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
-    "start": "ng serve --open",
+    "start": "npm run start:server & npm run start:app",
+    "start:app": "ng serve --open",
+    "start:server": "node .",
     "build": "ng build src --stats-json --prod --output-hashing=none",
     "save": "git add . && git commit -m 'update' && git push",
-    "deploy": "npm run build && npm run copy:www && npm run save",
-    "copy:www": "cp -R www/. ."
+    "deploy": "npm run patch:version && npm run build && npm run copy:www && npm run save",
+    "copy:www": "cp -R www/. .",
+    "patch:version": "npm --no-git-tag-version version patch"
   },
   "repository": {
     "type": "git",
@@ -38,13 +42,17 @@
     "@angular/platform-browser": "^11.0.7",
     "@angular/platform-browser-dynamic": "^11.0.7",
     "@types/stripe-v3": "^3.1.23",
+    "ack-css-boot": "^2.1.0",
     "rxjs": "^6.6.3",
     "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
     "typescript": "4.0.5",
     "zone.js": "^0.11.3"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
     "crypto-js": "^4.0.0",
+    "express": "^4.17.1",
     "form-urlencoded": "^4.2.1"
   }
 }
