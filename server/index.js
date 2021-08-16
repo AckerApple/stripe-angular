@@ -2,8 +2,9 @@ const express = require('express')
 const https = require('https')
 var bodyParser = require('body-parser')
 const axios = require('axios')
-
 const app = express()
+const path = require('path')
+const port = 3000
 
 app.use(bodyParser.json())
 app.use((req, res, next) => {
@@ -20,8 +21,9 @@ app.post(/\/plaid\/.+/, plaidReqRes)
 // app.post('/plaid/item/public_token/exchange', plaidReqRes)
 // app.post('/plaid/processor/stripe/bank_account_token/create', plaidReqRes)
 
-app.listen(3000,()=>{
-  console.log('server started - localhost:3000')
+app.listen(port,()=>{
+  console.info(`\x1b[36mServer started - localhost:${port}\x1b[0m`)
+  console.info(`\x1b[33mOpen file in browser ${path.join(__dirname,'../','index.html')}\x1b[0m`)
 })
 
 async function plaidReqRes(req, res) {

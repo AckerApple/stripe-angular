@@ -4,9 +4,10 @@
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
-    "start": "npm run start:server & npm run start:app",
+    "start": "npm run start:server",
     "start:app": "ng serve --open",
     "start:server": "node .",
+    "watch": "npm run start:server & npm run start:app",
     "build": "ng build src --stats-json --prod --output-hashing=none",
     "save": "git add . && git commit -m 'update' && git push",
     "deploy": "npm run patch:version && npm run build && npm run copy:www && npm run save",
