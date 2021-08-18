@@ -8,7 +8,7 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
     // host: 'https://sandbox.plaid.com/',
     path: 'link/token/create'
   },
-  link: 'https://plaid.com/docs/quickstart/#how-it-works',
+  link: 'https://plaid.com/docs/api/tokens/#linktokencreate',
   results: {
     favKeys: [{name: 'link_token'}]
   },
@@ -17,8 +17,10 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
     data: {
       // "client_id": "CLIENT_ID",
       // "secret": "SECRET",
-      "client_name": "Plaid Test App",
-      "user": { "client_user_id": "entity-id-aka-user-id" },
+      "client_name": "Your application name here",
+      "user": {
+        "client_user_id": "user-or-entity-id-from-your-system"
+      },
       "products": ["auth"],
       "country_codes": ["US"],
       "language": "en",
@@ -47,6 +49,7 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
 
 const plaid_publicTokenExchange: ISimpleRouteEditor = {
   title: '🐄 🪙 🤝 Public Token Exchange',
+  link: 'https://plaid.com/docs/api/tokens/#itempublic_tokenexchange',
   results: {
     favKeys: [{
       name: 'access_token'
@@ -67,6 +70,7 @@ const plaid_publicTokenExchange: ISimpleRouteEditor = {
 
 const plaid_stripeBankCreate: ISimpleRouteEditor = {
   title: '🐠 🏦 ➕ Stripe Bank Create',
+  link: 'https://plaid.com/docs/api/processors/#processorstripebank_account_tokencreate',
   results: {
     favKeys: [{
       name: 'stripe_bank_account_token'
@@ -88,6 +92,7 @@ const plaid_stripeBankCreate: ISimpleRouteEditor = {
 
 const getAccounts: ISimpleRouteEditor = {
   title: '💸 Get Accounts',
+  link: 'https://plaid.com/docs/api/accounts/#accountsget',
   request: {
     method: 'POST',
     host: 'http://localhost:3000/plaid/',
@@ -101,9 +106,59 @@ const getAccounts: ISimpleRouteEditor = {
   }
 }
 
+const getLinkToken: ISimpleRouteEditor = {
+  title: '🔗 🪙 GET Link Token',
+  link: 'https://plaid.com/docs/api/tokens/#linktokenget',
+  request: {
+    method: 'POST',
+    host: 'http://localhost:3000/plaid/',
+    path: 'link/token/get'
+  },
+  data: {
+    url: 'https://sandbox.plaid.com/link/token/get',
+    data: {
+      "link_token": ""
+    }
+  }
+}
+
+const getAuth: ISimpleRouteEditor = {
+  title: '🏦 🆔 auth get',
+  link: 'https://plaid.com/docs/api/products/#authget',
+  request: {
+    method: 'POST',
+    host: 'http://localhost:3000/plaid/',
+    path: 'auth/get'
+  },
+  data: {
+    url: 'https://sandbox.plaid.com/auth/get',
+    data: {
+      "access_token": ""
+    }
+  }
+}
+
+/*const getProcessorIdentity: ISimpleRouteEditor = {
+  title: '🏦 🆔 get processor identity',
+  link: 'https://plaid.com/docs/api/processors/#processoridentityget',
+  request: {
+    method: 'POST',
+    host: 'http://localhost:3000/plaid/',
+    path: 'processor/identity/get'
+  },
+  data: {
+    url: 'https://sandbox.plaid.com/processor/identity/get',
+    data: {
+      "processor_token": ""
+    }
+  }
+}*/
+
 export const serverSide = {
   plaid_publicTokenExchange,
   plaid_linkTokenCreate,
   plaid_stripeBankCreate,
   getAccounts,
+  getLinkToken,
+  getAuth,
 }

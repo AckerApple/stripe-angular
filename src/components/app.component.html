@@ -266,30 +266,44 @@
             </ng-container>
 
             <tool-wrap [api]="api.plaid_createPublicToken"
-              [pasteFavs] = "[['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']]"
+              [pasteFavs] = "[
+                ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']
+              ]"
             ></tool-wrap>
 
             <ng-container *ngIf="localServerActive">
               <tool-wrap [api]="plaidServerApis.plaid_publicTokenExchange"
-                [pasteFavs]="[['data.public_token', api.plaid_createPublicToken.result?.public_token]]"
+                [pasteFavs]="[
+                  ['public_token', api.plaid_createPublicToken.result?.public_token, 'data.public_token']
+                ]"
               ></tool-wrap>
 
               <tool-wrap [api]="plaidServerApis.plaid_stripeBankCreate"
                 [pasteFavs]="[
-                  ['data.access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token],
+                  ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token'],
                   ['public_token.accounts[0]', api.plaid_createPublicToken.result?.metadata.accounts && api.plaid_createPublicToken.result.metadata.accounts[0].id,'data.account_id']
                 ]"
               ></tool-wrap>
 
               <tool-wrap [api]="plaidServerApis.getAccounts"
                 [pasteFavs]="[
-                  ['data.access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token]
+                  ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
+                ]"
+              ></tool-wrap>
+
+              <tool-wrap [api]="plaidServerApis.getLinkToken"
+                [pasteFavs]="[
+                  ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'data.link_token']
+                ]"
+              ></tool-wrap>
+
+              <tool-wrap [api]="plaidServerApis.getAuth"
+                [pasteFavs]="[
+                  ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
                 ]"
               ></tool-wrap>
             </ng-container>
           </div>
-
-
         </ng-container>
       </div>
 
