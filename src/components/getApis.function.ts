@@ -13,6 +13,9 @@ export interface BankData {
 }
 
 const confirm_pay_intent: ISimpleRouteEditor = {
+  title: '🤝 Confirm Pay Intent',
+  link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
+  description: 'If a pay intent requires verification, use the form below',
   request: {
     method: 'POST',
     path: 'confirm'

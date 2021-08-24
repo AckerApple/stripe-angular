@@ -5,12 +5,13 @@
         {{api.title}}
       </label>
     </h3>
-    <small class="pad-left-xs">
+    <small *ngIf="api.link" class="pad-left-xs">
       <a [href]="api.link" class="text-white" target="_blank"
       >📕docs</a>
     </small>
   </div>
   <div class="tool-panel">
+    <p *ngIf="api.description" class="text-xs text-xs opacity-80">{{api.description}}</p>
     <simple-route-edit [config]="api" [pasteFavs]="pasteFavs">
       <ng-template #requestHeaderItems>
         <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>

@@ -152,6 +152,7 @@ export function tryParse(data: string | any) {
 
 export interface ISimpleRouteEditor {
   title?: string
+  description?: string
   hint?: string
   link?: string // documentation link
   data: {[index:string]: any}

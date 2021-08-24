@@ -1,5 +1,4 @@
 ## TODO
 
-- After source added
-  - offer easy copy id button
-  - "get payment method" offer "use source id" with title "a source can become a payment_method"
+- Refund Pay Intent
+- More descriptions for displayed for each api module

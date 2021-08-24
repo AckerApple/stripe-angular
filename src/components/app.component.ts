@@ -44,6 +44,8 @@ declare const Plaid: any
 
   localServerActive: boolean
 
+  showMore: boolean // more documentation near title
+
   // card elements options
   options: stripe.elements.ElementsOptions = {
     classes: {
