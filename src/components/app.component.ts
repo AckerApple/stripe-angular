@@ -2,7 +2,9 @@ import { Component } from "@angular/core"
 import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
-import { BankData, getApis, simpleMenuToSmart } from './getApis.function'
+import { BankData, getApis, simpleMenuToSmart,
+  urlBased
+} from './getApis.function'
 import {
   RequestOptions, request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
   copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor,
@@ -83,6 +85,7 @@ declare const Plaid: any
 
   api = getApis()
   plaidServerApis = simpleMenuToSmart(plaidServerSide)
+  stripeUrlApis = simpleMenuToSmart(urlBased)
 
   changeKey = changeKey
   copyText = copyText
@@ -96,24 +99,24 @@ declare const Plaid: any
     this.api.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
     this.api.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
     this.api.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
-    this.api.source_get.$send.subscribe(data => this.getSource(data.id))
     this.api.customer_get.$send.subscribe(data => this.getCustomer(data.id))
     this.api.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
     this.api.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
     this.api.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
-    this.api.customer.$send.subscribe(data => this.createCustomer(data))
     this.api.payintent.$send.subscribe(data => this.createPayIntent(data))
     this.api.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
     this.api.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
-    this.api.charge.$send.subscribe(data => this.createCharge(data))
     this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
-    this.api.customer_attach_method.$send.subscribe(data => this.stripeRouteRequest(this.api.plaid_linkTokenCreate,data))
-    this.api.customer_attach_source.$send.subscribe(data => this.stripeRouteRequest(this.api.customer_attach_source,data))
 
     // plaid
     this.api.plaid_createPublicToken.$send.subscribe(data => this.plaidCreateModal(data))
 
-    Object.values(this.plaidServerApis)
+    Object.values(this.stripeUrlApis)
+      .forEach(api =>
+        api.$send.subscribe(data => this.stripeRouteRequest(api,data))
+      )
+
+      Object.values(this.plaidServerApis)
       .forEach(api =>
         api.$send.subscribe(data => this.plaidRouteRequest(api,data))
       )
@@ -149,10 +152,9 @@ declare const Plaid: any
     storage.plaid = storage.plaid || {}
 
     this.api.customer_update.data.metadata = meta
-    this.api.customer.data.metadata = meta
+    this.stripeUrlApis.create_customer.data.metadata = meta
     this.api.payintent.data.metadata = meta
-    this.api.charge.data.metadata = meta
-
+    this.stripeUrlApis.charge.data.metadata = meta
     this.extraData.metadata = meta;
     (this.api.bank.data as any).metadata = meta
   }
@@ -204,13 +206,9 @@ declare const Plaid: any
     this.tempPublishableKey
     this.storage.key = this.tempPublishableKey || this.storage.key
 
-    if (savePrivateKeyLocally) {
-      this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
-      // localStorage.stripeAngularPrivateKey = this.privateKey;
-      this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
-    }
-
-    const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
+    this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
+    this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
+        const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
     if (storeLocally) {
       const cloneStorage = this.getSaveableStorage()
       const storageString = JSON.stringify(cloneStorage)
@@ -221,7 +219,6 @@ declare const Plaid: any
       // this.log('saved to localStorage', cloneStorage)
     }
 
-    console.log(483)
     return this.StripeScriptTag.setPublishableKey(this.storage.key)
       .then(stripe =>this.stripe=stripe);
   }
@@ -234,9 +231,9 @@ declare const Plaid: any
       delete cloneStorage.key
     }
 
-
     if (!cloneStorage.savePrivateKeyLocally) {
       delete cloneStorage.privateKey
+      delete storage.webhookSigningSecret
     }
 
     if (!cloneStorage.saveRequestsLocal) {
@@ -317,10 +314,6 @@ declare const Plaid: any
     this.enableServerMode = true
   }
 
-  getSource(sourceId: string) {
-    return stripeRequestByRouter(this.api.source_get, {id: sourceId, privateKey: this.storage.privateKey})
-  }
-
   getPaymentMethod(id: string) {
     return stripeRequestByRouter(this.api.payment_method_get, {id, privateKey: this.storage.privateKey})
   }
@@ -340,10 +333,6 @@ declare const Plaid: any
 
   getCustomerSources(id: string) {
     return stripeRequestByRouter(this.api.customer_get_sources, {id, privateKey: this.storage.privateKey})
-  }
-
-  createCustomer(data: any) {
-    return stripeRequestByRouter(this.api.customer, {post: data, privateKey: this.storage.privateKey})
   }
 
   createPayIntent(data: any) {
@@ -417,10 +406,6 @@ declare const Plaid: any
     })
   }
 
-  createCharge(post: any) {
-    return stripeRequestByRouter(this.api.charge, {post, privateKey: this.storage.privateKey})
-  }
-
   sendSourceUpdate(data: any, id: string) {
     const shallowClone = {...data}
     delete shallowClone.id; // just incase left over from text area
@@ -443,17 +428,21 @@ declare const Plaid: any
 
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
-    const customer = this.api.customer.data;
+    const customer = this.stripeUrlApis.create_customer.data;
     customer.source = token.id;
     // customer.payment_method = token.id; // does NOT work
     this.createCustomer(customer);
+  }
+
+  createCustomer(data: any) {
+    return stripeRequestByRouter(this.stripeUrlApis.create_customer, {post: data, privateKey: this.storage.privateKey})
   }
 
   /** TODO: upgrade to newer simpleRouteEditor */
   verifyBank() {
     const bankApi: BankData = this.api.bank as any
     const base = stripeServer + 'customers/'
-    const cusId = this.api.customer.result.id;
+    const cusId = this.stripeUrlApis.create_customer.result.id;
     const bankId = bankApi.token.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
@@ -589,8 +578,8 @@ export function requestByRouter(
     url = url + route.request.path
   }
 
-  const data = options.post || options.json
-  // let cloneData = {...route.data}
+  const rawData = options.post || options.json
+  const data = JSON.parse(JSON.stringify(rawData)) // clone
 
   const replaced = replaceStringVars(url, data)
   url = replaced.url

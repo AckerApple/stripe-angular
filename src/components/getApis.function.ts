@@ -16,6 +16,9 @@ const confirm_pay_intent: ISimpleRouteEditor = {
   title: '🤝 Confirm Pay Intent',
   link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
   description: 'If a pay intent requires verification, use the form below',
+  results: {
+    favKeys: [{name: 'id'}]
+  },
   request: {
     method: 'POST',
     path: 'confirm'
@@ -43,9 +46,12 @@ const bank: BankData = {
 }
 
 // create
-const customer: ISimpleRouteEditor = {
+const create_customer: ISimpleRouteEditor = {
   title: '👤 Create Customer',
   link: 'https://stripe.com/docs/api/customers',
+  results: {
+    favKeys: [{name: 'id'}]
+  },
   request: {
     method: 'POST',
     path: 'customers'
@@ -90,6 +96,9 @@ const get_paymethods: ISimpleRouteEditor = {
 
 const customer_attach_method: ISimpleRouteEditor = {
   title: '👤 ➡️ 💳 Customer attach pay method',
+  results: {
+    favKeys: [{name: 'id'}]
+  },
   request: {
     method: 'POST',
     path: 'payment_methods/${id}/attach'
@@ -115,6 +124,24 @@ const customer_attach_source: ISimpleRouteEditor = {
   } // not used currently
 }
 
+const create_source: ISimpleRouteEditor = {
+  title: '💳 Create source',
+  results: {
+    favKeys: [{name: 'id'}],
+  },
+  request: {
+    method: 'POST',
+    path: 'sources'
+  },
+  data: {
+    type: "ach_credit_transfer",
+    currency: "usd",
+    owner: {
+      email: "jenny.rosen@example.com"
+    },
+  }
+}
+
 const customer_detach_method: ISimpleRouteEditor = {
   request: {
     method: 'POST',
@@ -134,6 +161,8 @@ const customer_get_sources: ISimpleRouteEditor = {
 }
 
 const source_get: ISimpleRouteEditor = {
+  title: '💳 GET Source',
+  link: 'https://stripe.com/docs/api/sources/retrieve',
   request: {
     method: 'GET',
     path: 'sources/${id}'
@@ -174,12 +203,15 @@ const payment_method_update: ISimpleRouteEditor = {
 }
 
 const payintent: ISimpleRouteEditor = {
+  results: {
+    favKeys: [{name: 'id'}]
+  },
   request: {
     method: 'POST',
     path: 'payment_intents'
   },
   data: {
-    amount: 1099,
+    amount: 999,
     confirm: 'true',
     currency: 'usd',
     setup_future_usage: 'off_session',
@@ -211,12 +243,15 @@ const payintent_cancel: ISimpleRouteEditor = {
 const charge: ISimpleRouteEditor = {
   title: '💵 Create Charge',
   link: 'https://stripe.com/docs/api/charges',
+  results: {
+    favKeys: [{name: 'id'}]
+  },
   request: {
     method: 'POST',
     path: 'charges'
   },
   data: {
-    amount: 1099,
+    amount: 999,
     currency: 'usd',
     metadata: sample.metadata
   }
@@ -230,30 +265,33 @@ interface ApiMenu {
   [name: string]: SmartRouteEditor
 }
 
+export const urlBased = {
+  source_get,
+  charge,
+  create_source,
+  customer_attach_method,
+  customer_attach_source,
+  create_customer,
+}
+
 export function getApis (): ApiMenu {
   const menu = {
     confirm_pay_intent,
 
     // server sides
-    bank,
-    get_paymethods,
+    bank, get_paymethods,
 
     // customer apis
-    customer,
     customer_update,
     customer_get,
-    customer_attach_method,
     customer_detach_method,
-    customer_attach_source,
     customer_get_sources,
-    source_get,
     source_update,
     payment_method_get,
     payment_method_update,
     payintent,
     payintent_retrieve,
     payintent_cancel,
-    charge,
     testHeader,
 
     plaid_createPublicToken,

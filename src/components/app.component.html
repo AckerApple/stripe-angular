@@ -142,7 +142,10 @@
 
               <br /><br />
 
-              <server-tools [api]="api" [plaidServerApis]="plaidServerApis" [card]="card" [storage]="storage"></server-tools>
+              <server-tools
+                [api]="api" [stripeUrlApis]="stripeUrlApis" [plaidServerApis]="plaidServerApis"
+                [card]="card" [storage]="storage"
+              ></server-tools>
               <br />
               <button (click)="showServerMethods = false">❌ close</button>
             </div>
@@ -213,7 +216,7 @@
                       <div>
                         <input type="password" class="width-full"
                           (keyup)="storage.plaid.client_id=$event.target.value;"
-                          [value]="storage.plaid.client_id || null"
+                          [value]="storage.plaid?.client_id || null"
                           placeholder="Plaid > Team > Keys > client_id"
                         />
                       </div>
@@ -614,7 +617,7 @@
       </tr>
     </table>
 
-    <div *ngIf="api.customer.result?.id">
+    <div *ngIf="stripeUrlApis.create_customer.result?.id">
       <br />
       <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
         <h3 class="margin-0">👀 Verify customer micro deposits</h3>
@@ -710,6 +713,12 @@
       href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
       target="_blank" class="resource-link"
     >🎥 🔐 Customer Authentication & 3D Secure</a>
+
+    <a
+      href="https://stripe.com/docs/sources/ach-credit-transfer"
+      target="_blank" class="resource-link"
+      title="Receiving money from your customers"
+    >🏦 ACH credit transfer</a>
 
     <a
       href="https://plaid.com/docs/auth/partnerships/stripe/"

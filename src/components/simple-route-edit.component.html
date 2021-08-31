@@ -43,11 +43,11 @@
       [class.text-assertive] = "result.error"
     >↘️ {{title || 'Result'}}</strong>
 
-    <small *ngIf="result.id" style="opacity:.5;font-size: 0.8em;">
+    <!--<small *ngIf="result.id" style="opacity:.5;font-size: 0.8em;">
       <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
         (click)="copyText(result.id)"
       >copy id</a>
-    </small>
+    </small>-->
 
     <ng-container *ngIf="config.results?.favKeys">
       <ng-container *ngFor="let copyConfig of config.results.favKeys">

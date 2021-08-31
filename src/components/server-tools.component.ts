@@ -9,6 +9,7 @@ import { localSchema } from "./app.component.utils"
   @Input() card: CardsData
   @Input() api: any
   @Input() plaidServerApis: any
+  @Input() stripeUrlApis: any
   @Input() storage: localSchema
 
   // template function that maintains context
@@ -36,7 +37,7 @@ import { localSchema } from "./app.component.utils"
     customerId: string,
     paymentMethod: stripe.paymentMethod.PaymentMethod
   ) {
-    return stripeRequestByRouter(this.api.customer_attach_method, {
+    return stripeRequestByRouter(this.stripeUrlApis.customer_attach_method, {
       post: {
         customer: customerId
       },
@@ -123,17 +124,17 @@ import { localSchema } from "./app.component.utils"
 
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
-    const customer = this.api.customer.data;
+    const customer = this.stripeUrlApis.create_customer.data;
     customer.source = token.id;
     // customer.payment_method = token.id; // does NOT work
-    stripeRequestByRouter(this.api.customer, {post: customer, privateKey: this.storage.privateKey})
+    stripeRequestByRouter(this.stripeUrlApis.create_customer, {post: customer, privateKey: this.storage.privateKey})
   }
 
   // a source or token converted into a customer
   createCustomerByPaymentMethod(data: stripe.paymentMethod.PaymentMethod) {
-    const customer = this.api.customer.data;
+    const customer = this.stripeUrlApis.create_customer.data;
     customer.payment_method = data.id;
     // this.createCustomer(customer);
-    stripeRequestByRouter(this.api.customer, {post: customer, privateKey: this.storage.privateKey})
+    stripeRequestByRouter(this.stripeUrlApis.create_customer, {post: customer, privateKey: this.storage.privateKey})
   }
 }
