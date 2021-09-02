@@ -126,6 +126,8 @@ const customer_attach_source: ISimpleRouteEditor = {
 
 const create_source: ISimpleRouteEditor = {
   title: '💳 Create source',
+  link: 'https://stripe.com/docs/sources/ach-credit-transfer',
+  hint: 'Typically used for credit-transfer/wires',
   results: {
     favKeys: [{name: 'id'}],
   },

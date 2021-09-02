@@ -1,9 +1,9 @@
-<div style="opacity:.5" class="flex-wrap">
-  <div class="flex-1">
-    <ng-container *ngIf="config.request">
+<div class="flex-wrap opacity-half">
+  <div class="flex-1 text-smx max-width-80vw">
+    <div *ngIf="config.request" style="overflow-wrap:break-word">
       {{config.request.method}}&nbsp;/{{config.request.path}}&nbsp;&nbsp;
-    </ng-container>
-    <ng-container *ngIf="config.hint">{{config.hint}}</ng-container>
+    </div>
+    <div *ngIf="config.hint" class="text-xs opacity-80 pad-left">{{config.hint}}</div>
   </div>
 
   <ng-container *ngFor="let item of pasteFavs || []">
@@ -38,8 +38,8 @@
 
 <ng-template #simpleRouteResults let-resultAt="resultAt" let-result="result" let-title="title">
   <br />
-  <div style="display:flex;">
-    <strong style="flex-grow:1"
+  <div class="flex">
+    <strong class="flex-1"
       [class.text-assertive] = "result.error"
     >↘️ {{title || 'Result'}}</strong>
 
@@ -51,7 +51,9 @@
 
     <ng-container *ngIf="config.results?.favKeys">
       <ng-container *ngFor="let copyConfig of config.results.favKeys">
-        <small *ngIf="result && (result[copyConfig.name] || copyConfig.get)" style="opacity:.5;font-size: 0.8em;">
+        <small *ngIf="result && (result[copyConfig.name] || copyConfig.get)"
+          class="opacity-50 text-smx"
+        >
           <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
             (click)="copyText( result[copyConfig.name] || copyConfig.get(result) )"
           >✍️ copy {{copyConfig.name}}</a>

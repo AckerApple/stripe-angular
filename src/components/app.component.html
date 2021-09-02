@@ -71,7 +71,8 @@
             </div>
 
             <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
-              <tool-wrap [api]="api.confirm_pay_intent"
+              <tool-wrap class="flex-1"
+                [api]="api.confirm_pay_intent"
                 [pasteFavs] = "[
                   ['pay intent client_secret', api.payintent_retrieve.result?.client_secret, 'client_secret']
                 ]"
@@ -104,7 +105,7 @@
 
       <br /><br />
 
-      <div class="text-white flex-wrap flex-center child-margin">
+      <div class="text-white flex-wrap flex-center child-margin" style="max-width: 100vw">
         <div class="bg-grey border-bottom flex-1">
           <div class="flex-valign-center flex-wrap flex-right child-margin">
             <a (click)="showServerMethods = !showServerMethods">
@@ -192,7 +193,7 @@
           </ng-container>
         </div>
 
-        <div class="flex-1 text-white bg-grey border-bottom">
+        <div class="flex-1 text-white bg-grey border-bottom" style="max-width: 100vw">
           <div class="flex-valign-center flex-right flex-wrap child-margin"
             (click)="showPlaidMethods = !showPlaidMethods"
           >
@@ -206,7 +207,7 @@
           </div>
 
           <ng-container *ngIf="showPlaidMethods">
-            <div class="pad flex-center">
+            <div class="pad flex-center flex-wrap">
               <br />
               <ng-container *ngIf="localServerActive; else warnNoLocalServer">
                 <form class="flex-1" (submit)="save()" action="javascript:">
@@ -248,42 +249,49 @@
 
             <div class="flex-wrap flex-center">
               <ng-container *ngIf="localServerActive">
-                <tool-wrap [api]="plaidServerApis.plaid_linkTokenCreate"></tool-wrap>
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.plaid_linkTokenCreate"></tool-wrap>
               </ng-container>
 
-              <tool-wrap [api]="api.plaid_createPublicToken"
+              <tool-wrap class="flex-1"
+                [api]="api.plaid_createPublicToken"
                 [pasteFavs] = "[
                   ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']
                 ]"
               ></tool-wrap>
 
               <ng-container *ngIf="localServerActive">
-                <tool-wrap [api]="plaidServerApis.plaid_publicTokenExchange"
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.plaid_publicTokenExchange"
                   [pasteFavs]="[
                     ['public_token', api.plaid_createPublicToken.result?.public_token, 'data.public_token']
                   ]"
                 ></tool-wrap>
 
-                <tool-wrap [api]="plaidServerApis.plaid_stripeBankCreate"
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.plaid_stripeBankCreate"
                   [pasteFavs]="[
                     ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token'],
                     ['public_token.accounts[0]', api.plaid_createPublicToken.result?.metadata.accounts && api.plaid_createPublicToken.result.metadata.accounts[0].id,'data.account_id']
                   ]"
                 ></tool-wrap>
 
-                <tool-wrap [api]="plaidServerApis.getAccounts"
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.getAccounts"
                   [pasteFavs]="[
                     ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
                   ]"
                 ></tool-wrap>
 
-                <tool-wrap [api]="plaidServerApis.getLinkToken"
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.getLinkToken"
                   [pasteFavs]="[
                     ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'data.link_token']
                   ]"
                 ></tool-wrap>
 
-                <tool-wrap [api]="plaidServerApis.getAuth"
+                <tool-wrap class="flex-1"
+                  [api]="plaidServerApis.getAuth"
                   [pasteFavs]="[
                     ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
                   ]"

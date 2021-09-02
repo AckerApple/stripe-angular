@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
@@ -43,7 +43,7 @@
     "@angular/platform-browser": "^11.0.7",
     "@angular/platform-browser-dynamic": "^11.0.7",
     "@types/stripe-v3": "^3.1.23",
-    "ack-css-boot": "^2.2.1",
+    "ack-css-boot": "^2.2.2",
     "rxjs": "^6.6.3",
     "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
     "typescript": "4.0.5",

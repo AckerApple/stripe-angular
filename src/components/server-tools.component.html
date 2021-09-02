@@ -1,7 +1,7 @@
 
 <div class="flex-wrap flex-center">
 
-  <tool-wrap [api]="stripeUrlApis.create_customer"
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.create_customer"
     [pasteFavs] = "[
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
       ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, $setCustomerDefaultPayMethod],
@@ -17,14 +17,14 @@
     </ng-template>
   </tool-wrap>
 
-  <tool-wrap [api]="stripeUrlApis.customer_attach_method"
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_method"
     [pasteFavs] = "[
       ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'id']
     ]"
   >
   </tool-wrap>
 
-  <tool-wrap [api]="stripeUrlApis.customer_attach_source"
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_source"
     [pasteFavs] = "[
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
       [api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id,'source'],
@@ -250,7 +250,7 @@
     </div>
   </div>
 
-  <tool-wrap [api]="stripeUrlApis.source_get"
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.source_get"
     [pasteFavs] = "[
       ['use source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'id'],
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'id'],
@@ -411,10 +411,10 @@
     </div>
   </div>
 
-  <tool-wrap [api]="stripeUrlApis.charge"
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.charge"
     [pasteFavs] = "[
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
-      ['👤 🏦 bank '+ stripeUrlApis.customer_attach_source.result?.bank_name, stripeUrlApis.customer_attach_source.result?.id, 'source'],
+      ['👤 🏦 use attached '+ (stripeUrlApis.customer_attach_source.result?.bank_name || stripeUrlApis.customer_attach_source.result?.type), stripeUrlApis.customer_attach_source.result?.id, 'source'],
       ['💳 method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'payment_method'],
       ['🪙 token '+card.token?.card.brand+' '+card.token?.card.last4, card.token?.card.id, 'source'],
       ['💳 source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
@@ -448,7 +448,7 @@
     </ng-template>
   </tool-wrap>
 
-  <tool-wrap [api]="stripeUrlApis.create_source"></tool-wrap>
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.create_source"></tool-wrap>
 
 
 </div>
