@@ -21,8 +21,6 @@ const headers = getStripeWebhookHeaders(
 console.log('\n\nyour header.stripe-signature => ', headers)
 
 
-
-
 function getStripeWebhookHeaders(
   webhookSigningSecret: string,
   payload: Record<string, any>

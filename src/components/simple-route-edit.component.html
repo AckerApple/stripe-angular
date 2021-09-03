@@ -18,12 +18,14 @@
 </div>
 
 <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
-  (change)="changeKey(config, $event.target.value)"
->{{ config.data | json }}</textArea>
+  (change)="changeKey(config, $event.target.value, ['data'])"
+  [value] = "config.data | json"
+></textArea>
 
 <textarea *ngIf="config.error" wrap="off"
   disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:200px;"
->{{ config.error | json }}</textArea>
+  [value] = "config.error | json"
+></textArea>
 
 <button type="button"
   (click)="config.$send.emit(config.data)"

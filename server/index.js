@@ -23,7 +23,7 @@ app.post(/\/plaid\/.+/, plaidReqRes)
 
 app.listen(port,()=>{
   console.info(`\x1b[36mServer started - localhost:${port}\x1b[0m`)
-  console.info(`\x1b[33mWeb browser open, one of the following:\x1b[0m`)
+  console.info(`\x1b[33mOpen in a web browser one of the following:\x1b[0m`)
   console.info(`  - 🌎 https://ackerapple.github.io/stripe-angular/`)
   console.info(`  - 💾 ${path.join(__dirname,'../','index.html')}`)
 })

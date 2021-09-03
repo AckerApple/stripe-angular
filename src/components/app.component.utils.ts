@@ -290,24 +290,29 @@ function _computeSignature(payload, secret) {
 
 
 export function changeKey(
-  scope: SmartRouteEditor,
-  value: string
-) {
-  delete scope.error
-  const keys = ['data']
-  var current = scope;
+  scope: Record<any, any>,
+  value: string,
+  keys: string[] = ['data']
+): any {
+  delete scope.error // stripe-angular only
+  let current: any = scope;
 
-  while(keys.length > 1) {
-    current = current[keys.shift()];
+  while(keys.length > 2) {
+    current = current[ keys.shift() ]
   }
 
+  // value = JSON.parse(value)
   try {
-    // current[keys[0]] = JSON.parse(value);
-    eval('current[keys[0]] = ' + value); // allow loose js to be cast to json
+    eval('value = ' + value) // allow loose js to be cast to json
+    current[ keys[0] ] = value
+    // current = value
   } catch (err) {
+     // stripe-angular only
     scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
     console.error(`failed to parse object key ${keys[0]}`);
+
     throw err
   }
-}
 
+  return current[ keys[0] ]
+}

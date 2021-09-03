@@ -75,6 +75,8 @@ const customer_update: ISimpleRouteEditor = {
 }
 
 const customer_get: ISimpleRouteEditor = {
+  title: '👤 GET Customer',
+  link: 'https://stripe.com/docs/api/customers/retrieve',
   request: {
     method: 'GET',
     path: 'customers/${id}'
@@ -274,6 +276,7 @@ export const urlBased = {
   customer_attach_method,
   customer_attach_source,
   create_customer,
+  customer_get,
 }
 
 export function getApis (): ApiMenu {
@@ -285,7 +288,6 @@ export function getApis (): ApiMenu {
 
     // customer apis
     customer_update,
-    customer_get,
     customer_detach_method,
     customer_get_sources,
     source_update,

@@ -35,41 +35,12 @@
   >
   </tool-wrap>
 
-  <div class="tool-wrap">
-    <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-      <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-        <label>
-          👤 GET Customer
-        </label>
-      </h3>
-      <small>
-        <a href="https://stripe.com/docs/api/customers/retrieve"
-          style="color:white;" target="_blank"
-        >api docs</a>
-      </small>
-    </div>
-    <div class="tool-panel">
-      <div style="color:white;">
-        <small style="display:flex;flex-wrap:wrap;">
-          <a *ngIf="stripeUrlApis.create_customer.result"
-            (click)="api.customer_get.data.id = stripeUrlApis.create_customer.result.id"
-            style="text-decoration:underline;cursor:pointer;margin:1em;"
-            [style.opacity] = "api.customer_get.data.id === stripeUrlApis.create_customer.result.id && '.3'"
-          >use customer {{stripeUrlApis.create_customer.result.id}}</a>
-
-          <a *ngIf="api.payment_method_get.result?.customer"
-            (click)="api.customer_get.data.id = api.payment_method_get.result.customer"
-            style="text-decoration:underline;cursor:pointer;margin:1em;"
-            [style.opacity] = "api.customer_get.data.id === api.payment_method_get.result.customer && '.3'"
-            [title] = "api.payment_method_get.result.customer"
-          >
-            use pay method customer {{api.payment_method_get.result.customer}}
-          </a>
-        </small>
-      </div>
-      <simple-route-edit [config]="api.customer_get"></simple-route-edit>
-    </div>
-  </div>
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_get"
+    [pasteFavs] = "[
+      ['customer ' + stripeUrlApis.create_customer.result?.id, stripeUrlApis.create_customer.result?.id, 'id'],
+      ['pay method customer ' + api.payment_method_get.result?.customer, api.payment_method_get.result?.customer, 'id']
+    ]"
+  ></tool-wrap>
 
   <div class="tool-wrap">
     <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
@@ -314,12 +285,12 @@
         >
           use customer {{stripeUrlApis.create_customer.result.description}}
         </a>
-        <a *ngIf="api.customer_get.data.id"
-          (click)="api.payintent.data.customer = api.customer_get.data.id"
+        <a *ngIf="stripeUrlApis.customer_get.data.id"
+          (click)="api.payintent.data.customer = stripeUrlApis.customer_get.data.id"
           style="text-decoration:underline;cursor:pointer;margin:1em;"
-          [style.opacity] = "api.payintent.data.customer === api.customer_get.data.id && '.3'"
+          [style.opacity] = "api.payintent.data.customer === stripeUrlApis.customer_get.data.id && '.3'"
         >
-          use GET customer {{api.customer_get.data.id}}
+          use GET customer {{stripeUrlApis.customer_get.data.id}}
         </a>
         <a *ngIf="card.payment_method"
           (click)="api.payintent.data.payment_method = card.payment_method.id"

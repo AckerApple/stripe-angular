@@ -99,7 +99,6 @@ declare const Plaid: any
     this.api.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
     this.api.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
     this.api.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
-    this.api.customer_get.$send.subscribe(data => this.getCustomer(data.id))
     this.api.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
     this.api.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
     this.api.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
@@ -159,13 +158,11 @@ declare const Plaid: any
     (this.api.bank.data as any).metadata = meta
   }
 
-  ngOnInit(){
-    console.log(22)
+  ngOnInit() {
     // inject script tag onto document and save
     this.save()
     .then( () => this.loaded=true )
-    .catch(e=>{
-      console.log(33)
+    .catch(e => {
       this.lastError=e
       return Promise.reject(e)
     })
@@ -316,10 +313,6 @@ declare const Plaid: any
 
   getPaymentMethod(id: string) {
     return stripeRequestByRouter(this.api.payment_method_get, {id, privateKey: this.storage.privateKey})
-  }
-
-  getCustomer(id: string) {
-    return stripeRequestByRouter(this.api.customer_get, {id, privateKey: this.storage.privateKey})
   }
 
   getPaymentMethods(query: stripe.PaymentMethodData) {
@@ -550,8 +543,7 @@ function replaceStringVars(url: string, data: any): {url:string, data: any} {
   for (let index = array.length - 1; index >= 0; --index) {
     const result = array[index]
     const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
-    console.log('key', key)
-    const value = data[key];
+    const value = data[key]
     delete data[key] // remove from body data
     url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
   }
@@ -607,7 +599,7 @@ export function requestByRouter(
     .then(resultSetter(route))
     .catch(err => {
       route.error = err
-      console.log('err', err)
+      console.error('err', err)
       return Promise.reject(err)
     })
     .finally(() => --route.load)
