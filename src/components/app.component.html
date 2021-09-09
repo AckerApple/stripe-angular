@@ -211,9 +211,12 @@
                       <div>
                         <input type="password" class="width-full"
                           (keyup)="storage.plaid.client_id=$event.target.value;"
-                          [value]="storage.plaid?.client_id || null"
+                          [value]="storage.plaid.client_id || null"
                           placeholder="Plaid > Team > Keys > client_id"
                         />
+                      </div>
+                      <div *ngIf="storage.plaid.client_id?.length > 12" class="text-xs opacity-third pad-xxs pos-abs">
+                        {{ storage.plaid.client_id | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.client_id | slice : 8 : storage.plaid.client_id.length).length) }}
                       </div>
                     </div>
 
@@ -225,6 +228,9 @@
                           [value]="storage.plaid.secret || null"
                           placeholder="Plaid > Team > Keys > Sandbox"
                         />
+                      </div>
+                      <div *ngIf="storage.plaid.secret?.length > 12" class="text-xs opacity-third pad-xxs pos-abs">
+                        {{ storage.plaid.secret | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.secret | slice : 8 : storage.plaid.secret.length).length) }}
                       </div>
                     </div>
 
@@ -948,24 +954,32 @@
 </ng-template>
 
 <ng-template #warnNoLocalServer>
-  <div class="bg-warning pad">
-    <div class="text-dark">
-      <div class="flex-wrap">
-        <span class="flex-1">
-          ⚠️ No 🐠 stripe-angular local server detected.
-        </span>
-        <a (click)="checkLocalServer()">🔄</a>
+  <div>
+
+    <div class="bg-warning pad">
+      <div class="text-dark">
+        <div class="flex-wrap">
+          <span class="flex-1">
+            ⚠️ No 🐠 stripe-angular local server detected.
+          </span>
+          <a (click)="checkLocalServer()">🔄</a>
+        </div>
+        <br /><br />
+        <div>
+          <small class="opacity-70">Additional functionality available, run the following commands in a local terminal:</small>
+        </div>
       </div>
-      <br /><br />
-      <div>
-        <small class="opacity-70">Additional functionality available, run the following commands in a local terminal:</small>
-      </div>
-    </div>
 <pre class="bg-dark pad-xs margin-0">
 git clone --branch gh-pages https://github.com/ackerapple/stripe-angular
 cd stripe-angular
 npm install --production
 npm run start
 </pre>
+    </div>
+    <div class="text-right">
+      <button (click)="localServerActive = true">
+        🔧 show tools anyways
+      </button>
+    </div>
   </div>
 </ng-template>

@@ -113,6 +113,7 @@ const customer_attach_method: ISimpleRouteEditor = {
 
 const customer_attach_source: ISimpleRouteEditor = {
   title: '👤 ➡️ 💳 Customer attach pay source',
+  link: 'https://stripe.com/docs/sources/customers#attaching-a-source-to-a-new-customer-object',
   results: {
     favKeys: [{name: 'id'}]
   },
