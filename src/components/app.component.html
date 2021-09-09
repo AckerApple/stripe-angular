@@ -241,6 +241,13 @@
                       </button>
                     </div>
                   </div>
+                  <div class="flex-center child-margin-xxs">
+                    <div class="pos-rel text-xxs opacity-70 width-30vw">
+                      <div class="pos-abs flex-center width-full text-center">
+                        <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
+                      </div>
+                    </div>
+                  </div>
                 </form>
               </ng-container>
             </div>
@@ -379,14 +386,7 @@
             </div>
             <div class="pos-rel text-xxs opacity-70">
               <div class="pos-abs">
-                <label for="saveKeyLocally" style="align-items: center">
-                  <input
-                    type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
-                    (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
-                    [checked] = "storage.saveKeyLocally"
-                  />
-                  <span>💾 save in localStorage</span>
-                </label>
+                <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
               </div>
             </div>
           </div>
@@ -982,4 +982,15 @@ npm run start
       </button>
     </div>
   </div>
+</ng-template>
+
+<ng-template #localStorageCheck>
+  <label for="saveKeyLocally" style="align-items: center">
+    <input
+      type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
+      (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
+      [checked] = "storage.saveKeyLocally"
+    />
+    <span>💾 save in localStorage</span>
+  </label>
 </ng-template>
