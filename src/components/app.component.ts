@@ -115,7 +115,7 @@ declare const Plaid: any
         api.$send.subscribe(data => this.stripeRouteRequest(api,data))
       )
 
-      Object.values(this.plaidServerApis)
+    Object.values(this.plaidServerApis)
       .forEach(api =>
         api.$send.subscribe(data => this.plaidRouteRequest(api,data))
       )
@@ -123,6 +123,8 @@ declare const Plaid: any
     if (Object.keys(storage.metadata).length) {
       this.defaultMetadata(storage.metadata)
     }
+
+    storage.plaid = storage.plaid || {}
   }
 
   checkLocalServer() {
@@ -148,7 +150,6 @@ declare const Plaid: any
   defaultMetadata(meta: Record<string, any>) {
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
-    storage.plaid = storage.plaid || {}
 
     this.api.customer_update.data.metadata = meta
     this.stripeUrlApis.create_customer.data.metadata = meta
