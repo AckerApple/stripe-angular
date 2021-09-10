@@ -1,4 +1,4 @@
-<div class="flex-wrap opacity-half">
+<div class="flex-wrap opacity-70">
   <div class="flex-1 text-smx max-width-80vw">
     <div *ngIf="config.request" style="overflow-wrap:break-word">
       {{config.request.method}}&nbsp;/{{config.request.path}}&nbsp;&nbsp;
@@ -8,10 +8,8 @@
 
   <ng-container *ngFor="let item of pasteFavs || []">
     <a *ngIf="item[1]" (click)="pasteBy(item)" [title]="item[1]"
-      class="pointer border radius-5 pad-xxs margin-xxs hover-highlight text-xxs"
-    >
-      ✏️ use {{item[0]}}
-    </a>
+      class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
+    >↙️ use {{item[0]}}</a>
   </ng-container>
 
   <ng-container *ngTemplateOutlet="requestHeaderItems"></ng-container>
@@ -26,6 +24,8 @@
   disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:200px;"
   [value] = "config.error | json"
 ></textArea>
+
+<ng-container *ngTemplateOutlet="prependFormFooter"></ng-container>
 
 <button type="button"
   (click)="config.$send.emit(config.data)"

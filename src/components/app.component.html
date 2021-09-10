@@ -1,4 +1,4 @@
-<!-- 🐠 🔐 💳 👀 🏦 -->
+<!-- ↙️ 🐠 🔐 💳 👀 🏦 -->
 <table cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
   <tr>
     <td>
@@ -638,18 +638,16 @@
           </small>
         </div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;">
-        <div style="flex-grow: 1;margin:0.4em;">
-          <div style="display:flex;justify-content: space-between;align-items: flex-start;">
+      <div class="flex flex-wrap">
+        <div class="flex-1 margin-xxs">
+          <div class="flex flex-space-between flex-left">
             <span>Verify Amount 1</span>
             <sup>
-              <a (click)="api.bank.verify.amount1=32"
-                style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
-              >32</a>
+              <a (click)="api.bank.verify.amount1=32" class="opacity-70 text-xxs border radius-10 pad-xxs cursor"
+              >↙️ 32</a>
             </sup>
           </div>
-          <input
-            style="width:100%" type="number"
+          <input style="width:100%" type="number"
             [value]="api.bank.verify.amount1"
             (keyup)="api.bank.verify.amount1=$event.target.value"
             placeholder="Enter 32 here"
@@ -659,9 +657,8 @@
           <div style="display:flex;justify-content: space-between;align-items: flex-start;">
             <span>Verify Amount 2</span>
             <sup>
-              <a (click)="api.bank.verify.amount2=45"
-                style="font-size: 0.8em;opacity:.5;border:1px solid black;border-radius: 5px;padding:0.3em;cursor:pointer"
-              >45</a>
+              <a (click)="api.bank.verify.amount2=45" class="opacity-70 text-xxs border radius-10 pad-xxs cursor"
+              >↙️ 45</a>
             </sup>
           </div>
           <input

@@ -98,9 +98,6 @@ declare const Plaid: any
     // server sides?
     this.api.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
     this.api.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
-    this.api.payment_method_get.$send.subscribe(data => this.getPaymentMethod(data.id))
-    this.api.customer_get_sources.$send.subscribe(data => this.getCustomerSources(data.id))
-    this.api.get_paymethods.$send.subscribe(data => this.getPaymentMethods(data as any))
     this.api.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
     this.api.payintent.$send.subscribe(data => this.createPayIntent(data))
     this.api.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
@@ -310,23 +307,6 @@ declare const Plaid: any
     }
 
     this.enableServerMode = true
-  }
-
-  getPaymentMethod(id: string) {
-    return stripeRequestByRouter(this.api.payment_method_get, {id, privateKey: this.storage.privateKey})
-  }
-
-  getPaymentMethods(query: stripe.PaymentMethodData) {
-    return stripeRequestByRouter(this.api.get_paymethods, {query: query as any, privateKey: this.storage.privateKey})
-      .then(() => {
-        if (!this.api.payment_method_get.result && this.api.get_paymethods.result?.data?.length) {
-          this.api.payment_method_get.result = this.api.get_paymethods.result.data[0]
-        }
-      })
-  }
-
-  getCustomerSources(id: string) {
-    return stripeRequestByRouter(this.api.customer_get_sources, {id, privateKey: this.storage.privateKey})
   }
 
   createPayIntent(data: any) {

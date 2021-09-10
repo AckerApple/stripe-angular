@@ -9,5 +9,6 @@ import { SmartRouteEditor } from "./app.component.utils"
   @Input() pasteFavs: string[][] // [ title, value, pasteKey ]
 
   @ContentChild('footer', { static: false }) footerTemplate:TemplateRef<ElementRef>
+  @ContentChild('prependFormFooter', { static: false }) prependFormFooterTemplate:TemplateRef<ElementRef>
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItemsTemplate:TemplateRef<ElementRef>
 }

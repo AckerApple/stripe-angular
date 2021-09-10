@@ -87,6 +87,8 @@ const customer_get: ISimpleRouteEditor = {
 }
 
 const get_paymethods: ISimpleRouteEditor = {
+  title: '💳 GET Payment Methods',
+  link: 'https://stripe.com/docs/api/payment_methods/list',
   request: {
     method: 'GET',
     path: 'payment_methods'
@@ -156,6 +158,8 @@ const customer_detach_method: ISimpleRouteEditor = {
 }
 
 const customer_get_sources: ISimpleRouteEditor = {
+  title: '👤 💳 GET Customer Sources',
+  link: 'https://stripe.com/docs/api/cards/list',
   request: {
     method: 'GET',
     path: 'customers/${id}/sources'
@@ -188,9 +192,11 @@ const source_update: ISimpleRouteEditor = {
 }
 
 const payment_method_get: ISimpleRouteEditor = {
+  title: '💳 GET Payment Method',
+  link: 'https://stripe.com/docs/api/payment_methods/retrieve',
   request: {
     method: 'GET',
-    path: 'payment_methods'
+    path: 'payment_methods/${id}'
   },
   data: {
     id: ""
@@ -274,8 +280,13 @@ export const urlBased = {
   source_get,
   charge,
   create_source,
+
+  get_paymethods,
+  payment_method_get,
+
   customer_attach_method,
   customer_attach_source,
+  customer_get_sources,
   create_customer,
   customer_get,
 }
@@ -285,14 +296,13 @@ export function getApis (): ApiMenu {
     confirm_pay_intent,
 
     // server sides
-    bank, get_paymethods,
+    bank,
 
     // customer apis
     customer_update,
     customer_detach_method,
-    customer_get_sources,
     source_update,
-    payment_method_get,
+
     payment_method_update,
     payintent,
     payintent_retrieve,

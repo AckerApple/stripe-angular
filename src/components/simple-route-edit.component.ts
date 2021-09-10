@@ -11,7 +11,9 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
   @Input() config: SmartRouteEditor
   @Input() copy: string
   @Input() pasteFavs: PasteFav[] // [[name, value, paste-name]]
+
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
+  @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>
 
   copyText = copyText
   changeKey = changeKey
