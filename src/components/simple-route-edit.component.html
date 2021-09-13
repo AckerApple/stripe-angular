@@ -6,6 +6,14 @@
     <div *ngIf="config.hint" class="text-xs opacity-80 pad-left">{{config.hint}}</div>
   </div>
 
+  <ng-container *ngFor="let item of config.pastes || []">
+    <a *ngIf="item.api[ item.valueKey ]"
+      (click)="pasteByPaste( item )"
+      [title]="item.api.result[ item.valueKey ]"
+      class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
+    >↙️ use {{item.getTitle()}}</a>
+  </ng-container>
+
   <ng-container *ngFor="let item of pasteFavs || []">
     <a *ngIf="item[1]" (click)="pasteBy(item)" [title]="item[1]"
       class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
@@ -27,9 +35,11 @@
 
 <ng-container *ngTemplateOutlet="prependFormFooter"></ng-container>
 
-<button type="button"
-  (click)="config.$send.emit(config.data)"
->send request</button>
+<div>
+  <button type="button"
+    (click)="config.$send.emit(config.data)"
+  >send request</button>
+</div>
 
 <ng-container *ngIf="config.load">... loading ...</ng-container>
 

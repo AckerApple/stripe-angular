@@ -12,6 +12,18 @@ export interface BankData {
   token?: any
 }
 
+const balance_get: ISimpleRouteEditor = {
+  title: '💵 Balance',
+  link: 'https://stripe.com/docs/api/balance/balance_retrieve',
+  description: 'Get Stripe owner account balance',
+  request: {
+    method: 'GET',
+    path: 'balance'
+  },
+  data: {
+  }
+}
+
 const confirm_pay_intent: ISimpleRouteEditor = {
   title: '🤝 Confirm Pay Intent',
   link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
@@ -61,6 +73,86 @@ const create_customer: ISimpleRouteEditor = {
     ...sample.owner,
     metadata: sample.metadata
   }
+}
+
+const delete_customer: ISimpleRouteEditor = {
+  title: '❌ 👤 Delete Customer',
+  link: 'https://stripe.com/docs/api/customers/delete',
+  request: {
+    method: 'DELETE',
+    path: 'customers/${id}'
+  },
+  data: {
+    id: '',
+  },
+  pastes: [{
+    api: create_customer,
+    getTitle: () => 'customer ' + create_customer.result?.id,
+    pasteKey: 'id',
+    valueKey: 'result.id',
+  }]
+}
+
+const create_source: ISimpleRouteEditor = {
+  title: '💳 Create source',
+  link: 'https://stripe.com/docs/sources/ach-credit-transfer',
+  hint: 'Typically used for credit-transfer/wires',
+  results: {
+    favKeys: [{name: 'id'}],
+  },
+  request: {
+    method: 'POST',
+    path: 'sources'
+  },
+  data: {
+    type: "ach_credit_transfer",
+    currency: "usd",
+    owner: {
+      email: "jenny.rosen@example.com"
+    },
+  }
+}
+
+const customer_list_all: ISimpleRouteEditor = {
+  title: '🧾 👤 List all customers',
+  link: 'https://stripe.com/docs/api/customers/list',
+  request: {
+    method: 'GET',
+    path: 'customers',
+  },
+  pastes: [{
+    api: create_customer,
+    valueKey: 'result.id',
+    pasteKey: 'starting_after',
+    getTitle: () => 'created 👤 ' + create_customer.result?.id
+  }],
+  data: {
+    limit: 3, "created[gte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
+  }
+}
+
+const delete_source: ISimpleRouteEditor = {
+  title: '❌ 💳 delete source card',
+  link: 'https://stripe.com/docs/api/cards/delete',
+  request: {
+    method: 'DELETE',
+    path: 'customers/${customer}/sources/${source}'
+  },
+  data: {
+    customer: '',
+    source: '',
+  },
+  pastes: [{
+    api: create_customer,
+    getTitle: () => 'customer ' + create_customer.result?.id,
+    pasteKey: 'customer',
+    valueKey: 'result.id',
+  }, {
+    api: create_source,
+    getTitle: () => 'source ' + create_source.result?.id,
+    pasteKey: 'source',
+    valueKey: 'result.id',
+  }]
 }
 
 const customer_update: ISimpleRouteEditor = {
@@ -127,26 +219,6 @@ const customer_attach_source: ISimpleRouteEditor = {
     id: '',
     source: ''
   } // not used currently
-}
-
-const create_source: ISimpleRouteEditor = {
-  title: '💳 Create source',
-  link: 'https://stripe.com/docs/sources/ach-credit-transfer',
-  hint: 'Typically used for credit-transfer/wires',
-  results: {
-    favKeys: [{name: 'id'}],
-  },
-  request: {
-    method: 'POST',
-    path: 'sources'
-  },
-  data: {
-    type: "ach_credit_transfer",
-    currency: "usd",
-    owner: {
-      email: "jenny.rosen@example.com"
-    },
-  }
 }
 
 const customer_detach_method: ISimpleRouteEditor = {
@@ -276,6 +348,13 @@ interface ApiMenu {
   [name: string]: SmartRouteEditor
 }
 
+export const stripeUrlArray = [
+  delete_customer,
+  customer_list_all,
+  delete_source,
+  balance_get
+]
+
 export const urlBased = {
   source_get,
   charge,
@@ -324,13 +403,17 @@ export function simpleMenuToSmart(
   return Object.entries(menu).reduce((end, [key, value]) => {
     end[ key ] = simpleRouteToSmart(value)
     return end
-  }, {})
+  }, menu as any)
 }
 
 export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor {
-  return {
+  const routeRef = route as SmartRouteEditor
+  routeRef.$send = new EventEmitter()
+  routeRef.load = 0
+  return routeRef
+  /*return {
     ...route,
     $send: new EventEmitter(),
     load: 0,
-  }
+  }*/
 }

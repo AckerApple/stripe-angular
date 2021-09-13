@@ -3,10 +3,10 @@ import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
 import { BankData, getApis, simpleMenuToSmart,
-  urlBased
+  urlBased, stripeUrlArray, simpleRouteToSmart
 } from './getApis.function'
 import {
-  RequestOptions, request, ISimpleRouteEditor, sample, localSchema, getProjectLocalStorage,
+  RequestOptions, request, sample, localSchema, getProjectLocalStorage,
   copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor,
 } from "./app.component.utils"
 import { serverSide as plaidServerSide } from "./plaid.apis"
@@ -86,6 +86,7 @@ declare const Plaid: any
   api = getApis()
   plaidServerApis = simpleMenuToSmart(plaidServerSide)
   stripeUrlApis = simpleMenuToSmart(urlBased)
+  stripeUrlArray = stripeUrlArray.map(simpleRouteToSmart)
 
   changeKey = changeKey
   copyText = copyText
@@ -107,7 +108,12 @@ declare const Plaid: any
     // plaid
     this.api.plaid_createPublicToken.$send.subscribe(data => this.plaidCreateModal(data))
 
-    Object.values(this.stripeUrlApis)
+    this.stripeUrlArray
+      .forEach(api =>
+        api.$send.subscribe(data => this.stripeRouteRequest(api,data))
+      )
+
+      Object.values(this.stripeUrlApis)
       .forEach(api =>
         api.$send.subscribe(data => this.stripeRouteRequest(api,data))
       )
@@ -432,19 +438,6 @@ declare const Plaid: any
       .then(result => bankApi.verifyResponse = tryParse(result))
   }
 
-  /*fetchPayIntentUpdate(config: ISimpleRouteEditor) {
-    const base = stripeServer + 'payment_intents/'
-    const intentId = config.result.id;
-    const url = base + intentId;
-    ++config.load
-
-    request({
-      url,
-      authorizationBearer: this.storage.privateKey
-    })
-      // .then(result => config.retrieve = tryParse(result))
-      .finally(() => --config.load)
-  }*/
 
   updateStorageMeta(stringData: string) {
     this.storage.metadata = JSON.parse(stringData)
@@ -513,6 +506,8 @@ function resultSetter(
     delete route.error
     route.result = parsed
 
+    flatten(route)
+
     return route
   }
 }
@@ -536,6 +531,8 @@ export function requestByRouter(
   route: SmartRouteEditor,
   options: RouterRequestOptions
 ) {
+  delete route.result
+  delete route.error
   ++route.load
 
   let url: string = options.baseUrl || route.request.host || ''
@@ -571,9 +568,17 @@ export function requestByRouter(
     reqOptions.json = data
   }
 
+  console.log('route.request.method', route.request.method, reqOptions.post, options.post)
+
+  // GET convert POST to query params
+  if (route.request.method === 'GET' && reqOptions.post) {
+    options.query = reqOptions.post
+  }
+
   if (options.query) {
     const queryString = Object.keys(options.query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${options.query[key]}`,'')
-    url = url + '?' + queryString
+    reqOptions.url = reqOptions.url + '?' + queryString
+    console.log('url', reqOptions.url)
   }
 
   return request(reqOptions)
@@ -598,4 +603,42 @@ export function stripeRequestByRouter(
   options.request = options.request || {} as any
   options.request.authorizationBearer = options.privateKey
   return requestByRouter(route, options)
+}
+
+export function flatten<T>(
+  data: T, response = data,
+  {
+    flatKey = "", onlyLastKey = false, seen = []
+  }: {
+    flatKey?: string, onlyLastKey?: boolean, seen?: any[]
+  } = {}
+) {
+  for (const [key, value] of Object.entries(data)) {
+    let newFlatKey;
+    if (!isNaN(parseInt(key)) && flatKey.includes("[]")) {
+      newFlatKey = (flatKey.charAt(flatKey.length - 1) == "." ? flatKey.slice(0, -1) : flatKey) + `[${key}]`;
+    } else if (!flatKey.includes(".") && flatKey.length > 0) {
+      newFlatKey = `${flatKey}.${key}`;
+    } else {
+      newFlatKey = `${flatKey}${key}`;
+    }
+
+    const isValObject = typeof value === "object" && value !== null && Object.keys(value).length > 0
+    if (isValObject && !seen.includes(value)) {
+      seen.push(value)
+      flatten(value, response, {flatKey: `${newFlatKey}.`, onlyLastKey, seen});
+    } else {
+      if(onlyLastKey){
+        newFlatKey = newFlatKey.split(".").pop();
+      }
+      if (Array.isArray(response)) {
+        response.push({
+          [newFlatKey.replace("[]", "")]: value
+        });
+      } else {
+        response[newFlatKey.replace("[]", "")] = value;
+      }
+    }
+  }
+  return response;
 }

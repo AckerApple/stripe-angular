@@ -17,6 +17,10 @@
     </ng-template>
   </tool-wrap>
 
+  <ng-container *ngFor="let api of stripeUrlArray">
+    <tool-wrap class="flex-1" [api]="api"></tool-wrap>
+  </ng-container>
+
   <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_method"
     [pasteFavs] = "[
       ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'id']

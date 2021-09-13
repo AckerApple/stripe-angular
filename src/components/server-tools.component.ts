@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core"
+import { Component, Input } from "@angular/core"
 import { CardsData, stripeRequestByRouter } from "./app.component"
-import { localSchema } from "./app.component.utils"
+import { localSchema, SmartRouteEditor } from "./app.component.utils"
 
 @Component({
   selector:"server-tools",
@@ -8,8 +8,9 @@ import { localSchema } from "./app.component.utils"
 }) export class ServerToolsComponent {
   @Input() card: CardsData
   @Input() api: any
-  @Input() plaidServerApis: any
-  @Input() stripeUrlApis: any
+  @Input() plaidServerApis: {[name: string]: SmartRouteEditor}
+  @Input() stripeUrlApis: {[name: string]: SmartRouteEditor}
+  @Input() stripeUrlArray: SmartRouteEditor[]
   @Input() storage: localSchema
 
   // template function that maintains context

@@ -138,7 +138,7 @@
               <br /><br />
 
               <server-tools
-                [api]="api" [stripeUrlApis]="stripeUrlApis" [plaidServerApis]="plaidServerApis"
+                [api]="api" [stripeUrlArray]="stripeUrlArray" [stripeUrlApis]="stripeUrlApis" [plaidServerApis]="plaidServerApis"
                 [card]="card" [storage]="storage"
               ></server-tools>
               <br />
@@ -786,10 +786,6 @@
       href="https://stripe.com/docs/api/cards/update"
       target="_blank" class="resource-link"
     >💳 update source card</a>
-    <a
-      href="https://stripe.com/docs/api/cards/delete"
-      target="_blank" class="resource-link"
-    >❌ 💳 delete source card</a>
     <a
       href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
       target="_blank" class="resource-link"

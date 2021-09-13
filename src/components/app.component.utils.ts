@@ -72,19 +72,21 @@ export function request(
 
     // const formPost = objectToUriForm(post);
     if (post) {
+      console.log(0, post)
       req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
       const formPost = formurlencoded(post);
       req.send( formPost )
     } else if (json) {
+      console.log(1)
       const content = JSON.stringify(json)
       // req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
       req.setRequestHeader("Content-Type", "application/json")
       // req.setRequestHeader("Content-Length", content.length.toString())
       req.send(content);
     } else {
+      console.log(2)
       req.send()
     }
-
 
     req.onreadystatechange = () => {
       if (req.readyState === 4) {
@@ -150,12 +152,24 @@ export function tryParse(data: string | any) {
   }
 }
 
+export interface ApiPaste{
+  api: ISimpleRouteEditor
+  getTitle: () => string
+  valueKey: string
+  pasteKey: string
+}
+
 export interface ISimpleRouteEditor {
   title?: string
   description?: string
   hint?: string
   link?: string // documentation link
-  data: {[index:string]: any}
+  data: {[index:string]: any} // request body
+
+  // last result
+  result?: {[index:string]: any} // runtime paste of result
+  pastes?: ApiPaste[]
+
   request?: {
     method: string
     host?: string // base url example https://sandbox.plaid.com/
@@ -173,7 +187,6 @@ export interface SmartRouteEditor extends ISimpleRouteEditor {
   load: number
   resultAt?: number
   error?: any
-  result?: {[index:string]: any} // runtime paste of result
   $send: EventEmitter<{[index:string]: any}>
 }
 
