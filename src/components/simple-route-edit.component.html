@@ -35,6 +35,8 @@
 
 <ng-container *ngTemplateOutlet="prependFormFooter"></ng-container>
 
+<div *ngIf="config.warn" class="opacity-half text-xs pad-xs">{{config.warn}}</div>
+
 <div>
   <button type="button"
     (click)="config.$send.emit(config.data)"

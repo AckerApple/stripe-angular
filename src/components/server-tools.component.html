@@ -5,7 +5,7 @@
     [pasteFavs] = "[
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
       ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, $setCustomerDefaultPayMethod],
-      [api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id,'source'],
+      [api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id,'source'],
       ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
       ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
     ]"
@@ -31,7 +31,7 @@
   <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_source"
     [pasteFavs] = "[
       ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
-      [api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id,'source'],
+      [api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id,'source'],
       ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
       ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source'],
       ['customer '+stripeUrlApis.create_customer.result?.description, stripeUrlApis.create_customer.result?.id, 'id']
@@ -158,7 +158,7 @@
   >
     <!-- This api only takes customer-to-source associations as "source" (cant just be source.id)
       ['plaid '+plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
-      ['bank '+ api.bank.token?.bank_account.bank_name+' '+api.bank.token?.bank_account.last4, api.bank.token?.id, 'source'],
+      ['bank '+ api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id, 'source'],
     -->
     <ng-template #requestHeaderItems>
       <ng-container *ngFor="let item of stripeUrlApis.create_customer.result && stripeUrlApis.create_customer.result?.sources?.data">

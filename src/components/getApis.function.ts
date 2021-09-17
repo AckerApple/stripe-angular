@@ -378,6 +378,30 @@ const charge: ISimpleRouteEditor = {
   }
 }
 
+const verify_micro_deposits: ISimpleRouteEditor = {
+  title: '🪙 🪙 Verify ACH micro deposits',
+  warn: '⚠️ Bank account token must be associated with customer',
+  pastes: [{
+    api: bank,
+    valueKey: 'result.bank_account.id',
+    pasteKey: 'bank_token',
+    getTitle: () => 'bank token',
+  },{
+    api: create_customer,
+    getTitle: () => 'customer ' + create_customer.result?.id,
+    pasteKey: 'customer',
+    valueKey: 'result.id',
+  }],
+  request:{
+    method: 'POST',
+    path: 'customers/${customer}/sources/${bank_token}/verify'
+  },
+  data: {
+    amounts:[32, 45],
+    metadata: sample.metadata
+  },
+}
+
 const testHeader: ISimpleRouteEditor = {
   data: {}
 }
@@ -392,6 +416,7 @@ export const stripeUrlArray = [
 
   delete_source,
 
+  verify_micro_deposits,
   balance_get,
 
   payintent_retrieve,

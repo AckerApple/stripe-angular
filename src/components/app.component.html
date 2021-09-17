@@ -263,13 +263,7 @@
                 [pasteFavs] = "[
                   ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']
                 ]"
-              >
-                <ng-template #prependFormFooter>
-                  <div class="opacity-half text-xs pad-xs">
-                    ⚠️ Demo username/password ➡️ user_good/pass_good
-                  </div>
-                </ng-template>
-              </tool-wrap>
+              ></tool-wrap>
 
               <ng-container *ngIf="localServerActive">
                 <tool-wrap class="flex-1"
@@ -572,8 +566,8 @@
 <ng-template #bankUi>
   <stripe-bank
     #stripeBank
-    [(token)]="api.bank.token"
-    (tokenChange)="sending=false"
+    [(token)]="api.bank.result"
+    (tokenChange)="sending=false;flatten(api.bank)"
     (catch)="sending=false;lastError=$event"
     (invalidChange)="sending=false;lastError=$event"
   ></stripe-bank>
@@ -592,15 +586,15 @@
   </div>
 
   <!-- bank token success output -->
-  <div *ngIf="api.bank.token">
+  <div *ngIf="api.bank.result">
     <br />
     <strong>Bank Token</strong>
     <textarea
     disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
-    >{{ api.bank.token | json }}</textArea>
+    >{{ api.bank.result | json }}</textArea>
   </div>
 
-  <ng-container *ngIf="storage.privateKey && api.bank.token?.bank_account?.id">
+  <ng-container *ngIf="storage.privateKey && api.bank.result?.bank_account?.id">
     <br />
     <div style="display:flex;flex-wrap: wrap;align-items: baseline;">
       <h3 style="flex-grow:1;color:orange;">Bank Server Functions</h3>
@@ -618,7 +612,7 @@
       <tr class="text-xs">
         <td>
           <button type="button"
-            (click)="createCustomerByToken(api.bank.token)"
+            (click)="createCustomerByToken(api.bank.result)"
             title = "Connect the bank token created above with a Stripe customer"
           >👤 new customer by 🪙 token</button>
         </td>
@@ -673,8 +667,7 @@
           />
         </div>
       </div>
-      <button type="button" (click)="verifyBank()"
-      >verify</button>
+      <button type="button" (click)="verifyBank()">verify</button>
 
       <div *ngIf="api.bank.verifyResponse">
         <br />

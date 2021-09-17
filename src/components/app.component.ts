@@ -323,6 +323,11 @@ declare const Plaid: any
     return stripeRequestByRouter(route, {post, privateKey: this.storage.privateKey})
   }
 
+  flatten(ob: any) {
+    flatten(ob, ob)
+    console.log('ob', ob)
+  }
+
   // local server communications
   plaidRouteRequest(route: SmartRouteEditor, data: any) {
     this.storage.plaid = this.storage.plaid || {}

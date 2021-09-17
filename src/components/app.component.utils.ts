@@ -165,6 +165,7 @@ export interface ISimpleRouteEditor {
   title?: string
   description?: string
   hint?: string
+  warn?: string // description of things to keep in mind
 
   links?: LinkRef[]
   // maybe deprecated

@@ -32,6 +32,7 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
 export const plaid_createPublicToken: ISimpleRouteEditor = {
   title: '📢 🪙 Create Public Token',
   hint: 'javascript Plaid.create( config )',
+  warn: '⚠️ Demo username/password ➡️ user_good/pass_good',
   link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
   results: {
     favKeys: [{
