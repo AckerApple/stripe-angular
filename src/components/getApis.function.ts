@@ -24,22 +24,6 @@ const balance_get: ISimpleRouteEditor = {
   }
 }
 
-const confirm_pay_intent: ISimpleRouteEditor = {
-  title: '🤝 Confirm Pay Intent',
-  link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
-  description: 'If a pay intent requires verification, use the form below',
-  results: {
-    favKeys: [{name: 'id'}]
-  },
-  request: {
-    method: 'POST',
-    path: 'confirm'
-  },
-  data: {
-    client_secret: "",
-    return_url: window.location.href
-  }
-}
 
 // Server side only below
 
@@ -156,6 +140,8 @@ const delete_source: ISimpleRouteEditor = {
 }
 
 const customer_update: ISimpleRouteEditor = {
+  title: '👤 UPDATE Customer',
+  links: [{title: 'docs', url: 'https://stripe.com/docs/api/customers/update'}],
   request: {
     method: 'POST',
     path: 'customers/${id}'
@@ -254,12 +240,16 @@ const source_get: ISimpleRouteEditor = {
 }
 
 const source_update: ISimpleRouteEditor = {
+  title: '⬆️ 💳 UPDATE Source',
+  link: 'https://stripe.com/docs/api/sources/update',
   request: {
     method: 'POST',
     path: 'sources/${id}'
   },
   data: {
-    id: ""
+    id: "",
+    metadata: {},
+    owner: {},
   }
 }
 
@@ -276,16 +266,32 @@ const payment_method_get: ISimpleRouteEditor = {
 }
 
 const payment_method_update: ISimpleRouteEditor = {
+  title: '⬆️ 💳 UPDATE Payment Method',
+  links: [{
+    title: 'docs',
+    url: 'https://stripe.com/docs/api/payment_methods/update',
+  },{
+    title: 'update pay details',
+    url: 'https://stripe.com/docs/payments/checkout/subscriptions/update-payment-details',
+  }],
   request: {
     method: 'POST',
     path: 'payment_methods/${id}'
   },
   data: {
-    id: ""
+    id: "",
+    billing_details: {},
+    card: {
+      exp_month: '03',
+      exp_year: (new Date().getFullYear() + 1).toString(),
+    },
+    metadata: {},
   }
 }
 
-const payintent: ISimpleRouteEditor = {
+const payintent_create: ISimpleRouteEditor = {
+  title: '💸 Create Pay Intent',
+  link: 'https://stripe.com/docs/api/payment_intents',
   results: {
     favKeys: [{name: 'id'}]
   },
@@ -303,16 +309,48 @@ const payintent: ISimpleRouteEditor = {
 }
 
 const payintent_retrieve: ISimpleRouteEditor = {
+  title: '💸 Retrieve Pay Intent',
+  link: 'https://stripe.com/docs/api/payment_intents/retrieve',
   request: {
     method: 'GET',
     path: 'payment_intents/${id}'
   },
   data: {
     id: '',
-  }
+  },
+  pastes: [{
+    api: payintent_create,
+    getTitle: () => payintent_create.result.id,
+    pasteKey: 'id',
+    valueKey: 'result.id',
+  }]
 }
 
+const confirm_pay_intent: ISimpleRouteEditor = {
+  title: '🤝 Confirm Pay Intent',
+  link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
+  description: 'If a pay intent requires verification, use the form below',
+  results: {
+    favKeys: [{name: 'id'}]
+  },
+  request: {
+    method: 'POST',
+    path: 'confirm'
+  },
+  data: {
+    client_secret: "",
+    return_url: window.location.href
+  },
+  pastes: [{
+    api: payintent_retrieve,
+    getTitle: () => 'pay intent client_secret',
+    pasteKey: 'client_secret',
+    valueKey: 'result.client_secret',
+  }]
+}
 const payintent_cancel: ISimpleRouteEditor = {
+  title: '🚫 💸 Cancel Pay Intent',
+  link: 'https://stripe.com/docs/api/payment_intents/cancel',
   request: {
     method: 'POST',
     path: 'payment_intents/${id}/cancel'
@@ -351,23 +389,33 @@ interface ApiMenu {
 export const stripeUrlArray = [
   delete_customer,
   customer_list_all,
+
   delete_source,
-  balance_get
+
+  balance_get,
+
+  payintent_retrieve,
+  payintent_cancel,
 ]
 
 export const urlBased = {
   source_get,
   charge,
   create_source,
+  source_update,
 
   get_paymethods,
   payment_method_get,
+  payment_method_update,
 
   customer_attach_method,
   customer_attach_source,
   customer_get_sources,
   create_customer,
   customer_get,
+  customer_update,
+
+  payintent_create,
 }
 
 export function getApis (): ApiMenu {
@@ -378,14 +426,9 @@ export function getApis (): ApiMenu {
     bank,
 
     // customer apis
-    customer_update,
     customer_detach_method,
-    source_update,
 
-    payment_method_update,
-    payintent,
-    payintent_retrieve,
-    payintent_cancel,
+    payintent_create,
     testHeader,
 
     plaid_createPublicToken,

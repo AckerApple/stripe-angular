@@ -67,9 +67,6 @@
             <div style="flex-wrap:wrap;display:flex;display:flex;justify-content:center">
               <tool-wrap class="flex-1"
                 [api]="api.confirm_pay_intent"
-                [pasteFavs] = "[
-                  ['pay intent client_secret', api.payintent_retrieve.result?.client_secret, 'client_secret']
-                ]"
               >
                 <ng-template #footer>
                   <ng-container *ngIf="api.confirm_pay_intent.result?.paymentIntent?.next_action?.redirect_to_url?.url">
@@ -260,12 +257,19 @@
                   [api]="plaidServerApis.plaid_linkTokenCreate"></tool-wrap>
               </ng-container>
 
+              <!-- UI create public token -->
               <tool-wrap class="flex-1"
                 [api]="api.plaid_createPublicToken"
                 [pasteFavs] = "[
                   ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']
                 ]"
-              ></tool-wrap>
+              >
+                <ng-template #prependFormFooter>
+                  <div class="opacity-half text-xs pad-xs">
+                    ⚠️ Demo username/password ➡️ user_good/pass_good
+                  </div>
+                </ng-template>
+              </tool-wrap>
 
               <ng-container *ngIf="localServerActive">
                 <tool-wrap class="flex-1"
@@ -778,10 +782,6 @@
       href="https://stripe.com/docs/payments/payment-intents/migration/charges"
       target="_blank" class="resource-link"
     >Pay Intent API VS. Charges API</a>
-    <a
-      href="https://stripe.com/docs/api/payment_methods/update"
-      target="_blank" class="resource-link"
-    >💳 update payment method</a>
     <a
       href="https://stripe.com/docs/api/cards/update"
       target="_blank" class="resource-link"

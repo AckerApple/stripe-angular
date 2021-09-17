@@ -42,15 +42,20 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
   }
 
   pasteBy(item: PasteFav[]) {
-    let data = this.config.data
-
     if (item[2] && item[2] instanceof Function) {
-      return item[2](data)
+      return item[2]( this.config.data )
     }
 
-    const keyName: string = (item[2] as any) || item[0]
-    const keys = keyName.split('.')
+    let data: any = this.config
+    let keyName = 'data'
 
+    // specific paste, otherwise paste all
+    if (item[2]) {
+      data = this.config.data
+      keyName = item[2] as any
+    }
+
+    const keys = keyName.split('.')
     keys.forEach((key, index) => {
       if (index + 1 === keys.length) {
         return data[key] = item[1]

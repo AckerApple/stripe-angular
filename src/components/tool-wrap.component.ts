@@ -5,6 +5,7 @@ import { ApiPaste, SmartRouteEditor } from "./app.component.utils"
   selector:"tool-wrap",
   templateUrl: './tool-wrap.component.html'
 }) export class ToolWrapComponent {
+  @Input() showForm: boolean
   @Input() api: SmartRouteEditor
 
   // deprecated in favor of pastes

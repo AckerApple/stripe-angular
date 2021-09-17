@@ -95,14 +95,6 @@ declare const Plaid: any
     this.checkLocalServer()
 
     this.api.confirm_pay_intent.$send.subscribe(data => this.confirmPayIntent())
-
-    // server sides?
-    this.api.source_update.$send.subscribe(data => this.sendSourceUpdate(data, data.id))
-    this.api.payment_method_update.$send.subscribe(data => this.sendPaymentMethodUpdate(data, data.id))
-    this.api.customer_update.$send.subscribe(data => this.updateCustomer(data, data.id))
-    this.api.payintent.$send.subscribe(data => this.createPayIntent(data))
-    this.api.payintent_retrieve.$send.subscribe(data => this.retrievePayIntent(data.id))
-    this.api.payintent_cancel.$send.subscribe(data => this.cancelPayIntent(data.id))
     this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
 
     // plaid
@@ -154,10 +146,22 @@ declare const Plaid: any
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
 
-    this.api.customer_update.data.metadata = meta
-    this.stripeUrlApis.create_customer.data.metadata = meta
-    this.api.payintent.data.metadata = meta
-    this.stripeUrlApis.charge.data.metadata = meta
+    this.stripeUrlArray.forEach(api => {
+      if (!api.data.metadata) {
+        return
+      }
+
+      api.data.metadata = meta
+    })
+
+    Object.entries(this.stripeUrlApis).forEach(([name, api]) => {
+      if (!api.data.metadata) {
+        return
+      }
+
+      api.data.metadata = meta
+    })
+
     this.extraData.metadata = meta;
     (this.api.bank.data as any).metadata = meta
   }
@@ -315,15 +319,6 @@ declare const Plaid: any
     this.enableServerMode = true
   }
 
-  createPayIntent(data: any) {
-    return stripeRequestByRouter(this.api.payintent, {post: data, privateKey: this.storage.privateKey})
-      .then(() => {
-        // mirror result
-        this.api.payintent_retrieve.result = this.api.payintent.result
-        this.api.payintent_retrieve.resultAt = this.api.payintent.resultAt
-      })
-  }
-
   stripeRouteRequest(route: SmartRouteEditor, post: any) {
     return stripeRequestByRouter(route, {post, privateKey: this.storage.privateKey})
   }
@@ -371,39 +366,6 @@ declare const Plaid: any
     }
 
     Plaid.create({...pasteConfig, ...configs}).open()
-  }
-
-  retrievePayIntent(id: string) {
-    return stripeRequestByRouter(this.api.payintent_retrieve, {id, privateKey: this.storage.privateKey})
-  }
-
-  cancelPayIntent(id: string) {
-    return stripeRequestByRouter(this.api.payintent_cancel, {
-      id, privateKey: this.storage.privateKey,
-      post: {
-        cancellation_reason: this.api.payintent_cancel.data.cancellation_reason
-      }
-    })
-  }
-
-  sendSourceUpdate(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-    return stripeRequestByRouter(this.api.source_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
-  }
-
-  sendPaymentMethodUpdate(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-
-    return stripeRequestByRouter(this.api.payment_method_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
-  }
-
-  updateCustomer(data: any, id: string) {
-    const shallowClone = {...data}
-    delete shallowClone.id; // just incase left over from text area
-
-    return stripeRequestByRouter(this.api.customer_update, {post: shallowClone, id, privateKey: this.storage.privateKey})
   }
 
   // a source or token converted into a customer
@@ -568,8 +530,6 @@ export function requestByRouter(
     reqOptions.json = data
   }
 
-  console.log('route.request.method', route.request.method, reqOptions.post, options.post)
-
   // GET convert POST to query params
   if (route.request.method === 'GET' && reqOptions.post) {
     options.query = reqOptions.post
@@ -578,7 +538,6 @@ export function requestByRouter(
   if (options.query) {
     const queryString = Object.keys(options.query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${options.query[key]}`,'')
     reqOptions.url = reqOptions.url + '?' + queryString
-    console.log('url', reqOptions.url)
   }
 
   return request(reqOptions)

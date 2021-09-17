@@ -18,14 +18,23 @@ import { localSchema, SmartRouteEditor } from "./app.component.utils"
     this.setCustomerDefaultPayMethod(x)
   }.bind(this)
 
-  setCustomerDefaultPayMethod(
+  setCustomerDefaultPayMethod (e){
+    e.payment_method = this.card.payment_method.id
+    e.invoice_settings = e.invoice_settings||{}
+    e.invoice_settings.default_payment_method = this.card.payment_method.id
+  }
+
+  getCustomerUpdatePayMethodPaste(
     customer: any
   ) {
     const payMethodId = this.card.payment_method?.id
-
-    customer.payment_method = payMethodId
-    customer.invoice_settings = customer.invoice_settings || {}
-    customer.invoice_settings.default_payment_method = payMethodId
+    const clone = {
+      ...customer
+    }
+    clone.payment_method = payMethodId
+    clone.invoice_settings = customer.invoice_settings || {}
+    clone.invoice_settings.default_payment_method = payMethodId
+    return clone
   }
 
   detachCustomerPayMethod(

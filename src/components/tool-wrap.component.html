@@ -1,25 +1,44 @@
 <div class="tool-wrap">
-  <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-    <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-      <label for="card-like-element">
-        {{api.title}}
-      </label>
-    </h3>
-    <small *ngIf="api.link" class="pad-left-xs">
-      <a [href]="api.link" class="text-white no-a-style" target="_blank"
-      >📕docs</a>
-    </small>
+  <div class="flex-wrap flex-valign-center">
+    <div (click)="showForm = !showForm" class="flex-1 cursor-pointer">
+      <strong class="margin-0 pad-0 text-white">
+        <label for="card-like-element">
+          {{api.title}}
+        </label>
+      </strong>
+    </div>
   </div>
   <div class="tool-panel">
-    <p *ngIf="api.description" class="text-xs text-xs opacity-80">{{api.description}}</p>
-    <simple-route-edit [config]="api" [pasteFavs]="pasteFavs">
-      <ng-template #requestHeaderItems>
-        <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
-      </ng-template>
-      <ng-template #prependFormFooter>
-        <ng-container *ngTemplateOutlet="prependFormFooterTemplate"></ng-container>
-      </ng-template>
-    </simple-route-edit>
+    <p *ngIf="api.description" class="pad-0 margin-0 text-xs text-xs opacity-80">{{api.description}}</p>
+    <a *ngIf="!showForm" class="opacity-half block text-center pad bg-grey radius-10"
+      (click)="showForm = !showForm"
+    >show</a>
+
+    <ng-container *ngIf="showForm">
+      <br />
+      <simple-route-edit [config]="api" [pasteFavs]="pasteFavs">
+        <ng-template #requestHeaderItems>
+          <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
+        </ng-template>
+        <ng-template #prependFormFooter>
+          <ng-container *ngTemplateOutlet="prependFormFooterTemplate"></ng-container>
+        </ng-template>
+      </simple-route-edit>
+    </ng-container>
+
+    <div class="flex-center text-xs pad-top-xs opacity-70">
+      <small *ngFor="let item of api.links" class="pad-left-xs">
+        <a [href]="item.url" class="text-white no-a-style" target="_blank"
+        >📕{{item.title}}</a>
+      </small>
+
+      <!-- maybe deprecated-->
+      <small *ngIf="api.link" class="pad-left-xs">
+        <a [href]="api.link" class="text-white no-a-style" target="_blank"
+        >📕docs</a>
+      </small>
+    </div>
+
     <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
   </div>
 </div>

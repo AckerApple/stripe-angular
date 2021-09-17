@@ -30,8 +30,9 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
 }
 
 export const plaid_createPublicToken: ISimpleRouteEditor = {
-  title: '🐄 🪙 Create Public Token',
+  title: '📢 🪙 Create Public Token',
   hint: 'javascript Plaid.create( config )',
+  link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
   results: {
     favKeys: [{
       name: 'public_token',
@@ -48,7 +49,7 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
 }
 
 const plaid_publicTokenExchange: ISimpleRouteEditor = {
-  title: '🐄 🪙 🤝 Public Token Exchange',
+  title: '📢 🪙 🤝 Public Token Exchange',
   link: 'https://plaid.com/docs/api/tokens/#itempublic_tokenexchange',
   results: {
     favKeys: [{

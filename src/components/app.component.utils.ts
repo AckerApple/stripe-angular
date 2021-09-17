@@ -72,19 +72,16 @@ export function request(
 
     // const formPost = objectToUriForm(post);
     if (post) {
-      console.log(0, post)
       req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
       const formPost = formurlencoded(post);
       req.send( formPost )
     } else if (json) {
-      console.log(1)
       const content = JSON.stringify(json)
       // req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
       req.setRequestHeader("Content-Type", "application/json")
       // req.setRequestHeader("Content-Length", content.length.toString())
       req.send(content);
     } else {
-      console.log(2)
       req.send()
     }
 
@@ -159,11 +156,20 @@ export interface ApiPaste{
   pasteKey: string
 }
 
+export interface LinkRef {
+  url: string
+  title: string
+}
+
 export interface ISimpleRouteEditor {
   title?: string
   description?: string
   hint?: string
+
+  links?: LinkRef[]
+  // maybe deprecated
   link?: string // documentation link
+
   data: {[index:string]: any} // request body
 
   // last result
