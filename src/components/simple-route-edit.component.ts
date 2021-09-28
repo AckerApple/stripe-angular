@@ -1,5 +1,7 @@
 import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
-import { ApiPaste, changeKey, copyText, SmartRouteEditor } from "./app.component.utils"
+import { flatten, removeFlats } from "./app.component"
+import { ApiPaste, changeKey, copyText, PostWarnFunction, SmartRouteEditor, WarnResults } from "./app.component.utils"
+import { removeAllNulls } from './removeAllNulls.function'
 
 declare type PasteFav = [string, string, string | ((data: any) => any)]
 
@@ -19,26 +21,57 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>
 
+  showPost?: boolean
+  showParams?: boolean
+
   copyText = copyText
   changeKey = changeKey
 
-  pasteByPaste(item: ApiPaste) {
-    let data = this.config.data
-
-    if (item.pasteKey && item.pasteKey as any instanceof Function) {
-      return (item.pasteKey as any)(data)
+  ngOnInit(){
+    this.showPost = this.config.data ? true : false
+    if (this.config.request) {
+      this.showParams = this.config.request.params ? true : false
     }
+  }
 
-    const keyName: string = item.pasteKey
-    const keys = keyName.split('.')
+  pasteByPaste(item: ApiPaste) {
+    try {
+      let data = this.config // .data
 
-    keys.forEach((key, index) => {
-      if (index + 1 === keys.length) {
-        return data[key] = item.api[ item.valueKey ]
+      // paste by function
+      if (item.paste) {
+        (item.paste as any)(this.config)
       }
 
-      data = data[key]
-    })
+      if (item.pasteKey) {
+        const keyName: string = item.pasteKey // || 'id'
+        const keys = keyName.split('.')
+
+        let value = (item.pasteValueKey || item.valueKey).split('.')
+          .reduce((all, now) => all[now], item.api)
+
+        if (item.removeKeys) {
+          value = removeKeys(item.removeKeys, value) // remove keys from value
+        }
+
+        if (item.removeAllNulls) {
+          value = removeAllNulls(value)
+        }
+
+        // paste flattened value
+        data[keyName] = value
+
+        keys.forEach((key, index) => {
+          if (index + 1 === keys.length) {
+            return data[key] = value
+          }
+
+          data = data[key]
+        })
+      }
+    } catch (err) {
+      console.error(`Failed to paste by config`, {api: this.config, paste:item}, err);
+    }
   }
 
   pasteBy(item: PasteFav[]) {
@@ -64,4 +97,69 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
       data = data[key]
     })
   }
+
+  changeByString(data: any, key: any, value:any) {
+    changeKey(data, value, [key])
+    removeFlats(this.config)
+    flatten(this.config, this.config)
+    this.updateMessages()
+  }
+
+  updateMessages() {
+    const messages = []
+
+    if (this.config.messages) {
+      messages.push(
+        ...this.config.messages.filter(config => {
+          if (!config.valueKey) {
+            return true // simple message
+          }
+
+          const value = this.config[config.valueKey]
+          const notDefined = [undefined,null].includes(value)
+
+          if ( notDefined ) {
+            return false // value is not defined, no message
+          }
+
+          if (!config.valueExpression) {
+            return config // value is defined and has no conditions to display
+          }
+
+          const expression = new RegExp(config.valueExpression, 'gi')
+          return value.search(expression) >= 0
+        })
+      )
+    }
+
+    this.config.runtimeMessages = messages
+  }
 }
+
+export function removeKeys(keys: string[], cleanData: any) {
+  const deepClone = JSON.parse(JSON.stringify(cleanData))
+
+  keys.map(varName => {
+    const name = varName.trim()
+    delete deepClone[name] // flattened delete 'something' or 'something.something'
+
+    // delete by dot notation
+    const dotNotation = name.split('.')
+    dotNotation.reduce((all, now, index) => {
+      if ([undefined,null].includes(all)) {
+        return
+      }
+
+      if (index === dotNotation.length-1) {
+        return delete all[now]
+      }
+
+      return all[now]
+    }, deepClone)
+
+    return varName
+  })
+
+  return deepClone
+}
+

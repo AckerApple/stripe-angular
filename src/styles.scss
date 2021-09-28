@@ -23,6 +23,7 @@ body {
 .tool-wrap {
   flex:2 2 20em;
   margin:1em;display:flex;flex-direction:column;
+  min-width:20vw;
 }
 
 .tool-panel {

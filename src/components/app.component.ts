@@ -2,14 +2,15 @@ import { Component } from "@angular/core"
 import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
-import { BankData, getApis, simpleMenuToSmart,
-  urlBased, stripeUrlArray, simpleRouteToSmart
-} from './getApis.function'
+import { bank, BankData } from "./banks.api"
+import { getApis, urlBased, stripeUrlArray } from './getApis.function'
+import { apiGroups } from './apis'
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor, stringInterpolations, simpleRouteToSmart, simpleMenuToSmart, ISimpleRouteEditor,
 } from "./app.component.utils"
 import { serverSide as plaidServerSide } from "./plaid.apis"
+import { create_customer } from "./customers.api"
 
 const storage: localSchema = getProjectLocalStorage()
 
@@ -40,8 +41,7 @@ declare const Plaid: any
   localStorage = localStorage
 
   lastError:Error
-  card: CardsData = {}
-  stripeBank:stripe.Stripe
+  stripeBank: stripe.Stripe
   demoTemplate:string = demoTemplate
 
   localServerActive: boolean
@@ -80,13 +80,20 @@ declare const Plaid: any
     address_line2: "",
     address_state: "",
     address_zip: "",
+    currency: "usd",
     metadata: sample.metadata
   }
 
+  create_customer = simpleRouteToSmart(create_customer)
   api = getApis()
   plaidServerApis = simpleMenuToSmart(plaidServerSide)
   stripeUrlApis = simpleMenuToSmart(urlBased)
   stripeUrlArray = stripeUrlArray.map(simpleRouteToSmart)
+  apiGroups = apiGroups.map(group => {
+    group.apis = group.apis.map(simpleRouteToSmart) as any
+    return group
+  })
+  // secureStripeUrlArray = secureStripeUrlArray.map(simpleRouteToSmart)
 
   changeKey = changeKey
   copyText = copyText
@@ -97,22 +104,22 @@ declare const Plaid: any
     this.api.confirm_pay_intent.$send.subscribe(data => this.confirmPayIntent())
     this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
 
+    // listen to results to flatten
+    Object.values(this.api).forEach(api => this.subApi(api))
+
     // plaid
     this.api.plaid_createPublicToken.$send.subscribe(data => this.plaidCreateModal(data))
 
-    this.stripeUrlArray
-      .forEach(api =>
-        api.$send.subscribe(data => this.stripeRouteRequest(api,data))
-      )
+    const stripeEachRouteReg = api =>
+      this.subApi(api) && api.$send.subscribe(data => this.stripeRouteRequest(api,data))
 
-      Object.values(this.stripeUrlApis)
-      .forEach(api =>
-        api.$send.subscribe(data => this.stripeRouteRequest(api,data))
-      )
+    this.stripeUrlArray.forEach(stripeEachRouteReg)
+    this.apiGroups.forEach(group => group.apis.forEach(stripeEachRouteReg))
+    Object.values(this.stripeUrlApis).forEach(stripeEachRouteReg)
 
     Object.values(this.plaidServerApis)
       .forEach(api =>
-        api.$send.subscribe(data => this.plaidRouteRequest(api,data))
+        this.subApi(api) && api.$send.subscribe(data => this.plaidRouteRequest(api,data))
       )
 
     if (Object.keys(storage.metadata).length) {
@@ -120,6 +127,14 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
+
+    // console.log('customer_get', customer_get.request)
+  }
+
+  subApi(api: SmartRouteEditor) {
+    // listen to results to flatten
+    api.$result.subscribe(data => this.flatten(api))
+    return api
   }
 
   checkLocalServer() {
@@ -146,21 +161,18 @@ declare const Plaid: any
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
 
-    this.stripeUrlArray.forEach(api => {
-      if (!api.data.metadata) {
+    const applyMeta = api => {
+      if (!api.data?.metadata) {
         return
       }
 
       api.data.metadata = meta
-    })
+    }
+    this.stripeUrlArray.forEach(applyMeta)
 
-    Object.entries(this.stripeUrlApis).forEach(([name, api]) => {
-      if (!api.data.metadata) {
-        return
-      }
+    apiGroups.forEach(group => group.apis.forEach(applyMeta))
 
-      api.data.metadata = meta
-    })
+    Object.entries(this.stripeUrlApis).forEach(([name, api]) => applyMeta(api))
 
     this.extraData.metadata = meta;
     (this.api.bank.data as any).metadata = meta
@@ -324,8 +336,8 @@ declare const Plaid: any
   }
 
   flatten(ob: any) {
+    removeFlats(ob) // remove any previous dot notations to ensure those value updated
     flatten(ob, ob)
-    console.log('ob', ob)
   }
 
   // local server communications
@@ -354,15 +366,20 @@ declare const Plaid: any
     const pasteConfig = {
       onSuccess: (public_token, metadata) => {
         --this.api.plaid_createPublicToken.load
-        this.api.plaid_createPublicToken.result = {
+        const result = {
           public_token: public_token,
           metadata: metadata,
         }
+        this.api.plaid_createPublicToken.result = result
+        this.api.plaid_createPublicToken.$result.next(result)
+        console.log('this.api.plaid_createPublicToken',this.api.plaid_createPublicToken)
       },
       onExit: (err, metadata) => {
         --this.api.plaid_createPublicToken.load
         this.api.plaid_createPublicToken.error = err
-        this.api.plaid_createPublicToken.result = {metadata}
+        const result = {metadata}
+        this.api.plaid_createPublicToken.result = result
+        this.api.plaid_createPublicToken.$result.next(result)
       },
       /*
       onLoad: () => {},
@@ -375,34 +392,33 @@ declare const Plaid: any
 
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
-    const customer = this.stripeUrlApis.create_customer.data;
+    const customer = this.create_customer.data;
     customer.source = token.id;
     // customer.payment_method = token.id; // does NOT work
     this.createCustomer(customer);
   }
 
   createCustomer(data: any) {
-    return stripeRequestByRouter(this.stripeUrlApis.create_customer, {post: data, privateKey: this.storage.privateKey})
+    return stripeRequestByRouter(this.create_customer, {post: data, privateKey: this.storage.privateKey})
   }
 
   /** TODO: upgrade to newer simpleRouteEditor */
   verifyBank() {
-    const bankApi: BankData = this.api.bank as any
     const base = stripeServer + 'customers/'
-    const cusId = this.stripeUrlApis.create_customer.result.id;
-    const bankId = bankApi.token.bank_account.id;
+    const cusId = this.create_customer.result.id;
+    const bankId = bank.result.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
     request({
         url, authorizationBearer: this.storage.privateKey,
         post: {
           amounts:[
-            bankApi.verify.amount1,
-            bankApi.verify.amount2
+            bank.verify.amount1,
+            bank.verify.amount2
           ]
         }
       })
-      .then(result => bankApi.verifyResponse = tryParse(result))
+      .then(result => bank.verifyResponse = tryParse(result))
   }
 
 
@@ -433,10 +449,12 @@ declare const Plaid: any
         if (result.error.code === 'incomplete_number') {
           this.api.confirm_pay_intent.error.stripe_angular_help = 'You need to fill out the card form to prove card is in hand'
         }
+        this.flatten(this.api.confirm_pay_intent)
         return result
       }
 
       this.api.confirm_pay_intent.result = result
+      this.flatten(this.api.confirm_pay_intent)
     } catch (err) {
       this.api.confirm_pay_intent.error = err
     }
@@ -472,22 +490,21 @@ function resultSetter(
 
     delete route.error
     route.result = parsed
-
-    flatten(route)
+    route.$result.next(route)
 
     return route
   }
 }
 
 function replaceStringVars(url: string, data: any): {url:string, data: any} {
-  const regexp = /\$\{\s*[^\}]+\s*\}/g;
+  const regexp = stringInterpolations
   const array = [...url.matchAll(regexp)]
 
   for (let index = array.length - 1; index >= 0; --index) {
     const result = array[index]
     const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
     const value = data[key]
-    delete data[key] // remove from body data
+    // delete data[key] // remove from body data
     url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
   }
 
@@ -515,12 +532,12 @@ export function requestByRouter(
     url = url + route.request.path
   }
 
-  const rawData = options.post || options.json
-  const data = JSON.parse(JSON.stringify(rawData)) // clone
+  const rawData = options.post || options.json || route.data
+  const params = route.request.params
+  const data = rawData ? JSON.parse(JSON.stringify(rawData)) : {} // clone
 
-  const replaced = replaceStringVars(url, data)
+  const replaced = replaceStringVars(url, params)
   url = replaced.url
-
 
   const reqOptions: RequestOptions = {
     url, method: route.request.method,
@@ -569,15 +586,25 @@ export function stripeRequestByRouter(
   return requestByRouter(route, options)
 }
 
+export function removeFlats<T>(data: T): T {
+  const removes = Object.keys(data).filter(key => key.indexOf('.')>=0)
+  console.log('removes', removes.length)
+  removes.forEach(key => delete data[key])
+  return data
+}
+
 export function flatten<T>(
   data: T, response = data,
   {
-    flatKey = "", onlyLastKey = false, seen = []
+    flatKey = "", onlyLastKey = false, seen = [], original = data
   }: {
-    flatKey?: string, onlyLastKey?: boolean, seen?: any[]
+    flatKey?: string,
+    onlyLastKey?: boolean, // text key value display (instead of x.y.z just get z)
+    seen?: any[], original?: T
   } = {}
 ) {
-  for (const [key, value] of Object.entries(data)) {
+  const entries = Object.entries(data)
+  for (const [key, value] of entries) {
     let newFlatKey;
     if (!isNaN(parseInt(key)) && flatKey.includes("[]")) {
       newFlatKey = (flatKey.charAt(flatKey.length - 1) == "." ? flatKey.slice(0, -1) : flatKey) + `[${key}]`;
@@ -588,9 +615,9 @@ export function flatten<T>(
     }
 
     const isValObject = typeof value === "object" && value !== null && Object.keys(value).length > 0
-    if (isValObject && !seen.includes(value)) {
+    if (isValObject && !seen.includes(value) && value !== original) {
       seen.push(value)
-      flatten(value, response, {flatKey: `${newFlatKey}.`, onlyLastKey, seen});
+      flatten(value, response, {flatKey: `${newFlatKey}.`, onlyLastKey, seen, original});
     } else {
       if(onlyLastKey){
         newFlatKey = newFlatKey.split(".").pop();

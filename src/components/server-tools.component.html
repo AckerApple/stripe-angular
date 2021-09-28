@@ -1,209 +1,35 @@
+<div class="flex-wrap flex-center">
+  <div class="child-margin-smx">
+    <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup='common'"
+      [class.bg-grey-2x]="showGroup === 'common'"
+    >Common</a>
+
+    <ng-container *ngFor="let group of apiGroups">
+      <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup=group"
+        [class.bg-grey-2x]="showGroup === group"
+      >{{group.title}}</a>
+    </ng-container>
+  </div>
+</div>
 
 <div class="flex-wrap flex-center">
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.create_customer"
-    [pasteFavs] = "[
-      ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
-      ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, $setCustomerDefaultPayMethod],
-      [api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id,'source'],
-      ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
-      ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
-    ]"
-  >
-    <ng-template #footer>
-      <ng-container *ngIf="card.payment_method && stripeUrlApis.create_customer.result">
-        <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:stripeUrlApis.create_customer.result}"></ng-container>
+  <ng-container *ngFor="let group of apiGroups">
+    <ng-container *ngIf="showGroup === group">
+      <ng-container *ngFor="let api of group.apis">
+        <tool-wrap class="flex-1" [api]="api"></tool-wrap>
       </ng-container>
-    </ng-template>
-  </tool-wrap>
+    </ng-container>
+  </ng-container>
+</div>
 
+<div *ngIf="showGroup === 'common'" class="flex-wrap flex-center">
   <ng-container *ngFor="let api of stripeUrlArray">
     <tool-wrap class="flex-1" [api]="api"></tool-wrap>
   </ng-container>
 
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_method"
-    [pasteFavs] = "[
-      ['method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'id']
-    ]"
-  >
-  </tool-wrap>
+  <tool-wrap [api]="stripeUrlApis.payintent_create"></tool-wrap>
 
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_attach_source"
-    [pasteFavs] = "[
-      ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
-      [api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id,'source'],
-      ['source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
-      ['plaid bank token', plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source'],
-      ['customer '+stripeUrlApis.create_customer.result?.description, stripeUrlApis.create_customer.result?.id, 'id']
-    ]"
-  >
-  </tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_get"
-    [pasteFavs] = "[
-      ['customer ' + stripeUrlApis.create_customer.result?.id, stripeUrlApis.create_customer.result?.id, 'id'],
-      ['pay method customer ' + stripeUrlApis.payment_method_get.result?.customer, stripeUrlApis.payment_method_get.result?.customer, 'id']
-    ]"
-  ></tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.customer_get_sources"
-    [pasteFavs] = "[
-      ['customer ' + stripeUrlApis.create_customer.result?.id, stripeUrlApis.create_customer.result?.id, 'id']
-    ]"
-  ></tool-wrap>
-
-  <tool-wrap [api]="stripeUrlApis.customer_update"
-    [pasteFavs] = "[
-      ['customer ' + stripeUrlApis.create_customer.result?.id, stripeUrlApis.create_customer.result && cleanCustomerUpdateData(stripeUrlApis.create_customer.result)],
-      ['source ' + card.source?.card?.brand + ' ' + card.source?.card?.last4, card.source?.id, 'source'],
-      ['pay method ' + card.payment_method?.card?.brand+' '+card.payment_method?.card?.last4, card.payment_method?.card && getCustomerUpdatePayMethodPaste(stripeUrlApis.customer_update.data)]
-    ]"
-  >
-    <ng-template #footer>
-      <ng-container *ngIf="card.payment_method && stripeUrlApis.customer_update.data.id">
-        <ng-container *ngTemplateOutlet="customerPayMethodAttach;context:{payMethod:card.payment_method, customer:stripeUrlApis.customer_update.data}"></ng-container>
-      </ng-container>
-    </ng-template>
-  </tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.get_paymethods"
-    [pasteFavs] = "[
-      ['customer ' + stripeUrlApis.create_customer.result?.id, stripeUrlApis.create_customer.result?.id, 'customer']
-    ]"
-  ></tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.payment_method_get"
-    [pasteFavs]="[
-      ['pm '+card.payment_method?.card?.brand+' '+card.payment_method?.card?.last4, card.payment_method?.id, 'id']
-    ]"
-  >
-    <ng-template #footer>
-      <ng-container *ngIf="stripeUrlApis.payment_method_get.result">
-        <button
-          type="button"
-          (click)="createCustomerByPaymentMethod(stripeUrlApis.payment_method_get.result)"
-          [style.opacity]="stripeUrlApis.payment_method_get.result.customer ? '.3' : null"
-        >👤 create customer by payment method</button>
-      </ng-container>
-    </ng-template>
-  </tool-wrap>
-
-  <tool-wrap [api]="stripeUrlApis.payment_method_update"
-    [pasteFavs] = "[
-      ['pay method type ' + card.payment_method?.type, card.payment_method?.id, 'id'],
-      ['pay method type ' + stripeUrlApis.payment_method_get.result?.type, stripeUrlApis.payment_method_get.result && cleanPaymentMethodUpdateData(stripeUrlApis.payment_method_get.result), 'id']
-    ]"
-  ></tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.source_get"
-    [pasteFavs] = "[
-      ['use source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'id'],
-      ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'id'],
-    ]"
-  >
-    <ng-template #prependFormFooter>
-      <div *ngIf="stripeUrlApis.source_get.data.id?.slice(0,3) === 'ba_'" class="bg-warning text-dark pad margin-v">
-        ⚠️ It appears you are using a bank source which is NOT truly a source. Fetch bank sources using GET /customers/:id/sources
-      </div>
-      <div *ngIf="stripeUrlApis.source_get.data.id?.slice(0,5) === 'btok_'" class="bg-warning text-dark pad margin-v">
-        ⚠️ It appears you are using a bank token which is NOT a source
-      </div>
-      <ng-container *ngIf="stripeUrlApis.source_get.result">
-        <button
-          type="button"
-          (click)="createCustomerByToken(stripeUrlApis.source_get.result)"
-          [style.opacity] = "stripeUrlApis.create_customer.data.source === stripeUrlApis.source_get.result.id && '.3'"
-        >👤 create customer by source</button>
-      </ng-container>
-    </ng-template>
-  </tool-wrap>
-
-  <tool-wrap [api]="stripeUrlApis.source_update"
-    [pasteFavs] = "[
-      ['source ' + stripeUrlApis.source_get.result?.type, stripeUrlApis.source_get.result && cleanSourceUpdateData(stripeUrlApis.source_get.result)],
-      ['source ' + card.source?.type, card.source && cleanSourceUpdateData(card.source)]
-    ]"
-  ></tool-wrap>
-
-  <tool-wrap [api]="stripeUrlApis.payintent_create"
-    [pasteFavs] = "[
-      ['customer '+stripeUrlApis.create_customer.result?.description, stripeUrlApis.create_customer.result?.id, 'customer'],
-      ['GET customer ' + stripeUrlApis.customer_get.data.id, stripeUrlApis.customer_get.data.id, 'customer'],
-      ['method ' + card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'payment_method'],
-      ['source '+card.source?.card?.brand+' '+card.source?.card?.last4, card.source?.id, 'payment_method'],
-      ['token '+card.token?.card?.brand+' '+card.token?.card?.last4, card.token?.card?.id, 'payment_method'],
-      ['method '+stripeUrlApis.payment_method_get.result?.brand+' '+stripeUrlApis.payment_method_get.result?.last4, stripeUrlApis.payment_method_get.result?.id, 'payment_method'],
-      ['pay method customer', stripeUrlApis.payment_method_get.result?.customer, 'customer']
-    ]"
-  >
-    <ng-template #footer>
-      <ng-container *ngIf="api.payintent_create.result?.next_action?.use_stripe_sdk?.stripe_js">
-        <div>
-          <ng-container *ngTemplateOutlet="nextActionLink;context:{link:api.payintent_create.result.next_action.use_stripe_sdk.stripe_js}"></ng-container>
-        </div>
-      </ng-container>
-    </ng-template>
-  </tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.charge"
-    [pasteFavs] = "[
-      ['source '+stripeUrlApis.create_source.result?.type, stripeUrlApis.create_source.result?.id, 'source'],
-      ['👤 🏦 use attached '+ (stripeUrlApis.customer_attach_source.result?.bank_name || stripeUrlApis.customer_attach_source.result?.type), stripeUrlApis.customer_attach_source.result?.id, 'source'],
-      ['💳 method '+card.payment_method?.card.brand+' '+card.payment_method?.card.last4, card.payment_method?.id, 'payment_method'],
-      ['🪙 token '+card.token?.card.brand+' '+card.token?.card.last4, card.token?.card.id, 'source'],
-      ['💳 source '+card.source?.card.brand+' '+card.source?.card.last4, card.source?.id, 'source'],
-      ['👤 customer '+stripeUrlApis.create_customer.result?.description, stripeUrlApis.create_customer.result?.id, 'customer'],
-      ['👤 💳 source '+(stripeUrlApis.create_customer.result?.sources?.length && stripeUrlApis.create_customer.result.sources[0].object), (stripeUrlApis.create_customer.result?.sources?.length && stripeUrlApis.create_customer.result.sources[0].id), 'source']
-    ]"
-  >
-    <!-- This api only takes customer-to-source associations as "source" (cant just be source.id)
-      ['plaid '+plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, plaidServerApis.plaid_stripeBankCreate.result?.stripe_bank_account_token, 'source']
-      ['bank '+ api.bank.result?.bank_account.bank_name+' '+api.bank.result?.bank_account.last4, api.bank.result?.id, 'source'],
-    -->
-    <ng-template #requestHeaderItems>
-      <ng-container *ngFor="let item of stripeUrlApis.create_customer.result && stripeUrlApis.create_customer.result?.sources?.data">
-        <a *ngIf="item.object === 'bank_account'"
-          (click)="stripeUrlApis.charge.data.source = item.id"
-          style="text-decoration:underline;cursor:pointer;margin:1em;"
-          [title] = "item.id"
-          [style.opacity] = "stripeUrlApis.charge.data.source === item.id && '.3'"
-        >
-          use customer bank {{item.bank_name}} {{item.last4}}
-        </a>
-      </ng-container>
-    </ng-template>
-    <ng-template #footer>
-      <div style="text-align:center;opacity:.5;">
-        <small>
-          <a href="https://stripe.com/docs/payments/payment-intents/migration/charges" target="_blank"
-          >prefer pay intents</a>
-        </small>
-      </div>
-    </ng-template>
-  </tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.create_source"></tool-wrap>
-
+  <tool-wrap class="flex-1" [api]="stripeUrlApis.charge"></tool-wrap>
 
 </div>
 
-
-<ng-template #customerPayMethodAttach let-customer="customer" let-payMethod="payMethod">
-  <button *ngIf="customer.invoice_settings?.default_payment_method != payMethod.id"
-    (click)="attachCustomerPayMethod(customer.id, payMethod)"
-  >
-    attach method {{payMethod.card.brand}} {{payMethod.card.last4}}
-  </button>
-
-  <button (click)="detachCustomerPayMethod(payMethod)">
-    detach method {{payMethod.card.brand}} {{payMethod.card.last4}}
-  </button>
-
-  <ng-container *ngIf="stripeUrlApis.customer_attach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: stripeUrlApis.customer_attach_method.resultAt, result: stripeUrlApis.customer_attach_method.result, title: 'Attach Result'}"></div>
-  </ng-container>
-
-  <ng-container *ngIf="api.customer_detach_method.result">
-    <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: api.customer_detach_method.resultAt, result: api.customer_detach_method.result, title: 'Detach Result'}"></div>
-  </ng-container>
-</ng-template>

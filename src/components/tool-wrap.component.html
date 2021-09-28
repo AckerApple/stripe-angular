@@ -9,8 +9,13 @@
     </div>
   </div>
   <div class="tool-panel">
-    <p *ngIf="api.description" class="pad-0 margin-0 text-xs text-xs opacity-80">{{api.description}}</p>
-    <a *ngIf="!showForm" class="opacity-half block text-center pad bg-grey radius-10"
+    <div>
+      <span *ngIf="api.request" class="opacity-80 text-xs" style="overflow-wrap:break-word">
+        {{api.request.method}}&nbsp;/{{api.request.path}}
+      </span>
+      <span *ngIf="api.description" class="text-xxs opacity-60">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{api.description}}</span>
+    </div>
+    <a *ngIf="!showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
       (click)="showForm = !showForm"
     >show</a>
 
@@ -24,20 +29,21 @@
           <ng-container *ngTemplateOutlet="prependFormFooterTemplate"></ng-container>
         </ng-template>
       </simple-route-edit>
+
+      <div class="flex-center text-xs pad-top-xs opacity-70">
+        <small *ngFor="let item of api.links" class="pad-left-xs">
+          <a [href]="item.url" class="text-white no-a-style" target="_blank"
+          >📕{{item.title}}</a>
+        </small>
+
+        <!-- maybe deprecated-->
+        <small *ngIf="api.link" class="pad-left-xs">
+          <a [href]="api.link" class="text-white no-a-style" target="_blank"
+          >📕docs</a>
+        </small>
+      </div>
     </ng-container>
 
-    <div class="flex-center text-xs pad-top-xs opacity-70">
-      <small *ngFor="let item of api.links" class="pad-left-xs">
-        <a [href]="item.url" class="text-white no-a-style" target="_blank"
-        >📕{{item.title}}</a>
-      </small>
-
-      <!-- maybe deprecated-->
-      <small *ngIf="api.link" class="pad-left-xs">
-        <a [href]="api.link" class="text-white no-a-style" target="_blank"
-        >📕docs</a>
-      </small>
-    </div>
 
     <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
   </div>

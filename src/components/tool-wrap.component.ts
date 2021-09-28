@@ -1,5 +1,5 @@
 import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
-import { ApiPaste, SmartRouteEditor } from "./app.component.utils"
+import {  SmartRouteEditor } from "./app.component.utils"
 
 @Component({
   selector:"tool-wrap",

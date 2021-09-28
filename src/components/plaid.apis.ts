@@ -9,9 +9,7 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
     path: 'link/token/create'
   },
   link: 'https://plaid.com/docs/api/tokens/#linktokencreate',
-  results: {
-    favKeys: [{name: 'link_token'}]
-  },
+  favKeys: [{valueKey: 'result.link_token'}],
   data: {
     url: 'https://sandbox.plaid.com/link/token/create',
     data: {
@@ -34,15 +32,7 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
   hint: 'javascript Plaid.create( config )',
   warn: '⚠️ Demo username/password ➡️ user_good/pass_good',
   link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
-  results: {
-    favKeys: [{
-      name: 'public_token',
-      get: (data) => data.public_token
-    }, {
-      name: 'account 0 id',
-      get: (data) => data.metadata.accounts[0].id
-    }]
-  },
+  favKeys: [{valueKey: 'result.public_token'},{valueKey: 'result.metadata.accounts.0.id'}],
   data:{
     token: '',
     env: 'sandbox',
@@ -52,11 +42,7 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
 const plaid_publicTokenExchange: ISimpleRouteEditor = {
   title: '📢 🪙 🤝 Public Token Exchange',
   link: 'https://plaid.com/docs/api/tokens/#itempublic_tokenexchange',
-  results: {
-    favKeys: [{
-      name: 'access_token'
-    }]
-  },
+  favKeys: [{valueKey: 'result.access_token'}],
   request: {
     method: 'POST',
     host: 'http://localhost:3000/plaid/',
@@ -70,14 +56,10 @@ const plaid_publicTokenExchange: ISimpleRouteEditor = {
   }
 }
 
-const plaid_stripeBankCreate: ISimpleRouteEditor = {
+export const plaid_stripeBankCreate: ISimpleRouteEditor = {
   title: '🐠 🏦 ➕ Stripe Bank Create',
   link: 'https://plaid.com/docs/api/processors/#processorstripebank_account_tokencreate',
-  results: {
-    favKeys: [{
-      name: 'stripe_bank_account_token'
-    }]
-  },
+  favKeys: [{valueKey: 'result.stripe_bank_account_token'}],
   request: {
     method: 'POST',
     host: 'http://localhost:3000/plaid/',

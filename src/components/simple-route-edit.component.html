@@ -1,20 +1,23 @@
 <div class="flex-wrap opacity-70">
   <div class="flex-1 text-smx max-width-80vw">
-    <div *ngIf="config.request" style="overflow-wrap:break-word">
-      {{config.request.method}}&nbsp;/{{config.request.path}}&nbsp;&nbsp;
-    </div>
+    <!--
+      <div *ngIf="config.request" style="overflow-wrap:break-word">
+        {{config.request.method}}&nbsp;/{{config.request.path}}&nbsp;&nbsp;
+      </div>
+    -->
     <div *ngIf="config.hint" class="text-xs opacity-80 pad-left">{{config.hint}}</div>
   </div>
 
-  <ng-container *ngFor="let item of config.pastes || []">
+  <ng-container *ngFor="let item of config.pastes">
     <a *ngIf="item.api[ item.valueKey ]"
       (click)="pasteByPaste( item )"
-      [title]="item.api.result[ item.valueKey ]"
+      [title]="item.api[ item.valueKey ]"
       class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
-    >↙️ use {{item.getTitle()}}</a>
+      [class.opacity-half] = "item.pasteKey && item.api[item.pasteKey] === item.api[ item.valueKey ]"
+    >↙️ use {{ item.title || (item.getTitle && item.getTitle(config)) || item.api[ item.valueKey ] }}</a>
   </ng-container>
 
-  <ng-container *ngFor="let item of pasteFavs || []">
+  <ng-container *ngFor="let item of pasteFavs">
     <a *ngIf="item[1]" (click)="pasteBy(item)" [title]="item[1]"
       class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
     >↙️ use {{item[0]}}</a>
@@ -23,25 +26,59 @@
   <ng-container *ngTemplateOutlet="requestHeaderItems"></ng-container>
 </div>
 
-<textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
-  (change)="changeKey(config, $event.target.value, ['data'])"
-  [value] = "config.data | json"
-></textArea>
+<ng-container *ngIf="config.request && showParams">
+  <div class="pos-rel">
+    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half">🔗 path parameters</div>
+  </div>
+  <textarea wrap="off" style="width:100%;height:10vh;min-height:125px;"
+    (change)="changeByString(config.request, 'params', $event.target.value)"
+    [value] = "config.request.params || {} | json"
+  ></textArea>
+</ng-container>
 
-<textarea *ngIf="config.error" wrap="off"
-  disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:200px;"
-  [value] = "config.error | json"
-></textArea>
+<ng-container *ngIf="showPost">
+  <div class="pos-rel">
+    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half">🧾 input data</div>
+  </div>
+  <textarea wrap="off" style="width:100%;height:25vh;min-height:275px;"
+    (change)="changeByString(config, 'data', $event.target.value)"
+    [value] = "config.data || {} | json"
+  ></textArea>
+</ng-container>
+
+<ng-container *ngIf="config.error">
+  <textarea wrap="off"
+    disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:275px;"
+    [value] = "config.error | json"
+  ></textArea>
+
+  <ng-container *ngIf="config.error.doc_url">
+    <ng-container *ngTemplateOutlet="linkButton;context:{title:'🔗 error doc', url:config.error.doc_url}"></ng-container>
+  </ng-container>
+</ng-container>
+
 
 <ng-container *ngTemplateOutlet="prependFormFooter"></ng-container>
 
+<ng-container *ngFor="let item of config.runtimeMessages">
+  <div class="bg-warning text-dark pad margin-v text-xs">{{item.message}}</div>
+</ng-container>
+
 <div *ngIf="config.warn" class="opacity-half text-xs pad-xs">{{config.warn}}</div>
 
-<div>
+<button type="button"
+  (click)="config.$send.emit(config.data)" class="bg-success"
+>{{config.result ? '⬇️' : '⬆️'}} send inputs</button>
+
+<button type="button"
+  (click)="showPost = !showPost"
+>🧾 {{ showPost ? 'hide' : 'show'}} inputs</button>
+
+<ng-container *ngIf="config.request">
   <button type="button"
-    (click)="config.$send.emit(config.data)"
-  >send request</button>
-</div>
+    (click)="showParams = !showParams"
+  >🔗 {{ showParams ? 'hide' : 'show'}} params</button>
+</ng-container>
 
 <ng-container *ngIf="config.load">... loading ...</ng-container>
 
@@ -49,6 +86,29 @@
   <br />
   <div *ngTemplateOutlet="simpleRouteResults;context:{resultAt: config.resultAt, result: config.result}"></div>
 </ng-container>
+
+<ng-container *ngIf="config.favKeys">
+  <ng-container *ngFor="let copyConfig of config.favKeys">
+    <small *ngIf="config[copyConfig.valueKey] || copyConfig.get" class="opacity-50 text-smx">
+      <ng-container *ngIf="!copyConfig.type || copyConfig.type === 'copy'">
+        <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
+          (click)="copyText( config[copyConfig.valueKey] || copyConfig.get(config) )"
+        >✍️ copy {{copyConfig.title || copyConfig.valueKey}}</a>
+      </ng-container>
+
+      <ng-container *ngIf="copyConfig.type === 'link'">
+        <ng-container *ngTemplateOutlet="linkButton;context:{title:copyConfig.title || copyConfig.valueKey, url:config.error.doc_url, url:config[copyConfig.valueKey] || copyConfig.get(config)}"></ng-container>
+      </ng-container>
+    </small>
+  </ng-container>
+</ng-container>
+
+<ng-template #linkButton let-url="url" let-title="title">
+  <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
+    [href]="url" target="_blank"
+  >{{title}}</a>
+</ng-template>
+
 
 <ng-template #simpleRouteResults let-resultAt="resultAt" let-result="result" let-title="title">
   <br />
@@ -63,18 +123,6 @@
       >copy id</a>
     </small>-->
 
-    <ng-container *ngIf="config.results?.favKeys">
-      <ng-container *ngFor="let copyConfig of config.results.favKeys">
-        <small *ngIf="result && (result[copyConfig.name] || copyConfig.get)"
-          class="opacity-50 text-smx"
-        >
-          <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
-            (click)="copyText( result[copyConfig.name] || copyConfig.get(result) )"
-          >✍️ copy {{copyConfig.name}}</a>
-        </small>
-      </ng-container>
-    </ng-container>
-
     <small *ngIf="copy && result && result[copy]" style="opacity:.5;font-size: 0.8em;">
       <a class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized active-bg-balanced"
         (click)="copyText(result[copy])"
@@ -83,7 +131,7 @@
     <small *ngIf="resultAt" class="opacity-half text-xs">{{resultAt | date : 'mediumTime' }}</small>
   </div>
   <textarea
-    disabled wrap="off" style="width:100%;height:350px"
+    disabled wrap="off" style="width:100%;min-height:375px"
     [class.bg-danger] = "result.error"
   >{{ result | json }}</textArea>
 </ng-template>
