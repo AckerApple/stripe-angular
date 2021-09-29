@@ -31,7 +31,7 @@
             <span class="strong">{{key}}</span>
             <span class="text-xs pad-left-xs">{{value.length}}</span>
           </a>
-          <div *ngIf="show || showKids || (showLevels > 0)" class="flex-wrap child-margin-xxs">
+          <div *ngIf="show || showKids || (show==undefined && showLevels > 0)" class="flex-wrap child-margin-xxs">
             <ng-container *ngFor="let item of value">
               <dump [value]="item" [showLevels]="showLevels" [showKids]="showKids"></dump>
             </ng-container>
