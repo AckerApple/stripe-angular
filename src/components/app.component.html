@@ -45,7 +45,7 @@
               <div class="tool-panel">
                 <p class="text-xs text-xs opacity-80">Test &lt;stripe-card&gt; component by entering card details below</p>
                 <ng-container *ngTemplateOutlet="cardUi"></ng-container>
-              </div>`
+              </div>
             </div>
 
             <div class="tool-wrap">
@@ -124,8 +124,7 @@
 
             <br /><br />
 
-            <server-tools
-              [api]="api" [stripeUrlArray]="stripeUrlArray" [stripeUrlApis]="stripeUrlApis" [plaidServerApis]="plaidServerApis"
+            <server-tools [api]="api" [plaidServerApis]="plaidServerApis"
               [apiGroups]="apiGroups" [storage]="storage"
             ></server-tools>
 
@@ -194,7 +193,7 @@
                 <form class="flex-1" (submit)="save()" action="javascript:">
                   <div class="flex-1 flex-wrap flex-center flex-valign-center child-margin-xxs">
                     <div class="flex-1 max-width-800">
-                      <strong style="color:orange;">🆔 CLIENT_ID</strong>
+                      <strong>🆔 CLIENT_ID</strong>
                       <div>
                         <input type="password" class="width-full"
                           (keyup)="storage.plaid.client_id=$event.target.value;"
@@ -208,7 +207,7 @@
                     </div>
 
                     <div class="flex-1 max-width-800">
-                      <strong style="color:orange;">👂 SECRET</strong>
+                      <strong>👂 SECRET</strong>
                       <div>
                         <input type="password" class="width-full"
                           (keyup)="storage.plaid.secret=$event.target.value;"
@@ -322,14 +321,39 @@
         >{{ storage.key | slice : 0 : 16 }}...</div>
       </div>
 
-      <div *ngIf="storage.privateKey" class="flex-1">
+      <div *ngIf="storage.privateKey" class="flex1">
         <strong>🔐 Private Key</strong>
-        <div (click)="copyText(storage.privateKey)" class="hover-highlight" style="cursor: pointer;">{{ storage.privateKey | slice : 0 : 8 }}......{{ storage.privateKey | slice : -6 }}</div>
+        <div class="flex">
+          <div class="hover-highlight cursor-pointer"
+            (click)="copyText(storage.privateKey)"
+          >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
+          <a *ngIf="storage.privateKeys.length" class="flex-center flex-valign-center pad-left"
+            (click)="showPrivateKeyChange=!showPrivateKeyChange"
+          >
+            💠
+            <div *ngIf="showPrivateKeyChange" class="pos-abs bg-white border-2" style="box-shadow:5px 10px rgba(0, 0, 0, 0.3)">
+              <div class="pos-rel text-xxs opacity-half">
+                <div class="pos-abs top-0 right-0 pad-xxs line-height-half">x</div>
+                <div class=" text-center pad-xxs border-bottom border-grey">key chain select</div>
+              </div>
+              <div class="flex-stacked">
+                <a *ngFor="let item of storage.privateKeys" class="border-bottom border-grey pad-xs hover-bg-energized"
+                  (click)="storage.privateKey=item.value"
+                  [class.bg-warning]="storage.privateKey===item.value"
+                >
+                  {{item.title}}
+                </a>
+              </div>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div *ngIf="storage.webhookSigningSecret" class="flex-1">
         <strong>🪝 Webhook Signing Secret</strong>
-        <div (click)="copyText(storage.webhookSigningSecret)" class="hover-highlight" style="cursor: pointer;">{{ storage.webhookSigningSecret | slice : 0 : 8 }}......{{ storage.webhookSigningSecret | slice : -6 }}</div>
+        <div class="hover-highlight cursor-pointer"
+        (click)="copyText(storage.webhookSigningSecret)"
+        >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
       </div>
     </div>
 
@@ -399,6 +423,27 @@
           </label>
         </div>
 
+        <div *ngIf="storage.saveKeyLocally" class="flex-1">
+          <strong>🔑 Switchable keys</strong>
+          <div>
+            <ng-container *ngFor="let item of storage.privateKeys; let index=index">
+              <div class="flex">
+                <input type="text" maxLength="125" [value]="item.title || ''"
+                  (keyup)="item.title=$event.target.value" placeholder="key title"
+                />&nbsp;=&nbsp;
+                <input type="password" placeholder="🔑 value"
+                  (keyup)="item.value=$event.target.value"
+                  [value]="item.value || ''"
+                  style="width:100%"
+                />
+                <a (click)="storage.privateKeys.splice(index, 1)">❌</a>
+              </div>
+            </ng-container>
+            <button type="button" class="width-full"
+              (click)="storage.privateKeys.push({})"
+            >add</button>
+          </div>
+        </div>
       </div>
 
       <br />
@@ -885,7 +930,7 @@
 </ng-template>
 
 <ng-template #editPrivateKey>
-  <strong style="color:orange;"
+  <strong
     title="This demo offers helpful server functionality"
   >🔐 privateKey</strong>
   <div>
@@ -932,7 +977,7 @@
 </ng-template>
 
 <ng-template #editWebhookSecret>
-  <strong style="color:orange;">🪝 webhookSigningSecret</strong>
+  <strong>🪝 webhookSigningSecret</strong>
   <div>
     <input type="password"
       (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"

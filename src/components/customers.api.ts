@@ -64,7 +64,7 @@ export const customer_list_all: ISimpleRouteEditor = {
     getTitle: () => 'created 👤 ' + create_customer.result?.id
   }],
   data: {
-    limit: 3, "created[gte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
+    limit: 3, "created[lte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
   }
 }
 
@@ -80,6 +80,11 @@ export const delete_customer: ISimpleRouteEditor = {
     getTitle: () => 'customer ' + create_customer.result?.id,
     pasteKey: 'request.params.id',
     valueKey: 'result.id',
+  },{
+    $api: () => customer_list_all,
+    title: 'GET customers[0]',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id'
   }]
 }
 
@@ -225,31 +230,82 @@ export const customer_get_sources: ISimpleRouteEditor = {
     getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
     pasteKey: 'request.params.id'
+  },{
+    $api: () => customer_list_all,
+    title: 'GET customers[0]',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id'
   }]
 }
 
-export const customer_source_get: ISimpleRouteEditor = {
-  title: '1️⃣ 👤 🏦 Retrieve a bank account',
-  link: 'https://stripe.com/docs/api/customer_bank_accounts/retrieve',
+export const customer_get_source: ISimpleRouteEditor = {
+  title: '1️⃣ 👤 💳 GET Customer Source',
+  link: 'https://stripe.com/docs/api/cards/retrieve',
   request: {
     method: 'GET',
     path: 'customers/${customer}/sources/${source}'
   },
-  messages: [{
-    valueExpression: 'btok_',
-    valueKey: 'request.params.source',
-    message: '⚠️ It appears you are using a bank token which is NOT usable here. Use bank account id \"ba_\" instead',
-  }],
   pastes: [{
     $api: () => create_customer,
-    title: 'created customer',
+    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
-    $api: () => bank,
-    title: 'new bank account',
-    valueKey: 'result.bank_account.id',
+    $api: () => payment_method_get,
+    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
+    valueKey: 'result.customer',
+    pasteKey: 'request.params.customer'
+  },{
+    $api: () => customer_list_all,
+    title: 'GET customers[0]',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.customer'
+  },{
+    $api: () => customer_get_sources,
+    title: 'GET customer.sources[0].id',
+    valueKey: 'result.data.0.id',
     pasteKey: 'request.params.source'
+  }]
+}
+
+const customer_delete_source: ISimpleRouteEditor = {
+  title: '❌ 👤 💳 DELETE Customer Source',
+  links: [{
+    title: 'delete customer bank',
+    url: 'https://stripe.com/docs/api/customer_bank_accounts/delete'
+  },{
+    title: 'delete customer card',
+    url: 'https://stripe.com/docs/api/cards/delete'
+  }],
+  request: {
+    method: 'DELETE',
+    path: 'customers/${customer}/sources/${source}'
+  },
+  pastes: [{
+    $api: () => create_customer,
+    getTitle: () => 'customer ' + create_customer.result.id,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.customer',
+  },{
+    $api: () => payment_method_get,
+    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
+    valueKey: 'result.customer',
+    pasteKey: 'request.params.customer'
+  },{
+    $api: () => customer_list_all,
+    title: 'GET customers[0]',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.customer'
+  },{
+    $api: () => customer_get_sources,
+    title: 'GET customer.sources[0].id',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.source'
+  }, {
+    $api: () => create_source,
+    getTitle: () => 'source ' + create_source.result?.id,
+    pasteKey: 'request.params.source',
+    valueKey: 'result.id',
   }]
 }
 
@@ -292,8 +348,8 @@ export function getCustomerUpdatePayMethodPaste(
 }
 
 export const apis = [
-  create_customer, customer_list_all, customer_update, customer_get,
+  create_customer, customer_list_all, customer_get, customer_update, delete_customer,
   customer_get_payment_methods, customer_attach_method, customer_detach_method,
-  customer_attach_source, customer_get_sources, customer_source_get,
-  delete_customer,
+  customer_attach_source, customer_get_sources, customer_get_source, customer_delete_source,
+
 ]

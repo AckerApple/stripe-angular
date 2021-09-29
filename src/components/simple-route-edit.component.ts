@@ -1,7 +1,7 @@
 import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
 import { flatten, removeFlats } from "./app.component"
 import { ApiPaste, changeKey, copyText, PostWarnFunction, SmartRouteEditor, WarnResults } from "./app.component.utils"
-import { removeAllNulls } from './removeAllNulls.function'
+import { removeValues } from './removeValues.function'
 
 declare type PasteFav = [string, string, string | ((data: any) => any)]
 
@@ -21,8 +21,11 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>
 
+  showAll?: boolean
   showPost?: boolean
   showParams?: boolean
+  showHeaders?: boolean
+  format: 'json' | 'small' = 'small'
 
   copyText = copyText
   changeKey = changeKey
@@ -54,8 +57,8 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
           value = removeKeys(item.removeKeys, value) // remove keys from value
         }
 
-        if (item.removeAllNulls) {
-          value = removeAllNulls(value)
+        if (item.removeValues) {
+          value = removeValues(value, item.removeValues)
         }
 
         // paste flattened value
@@ -66,8 +69,9 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
             return data[key] = value
           }
 
-          data = data[key]
+          data = data[key] || (data[key] = {})
         })
+        console.log(keyName, this.config)
       }
     } catch (err) {
       console.error(`Failed to paste by config`, {api: this.config, paste:item}, err);

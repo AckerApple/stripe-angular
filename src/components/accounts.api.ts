@@ -64,9 +64,7 @@ export const accounts_get: ISimpleRouteEditor = {
     limit: 3,
   },
   pastes: [{
-    // api: accounts_get,
-    $api: () => exports.accounts_get,
-    // getTitle: (api) => api.result?.data[0].id,
+    $api: () => accounts_get,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.starting_after',
   }]
@@ -95,7 +93,7 @@ export const account_links_create: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => accounts_get,
-    // getTitle: () => accounts_get.result.data[0].id,
+    title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.account',
   }]
@@ -253,7 +251,7 @@ DELETE /v1/accounts/:id/external_accounts/:id
 */
 
 export const apis = [
-  exports.accounts_get, exports.accounts_create, exports.accounts_update, exports.accounts_retrieve,
-  exports.account_links_create, exports.account_login_link,
-  exports.external_accounts_create, exports.accounts_external_list,
+  accounts_get, accounts_create, accounts_update, accounts_retrieve,
+  account_links_create, account_login_link,
+  external_accounts_create, accounts_external_list,
 ]

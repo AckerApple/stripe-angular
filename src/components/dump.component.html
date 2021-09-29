@@ -1,0 +1,67 @@
+<ng-container *ngIf="['boolean','number','string'].includes(typing)">
+  <div class="text-xs text-dark">
+    <div *ngIf="key" class="strong text-xxs border-white border-bottom">{{key}}</div>
+    <ng-container *ngIf="value.search && (value.includes('https://') || value.includes('http://'));else simpleValue">
+      <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
+    </ng-container>
+    <ng-template #simpleValue>
+      <div (click)="copyText(value)" class="hover-bg-warning active-bg-energized">{{value}}</div>
+    </ng-template>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="typing==='object'">
+  <ng-container [ngSwitch]="value">
+    <ng-container *ngSwitchCase="undefined">
+      <ng-container *ngTemplateOutlet="dumpSimple;context:{key: key, value:'undefined'}"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="null">
+      <ng-container *ngTemplateOutlet="dumpSimple;context:{key: key, value:'null'}"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault>
+      <!-- array -->
+      <ng-container *ngIf="value.push && value.pop;else dumpObject">
+        <div *ngIf="value.length" class="border border-radius-5 bg-danger flex-stacked text-dark">
+          <a *ngIf="key" class="text-white text-xxs border-white pad-xxs bg-grey-2x flex-1 flex-valign-center flex-apart bg-assertive"
+            [class.border-bottom] = "show"
+            (click)="show = !show"
+          >
+            <span class="strong">{{key}}</span>
+            <span class="text-xs pad-left-xs">{{value.length}}</span>
+          </a>
+          <div *ngIf="show || showKids || (showLevels > 0)" class="flex-wrap child-margin-xxs">
+            <ng-container *ngFor="let item of value">
+              <dump [value]="item" [showLevels]="showLevels" [showKids]="showKids"></dump>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- object -->
+      <ng-template #dumpObject>
+        <div class="border border-radius-5 bg-info flex-stacked text-sm text-dark">
+          <a *ngIf="key" class="text-white strong text-xxs border-white pad-xxs bg-positive flex-1 flex-valign-center"
+            [class.border-bottom] = "show"
+            (click)="show = !show"
+          >{{key}}</a>
+          <div *ngIf="!key || showKids || show || (show==undefined && showLevels > 0)" class="flex-wrap child-margin-xxs pad-xxs">
+            <ng-container *ngFor="let item of value | keyvalue : unsorted">
+              <dump class="flex" [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showKids"></dump>
+            </ng-container>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<!--
+  <ng-container #defaultTemplate>
+    <div class="text-xs">
+      <div class="strong text-xxs border-white border-bottom">{{key}}:{{typing}}</div>
+      <div>{{value | json}}</div>
+    </div>
+  </ng-container>
+-->

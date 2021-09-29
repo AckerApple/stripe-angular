@@ -2,8 +2,8 @@ import { Component } from "@angular/core"
 import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
-import { bank, BankData } from "./banks.api"
-import { getApis, urlBased, stripeUrlArray } from './getApis.function'
+import { bank } from "./banks.api"
+import { getApis } from './getApis.function'
 import { apiGroups } from './apis'
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
@@ -27,11 +27,13 @@ declare const Plaid: any
 
   loaded: boolean
   sending: boolean
-  showServerMethods: boolean
-  showWebhookMethods: boolean
-  showPlaidMethods: boolean
   cardComplete = false
   enableServerMode?: boolean = storage.privateKey ? true : false;
+
+  showPrivateKeyChange?: boolean
+  showServerMethods?: boolean
+  showWebhookMethods?: boolean
+  showPlaidMethods: boolean
 
   tempPublishableKey = storage.key
   tempWebhookSigningSecret = storage.webhookSigningSecret
@@ -87,13 +89,10 @@ declare const Plaid: any
   create_customer = simpleRouteToSmart(create_customer)
   api = getApis()
   plaidServerApis = simpleMenuToSmart(plaidServerSide)
-  stripeUrlApis = simpleMenuToSmart(urlBased)
-  stripeUrlArray = stripeUrlArray.map(simpleRouteToSmart)
   apiGroups = apiGroups.map(group => {
     group.apis = group.apis.map(simpleRouteToSmart) as any
     return group
   })
-  // secureStripeUrlArray = secureStripeUrlArray.map(simpleRouteToSmart)
 
   changeKey = changeKey
   copyText = copyText
@@ -113,9 +112,7 @@ declare const Plaid: any
     const stripeEachRouteReg = api =>
       this.subApi(api) && api.$send.subscribe(data => this.stripeRouteRequest(api,data))
 
-    this.stripeUrlArray.forEach(stripeEachRouteReg)
     this.apiGroups.forEach(group => group.apis.forEach(stripeEachRouteReg))
-    Object.values(this.stripeUrlApis).forEach(stripeEachRouteReg)
 
     Object.values(this.plaidServerApis)
       .forEach(api =>
@@ -168,11 +165,8 @@ declare const Plaid: any
 
       api.data.metadata = meta
     }
-    this.stripeUrlArray.forEach(applyMeta)
 
     apiGroups.forEach(group => group.apis.forEach(applyMeta))
-
-    Object.entries(this.stripeUrlApis).forEach(([name, api]) => applyMeta(api))
 
     this.extraData.metadata = meta;
     (this.api.bank.data as any).metadata = meta
@@ -539,8 +533,19 @@ export function requestByRouter(
   const replaced = replaceStringVars(url, params)
   url = replaced.url
 
+  let headers = route.request.headers
+
+  if (route.request.removeHeaderValues) {
+    headers = JSON.parse(JSON.stringify(headers)) // clone before deletes occur
+    Object.entries(headers).forEach(([key, value]) => {
+      if (route.request.removeHeaderValues.includes(value)) {
+        delete headers[key]
+      }
+    })
+  }
+
   const reqOptions: RequestOptions = {
-    url, method: route.request.method,
+    url, method: route.request.method, headers,
     authorizationBearer: options.request?.authorizationBearer,
   }
 
@@ -588,7 +593,6 @@ export function stripeRequestByRouter(
 
 export function removeFlats<T>(data: T): T {
   const removes = Object.keys(data).filter(key => key.indexOf('.')>=0)
-  console.log('removes', removes.length)
   removes.forEach(key => delete data[key])
   return data
 }

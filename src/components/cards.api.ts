@@ -1,5 +1,5 @@
 // import { customerApis } from './getApis.function'
-import { create_customer } from './customers.api'
+import { create_customer, customer_get_sources } from './customers.api'
 import { ISimpleRouteEditor } from "./app.component.utils"
 
 export const cardRemoveKeys = [
@@ -47,26 +47,6 @@ export const create_source: ISimpleRouteEditor = {
   }
 }
 
-export const delete_source: ISimpleRouteEditor = {
-  title: '❌ 💳 delete source card',
-  link: 'https://stripe.com/docs/api/cards/delete',
-  request: {
-    method: 'DELETE',
-    path: 'customers/${customer}/sources/${source}',
-  },
-  pastes: [{
-    $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result?.id,
-    pasteKey: 'request.params.customer',
-    valueKey: 'result.id',
-  }, {
-    $api: () => create_source,
-    getTitle: () => 'source ' + create_source.result?.id,
-    pasteKey: 'request.params.source',
-    valueKey: 'result.id',
-  }]
-}
-
 export const get_paymethods: ISimpleRouteEditor = {
   title: '💳 GET Payment Methods',
   link: 'https://stripe.com/docs/api/payment_methods/list',
@@ -111,6 +91,11 @@ export const source_get: ISimpleRouteEditor = {
     getTitle: () => 'source '+ create_source.result.type,
     valueKey: 'create_source.result.id',
     pasteKey: 'request.params.id',
+  },{
+    $api: () => customer_get_sources,
+    title: 'GET customer.sources[0].id',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.source'
   }],
 }
 
@@ -131,7 +116,7 @@ export const source_update: ISimpleRouteEditor = {
     valueKey: 'result',
     pasteKey: 'data',
     removeKeys: cleanSourceRemoveKeys,
-    removeAllNulls: true
+    removeValues: [null]
   },{
     $api: () => source_get,
     title: 'GET source id',
@@ -149,7 +134,7 @@ export const source_update: ISimpleRouteEditor = {
     pasteValueKey: 'result.source',
     pasteKey: 'data',
     removeKeys: cleanSourceRemoveKeys,
-    removeAllNulls: true
+    removeValues: [null]
   }]
 }
 
@@ -210,7 +195,6 @@ export const payment_method_update: ISimpleRouteEditor = {
 
 export const apis = [
   // card,
-  create_source, delete_source, get_paymethods,
-  source_get, source_update,
-  payment_method_get, payment_method_update,
+  create_source, source_get, source_update,
+  get_paymethods, payment_method_get, payment_method_update,
 ]

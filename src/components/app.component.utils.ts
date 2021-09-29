@@ -29,11 +29,14 @@ export const sample = {
 
 export interface localSchema {
   key: string
+
   privateKey: string
+  privateKeys: {title: string, value: string}[] // switchable keys
   webhookSigningSecret?: string
   saveRequestsLocal?: boolean
   saveKeyLocally?: boolean
   savePrivateKeyLocally?: boolean
+
   metadata?: Record<string, any>
   extraData?: any
   requests?: {
@@ -52,12 +55,13 @@ export interface localSchema {
 export interface RequestOptions {
   url: string, method?: 'GET' | 'POST' | string
   post?: {[x: string]: any}
+  headers?: {[x: string]: any}
   json?: {[x: string]: any}
   authorizationBearer?: string
 }
 
 export function request(
-  {url, method, post, json, authorizationBearer}: RequestOptions
+  {url, method, post, json, headers, authorizationBearer}: RequestOptions
 ) {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
@@ -65,16 +69,22 @@ export function request(
 
     // req.open(endMethod, url, true);
     req.open(endMethod, url);
-    req.setRequestHeader('Accept', 'application/json');
+    req.setRequestHeader('Accept', 'application/json')
 
     if (authorizationBearer) {
-      req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer);
+      req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer)
     }
 
-    // const formPost = objectToUriForm(post);
+    if (headers) {
+      Object.entries(headers).forEach(([name, value]) =>
+        req.setRequestHeader(name, value)
+      )
+    }
+
+    // const formPost = objectToUriForm(post)
     if (post) {
-      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-      const formPost = formurlencoded(post);
+      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded charset=UTF-8')
+      const formPost = formurlencoded(post)
       req.send( formPost )
     } else if (json) {
       const content = JSON.stringify(json)
@@ -168,7 +178,7 @@ export interface ApiPaste {
   pasteKey?: string
   paste?: (thisApi: ISimpleRouteEditor) => any
   removeKeys?: string[] // ex: {balance, secret, ...keepTheRest}
-  removeAllNulls?: boolean // deletes any values with null
+  removeValues?: any[] // deletes any values with null
 
   getTitle?: (thisApi: ISimpleRouteEditor) => string
 }
@@ -195,7 +205,8 @@ export interface ISimpleRouteEditor {
   // maybe deprecated
   link?: string // documentation link
 
-  data?: {[index:string]: any} // Input data. For requests, its the request post body.
+  // Input data. For POST requests, its the request post body. For GET its the URL variables (this may need to change)
+  data?: {[index:string]: any}
 
   // last result
   result?: {[index:string]: any} // Output data. Runtime data. For request, its the response body
@@ -208,6 +219,9 @@ export interface ISimpleRouteEditor {
     method: string
     host?: string // base url example https://sandbox.plaid.com/
     path: string,
+
+    headers?: {[name: string]: string}
+    removeHeaderValues?: any[]
   }
 
   // data points that can be display links or copy action buttons
@@ -264,6 +278,7 @@ export function getProjectLocalStorage(): localSchema {
 
   storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
   storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
+  storage.privateKeys = storage.privateKeys || []
 
   storage.requests = storage.requests || {
     // passed along when token or sources created

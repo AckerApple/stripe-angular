@@ -1,35 +1,23 @@
-<div class="flex-wrap flex-center">
-  <div class="child-margin-smx">
-    <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup='common'"
-      [class.bg-grey-2x]="showGroup === 'common'"
-    >Common</a>
-
-    <ng-container *ngFor="let group of apiGroups">
-      <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup=group"
-        [class.bg-grey-2x]="showGroup === group"
-      >{{group.title}}</a>
-    </ng-container>
-  </div>
-</div>
-
-<div class="flex-wrap flex-center">
+<div class="flex-wrap flex-center child-margin-smx">
   <ng-container *ngFor="let group of apiGroups">
-    <ng-container *ngIf="showGroup === group">
-      <ng-container *ngFor="let api of group.apis">
-        <tool-wrap class="flex-1" [api]="api"></tool-wrap>
-      </ng-container>
-    </ng-container>
+    <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup=group"
+      [class.bg-grey-2x]="showGroup === group"
+    >{{group.title}}</a>
   </ng-container>
 </div>
 
-<div *ngIf="showGroup === 'common'" class="flex-wrap flex-center">
-  <ng-container *ngFor="let api of stripeUrlArray">
-    <tool-wrap class="flex-1" [api]="api"></tool-wrap>
+<ng-container *ngFor="let group of apiGroups">
+  <ng-container *ngIf="showGroup === group">
+    <div class="flex-center child-margin">
+      <a class="no-a-style text-smx" *ngFor="let item of group.links" [href]="item.url" target="_blank">
+        <span class="underline">{{item.title || item.url}}</span>
+      </a>
+    </div>
+    <div *ngIf="group.description" class="flex-center">
+      <p class="opacity-70 text-smx margin" style="max-width: 1200px;">{{group.description}}</p>
+    </div>
+    <div class="flex-wrap flex-center">
+      <tool-wrap *ngFor="let api of group.apis" class="flex1 flex-stacked" [api]="api"></tool-wrap>
+    </div>
   </ng-container>
-
-  <tool-wrap [api]="stripeUrlApis.payintent_create"></tool-wrap>
-
-  <tool-wrap class="flex-1" [api]="stripeUrlApis.charge"></tool-wrap>
-
-</div>
-
+</ng-container>
