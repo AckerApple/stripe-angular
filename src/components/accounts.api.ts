@@ -159,6 +159,7 @@ export const accounts_delete: ISimpleRouteEditor = {
 
 export const account_login_link: ISimpleRouteEditor = {
   title: '🔓 🔗 Create account login link',
+  warn: '⚠️ for express accounts only',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/account/login_link'

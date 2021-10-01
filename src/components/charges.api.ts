@@ -31,12 +31,18 @@ export const charge: ISimpleRouteEditor = {
     data: {
       amount: 999,
       currency: 'usd',
-      customer: '', // Previously stored, then retrieved
-      application_fee_amount: 100,
       transfer_data: {
         amount: 850,
         destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
       },
+      metadata: sample.metadata
+    }
+  },{
+    title: 'application fee',
+    data: {
+      amount: 999,
+      currency: 'usd',
+      application_fee_amount: 100,
       metadata: sample.metadata
     }
   }],

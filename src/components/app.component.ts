@@ -156,12 +156,18 @@ declare const Plaid: any
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
 
+    const metaCheck = (data: any) => {
+      if (data?.metadata) {
+        data.metadata = meta
+      }
+    }
+
     const applyMeta = api => {
-      if (!api.data?.metadata) {
-        return
+      if (api.examples) {
+        api.examples.map(x => x.data).forEach(metaCheck)
       }
 
-      api.data.metadata = meta
+      metaCheck(api.data)
     }
 
     apiGroups.forEach(group => group.apis.forEach(applyMeta))

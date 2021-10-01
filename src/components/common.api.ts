@@ -16,10 +16,20 @@ export const balance_get: ISimpleRouteEditor = {
     removeHeaderValues: ['']
   },
   pastes:[{
-    $api: () => accounts_get,
-    title: 'Accounts GET 1️⃣ header',
+    $api: () => account_get,
+    title: 'Account GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account',
+  },{
+    title: 'accounts list 1️⃣',
+    $api: () => accounts_get,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.headers.Stripe-Account'
+  },{
+    title: 'accounts GET',
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'request.headers.Stripe-Account'
   }]
 }
 

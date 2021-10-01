@@ -46,12 +46,12 @@ export const transfer_create: ISimpleRouteEditor = {
     valueKey: 'result.id',
     title: 'created charge'
   },{
-    title: 'accounts list 1️⃣ as header',
+    title: 'accounts list 1️⃣',
     $api: () => accounts_get,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
-    title: 'accounts GET as header',
+    title: 'accounts GET',
     $api: () => accounts_retrieve,
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'

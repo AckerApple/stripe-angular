@@ -5,6 +5,7 @@ import { AppComponent } from "./components/app.component"
 import { ServerToolsComponent } from "./components/server-tools.component"
 import { SimpleRouteEditComponent } from "./components/simple-route-edit.component"
 import { DumpComponent } from "./components/dump.component"
+import { PastesMenuComponent } from "./components/pastes-menu.component"
 import { MenuOptionsComponent } from "./components/menu-options.component"
 import { ToolWrapComponent } from "./components/tool-wrap.component"
 export { AppComponent } from "./components/app.component"
@@ -17,6 +18,7 @@ import { StripeModule } from "stripe-angular"
   ],
   declarations: [
     AppComponent,
+    PastesMenuComponent,
     MenuOptionsComponent,
     DumpComponent,
     ServerToolsComponent,

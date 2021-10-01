@@ -21,7 +21,11 @@ export const payintent_create: ISimpleRouteEditor = {
   }],
   request: {
     method: 'POST',
-    path: 'payment_intents'
+    path: 'payment_intents',
+    headers: {
+      'Stripe-Account': ''
+    },
+    removeHeaderValues: ['']
   },
   data: {
     amount: 999,
@@ -35,12 +39,18 @@ export const payintent_create: ISimpleRouteEditor = {
     data: {
       amount: 999,
       currency: 'usd',
-      customer: '', // Previously stored, then retrieved
-      application_fee_amount: 100,
       transfer_data: {
         amount: 850,
         destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
       },
+      metadata: sample.metadata
+    }
+  },{
+    title: 'application fee',
+    data: {
+      amount: 999,
+      currency: 'usd',
+      application_fee_amount: 100,
       metadata: sample.metadata
     }
   }],
@@ -54,6 +64,11 @@ export const payintent_create: ISimpleRouteEditor = {
     title: 'Accounts retrieve by id',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.id'
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 customer list 1️⃣',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.customer'
   },{
     $api: () => create_customer,
     getTitle: () => 'customer '+create_customer.result.description,
@@ -89,6 +104,16 @@ export const payintent_create: ISimpleRouteEditor = {
     title:'pay method customer',
     valueKey: 'result.customer',
     pasteKey: 'data.customer',
+  },{
+    title: 'accounts list 1️⃣',
+    $api: () => accounts_get,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.headers.Stripe-Account'
+  },{
+    title: 'accounts GET',
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'request.headers.Stripe-Account'
   }]
 }
 

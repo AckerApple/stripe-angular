@@ -8,6 +8,9 @@
       <ng-container *ngFor="let item of options">
         <ng-container *ngTemplateOutlet="item"></ng-container>
       </ng-container>
+      <div *ngIf="!options.length" class="text-center opacity-half text-xs pad-xxs">
+        ⚠️ no options at this time
+      </div>
     </div>
   </div>
 </span>

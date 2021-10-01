@@ -51,7 +51,7 @@ export const create_customer: ISimpleRouteEditor = {
 }
 
 export const customer_list_all: ISimpleRouteEditor = {
-  title: '🧾 👤 List all customers',
+  title: '🧾 List all customers',
   link: 'https://stripe.com/docs/api/customers/list',
   request: {
     method: 'GET',
@@ -89,7 +89,7 @@ export const delete_customer: ISimpleRouteEditor = {
 }
 
 export const customer_update: ISimpleRouteEditor = {
-  title: '👤 UPDATE Customer',
+  title: '⬆️ UPDATE Customer',
   links: [{title: 'docs', url: 'https://stripe.com/docs/api/customers/update'}],
   request: {
     method: 'POST',
@@ -109,6 +109,11 @@ export const customer_update: ISimpleRouteEditor = {
     valueKey: 'result',
     pasteKey: 'data',
     removeKeys: ['account_balance', 'balance', 'object', 'cards', 'created', 'delinquent', 'livemode', 'sources', 'data', 'subscriptions', 'tax_ids'],
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 customer list 1️⃣',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id',
   },{
     $api: () => card,
     getTitle: () => 'source ' + card.result.source.card.brand + ' ' + card.result.source.card.last4,
@@ -138,6 +143,11 @@ export const customer_get: ISimpleRouteEditor = {
     $api: () => source_get,
     title: 'source GET customer',
     valueKey: 'result.customer',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 customer list 1️⃣',
+    valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
   }]
 }

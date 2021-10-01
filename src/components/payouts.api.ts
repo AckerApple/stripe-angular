@@ -1,4 +1,4 @@
-import { accounts_get } from "./accounts.api"
+import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./app.component.utils"
 
 export const payouts_get: ISimpleRouteEditor = {
@@ -38,9 +38,14 @@ export const payouts_post: ISimpleRouteEditor = {
     currency: 'usd',
   },
   pastes: [{
-    title: 'accounts GET 1️⃣ as header',
+    title: 'accounts list 1️⃣',
     $api: () => accounts_get,
     valueKey: 'result.data.0.id',
+    pasteKey: 'request.headers.Stripe-Account'
+  },{
+    title: 'accounts GET',
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
   }]
 }
