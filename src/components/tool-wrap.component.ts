@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
+import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
 import {  SmartRouteEditor } from "./app.component.utils"
 
 @Component({
@@ -7,10 +7,8 @@ import {  SmartRouteEditor } from "./app.component.utils"
 }) export class ToolWrapComponent {
   @Input() showForm: boolean
   @Input() api: SmartRouteEditor
-
-  // deprecated in favor of pastes
-  @Input() pasteFavs: string[][] // [ title, value, pasteKey ]
-
+  @Input() format: 'json' | 'small' = 'small'
+  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter
   @ContentChild('footer', { static: false }) footerTemplate:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooterTemplate:TemplateRef<ElementRef>
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItemsTemplate:TemplateRef<ElementRef>

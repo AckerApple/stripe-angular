@@ -92,6 +92,16 @@ export const charge: ISimpleRouteEditor = {
     title: 'source GET customer',
     valueKey: 'result.customer',
     pasteKey: 'data.customer',
+  },{
+    $api: () => create_customer,
+    title: 'new 👤 customer default_source',
+    valueKey: 'result.default_source',
+    pasteKey: 'data.source'
+  },{
+    $api: () => customer_get,
+    title: 'new 👤 customer default_source',
+    valueKey: 'result.default_source',
+    pasteKey: 'data.source'
   }]
 }
 
@@ -227,6 +237,7 @@ const application_fees_get: ISimpleRouteEditor = {
 }
 
 export const apis = [
+  charge,
   account_get,
   balance_get,
   prices_get,

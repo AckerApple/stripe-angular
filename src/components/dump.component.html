@@ -1,23 +1,25 @@
-<ng-container *ngIf="['boolean','number','string'].includes(typing)">
-  <div class="text-xs text-dark">
-    <div *ngIf="key" class="strong text-xxs border-white border-bottom">{{key}}</div>
-    <ng-container *ngIf="value.search && (value.includes('https://') || value.includes('http://'));else simpleValue">
-      <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
-    </ng-container>
-    <ng-template #simpleValue>
-      <div (click)="copyText(value)" class="hover-bg-warning active-bg-energized">{{value}}</div>
-    </ng-template>
-  </div>
+<!-- IF 1: undefined -->
+<ng-container *ngIf="'undefined' === typing;else simpleTemplate">
+  <ng-container *ngIf="showKids">
+    <ng-container *ngTemplateOutlet="dumpSimple;context:{key:key, value:typing}"></ng-container>
+  </ng-container>
 </ng-container>
 
-<ng-container *ngIf="typing==='object'">
-  <ng-container [ngSwitch]="value">
-    <ng-container *ngSwitchCase="undefined">
-      <ng-container *ngTemplateOutlet="dumpSimple;context:{key: key, value:'undefined'}"></ng-container>
-    </ng-container>
+<ng-template #simpleTemplate>
+  <!-- IF 2: simple value -->
+  <ng-container *ngIf="['boolean','number','string'].includes(typing); else objectTemplate">
+    <ng-container *ngTemplateOutlet="dumpSimple;context:{key:key, value:value}"></ng-container>
+  </ng-container>
+</ng-template>
 
+<ng-template #objectTemplate>
+  <!-- IF 3: object value -->
+  <ng-container [ngSwitch]="value">
+    <!--null-->
     <ng-container *ngSwitchCase="null">
-      <ng-container *ngTemplateOutlet="dumpSimple;context:{key: key, value:'null'}"></ng-container>
+      <ng-container *ngIf="showKids">
+        <ng-container *ngTemplateOutlet="dumpSimple;context:{key: key, value:'null'}"></ng-container>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngSwitchDefault>
@@ -46,22 +48,27 @@
             [class.border-bottom] = "show"
             (click)="show = !show"
           >{{key}}</a>
-          <div *ngIf="!key || showKids || show || (show==undefined && showLevels > 0)" class="flex-wrap child-margin-xxs pad-xxs">
+          <div *ngIf="!key || showKids || show || (show==undefined && showLevels > 0)" class="flex-wrap">
             <ng-container *ngFor="let item of value | keyvalue : unsorted">
-              <dump class="flex" [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showKids"></dump>
+              <dump [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showKids"
+                class="flex-wrap child-margin-xxs pad-xxs"
+              ></dump>
             </ng-container>
           </div>
         </div>
       </ng-template>
     </ng-container>
   </ng-container>
-</ng-container>
+</ng-template>
 
-<!--
-  <ng-container #defaultTemplate>
-    <div class="text-xs">
-      <div class="strong text-xxs border-white border-bottom">{{key}}:{{typing}}</div>
-      <div>{{value | json}}</div>
-    </div>
-  </ng-container>
--->
+<ng-template #dumpSimple let-key="key" let-value="value">
+  <div class="text-xs text-dark">
+    <div *ngIf="key" class="strong text-xxs border-white border-bottom">{{key}}</div>
+    <ng-container *ngIf="value.search && (value.slice(0,8)==='https://' || value.slice(0,7)==='http://');else simpleValue">
+      <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
+    </ng-container>
+    <ng-template #simpleValue>
+      <div (click)="copyText(value)" class="cursor-pointer hover-bg-warning active-bg-energized">{{value}}</div>
+    </ng-template>
+  </div>
+</ng-template>

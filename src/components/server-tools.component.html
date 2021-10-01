@@ -17,7 +17,7 @@
       <p class="opacity-70 text-smx margin" style="max-width: 1200px;">{{group.description}}</p>
     </div>
     <div class="flex-wrap flex-center">
-      <tool-wrap *ngFor="let api of group.apis" class="flex1 flex-stacked" [api]="api"></tool-wrap>
+      <tool-wrap *ngFor="let api of group.apis" class="flex1 flex-stacked" [api]="api" [(format)]="storage.format"></tool-wrap>
     </div>
   </ng-container>
 </ng-container>

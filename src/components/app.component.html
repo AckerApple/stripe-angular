@@ -24,7 +24,7 @@
 
       <ng-container *ngIf="loaded">
         <div class="flex-wrap flex-center">
-          <div class="tool-wrap" style="flex-grow:1">
+          <div class="tool-wrap flex1">
             <h3 class="margin-0 text-left text-white">⚙️ Settings</h3>
             <div class="pad text-left flex-1 radius-5" style="background-color:#888;">
               <p class="text-xs opacity-80">Ensure you are testing with the right secrets</p>
@@ -34,7 +34,7 @@
 
           <!-- hide elements when possibly changing keys -->
           <ng-container *ngIf="stripe && !changekey">
-            <div class="tool-wrap">
+            <div class="tool-wrap flex1">
               <label for="card-like-element" class="flex flex-wrap flex-valign-center color-white">
                 <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
                 <small class="underline">
@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <div class="tool-wrap">
+            <div class="tool-wrap flex1">
               <div class="flex flex-wrap flex-valign-bottom text-white">
                 <h3 class="margin-0 pad-0 flex-1">
                   <label for="card-like-element">🏦 Bank Account</label>
@@ -64,9 +64,7 @@
               </div>
             </div>
 
-            <div class="flex-wrap flex-center">
-              <tool-wrap class="flex-1" [api]="api.confirm_pay_intent"></tool-wrap>
-            </div>
+            <tool-wrap class="flex1 flex-center" [api]="api.confirm_pay_intent" [(format)]="storage.format"></tool-wrap>
           </ng-container>
         </div>
 
@@ -124,9 +122,7 @@
 
             <br /><br />
 
-            <server-tools [api]="api" [plaidServerApis]="plaidServerApis"
-              [apiGroups]="apiGroups" [storage]="storage"
-            ></server-tools>
+            <server-tools [api]="api" [apiGroups]="apiGroups" [storage]="storage"></server-tools>
 
             <br />
             <button (click)="showServerMethods = false" class="active-bg-energized">❌ close</button>
@@ -241,55 +237,22 @@
             <br />
 
             <div class="flex-wrap flex-center">
+              <!-- step 1 -->
               <ng-container *ngIf="localServerActive">
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.plaid_linkTokenCreate"></tool-wrap>
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_linkTokenCreate" [(format)]="storage.format"></tool-wrap>
               </ng-container>
 
-              <!-- UI create public token -->
-              <tool-wrap class="flex-1"
-                [api]="api.plaid_createPublicToken"
-                [pasteFavs] = "[
-                  ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'token']
-                ]"
-              ></tool-wrap>
+              <!-- UI create public token: step 2 -->
+              <tool-wrap class="flex1 flex-stacked" [api]="api.plaid_createPublicToken" [(format)]="storage.format"></tool-wrap>
 
               <ng-container *ngIf="localServerActive">
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.plaid_publicTokenExchange"
-                  [pasteFavs]="[
-                    ['public_token', api.plaid_createPublicToken.result?.public_token, 'data.public_token']
-                  ]"
-                ></tool-wrap>
+                <!-- step 3 & 4 -->
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_publicTokenExchange" [(format)]="storage.format"></tool-wrap>
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_stripeBankCreate" [(format)]="storage.format"></tool-wrap>
 
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.plaid_stripeBankCreate"
-                  [pasteFavs]="[
-                    ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token'],
-                    ['public_token.accounts[0]', api.plaid_createPublicToken.result?.metadata.accounts && api.plaid_createPublicToken.result.metadata.accounts[0].id,'data.account_id']
-                  ]"
-                ></tool-wrap>
-
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.getAccounts"
-                  [pasteFavs]="[
-                    ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
-                  ]"
-                ></tool-wrap>
-
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.getLinkToken"
-                  [pasteFavs]="[
-                    ['link_token', plaidServerApis.plaid_linkTokenCreate.result?.link_token, 'data.link_token']
-                  ]"
-                ></tool-wrap>
-
-                <tool-wrap class="flex-1"
-                  [api]="plaidServerApis.getAuth"
-                  [pasteFavs]="[
-                    ['access_token', plaidServerApis.plaid_publicTokenExchange.result?.access_token, 'data.access_token']
-                  ]"
-                ></tool-wrap>
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getAccounts" [(format)]="storage.format"></tool-wrap>
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getLinkToken" [(format)]="storage.format"></tool-wrap>
+                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getAuth" [(format)]="storage.format"></tool-wrap>
               </ng-container>
             </div>
           </ng-container>
@@ -331,20 +294,18 @@
             (click)="showPrivateKeyChange=!showPrivateKeyChange"
           >
             💠
-            <div *ngIf="showPrivateKeyChange" class="pos-abs bg-white border-2" style="box-shadow:5px 10px rgba(0, 0, 0, 0.3)">
-              <div class="pos-rel text-xxs opacity-half">
-                <div class="pos-abs top-0 right-0 pad-xxs line-height-half">x</div>
-                <div class=" text-center pad-xxs border-bottom border-grey">key chain select</div>
-              </div>
-              <div class="flex-stacked">
-                <a *ngFor="let item of storage.privateKeys" class="border-bottom border-grey pad-xs hover-bg-energized"
-                  (click)="storage.privateKey=item.value"
-                  [class.bg-warning]="storage.privateKey===item.value"
-                >
-                  {{item.title}}
-                </a>
-              </div>
-            </div>
+            <menu-options *ngIf="showPrivateKeyChange">
+              <ng-container *ngFor="let item of storage.privateKeys">
+                <ng-template #option>
+                  <a class="border-bottom border-grey pad-xs hover-bg-energized"
+                    (click)="storage.privateKey=item.value"
+                    [class.bg-warning]="storage.privateKey===item.value"
+                  >
+                    {{item.title}}
+                  </a>
+                </ng-template>
+              </ng-container>
+            </menu-options>
           </a>
         </div>
       </div>
@@ -514,22 +475,31 @@
     ></stripe-card>
   </div>
 
-  <br />
+  <!--<div *ngIf="!cardComplete;" class="opacity-half text-center pad-v">
+    ...awaiting card entry above...
+  </div>-->
 
-  <div>
-    <div *ngIf="cardComplete" class="flex-wrap">
-      <button type="button" class="flex-1 active-bg-balanced"
+  <div class="text-center opacity-70">
+    <small
+      [class.text-assertive]="!cardComplete"
+      [class.text-balanced]="cardComplete"
+    ><strong>card entry status</strong>: {{ cardComplete ? 'complete' : 'incomplete' }}</small>
+  </div>
+
+  <div class="pad-top">
+    <div class="flex-wrap">
+      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
         style="background-color:#99FFFF;"
       >💳 create payment method</button>
 
-      <button type="button" class="flex-1 active-bg-balanced"
+      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
         style="background-color:#99FFFF;"
         title="Using Payment Method instead is recommended"
       >💳 create source</button>
 
-      <button type="button" class="flex-1 active-bg-balanced"
+      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
         style="background-color:#99FFFF;"
         title="Using Payment Method instead is recommended"
@@ -558,21 +528,13 @@
       </div>
     </div>
 
-    <div *ngIf="!cardComplete;" class="opacity-half text-center">
-      ...awaiting card entry above...
-    </div>
-
-    <h4>Additional functionality</h4>
+    <!--<h4>Additional functionality</h4>-->
     <div class="flex-wrap">
-      <ng-container *ngIf="cardComplete">
-        <ng-container *ngTemplateOutlet="optionalCardControls"></ng-container>
-      </ng-container>
-
-      <button type="button"
+      <button type="button" class="flex-1"
         (click)="editOptions=!editOptions"
-        style="flex-grow:1"
         [style.background-color] = "editOptions && '#0099CC' || null"
       >🔧 options</button>
+      <ng-container *ngTemplateOutlet="optionalCardControls"></ng-container>
     </div>
 
     <div *ngIf="editExtraData">
@@ -666,13 +628,6 @@
     <textarea
       disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
     >{{ api.card.result.payment_method | json }}</textArea>
-  </div>
-
-  <div style="text-align:right;opacity:70%">
-    <small
-      [class.text-assertive]="!cardComplete"
-      [class.text-balanced]="cardComplete"
-    >card complete: <strong>{{ cardComplete }}</strong></small>
   </div>
 
   <div *ngIf="api.card.changedEvent">
@@ -908,25 +863,22 @@
 </ng-template>
 
 <ng-template #optionalCardControls>
-  <div class="flex-wrap">
-    <button type="button" class="active-bg-energized"
-      (click)="editSourceRequest=!editSourceRequest"
-      style="flex-grow:1"
-      [style.background-color] = "editSourceRequest && '#0099CC' || null"
-      title="Using Payment Method instead is recommended"
-    >💳 source data</button>
+  <button type="button" class="active-bg-energized flex-1"
+    (click)="editSourceRequest=!editSourceRequest"
+    [style.background-color] = "editSourceRequest && '#0099CC' || null"
+    title="Using Payment Method instead is recommended"
+  >💳 source data</button>
 
-    <button type="button" class="active-bg-energized flex-1"
-      (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
-      [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
-    >💳 payment method data</button>
+  <button type="button" class="active-bg-energized flex-1"
+    (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
+    [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
+  >💳 payment method data</button>
 
-    <button type="button" class="active-bg-energized flex-1"
-      (click)="editExtraData=!editExtraData"
-      [style.background-color] = "editExtraData && '#0099CC' || null"
-      title="Using Payment Method instead is recommended"
-    >🪙 token data</button>
-  </div>
+  <button type="button" class="active-bg-energized flex-1"
+    (click)="editExtraData=!editExtraData"
+    [style.background-color] = "editExtraData && '#0099CC' || null"
+    title="Using Payment Method instead is recommended"
+  >🪙 token data</button>
 </ng-template>
 
 <ng-template #editPrivateKey>
@@ -970,7 +922,7 @@
       </div>
       <div class="tool-panel">
         Paste your payload below to encode into a signing secret
-        <simple-route-edit [config]="api.testHeader" copy="result"></simple-route-edit>
+        <simple-route-edit [config]="api.testHeader" copy="result" [(format)]="storage.format"></simple-route-edit>
       </div>
     </div>
   </div>

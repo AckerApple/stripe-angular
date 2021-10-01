@@ -21,7 +21,7 @@
 
     <ng-container *ngIf="showForm">
       <br />
-      <simple-route-edit [config]="api" [pasteFavs]="pasteFavs">
+      <simple-route-edit [config]="api" [(format)]="format" (formatChange)="formatChange.emit($event)">
         <ng-template #requestHeaderItems>
           <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
         </ng-template>

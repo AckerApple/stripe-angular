@@ -17,12 +17,6 @@
     >↙️ use {{ item.title || (item.getTitle && item.getTitle(config)) || item.api[ item.valueKey ] }}</a>
   </ng-container>
 
-  <ng-container *ngFor="let item of pasteFavs">
-    <a *ngIf="item[1]" (click)="pasteBy(item)" [title]="item[1]"
-      class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
-    >↙️ use {{item[0]}}</a>
-  </ng-container>
-
   <ng-container *ngTemplateOutlet="requestHeaderItems"></ng-container>
 </div>
 
@@ -48,7 +42,24 @@
 
 <ng-container *ngIf="showPost">
   <div class="pos-rel">
-    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half">🧾 input data</div>
+    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs flex">
+      <span class="opacity-half">🧾 input data</span>
+      <a *ngIf="config.examples" class="flex-center flex-valign-center pad-left"
+        (click)="showExamples=!showExamples"
+      >
+        💠
+        <menu-options *ngIf="showExamples">
+          <ng-container *ngFor="let item of config.examples">
+            <ng-template #option>
+              <a class="border-bottom border-grey pad-xs hover-bg-energized"
+                (click)="config.data = item.data"
+                [class.bg-warning]="config.data === item.data"
+              >{{item.title}}</a>
+            </ng-template>
+          </ng-container>
+        </menu-options>
+      </a>
+    </div>
   </div>
   <textarea wrap="off" style="width:100%;min-height:250px;"
     (change)="changeByString(config, 'data', $event.target.value)"
@@ -57,10 +68,16 @@
 </ng-container>
 
 <ng-container *ngIf="config.error">
-  <textarea wrap="off"
-    disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:275px;"
-    [value] = "config.error | json"
-  ></textArea>
+  <div class="bg-assertive pad-xxs">
+    <strong>🐛 Error</strong>
+    <dump [value]="config.error"></dump>
+  </div>
+  <!--
+    <textarea wrap="off"
+      disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:275px;"
+      [value] = "config.error | json"
+    ></textArea>
+  -->
 
   <ng-container *ngIf="config.error.doc_url">
     <ng-container *ngTemplateOutlet="linkButton;context:{title:'🔗 error doc', url:config.error.doc_url}"></ng-container>
@@ -85,7 +102,7 @@
 >🧾 inputs</button>
 
 <ng-container *ngIf="config.request">
-  <button type="button"
+  <button type="button" *ngIf="config.request.params"
     (click)="showParams = !showParams" [class.bg-info]="showParams"
   >🔗 params</button>
   <button type="button"
@@ -93,7 +110,7 @@
   >🈁 headers</button>
 </ng-container>
 
-<ng-container *ngIf="config.load">... loading ...</ng-container>
+<span *ngIf="config.load" class="no-wrap">🔄 loading</span>
 
 <ng-container *ngIf="config.result">
   <br />
@@ -140,18 +157,19 @@
 
   <div class="pos-rel">
     <div class="pos-abs text-xxxs child-margin-1 flex" style="top:-18px;right:-6px">
-      <a class="radius-5 text-white pad-xxs hover-bg-balanced" (click)="showAll = !showAll"
-      >{{ showAll ? '🙈' : '👁'}}</a>
-      <a class="radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='small'"
-        [class]="format==='small' ? 'bg-positive' : 'bg-dark'"
+      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced bg-dark" (click)="showAll = !showAll"
+        title="hide/show all sub objects"
+      >👁</a>
+      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='small';formatChange.emit(format)"
+        [class]="!format || format==='small' ? 'bg-positive' : 'bg-dark'"
       >small</a>
-      <a class="radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='json'"
+      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='json';formatChange.emit(format)"
         [class]="format==='json' ? 'bg-positive' : 'bg-dark'"
       >json</a>
     </div>
   </div>
 
-  <div class="max-height-600 overflow" *ngIf="format==='small'">
+  <div class="max-height-600 overflow" *ngIf="!format || format==='small'">
     <dump [value]="result" [showKids]="showAll"></dump>
   </div>
 

@@ -40,6 +40,7 @@ export interface localSchema {
   metadata?: Record<string, any>
   extraData?: any
   requests?: {
+    resultView: 'json' | 'small'
     source?: any
     paymentMethod?: any
   }
@@ -195,6 +196,16 @@ export interface PostWarning {
 export interface WarnResults {warnings?: PostWarning[]}
 export declare type PostWarnFunction = (data: Record<string, any>, thisApi: ISimpleRouteEditor) => PostWarning[] & WarnResults
 
+export interface RouteRequest {
+  params?: {[name: string]: string}
+  method: string
+  host?: string // base url example https://sandbox.plaid.com/
+  path: string,
+
+  headers?: {[name: string]: string}
+  removeHeaderValues?: any[]
+}
+
 export interface ISimpleRouteEditor {
   title?: string
   description?: string
@@ -207,6 +218,7 @@ export interface ISimpleRouteEditor {
 
   // Input data. For POST requests, its the request post body. For GET its the URL variables (this may need to change)
   data?: {[index:string]: any}
+  examples?: {[index:string]: any}[]
 
   // last result
   result?: {[index:string]: any} // Output data. Runtime data. For request, its the response body
@@ -214,15 +226,7 @@ export interface ISimpleRouteEditor {
 
   messages?: ApiMessage[]
 
-  request?: {
-    params?: {[name: string]: string}
-    method: string
-    host?: string // base url example https://sandbox.plaid.com/
-    path: string,
-
-    headers?: {[name: string]: string}
-    removeHeaderValues?: any[]
-  }
+  request?: RouteRequest
 
   // data points that can be display links or copy action buttons
   favKeys?: {
@@ -367,11 +371,9 @@ export function changeKey(
     current = current[ keys.shift() ]
   }
 
-  // value = JSON.parse(value)
   try {
     eval('value = ' + value) // allow loose js to be cast to json
     current[ keys[0] ] = value
-    // current = value
   } catch (err) {
      // stripe-angular only
     scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
@@ -392,22 +394,42 @@ export function simpleMenuToSmart(
   }, menu as any)
 }
 
-export const stringInterpolations = /\$\{\s*[^\}]+\s*\}/g;
+function paramRequestUrlParams(request: RouteRequest) {
+  const identifiers = getStringIdentifiers(request.path)
+  const interps = getStringInterpolations(request.path)
+
+  if (interps.length) {
+    request.params = request.params || {}
+
+    // create data points for path interps
+    interps.forEach(result => {
+      const nameString = result[0]
+      const name = nameString.slice(2, nameString.length-1)
+      request.params[name] = request.params[name] || ''
+    })
+  }
+
+  if (identifiers.length) {
+    request.params = request.params || {}
+
+    // create data points for path identifiers
+    interps.forEach(result => {
+      const nameString = result[0]
+      const name = nameString.slice(2, nameString.length-1) // remove :
+      request.params[name] = request.params[name] || ''
+    })
+  }
+}
+
 export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor {
   const routeRef = route as SmartRouteEditor
 
-  if (routeRef.request) {
-    const interps = getStringInterpolations(routeRef.request.path)
-    if (interps.length) {
-      routeRef.request.params = routeRef.request.params || {}
+  if (routeRef.data && routeRef.examples) {
+    routeRef.examples.push({title: 'original data', data: routeRef.data})
+  }
 
-      // create data points for path interps
-      interps.forEach(result => {
-        const nameString = result[0]
-        const name = nameString.slice(2, nameString.length-1)
-        routeRef.request.params[name] = routeRef.request.params[name] || ''
-      })
-    }
+  if (routeRef.request) {
+    paramRequestUrlParams(routeRef.request)
   }
 
   // runtime tie memory paste-able data points
@@ -435,6 +457,12 @@ export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor 
   return routeRef
 }
 
+export const stringIdentifiers = /\/:[^\/]+(?=\/|$)/g;
+export function getStringIdentifiers(string: String): RegExpMatchArray[] {
+  return [...string.matchAll(stringIdentifiers)]
+}
+
+export const stringInterpolations = /\$\{\s*[^\}]+\s*\}/g;
 export function getStringInterpolations(string: String): RegExpMatchArray[] {
   return [...string.matchAll(stringInterpolations)]
 }

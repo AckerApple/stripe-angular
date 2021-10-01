@@ -32,11 +32,17 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
   hint: 'javascript Plaid.create( config )',
   warn: '⚠️ Demo username/password ➡️ user_good/pass_good',
   link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
-  favKeys: [{valueKey: 'result.public_token'},{valueKey: 'result.metadata.accounts.0.id'}],
+  // favKeys: [{valueKey: 'result.public_token'},{valueKey: 'result.metadata.accounts.0.id'}],
   data:{
     token: '',
     env: 'sandbox',
-  }
+  },
+  pastes: [{
+    title: 'link_token',
+    $api: () => plaid_linkTokenCreate,
+    valueKey: 'result.link_token',
+    pasteKey: 'data.token'
+  }]
 }
 
 const plaid_publicTokenExchange: ISimpleRouteEditor = {
@@ -53,7 +59,13 @@ const plaid_publicTokenExchange: ISimpleRouteEditor = {
     data: {
       "public_token": ""
     }
-  }
+  },
+  pastes: [{
+    title: 'public_token',
+    $api: () => plaid_createPublicToken,
+    valueKey: 'result.public_token',
+    pasteKey: 'data.data.public_token'
+  }]
 }
 
 export const plaid_stripeBankCreate: ISimpleRouteEditor = {
@@ -71,7 +83,18 @@ export const plaid_stripeBankCreate: ISimpleRouteEditor = {
       "access_token": "",
       "account_id": ""
     }
-  }
+  },
+  pastes: [{
+    title: 'access_token',
+    $api: () => plaid_publicTokenExchange,
+    valueKey: 'result.access_token',
+    pasteKey: 'data.data.access_token',
+  },{
+    title: 'public_token.accounts.0',
+    $api: () => plaid_createPublicToken,
+    valueKey: 'result.metadata.accounts.0.id',
+    pasteKey: 'data.data.account_id'
+  }]
 }
 
 const getAccounts: ISimpleRouteEditor = {
@@ -87,7 +110,13 @@ const getAccounts: ISimpleRouteEditor = {
     data: {
       "access_token": ""
     }
-  }
+  },
+  pastes: [{
+    title: 'access_token',
+    $api: () => plaid_publicTokenExchange,
+    valueKey: 'result.access_token',
+    pasteKey: 'data.data.access_token',
+  }]
 }
 
 const getLinkToken: ISimpleRouteEditor = {
@@ -103,7 +132,13 @@ const getLinkToken: ISimpleRouteEditor = {
     data: {
       "link_token": ""
     }
-  }
+  },
+  pastes: [{
+    title: 'link_token',
+    $api: () => plaid_linkTokenCreate,
+    valueKey: 'result.link_token',
+    pasteKey: 'data.data.link_token'
+  }]
 }
 
 const getAuth: ISimpleRouteEditor = {
@@ -119,7 +154,13 @@ const getAuth: ISimpleRouteEditor = {
     data: {
       "access_token": ""
     }
-  }
+  },
+  pastes: [{
+    title: 'access_token',
+    $api: () => plaid_publicTokenExchange,
+    valueKey: 'result.access_token',
+    pasteKey: 'data.access_token'
+  }]
 }
 
 /*const getProcessorIdentity: ISimpleRouteEditor = {

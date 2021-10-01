@@ -8,7 +8,6 @@ import { localSchema, SmartRouteEditor } from "./app.component.utils"
 }) export class ServerToolsComponent {
   @Input() apiGroups: any
   @Input() api: any
-  @Input() plaidServerApis: {[name: string]: SmartRouteEditor}
   @Input() storage: localSchema
 
   showGroup!: string | any

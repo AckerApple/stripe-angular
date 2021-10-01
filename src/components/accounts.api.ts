@@ -148,6 +148,27 @@ export const accounts_retrieve: ISimpleRouteEditor = {
   }]
 }
 
+export const accounts_delete: ISimpleRouteEditor = {
+  title: '❌ ♣️ Account delete',
+  links: [{
+    title: 'docs',
+    url: 'https://stripe.com/docs/api/accounts/delete'
+  },{
+    title: 'testing',
+    url: 'https://stripe.com/docs/connect/testing'
+  }],
+  request:{
+    method: 'DELETE',
+    path: 'accounts/${id}'
+  },
+  pastes:[{
+    $api: () => accounts_get,
+    title: 'Accounts GET 1️⃣ result',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id',
+  }]
+}
+
 export const account_login_link: ISimpleRouteEditor = {
   title: '♣️ Create account login link',
   links: [{
@@ -223,14 +244,20 @@ export const external_accounts_create: ISimpleRouteEditor = {
 }
 
 export const accounts_external_list: ISimpleRouteEditor = {
-  title: '♣️ 🏦 List all bank accounts',
+  title: '♣️ 🏦 List all external accounts',
   request:{
     method: 'GET',
     path: 'accounts/${account}/external_accounts',
   },
   data: {
-    object: 'bank_account', limit: 3,
+    limit: 3,
   },
+  examples: [{
+    title: 'bank_account search',
+    data: {
+      object: 'bank_account', limit: 3,
+    }
+  }],
   pastes:[{
     $api: () => accounts_get,
     valueKey: 'result.data.0.id',
@@ -238,9 +265,17 @@ export const accounts_external_list: ISimpleRouteEditor = {
   }]
 }
 
+const external_accounts_retrieve: ISimpleRouteEditor = {
+  title: 'GET external_account 1️⃣',
+  request: {
+    method: 'GET',
+    path: 'accounts/:account/external_accounts/:external_account'
+  },
+  link: 'https://stripe.com/docs/api/external_account_bank_accounts/retrieve',
+}
 
 /*
-   GET /v1/accounts/:id/external_accounts/:id
+   GET /v1/accounts/:id/external_accounts/:id ☑️
   POST /v1/accounts/:id/external_accounts/:id
 DELETE /v1/accounts/:id/external_accounts/:id
   POST /v1/accounts/:id/external_accounts
@@ -251,7 +286,7 @@ DELETE /v1/accounts/:id/external_accounts/:id
 */
 
 export const apis = [
-  accounts_get, accounts_create, accounts_update, accounts_retrieve,
+  accounts_get, accounts_create, accounts_update, accounts_retrieve, accounts_delete,
   account_links_create, account_login_link,
-  external_accounts_create, accounts_external_list,
+  external_accounts_create, accounts_external_list, external_accounts_retrieve,
 ]

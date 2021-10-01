@@ -13,13 +13,6 @@ body {
   background-color:#555;
 }
 
-/* mobile screens */
-/*@media only screen and (max-width: 500px) {
-  html, body, input, textarea {
-    font-size:1.01em;line-height: 1.2;
-  }
-}*/
-
 .tool-wrap {
   /*flex:2 2 20em;*/
   margin:.5em;
@@ -30,4 +23,18 @@ body {
 .tool-panel {
   flex-grow:1;
   border-radius:5px;background-color:#888;text-align:left;width:100%;padding:.6em;
+}
+
+
+/* small screens */
+@media only screen and (max-width: 1900px) {
+  .tool-wrap {min-width: 30vw}
+}
+
+@media only screen and (max-width: 1300px) {
+  .tool-wrap {min-width: 45vw}
+}
+
+@media only screen and (max-width: 800px) {
+  .tool-wrap {min-width: 80vw}
 }

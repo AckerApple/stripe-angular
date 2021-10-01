@@ -124,13 +124,11 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
-
-    // console.log('customer_get', customer_get.request)
   }
 
   subApi(api: SmartRouteEditor) {
     // listen to results to flatten
-    api.$result.subscribe(data => this.flatten(api))
+    api.$result.subscribe(_data => this.flatten(api))
     return api
   }
 
@@ -366,7 +364,6 @@ declare const Plaid: any
         }
         this.api.plaid_createPublicToken.result = result
         this.api.plaid_createPublicToken.$result.next(result)
-        console.log('this.api.plaid_createPublicToken',this.api.plaid_createPublicToken)
       },
       onExit: (err, metadata) => {
         --this.api.plaid_createPublicToken.load

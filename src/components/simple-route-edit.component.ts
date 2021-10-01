@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
+import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
 import { flatten, removeFlats } from "./app.component"
 import { ApiPaste, changeKey, copyText, PostWarnFunction, SmartRouteEditor, WarnResults } from "./app.component.utils"
 import { removeValues } from './removeValues.function'
@@ -15,8 +15,8 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
 
   @Input() pastes: PasteFav[] // [[name, value, paste-name]]
 
-  // deprecated in favor of pastes
-  @Input() pasteFavs: PasteFav[] // [[name, value, paste-name]]
+  @Input() format: 'json' | 'small' = 'small'
+  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter
 
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>
@@ -25,7 +25,6 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
   showPost?: boolean
   showParams?: boolean
   showHeaders?: boolean
-  format: 'json' | 'small' = 'small'
 
   copyText = copyText
   changeKey = changeKey
@@ -71,7 +70,7 @@ declare type PasteFav = [string, string, string | ((data: any) => any)]
 
           data = data[key] || (data[key] = {})
         })
-        console.log(keyName, this.config)
+        // console.log(keyName, this.config)
       }
     } catch (err) {
       console.error(`Failed to paste by config`, {api: this.config, paste:item}, err);
