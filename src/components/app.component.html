@@ -184,8 +184,8 @@
 
           <ng-container *ngIf="showPlaidMethods">
             <div class="pad flex-center flex-wrap">
-              <br />
-              <ng-container *ngIf="localServerActive; else warnNoLocalServer">
+              <ng-container *ngIf="localServerActive">
+                <br />
                 <form class="flex-1" (submit)="save()" action="javascript:">
                   <div class="flex-1 flex-wrap flex-center flex-valign-center child-margin-xxs">
                     <div class="flex-1 max-width-800">
@@ -232,9 +232,8 @@
                   </div>
                 </form>
               </ng-container>
+              <br />
             </div>
-
-            <br />
 
             <div class="flex-wrap flex-center">
               <!-- step 1 -->
@@ -254,6 +253,10 @@
                 <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getLinkToken" [(format)]="storage.format"></tool-wrap>
                 <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getAuth" [(format)]="storage.format"></tool-wrap>
               </ng-container>
+            </div>
+
+            <div *ngIf="!localServerActive" class="pad">
+              <ng-container *ngTemplateOutlet="warnNoLocalServer"></ng-container>
             </div>
           </ng-container>
         </div>
