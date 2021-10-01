@@ -3,7 +3,7 @@ import { ISimpleRouteEditor, sample, simpleMenuToSmart, SmartRouteEditor } from 
 import { plaid_createPublicToken } from './plaid.apis'
 import { bank } from './banks.api'
 import { card } from "./cards.api"
-import { payintent_create, payintent_retrieve } from "./common.api"
+import { payintent_create, payintent_retrieve } from "./pay_intents.api"
 
 const testHeader: ISimpleRouteEditor = {
   data: {}

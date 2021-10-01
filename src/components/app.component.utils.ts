@@ -413,9 +413,9 @@ function paramRequestUrlParams(request: RouteRequest) {
     request.params = request.params || {}
 
     // create data points for path identifiers
-    interps.forEach(result => {
+    identifiers.forEach(result => {
       const nameString = result[0]
-      const name = nameString.slice(2, nameString.length-1) // remove :
+      const name = nameString.slice(2, nameString.length) // remove /:
       request.params[name] = request.params[name] || ''
     })
   }

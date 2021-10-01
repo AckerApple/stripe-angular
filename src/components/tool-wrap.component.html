@@ -9,18 +9,39 @@
     </div>
   </div>
   <div class="tool-panel">
-    <div>
+    <div class="flex-wrap flex-apart">
       <span *ngIf="api.request" class="opacity-80 text-xs" style="overflow-wrap:break-word">
         {{api.request.method}}&nbsp;/{{api.request.path}}
       </span>
-      <span *ngIf="api.description" class="text-xxs opacity-60">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{api.description}}</span>
+
+      <!--pastes-->
+      <ng-container *ngIf="showForm && api.pastes">
+        <div class="flex-1 flex-right">
+          <a (click)="showPastes = !showPastes">💠
+            <menu-options *ngIf="showPastes" title="quick pastes">
+              <ng-container *ngFor="let item of api.pastes">
+                <ng-template #option>
+                  <a *ngIf="item.api[ item.valueKey ]"
+                    (click)="pasteByPaste( item )"
+                    [title]="item.api[ item.valueKey ]"
+                    class="pointer pad-xxs hover-bg-energized text-xxs active-bg-balanced"
+                    [class.opacity-half] = "item.pasteKey && item.api[item.valueKey] === api[ item.pasteKey ]"
+                  >↙️ set <strong>{{item.pasteKey}}</strong> = {{ item.title || (item.getTitle && item.getTitle(api)) || item.api[ item.valueKey ] }}</a>
+                </ng-template>
+              </ng-container>
+            </menu-options>
+          </a>
+        </div>
+      </ng-container>
+
+      <div *ngIf="api.description" class="text-xxs opacity-60">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{api.description}}</div>
     </div>
+
     <a *ngIf="!showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
       (click)="showForm = !showForm"
     >show</a>
 
     <ng-container *ngIf="showForm">
-      <br />
       <simple-route-edit [config]="api" [(format)]="format" (formatChange)="formatChange.emit($event)">
         <ng-template #requestHeaderItems>
           <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>

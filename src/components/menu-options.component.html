@@ -1,8 +1,8 @@
-<span class="pos-rel flex-valign-center flex-center">
-  <div class="pos-abs bg-white border-2" style="box-shadow:5px 10px rgba(0, 0, 0, 0.3);white-space: nowrap;">
+<span #absElement class="pos-rel flex-valign-center flex-center">
+  <div class="pos-abs bg-white text-dark border-2 nowrap" style="box-shadow:5px 10px rgba(0, 0, 0, 0.3);z-index:2">
     <div class="pos-rel text-xxs opacity-half">
       <div class="pos-abs top-0 right-0 pad-xxs line-height-half">x</div>
-      <div class=" text-center pad-xxs border-bottom border-grey">key chain select</div>
+      <div class="text-center pad-xxs border-bottom border-grey">{{ title || 'options'}}</div>
     </div>
     <div class="flex-stacked">
       <ng-container *ngFor="let item of options">

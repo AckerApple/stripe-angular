@@ -5,7 +5,7 @@ import { card } from "./cards.api"
 
 
 export const accounts_create: ISimpleRouteEditor = {
-  title: '➕ ♣️ Create account',
+  title: '🆕 Create account',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/create'
@@ -29,26 +29,14 @@ export const accounts_create: ISimpleRouteEditor = {
         requested: true,
       },
     },
+    metadata: {
+      order_id: '6735' // value in Stripe docs
+    }
   }
 }
 
-/*export const server_account_create: ISimpleRouteEditor = {
-  title: '➕ ♣️ Create account',
-  link: 'https://stripe.com/docs/api/accounts/create',
-  request: {
-    method: 'POST',
-    host: 'http://localhost:3000/plaid/',
-    path: 'accounts'
-  },
-  data: {
-    url: 'https://api.stripe.com/v1/accounts',
-    data: account_create.data,
-  }
-}*/
-
-
 export const accounts_get: ISimpleRouteEditor = {
-  title: '♣️ Get accounts',
+  title: '🧾 List all accounts',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/list'
@@ -71,7 +59,7 @@ export const accounts_get: ISimpleRouteEditor = {
 }
 
 export const account_links_create: ISimpleRouteEditor = {
-  title: '➕ ♣️ 🔗 Create account link',
+  title: '🆕 🔗 Create account link',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/account_links/create'
@@ -100,7 +88,7 @@ export const account_links_create: ISimpleRouteEditor = {
 }
 
 export const accounts_update: ISimpleRouteEditor = {
-  title: '⬆️ ♣️ Update account',
+  title: '⬆️ Update account',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/update'
@@ -115,7 +103,7 @@ export const accounts_update: ISimpleRouteEditor = {
   },
   data: {
     metadata: {
-      order_id: '6735'
+      order_id: '6735' // value in Stripe docs
     }
   },
   pastes:[{
@@ -127,7 +115,7 @@ export const accounts_update: ISimpleRouteEditor = {
 }
 
 export const accounts_retrieve: ISimpleRouteEditor = {
-  title: '♣️ Account retrieve',
+  title: '1️⃣ Account retrieve',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/retrieve'
@@ -142,14 +130,14 @@ export const accounts_retrieve: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => accounts_get,
-    // getTitle: () => accounts_get.result.data[0].id,
+    title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
   }]
 }
 
 export const accounts_delete: ISimpleRouteEditor = {
-  title: '❌ ♣️ Account delete',
+  title: '❌ Account delete',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/delete'
@@ -170,7 +158,7 @@ export const accounts_delete: ISimpleRouteEditor = {
 }
 
 export const account_login_link: ISimpleRouteEditor = {
-  title: '♣️ Create account login link',
+  title: '🔓 🔗 Create account login link',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/account/login_link'
@@ -187,8 +175,13 @@ export const account_login_link: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => accounts_get,
-    // getTitle: () => accounts_get.result.data[0].id,
+    title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => accounts_retrieve,
+    title: 'Accounts retrieve',
+    valueKey: 'result.id',
     pasteKey: 'request.params.account',
   }]
 }
@@ -222,14 +215,20 @@ export const external_accounts_create: ISimpleRouteEditor = {
     external_account: 'btok_',
   },
   pastes:[{
+    $api: () => accounts_retrieve,
+    title: 'Accounts GET',
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
+  },{
     $api: () => accounts_get,
+    title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
   },{
     $api: () => bank,
+    title: 'bank token',
     valueKey: 'result.id',
     pasteKey: 'data.external_account',
-    title: 'bank token',
   },{
     $api: () => card,
     title: 'card token',
@@ -244,7 +243,7 @@ export const external_accounts_create: ISimpleRouteEditor = {
 }
 
 export const accounts_external_list: ISimpleRouteEditor = {
-  title: '♣️ 🏦 List all external accounts',
+  title: '🧾 🏦 List all external accounts',
   request:{
     method: 'GET',
     path: 'accounts/${account}/external_accounts',
@@ -274,19 +273,70 @@ const external_accounts_retrieve: ISimpleRouteEditor = {
   link: 'https://stripe.com/docs/api/external_account_bank_accounts/retrieve',
 }
 
-/*
-   GET /v1/accounts/:id/external_accounts/:id ☑️
-  POST /v1/accounts/:id/external_accounts/:id
-DELETE /v1/accounts/:id/external_accounts/:id
-  POST /v1/accounts/:id/external_accounts
-   GET /v1/accounts/:id/external_accounts/:id
-  POST /v1/accounts/:id/external_accounts/:id
-DELETE /v1/accounts/:id/external_accounts/:id
-   GET /v1/accounts/:id/external_accounts?object=card
-*/
+const application_fees_list: ISimpleRouteEditor = {
+  title: '🧾 List all application fees',
+  link: 'https://stripe.com/docs/api/application_fees/list',
+  request: {
+    path: 'application_fees',
+    method: 'GET'
+  },
+  data: {
+    limit: 3,
+  }
+}
+
+const application_fees_retrieve: ISimpleRouteEditor = {
+  title: 'Retrieve an application fee',
+  link: 'https://stripe.com/docs/api/application_fees/retrieve',
+  request: {
+    path: 'application_fees/:id',
+    method: 'GET'
+  },
+}
+
+const application_fees_refunds_create: ISimpleRouteEditor = {
+  title: '🆕 Create an application fee refund',
+  link: 'https://stripe.com/docs/api/fee_refunds/create',
+  request: {
+    method: 'POST',
+    path: 'application_fees/:id/refunds'
+  }
+}
+
+const application_fees_refunds_retrieve: ISimpleRouteEditor = {
+  title: 'Retrieve an application fee refund',
+  link: 'https://stripe.com/docs/api/fee_refunds/retrieve',
+  request: {
+    method: 'GET',
+    path: 'application_fees/:id/refunds/:id'
+  }
+}
+
+const application_fees_refunds_update: ISimpleRouteEditor = {
+  title: '⬆️Update an application fee refund',
+  link: 'https://stripe.com/docs/api/fee_refunds/update',
+  request: {
+    method: 'POST',
+    path: 'application_fees/:id/refunds/:id'
+  },
+  data: {
+    metadata: {order_id: '6735'}
+  }
+}
+
+const application_fees_refunds: ISimpleRouteEditor = {
+  title: 'List all application fee refunds',
+  link: 'https://stripe.com/docs/api/fee_refunds/list',
+  request: {
+    method: 'GET',
+    path: 'application_fees/:id/refunds'
+  }
+}
 
 export const apis = [
   accounts_get, accounts_create, accounts_update, accounts_retrieve, accounts_delete,
   account_links_create, account_login_link,
   external_accounts_create, accounts_external_list, external_accounts_retrieve,
+  application_fees_list, application_fees_retrieve,
+  application_fees_refunds_create, application_fees_refunds_retrieve, application_fees_refunds_update, application_fees_refunds
 ]

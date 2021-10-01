@@ -1,4 +1,4 @@
-<div class="flex-wrap opacity-70">
+<div class="flex-wrap">
   <div class="flex-1 text-smx max-width-80vw">
     <!--
       <div *ngIf="config.request" style="overflow-wrap:break-word">
@@ -8,21 +8,13 @@
     <div *ngIf="config.hint" class="text-xs opacity-80 pad-left">{{config.hint}}</div>
   </div>
 
-  <ng-container *ngFor="let item of config.pastes">
-    <a *ngIf="item.api[ item.valueKey ]"
-      (click)="pasteByPaste( item )"
-      [title]="item.api[ item.valueKey ]"
-      class="pointer border radius-5 pad-xxs margin-xxs hover-bg-energized text-xxs active-bg-balanced"
-      [class.opacity-half] = "item.pasteKey && item.api[item.pasteKey] === item.api[ item.valueKey ]"
-    >↙️ use {{ item.title || (item.getTitle && item.getTitle(config)) || item.api[ item.valueKey ] }}</a>
-  </ng-container>
-
   <ng-container *ngTemplateOutlet="requestHeaderItems"></ng-container>
 </div>
 
 <ng-container *ngIf="showParams">
   <div class="pos-rel">
-    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half">🔗 path parameters</div>
+    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half"
+    >🔗 path parameters</div>
   </div>
   <textarea wrap="off" style="width:100%;height:10vh;min-height:125px;"
     (change)="changeByString(config.request, 'params', $event.target.value)"
@@ -48,7 +40,7 @@
         (click)="showExamples=!showExamples"
       >
         💠
-        <menu-options *ngIf="showExamples">
+        <menu-options *ngIf="showExamples" title="input data examples">
           <ng-container *ngFor="let item of config.examples">
             <ng-template #option>
               <a class="border-bottom border-grey pad-xs hover-bg-energized"
@@ -93,24 +85,29 @@
 
 <div *ngIf="config.warn" class="opacity-half text-xs pad-xs">{{config.warn}}</div>
 
-<button type="button"
-  (click)="config.$send.emit(config.data)" class="bg-balanced"
->{{config.result ? '⬇️' : '⬆️'}} send</button>
-
-<button type="button"
-  (click)="showPost = !showPost" [class.bg-info]="showPost"
->🧾 inputs</button>
-
-<ng-container *ngIf="config.request">
-  <button type="button" *ngIf="config.request.params"
-    (click)="showParams = !showParams" [class.bg-info]="showParams"
-  >🔗 params</button>
+<!-- buttons -->
+<div class="flex-wrap">
   <button type="button"
-    (click)="showHeaders = !showHeaders" [class.bg-info]="showHeaders"
-  >🈁 headers</button>
-</ng-container>
+    (click)="config.$send.emit(config.data)" class="bg-balanced flex-1"
+  >{{config.result ? '⬇️' : '⬆️'}} send</button>
 
-<span *ngIf="config.load" class="no-wrap">🔄 loading</span>
+  <button type="button" class="flex-1"
+    (click)="showPost = !showPost" [class.bg-info]="showPost"
+  >🧾 inputs</button>
+
+  <ng-container *ngIf="config.request">
+    <button type="button" *ngIf="config.request.params" class="flex-1"
+      (click)="showParams = !showParams" [class.bg-info]="showParams"
+    >🔗 params</button>
+    <button type="button" class="flex-1"
+      (click)="showHeaders = !showHeaders" [class.bg-info]="showHeaders"
+    >🈁 headers</button>
+  </ng-container>
+</div>
+
+<div>
+  <span *ngIf="config.load" class="nowrap">🔄 loading</span>
+</div>
 
 <ng-container *ngIf="config.result">
   <br />
@@ -157,13 +154,13 @@
 
   <div class="pos-rel">
     <div class="pos-abs text-xxxs child-margin-1 flex" style="top:-18px;right:-6px">
-      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced bg-dark" (click)="showAll = !showAll"
+      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced bg-dark" (click)="showAll = !showAll"
         title="hide/show all sub objects"
       >👁</a>
-      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='small';formatChange.emit(format)"
+      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced" (click)="format='small';formatChange.emit(format)"
         [class]="!format || format==='small' ? 'bg-positive' : 'bg-dark'"
       >small</a>
-      <a class="flex-valign-center radius-5 text-white pad-xxs hover-bg-balanced" (click)="format='json';formatChange.emit(format)"
+      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced" (click)="format='json';formatChange.emit(format)"
         [class]="format==='json' ? 'bg-positive' : 'bg-dark'"
       >json</a>
     </div>

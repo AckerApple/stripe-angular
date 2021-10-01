@@ -68,7 +68,10 @@
       <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
     </ng-container>
     <ng-template #simpleValue>
-      <div (click)="copyText(value)" class="cursor-pointer hover-bg-warning active-bg-energized">{{value}}</div>
+      <div (click)="copyText(value)" class="cursor-pointer hover-bg-warning active-bg-energized"
+        [class.text-balanced]="value === true"
+        [class.text-assertive]="value === false"
+      >{{value}}</div>
     </ng-template>
   </div>
 </ng-template>

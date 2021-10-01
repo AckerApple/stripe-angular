@@ -25,6 +25,14 @@ export const bank: BankData & ISimpleRouteEditor = {
 
 const verify_micro_deposits: ISimpleRouteEditor = {
   title: '🪙 🪙 Verify ACH micro deposits',
+  request:{
+    method: 'POST',
+    path: 'customers/${customer}/sources/${bank_token}/verify'
+  },
+  data: {
+    amounts:[32, 45],
+     // metadata: sample.metadata // not available here
+  },
   warn: '⚠️ Bank account token must be associated with customer',
   links: [{
     url: 'https://stripe.com/docs/api/customer_bank_accounts/verify',
@@ -32,6 +40,9 @@ const verify_micro_deposits: ISimpleRouteEditor = {
   },{
     url: 'https://stripe.com/docs/ach#testing-ach',
     title: 'test ach numbers',
+  },{
+    url: 'https://stripe.com/docs/ach#authorization',
+    title: 'charge authorization',
   }],
   pastes: [{
     $api: ()=> bank,
@@ -44,14 +55,6 @@ const verify_micro_deposits: ISimpleRouteEditor = {
     pasteKey: 'request.params.customer',
     valueKey: 'result.id',
   }],
-  request:{
-    method: 'POST',
-    path: 'customers/${customer}/sources/${bank_token}/verify'
-  },
-  data: {
-    amounts:[32, 45],
-     // metadata: sample.metadata // not available here
-  },
 }
 
 export const customer_source_get: ISimpleRouteEditor = {

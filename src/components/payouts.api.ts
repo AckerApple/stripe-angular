@@ -2,7 +2,7 @@ import { accounts_get } from "./accounts.api"
 import { ISimpleRouteEditor } from "./app.component.utils"
 
 export const payouts_get: ISimpleRouteEditor = {
-  title: '💰 ⬆️ List all payouts',
+  title: '🧾 List all payouts',
   description: 'Returns a list of existing payouts sent to third-party bank accounts or that Stripe has sent you. The payouts are returned in sorted order, with the most recently created payouts appearing first.',
   links: [{
     title: 'docs',
@@ -24,7 +24,7 @@ export const payouts_get: ISimpleRouteEditor = {
 }
 
 export const payouts_post: ISimpleRouteEditor = {
-  title: '💰 🆕 Create payout',
+  title: '🆕 Create payout',
   description: 'To send funds to your own bank account, you create a new payout object.',
   request: {
     method: 'POST',
@@ -46,7 +46,7 @@ export const payouts_post: ISimpleRouteEditor = {
 }
 
 export const payouts_cancel: ISimpleRouteEditor = {
-  title: '💰 ❌ Cancel payout',
+  title: '❌ Cancel payout',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/payouts/cancel'
@@ -64,7 +64,7 @@ export const payouts_cancel: ISimpleRouteEditor = {
 }
 
 export const payouts_reverse: ISimpleRouteEditor = {
-  title: '💰 ↩️ Reverse payout',
+  title: '↩️ Reverse payout',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/payouts/reverse'

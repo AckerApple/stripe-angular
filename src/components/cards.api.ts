@@ -30,7 +30,7 @@ export const card: ISimpleRouteEditor = {
 }
 
 export const create_source: ISimpleRouteEditor = {
-  title: '💳 Create source',
+  title: '🆕 💳 Create source',
   link: 'https://stripe.com/docs/sources/ach-credit-transfer',
   hint: 'Typically used for credit-transfer/wires',
   favKeys: [{valueKey: 'result.id'}],
@@ -66,7 +66,7 @@ export const get_paymethods: ISimpleRouteEditor = {
 }
 
 export const source_get: ISimpleRouteEditor = {
-  title: '💳 GET Source',
+  title: '1️⃣ 💳 GET Source',
   link: 'https://stripe.com/docs/api/sources/retrieve',
   messages: [{
     valueExpression: 'ba_',
@@ -139,7 +139,7 @@ export const source_update: ISimpleRouteEditor = {
 }
 
 export const payment_method_get: ISimpleRouteEditor = {
-  title: '💳 GET Payment Method',
+  title: '1️⃣ 💳 GET Payment Method',
   link: 'https://stripe.com/docs/api/payment_methods/retrieve',
   request: {
     method: 'GET',

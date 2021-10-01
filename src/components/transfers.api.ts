@@ -1,10 +1,10 @@
-import { accounts_get } from "./accounts.api"
+import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./app.component.utils"
+import { charge } from "./charges.api"
 import { account_get } from "./common.api"
-import { charge } from "./common.api"
 
 export const transfer_create: ISimpleRouteEditor = {
-  title: '👤 ➡️ 👤 Create Transfer',
+  title: '🆕 Create Transfer',
   link: 'https://stripe.com/docs/api/transfers/create',
   request: {
     method: 'POST',
@@ -23,12 +23,22 @@ export const transfer_create: ISimpleRouteEditor = {
   pastes: [{
     pasteKey: 'data.destination',
     $api: () => accounts_get,
-    getTitle: () => accounts_get.result.data[0].id,
+    title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
+  },{
+    pasteKey: 'data.destination',
+    $api: () => accounts_retrieve,
+    title: 'Accounts retrieve by id',
+    valueKey: 'data.id',
   },{
     pasteKey: 'data.destination',
     $api: () => account_get,
     title: 'Account GET',
+    valueKey: 'result.id',
+  },{
+    pasteKey: 'data.destination',
+    $api: () => accounts_retrieve,
+    title: 'Accounts retrieve by id',
     valueKey: 'result.id',
   },{
     $api: () => charge,
@@ -36,15 +46,20 @@ export const transfer_create: ISimpleRouteEditor = {
     valueKey: 'result.id',
     title: 'created charge'
   },{
-    title: 'accounts GET 1️⃣ as header',
+    title: 'accounts list 1️⃣ as header',
     $api: () => accounts_get,
     valueKey: 'result.data.0.id',
+    pasteKey: 'request.headers.Stripe-Account'
+  },{
+    title: 'accounts GET as header',
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
   }]
 }
 
 const transfers_list = {
-  title: '👤 ➡️ 👤 List all transfers',
+  title: '🧾 List all transfers',
   description: 'Returns a list of existing transfers sent to connected accounts. The transfers are returned in sorted order, with the most recently created transfers appearing first.',
   request: {
     method: 'GET', path: 'transfers'

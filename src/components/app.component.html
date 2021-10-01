@@ -294,7 +294,7 @@
             (click)="showPrivateKeyChange=!showPrivateKeyChange"
           >
             💠
-            <menu-options *ngIf="showPrivateKeyChange">
+            <menu-options *ngIf="showPrivateKeyChange" title="key chain select">
               <ng-container *ngFor="let item of storage.privateKeys">
                 <ng-template #option>
                   <a class="border-bottom border-grey pad-xs hover-bg-energized"
@@ -617,11 +617,11 @@
 
   <div *ngIf="api.card.result.payment_method">
     <br />
-    <div style="display:flex">
+    <div class="flex">
       <strong>Payment Method Response</strong>
-      <small style="opacity:.5;font-size: 0.8em;">
-        <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
-          class="hover-highlight" (click)="copyText(api.card.result.payment_method.id)"
+      <small class="opacity-50 text-xxs">
+        <a class="hover-highlight cursor-pointer border radius-5 pad-xxs margin-xxs"
+          (click)="copyText(api.card.result.payment_method.id)"
         >✍️ copy id</a>
       </small>
     </div>
