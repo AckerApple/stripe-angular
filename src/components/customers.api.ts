@@ -245,6 +245,11 @@ export const customer_get_sources: ISimpleRouteEditor = {
     title: 'GET customers[0]',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
+  },{
+    $api: () => customer_get,
+    title: 'Customer GET 1️⃣',
+    valueKey: 'result.id',
+    pasteKey: 'request.params.id'
   }]
 }
 

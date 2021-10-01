@@ -15,7 +15,7 @@
       </span>
 
       <!--pastes-->
-      <ng-container *ngIf="showForm && api.pastes.length">
+      <ng-container *ngIf="showForm && api.pastes?.length">
         <div class="flex-1 flex-right">
           <pastes-menu [api]="api" [pastes]="api.pastes"></pastes-menu>
         </div>
