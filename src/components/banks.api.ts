@@ -10,6 +10,8 @@ export interface BankData {
 
 // ach token data
 export const bank: BankData & ISimpleRouteEditor = {
+  title: '🏦 Bank Account',
+  link: 'https://stripe.com/docs/api/customer_bank_accounts',
   verify: {}, // used during micro deposit verification
   data: {
     country: 'US',

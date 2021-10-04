@@ -7,7 +7,7 @@ import { getApis } from './getApis.function'
 import { apiGroups } from './apis'
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor, stringInterpolations, simpleRouteToSmart, simpleMenuToSmart, ISimpleRouteEditor,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor, stringInterpolations, simpleRouteToSmart, simpleMenuToSmart, ISimpleRouteEditor, stringIdentifiers,
 } from "./app.component.utils"
 import { serverSide as plaidServerSide } from "./plaid.apis"
 import { create_customer } from "./customers.api"
@@ -223,7 +223,8 @@ declare const Plaid: any
 
     this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
     this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
-        const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
+
+    const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
     if (storeLocally) {
       const cloneStorage = this.getSaveableStorage()
       const storageString = JSON.stringify(cloneStorage)
@@ -494,15 +495,25 @@ function resultSetter(
 }
 
 function replaceStringVars(url: string, data: any): {url:string, data: any} {
+  // ${interpolations}
   const regexp = stringInterpolations
   const array = [...url.matchAll(regexp)]
-
   for (let index = array.length - 1; index >= 0; --index) {
     const result = array[index]
     const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
     const value = data[key]
     // delete data[key] // remove from body data
     url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
+  }
+
+  // :identifiers
+  const idRegexp = stringIdentifiers
+  const idArray = [...url.matchAll(idRegexp)]
+  for (let index = idArray.length - 1; index >= 0; --index) {
+    const result = idArray[index]
+    const key = result[0].slice(2, result[0].length).trim() // remove :
+    const value = data[key]
+    url = url.slice(0, result.index+1) + value + url.slice(result.index + result[0].length, url.length)
   }
 
   return {url, data}
@@ -530,9 +541,9 @@ export function requestByRouter(
   }
 
   const rawData = options.post || options.json || route.data
-  const params = route.request.params
   const data = rawData ? JSON.parse(JSON.stringify(rawData)) : {} // clone
 
+  const params = route.request.params
   const replaced = replaceStringVars(url, params)
   url = replaced.url
 

@@ -57,7 +57,6 @@ import { removeValues } from './removeValues.function'
 
           data = data[key] || (data[key] = {})
         })
-        // console.log(keyName, this.api)
       }
     } catch (err) {
       console.error(`Failed to paste by config`, {api: this.api, paste:item}, err);

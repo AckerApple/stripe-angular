@@ -325,7 +325,7 @@ const customer_delete_source: ISimpleRouteEditor = {
 }
 
 export const customer_get_payment_methods: ISimpleRouteEditor = {
-  title: '👤 💳 GET Customer Payment Methods',
+  title: '🧾 💳 list payment methods',
   link: 'https://stripe.com/docs/api/payment_methods/list',
   request: {
     method: 'GET',
@@ -345,6 +345,11 @@ export const customer_get_payment_methods: ISimpleRouteEditor = {
     $api: () => payment_method_get,
     getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
+    pasteKey: 'data.customer'
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 Customer list 1️⃣',
+    valueKey: 'result.data.0.id',
     pasteKey: 'data.customer'
   }]
 }

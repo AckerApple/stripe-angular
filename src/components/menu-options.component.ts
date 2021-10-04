@@ -7,6 +7,7 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
   @Input() value: any
   @Input() title: string
   @Output() valueChange: EventEmitter<any> = new EventEmitter()
+  @Output() close: EventEmitter<void> = new EventEmitter()
 
   @ContentChildren('option') options:TemplateRef<ElementRef>[]
   @ViewChild('absElement', { static: false }) absElement: ElementRef;

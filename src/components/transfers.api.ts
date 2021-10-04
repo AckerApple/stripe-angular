@@ -2,6 +2,7 @@ import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./app.component.utils"
 import { charge } from "./charges.api"
 import { account_get } from "./common.api"
+import { payintent_create } from "./pay_intents.api"
 
 export const transfer_create: ISimpleRouteEditor = {
   title: '🆕 Create Transfer',
@@ -45,6 +46,11 @@ export const transfer_create: ISimpleRouteEditor = {
     pasteKey: 'data.source_transaction',
     valueKey: 'result.id',
     title: 'created charge'
+  },{
+    $api: () => payintent_create,
+    pasteKey: 'data.source_transaction',
+    valueKey: 'result.id',
+    title: 'created pay intent'
   },{
     title: 'accounts list 1️⃣',
     $api: () => accounts_get,

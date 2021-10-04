@@ -1,7 +1,7 @@
 import { ISimpleRouteEditor, sample } from "./app.component.utils"
 import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { card, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_get, customer_list_all } from "./customers.api"
+import { create_customer, customer_get, customer_get_payment_methods, customer_list_all } from "./customers.api"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
@@ -79,6 +79,11 @@ export const payintent_create: ISimpleRouteEditor = {
     getTitle: () => 'GET customer ' + customer_get.data.id,
     valueKey: 'data.id',
     pasteKey: 'data.customer',
+  },{
+    $api: () => customer_get_payment_methods,
+    title: '🧾 💳 Customer GET payment methods',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.payment_method',
   },{
     $api: () => card,
     getTitle: () => 'method ' + card.result.payment_method?.card.brand+' '+card.result.payment_method.card.last4,

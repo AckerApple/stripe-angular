@@ -1,4 +1,4 @@
-<!-- ↙️ 🐠 🔐 💳 👀 🏦 -->
+<!-- 🔑 💠 ↙️ 🐠 🔐 💳 👀 🏦 -->
 <table cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
   <tr>
     <td>
@@ -114,6 +114,18 @@
                         [class.bg-balanced] = "enableServerMode"
                         title = "tap to toggle enabled/disable and clear localStorage"
                       >{{ enableServerMode ? '☑️ enabled' : '◻️ disabled' }}</button>
+                      <div class="width-full text-xxs pos-rel">
+                        <div class="pos-abs opacity-80">
+                          <label for="savePrivateKeyLocally" style="align-items: center">
+                            <input
+                              type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
+                              (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
+                              [checked] = "storage.savePrivateKeyLocally"
+                            />
+                            <span>💾 save in localStorage</span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -290,26 +302,8 @@
       <div *ngIf="storage.privateKey" class="flex1">
         <strong>🔐 Private Key</strong>
         <div class="flex">
-          <div class="hover-highlight cursor-pointer"
-            (click)="copyText(storage.privateKey)"
-          >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
-          <a *ngIf="storage.privateKeys.length" class="flex-center flex-valign-center pad-left"
-            (click)="showPrivateKeyChange=!showPrivateKeyChange"
-          >
-            💠
-            <menu-options *ngIf="showPrivateKeyChange" title="key chain select">
-              <ng-container *ngFor="let item of storage.privateKeys">
-                <ng-template #option>
-                  <a class="border-bottom border-grey pad-xs hover-bg-energized"
-                    (click)="storage.privateKey=item.value"
-                    [class.bg-warning]="storage.privateKey===item.value"
-                  >
-                    {{item.title}}
-                  </a>
-                </ng-template>
-              </ng-container>
-            </menu-options>
-          </a>
+          <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
+          <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
         </div>
       </div>
 
@@ -405,7 +399,7 @@
             </ng-container>
             <button type="button" class="width-full"
               (click)="storage.privateKeys.push({})"
-            >add</button>
+            >add key</button>
           </div>
         </div>
       </div>
@@ -777,89 +771,81 @@
 <ng-template #resources>
   <h4>🚀 Setup and starter docs</h4>
   <div class="text-center flex-center flex-wrap">
-    <a
-      href="https://stripe.com/docs/payouts"
+    <a href="https://stripe.com/docs/payouts"
       target="_blank" class="resource-link"
     >
       💰 Receiving payouts
       <div class="text-xxxs opacity-half">connecting Stripe to your bank account</div>
     </a>
 
-    <a
-      href="https://stripe.dev/elements-examples/"
+    <a href="https://stripe.dev/elements-examples/"
       target="_blank" class="resource-link"
     >🎨 stripe elements examples</a>
 
-    <a
-      href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
+    <a href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
       target="_blank" class="resource-link"
     >🎥 🔐 Customer Authentication & 3D Secure</a>
 
-    <a
-      href="https://stripe.com/docs/sources/ach-credit-transfer"
+    <a href="https://stripe.com/docs/sources/ach-credit-transfer"
       target="_blank" class="resource-link"
       title="Receiving money from your customers"
     >🏦 ACH credit transfer</a>
 
-    <a
-      href="https://plaid.com/docs/auth/partnerships/stripe/"
+    <a href="https://plaid.com/docs/auth/partnerships/stripe/"
       target="_blank" class="resource-link"
       title="becoming outdated by beta Plaid but still useful docs"
     >🏦 Plaid + Stripe</a>
-    <a
-      href="https://plaid.com/docs/quickstart/#how-it-works"
+    <a href="https://plaid.com/docs/quickstart/#how-it-works"
       target="_blank" class="resource-link"
     >🏦 Plaid quickstart</a>
-    <a
-      href="https://stripe.com/docs/ach#using-plaid"
+    <a href="https://stripe.com/docs/ach#using-plaid"
       target="_blank" class="resource-link"
       title="becoming outdated by beta Plaid but still useful docs"
     >🏦 Plaid from Stripe POV</a>
-    <a
-      href="https://www.youtube.com/watch?v=aVJz1OUKcIM"
+    <a href="https://www.youtube.com/watch?v=aVJz1OUKcIM"
       target="_blank" class="resource-link"
       title="becoming outdated by beta Plaid but still useful docs"
     >🏦 🎥 Plaid + Stripe Youtube</a>
-    <a
-      href="https://plaid.com/docs/api/"
+    <a href="https://plaid.com/docs/api/"
       target="_blank" class="resource-link"
     >🏦 Plaid API Overview</a>
   </div>
 
   <h4>🔬 Technical implementation docs</h4>
   <div style="text-align:center;display:flex;justify-content: center;flex-wrap:wrap">
-    <a
-      href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
+    <a href="https://stripe.com/docs/api/events/types"
+      target="_blank" class="resource-link"
+    >🪝 Webhooks types of events</a>
+
+    <a href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
       target="_blank" class="resource-link"
     >🐠 demo code on github</a>
 
-    <a
-      href="https://stripe.com/docs/error-codes"
+    <a href="https://stripe.com/docs/error-codes"
       target="_blank" class="resource-link"
     >🔴 error codes</a>
 
-      <a
-      href="https://stripe.com/docs/js"
+      <a href="https://stripe.com/docs/js"
       target="_blank" class="resource-link"
     >📄 stripe.js docs</a>
-    <a
-      href="https://stripe.com/docs/api/sources/object#source_object-type"
+
+    <a href="https://stripe.com/docs/api/sources/object#source_object-type"
       target="_blank" class="resource-link"
     >📄 source types</a>
-    <a
-      href="https://www.youtube.com/watch?v=_1EX-DrikoA"
+
+    <a href="https://www.youtube.com/watch?v=_1EX-DrikoA"
       target="_blank" class="resource-link"
     >🎥 🏦 ACH bank account setup</a>
-    <a
-      href="https://stripe.com/docs/payments/payment-intents/migration/charges"
+
+    <a href="https://stripe.com/docs/payments/payment-intents/migration/charges"
       target="_blank" class="resource-link"
     >Pay Intent API VS. Charges API</a>
-    <a
-      href="https://stripe.com/docs/api/cards/update"
+
+    <a href="https://stripe.com/docs/api/cards/update"
       target="_blank" class="resource-link"
     >💳 update source card</a>
-    <a
-      href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
+
+    <a href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
       target="_blank" class="resource-link"
     >💳 ✅ check card valid without charge</a>
   </div>
@@ -885,9 +871,12 @@
 </ng-template>
 
 <ng-template #editPrivateKey>
-  <strong
-    title="This demo offers helpful server functionality"
-  >🔐 privateKey</strong>
+  <div class="flex-apart">
+    <strong
+      title="This demo offers helpful server functionality"
+    >🔐 Private Key</strong>
+    <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
+  </div>
   <div>
     <input type="password"
       (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
@@ -897,14 +886,7 @@
   </div>
   <div class="pos-rel text-xxs opacity-70">
     <div class="pos-abs">
-      <label for="savePrivateKeyLocally" style="align-items: center">
-        <input
-          type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-          (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
-          [checked] = "storage.savePrivateKeyLocally"
-        />
-        <span>💾 save in localStorage</span>
-      </label>
+      <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
     </div>
   </div>
 </ng-template>
@@ -986,4 +968,29 @@ npm run start
     />
     <span>💾 save in localStorage</span>
   </label>
+</ng-template>
+
+<ng-template #maskedPrivateKey>
+  <div class="hover-highlight cursor-pointer"
+    (click)="copyText(storage.privateKey)"
+  >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
+</ng-template>
+
+<ng-template #privateKeyChange>
+  <a *ngIf="storage.privateKeys.length" class="flex-center flex-valign-center pad-left">
+    <span (click)="showPrivateKeyChange=true">💠</span>
+    <menu-options *ngIf="showPrivateKeyChange" title="key chain select" (close)="showPrivateKeyChange=false">
+      <ng-container *ngFor="let item of storage.privateKeys">
+        <ng-template #option>
+          <a class="border-bottom border-grey pad-xs hover-bg-energized"
+            (click)="tempPrivateKey=storage.privateKey=item.value;showPrivateKeyChange=false;save()"
+            [class.bg-warning]="storage.privateKey===item.value"
+            [title] = "(item.value | slice : 0 : 5) + '*****************' + (item.value | slice : -4)"
+          >
+            {{storage.privateKey===item.value ? '🔘' : '⚪️'}}&nbsp;{{item.title}}
+          </a>
+        </ng-template>
+      </ng-container>
+    </menu-options>
+  </a>
 </ng-template>
