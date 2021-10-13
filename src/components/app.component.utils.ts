@@ -27,11 +27,14 @@ export const sample = {
   }
 }
 
+export interface KeyInfo {title: string, value: string}
+
 export interface localSchema {
   key: string
 
   privateKey: string
-  privateKeys: {title: string, value: string}[] // switchable keys
+  privateKeys: KeyInfo[] // switchable keys
+  publicKeys: KeyInfo[] // switchable keys
   webhookSigningSecret?: string
   saveRequestsLocal?: boolean
   saveKeyLocally?: boolean
@@ -283,6 +286,7 @@ export function getProjectLocalStorage(): localSchema {
   storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
   storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
   storage.privateKeys = storage.privateKeys || []
+  storage.publicKeys = storage.publicKeys || []
 
   storage.requests = storage.requests || {
     // passed along when token or sources created

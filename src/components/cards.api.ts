@@ -79,7 +79,7 @@ export const source_get: ISimpleRouteEditor = {
   }],
   request: {
     method: 'GET',
-    path: 'sources/${id}',
+    path: 'sources/:id',
   },
   pastes: [{
     $api: () => card,
@@ -104,7 +104,7 @@ export const source_update: ISimpleRouteEditor = {
   link: 'https://stripe.com/docs/api/sources/update',
   request: {
     method: 'POST',
-    path: 'sources/${id}'
+    path: 'sources/:id'
   },
   data: {
     metadata: {},
@@ -143,7 +143,7 @@ export const payment_method_get: ISimpleRouteEditor = {
   link: 'https://stripe.com/docs/api/payment_methods/retrieve',
   request: {
     method: 'GET',
-    path: 'payment_methods/${id}'
+    path: 'payment_methods/:id'
   },
   pastes: [{
     $api: () => card,
@@ -164,7 +164,7 @@ export const payment_method_update: ISimpleRouteEditor = {
   }],
   request: {
     method: 'POST',
-    path: 'payment_methods/${id}'
+    path: 'payment_methods/:id'
   },
   data: {
     billing_details: {},

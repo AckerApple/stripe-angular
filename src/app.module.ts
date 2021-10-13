@@ -7,6 +7,7 @@ import { SimpleRouteEditComponent } from "./components/simple-route-edit.compone
 import { DumpComponent } from "./components/dump.component"
 import { PastesMenuComponent } from "./components/pastes-menu.component"
 import { MenuOptionsComponent } from "./components/menu-options.component"
+import { KeyChangerComponent } from "./components/key-changer.component"
 import { ToolWrapComponent } from "./components/tool-wrap.component"
 export { AppComponent } from "./components/app.component"
 import { StripeModule } from "stripe-angular"
@@ -20,6 +21,7 @@ import { StripeModule } from "stripe-angular"
     AppComponent,
     PastesMenuComponent,
     MenuOptionsComponent,
+    KeyChangerComponent,
     DumpComponent,
     ServerToolsComponent,
     ToolWrapComponent,

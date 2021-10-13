@@ -6,7 +6,7 @@ import { plaid_stripeBankCreate } from "./plaid.apis"
 
 // create
 export const create_customer: ISimpleRouteEditor = {
-  title: '👤 Create Customer',
+  title: '🆕 Create Customer',
   link: 'https://stripe.com/docs/api/customers',
   favKeys: [{valueKey: 'result.id'}],
   request: {
@@ -58,10 +58,15 @@ export const customer_list_all: ISimpleRouteEditor = {
     path: 'customers',
   },
   pastes: [{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.starting_after',
+    title: 'next customer'
+  },{
     $api: () => create_customer,
     valueKey: 'result.id',
     pasteKey: 'data.starting_after',
-    getTitle: () => 'created 👤 ' + create_customer.result?.id
+    title: '🆕 created customer'
   }],
   data: {
     limit: 3, "created[lte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
@@ -69,11 +74,11 @@ export const customer_list_all: ISimpleRouteEditor = {
 }
 
 export const delete_customer: ISimpleRouteEditor = {
-  title: '❌ 👤 Delete Customer',
+  title: '❌ Delete Customer',
   link: 'https://stripe.com/docs/api/customers/delete',
   request: {
     method: 'DELETE',
-    path: 'customers/${id}'
+    path: 'customers/:id'
   },
   pastes: [{
     $api: () => create_customer,
@@ -93,7 +98,7 @@ export const customer_update: ISimpleRouteEditor = {
   links: [{title: 'docs', url: 'https://stripe.com/docs/api/customers/update'}],
   request: {
     method: 'POST',
-    path: 'customers/${id}'
+    path: 'customers/:id'
   },
   data: {
     metadata: sample.metadata
@@ -128,17 +133,17 @@ export const customer_update: ISimpleRouteEditor = {
 }
 
 export const customer_get: ISimpleRouteEditor = {
-  title: '👤 GET Customer',
+  title: '1️⃣ GET Customer',
   link: 'https://stripe.com/docs/api/customers/retrieve',
   request: {
     method: 'GET',
-    path: 'customers/${id}'
+    path: 'customers/:id'
   },
   pastes: [{
     $api: () => create_customer,
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
-    getTitle: () => 'created 👤 ' + create_customer.result?.id
+    title: '🆕 created customer'
   },{
     $api: () => source_get,
     title: 'source GET customer',
@@ -153,11 +158,11 @@ export const customer_get: ISimpleRouteEditor = {
 }
 
 export const customer_attach_method: ISimpleRouteEditor = {
-  title: '👤 ➡️ 💳 Customer attach pay method',
+  title: '👤 ➡️ 💳 Attach pay method',
   favKeys: [{valueKey: 'result.id'}],
   request: {
     method: 'POST',
-    path: 'payment_methods/${paymentMethodId}/attach'
+    path: 'payment_methods/:paymentMethodId/attach'
   },
   data: {
     customer: ''
@@ -168,6 +173,11 @@ export const customer_attach_method: ISimpleRouteEditor = {
     valueKey: 'result.id',
     pasteKey: 'data.customer'
   },{
+    $api: () => customer_list_all,
+    title: '🧾 Customer list 1️⃣',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.customer'
+  },{
     getTitle: () => 'method '+card.result.payment_method.card.brand+' '+card.result.payment_method.card.last4,
     $api: () => card,
     valueKey: 'result.payment_method.id',
@@ -176,12 +186,12 @@ export const customer_attach_method: ISimpleRouteEditor = {
 }
 
 export const customer_attach_source: ISimpleRouteEditor = {
-  title: '👤 ➡️ 💳 Customer attach pay source',
+  title: '👤 ➡️ 💳 🏦 attach pay source',
   link: 'https://stripe.com/docs/sources/customers#attaching-a-source-to-a-new-customer-object',
   favKeys: [{valueKey: 'result.id'}],
   request: {
     method: 'POST',
-    path: 'customers/${id}/sources'
+    path: 'customers/:id/sources'
   },
   data: {
     source: ''
@@ -190,17 +200,17 @@ export const customer_attach_source: ISimpleRouteEditor = {
     $api: () => bank,
     valueKey: 'result.id',
     pasteKey: 'data.source',
-    title: 'bank token',
+    title: '🏦 bank token',
   },{
     $api: () => create_source,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
-    getTitle: () => 'source ' + create_source.result.type,
+    getTitle: () => '🆕 Created source ' + create_source.result.type, // typically create_source.request.type = 'ach_credit_transfer'
   },{
     $api: () => card,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
-    getTitle: () => 'source ' + card.result.source.card.brand+' '+card.result.source.card.last4,
+    title: '🆕 💳 Created card source',
   },{
     $api: () => plaid_stripeBankCreate,
     valueKey: 'result.stripe_bank_account_token',
@@ -210,7 +220,12 @@ export const customer_attach_source: ISimpleRouteEditor = {
     $api: () => create_customer,
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
-    getTitle: () => 'customer ' + create_customer.result.description,
+    title: '🆕 Created customer',
+  },{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id',
+    title: '🧾 Customer list 1️⃣',
   }],
 }
 
@@ -218,17 +233,17 @@ export const customer_detach_method: ISimpleRouteEditor = {
   title: '❌ 💳 Detach payment method',
   request: {
     method: 'POST',
-    path: 'payment_methods/${id}/detach'
+    path: 'payment_methods/:id/detach'
   },
   data: {} // not used currently
 }
 
 export const customer_get_sources: ISimpleRouteEditor = {
-  title: '👤 💳 GET Customer Sources',
+  title: '🧾 💳 Sources list',
   link: 'https://stripe.com/docs/api/cards/list',
   request: {
     method: 'GET',
-    path: 'customers/${id}/sources'
+    path: 'customers/:id/sources'
   },
   pastes: [{
     $api: () => create_customer,
@@ -254,11 +269,11 @@ export const customer_get_sources: ISimpleRouteEditor = {
 }
 
 export const customer_get_source: ISimpleRouteEditor = {
-  title: '1️⃣ 👤 💳 GET Customer Source',
+  title: '1️⃣ 👤 💳 Source retrieve 1️⃣',
   link: 'https://stripe.com/docs/api/cards/retrieve',
   request: {
     method: 'GET',
-    path: 'customers/${customer}/sources/${source}'
+    path: 'customers/:customer/sources/:source'
   },
   pastes: [{
     $api: () => create_customer,
@@ -284,7 +299,7 @@ export const customer_get_source: ISimpleRouteEditor = {
 }
 
 const customer_delete_source: ISimpleRouteEditor = {
-  title: '❌ 👤 💳 DELETE Customer Source',
+  title: '❌ 💳 DELETE Customer Source',
   links: [{
     title: 'delete customer bank',
     url: 'https://stripe.com/docs/api/customer_bank_accounts/delete'
@@ -294,7 +309,7 @@ const customer_delete_source: ISimpleRouteEditor = {
   }],
   request: {
     method: 'DELETE',
-    path: 'customers/${customer}/sources/${source}'
+    path: 'customers/:customer/sources/:source'
   },
   pastes: [{
     $api: () => create_customer,

@@ -1,4 +1,4 @@
-<!-- 🔑 💠 ↙️ 🐠 🔐 💳 👀 🏦 -->
+<!-- ⚙️ ❌ 🔑 💠 ↙️ 🐠 🔐 💳 👀 🏦 -->
 <table cellPadding="0" cellSpacing="0" border="0" style="width:100%;height:100%">
   <tr>
     <td>
@@ -13,7 +13,7 @@
         </div>
         <div class="flex-center">
           <p *ngIf="showMore" class="text-xs opacity-70 max-width-900 text-justify">
-            📕 This tool started as just functionality for Stripe elements for the Angular framework. It has since grown into a full featured testing app for not only just 🐠 stripe-angular but now also for Plaid, Stripe Web Hooks, and so much more.
+            📕 This tool started as just functionality for Stripe elements for the Angular framework. It has since grown into a full featured testing app for not only just 🐠 stripe-angular but now also for Plaid, Stripe Webhooks, and so much more.
             <br />
             <br />
             For specific client side 🐠 stripe-angular documentation and support, <span class="underline"><a class="no-a-style" href="https://github.com/AckerApple/stripe-angular">use the README.md file</a></span>. Then come back here to interactively test time and time again to affirm understandings.
@@ -34,36 +34,8 @@
 
           <!-- hide elements when possibly changing keys -->
           <ng-container *ngIf="stripe && !changekey">
-            <div class="tool-wrap flex1">
-              <label for="card-like-element" class="flex flex-wrap flex-valign-center color-white">
-                <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
-                <small class="underline">
-                  <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
-                </small>
-              </label>
-
-              <div class="tool-panel">
-                <p class="text-xs text-xs opacity-80">Test &lt;stripe-card&gt; component by entering card details below</p>
-                <ng-container *ngTemplateOutlet="cardUi"></ng-container>
-              </div>
-            </div>
-
-            <div class="tool-wrap flex1">
-              <div class="flex flex-wrap flex-valign-bottom text-white">
-                <h3 class="margin-0 pad-0 flex-1">
-                  <label for="card-like-element">🏦 Bank Account</label>
-                </h3>
-                <small class="underline">
-                  <a href="https://stripe.com/docs/ach#testing-ach" target="_blank" class="text-xs no-a-style"
-                  >demo accounts</a>
-                </small>
-              </div>
-              <div class="tool-panel">
-                <p class="text-xs text-xs opacity-80">Test &lt;stripe-bank&gt; component by entering bank details below</p>
-                <ng-container *ngTemplateOutlet="bankUi"></ng-container>
-              </div>
-            </div>
-
+            <ng-container *ngTemplateOutlet="cardTemplate"></ng-container>
+            <ng-container *ngTemplateOutlet="bankTemplate"></ng-container>
             <tool-wrap class="flex1 flex-center" [api]="api.confirm_pay_intent" [(format)]="storage.format"></tool-wrap>
           </ng-container>
         </div>
@@ -84,102 +56,11 @@
 
       <br /><br />
 
-      <div class="text-white flex-wrap flex-center child-margin" style="max-width: 100vw">
-        <div class="bg-grey border-bottom flex-1"
-          [class.width-full]="showServerMethods"
-        >
-          <a class="flex-valign-center flex-wrap flex-right child-margin" (click)="showServerMethods = !showServerMethods">
-            <span>{{ showServerMethods ? '🔽' : '▶️'}}</span>
-            <span class="flex-1">
-              <h2 class="opacity-half margin-0 pad-0">🔗 Server Functionality</h2>
-              <small class="opacity-70">Helpful tools ONLY available in this demo by Stripe <strong>privateKey</strong></small>
-            </span>
-          </a>
-
-          <div *ngIf="showServerMethods">
-            <div class="pad flex-center">
-              <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
-                <div class="flex">
-                  <div class="flex-1">
-                    <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
-                  </div>
-                  <div class="flex-valign-bottom">
-                    <div class="flex-wrap">
-                      <button type="submit" class="active-bg-balanced">
-                        💾&nbsp;save
-                      </button>
-
-                      <button type="button" (click)="toggleServerMode()" class="active-bg-energized"
-                        [class.bg-assertive] = "!enableServerMode"
-                        [class.bg-balanced] = "enableServerMode"
-                        title = "tap to toggle enabled/disable and clear localStorage"
-                      >{{ enableServerMode ? '☑️ enabled' : '◻️ disabled' }}</button>
-                      <div class="width-full text-xxs pos-rel">
-                        <div class="pos-abs opacity-80">
-                          <label for="savePrivateKeyLocally" style="align-items: center">
-                            <input
-                              type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-                              (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
-                              [checked] = "storage.savePrivateKeyLocally"
-                            />
-                            <span>💾 save in localStorage</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            <br /><br />
-
-            <server-tools [api]="api" [apiGroups]="apiGroups" [storage]="storage"></server-tools>
-
-            <br />
-            <button (click)="showServerMethods = false" class="active-bg-energized">❌ close</button>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey border-bottom text-white">
-          <div class="flex-valign-center flex-right flex-wrap child-margin"
-            (click)="showWebhookMethods = !showWebhookMethods"
-          >
-            <a>
-              {{ showWebhookMethods ? '🔽' : '▶️'}}
-            </a>
-            <a class="flex-1">
-              <h2 class="opacity-half margin-0 pad-0">🪝 Web Hook Functionality</h2>
-              <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
-            </a>
-          </div>
-
-          <ng-container *ngIf="showWebhookMethods">
-            <br />
-
-            <div class="pad flex-center">
-              <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
-                <div class="flex">
-                  <div class="flex-1">
-                    <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
-                  </div>
-                  <div>
-                    <div class="invisible">🔐</div>
-                    <button type="submit" class="active-bg-balanced">
-                      💾&nbsp;save
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            <br />
-
-            <ng-container *ngTemplateOutlet="webhookFunctionality"></ng-container>
-            <br />
-            <button (click)="showWebhookMethods = false" class="active-bg-energized">❌ close</button>
-          </ng-container>
-        </div>
+      <div class="text-white flex-wrap flex-center child-margin-xs" style="max-width: 100vw">
+        <!-- server functionality -->
+        <ng-container *ngTemplateOutlet="stripeServerTemplate"></ng-container>
+        <!-- webhook functionality -->
+        <ng-container *ngTemplateOutlet="webhookTemplate"></ng-container>
 
         <div class="flex-1 text-white bg-grey border-bottom" style="max-width: 100vw">
           <div class="flex-valign-center flex-right flex-wrap child-margin"
@@ -295,8 +176,13 @@
     <div class="flex flex-wrap child-margin text-smx">
       <div class="flex-1">
         <strong>🗝 Publishable Key</strong>
-        <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
-        >{{ storage.key | slice : 0 : 16 }}...</div>
+        <div class="flex">
+          <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
+          >{{ storage.key | slice : 0 : 16 }}...</div>
+          <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
+            (valueChange) = "tempPublishableKey=$event;save()"
+          ></key-changer>
+        </div>
       </div>
 
       <div *ngIf="storage.privateKey" class="flex1">
@@ -343,10 +229,15 @@
 <ng-template #storageForm>
   <div *ngIf="changekey">
     <form action="javascript:" (submit)="save();changekey=false">
-      <div class="flex-wrap flex-valign-center child-margin">
+      <div class="flex-wrap flex-top child-margin">
         <div class="flex-1">
           <div>
-            <strong>🗝 publishableKey</strong>
+            <div class="flex-apart">
+              <strong>👁 🗝 publishableKey</strong>
+              <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
+                (valueChange) = "tempPublishableKey=$event;save()"
+              ></key-changer>
+            </div>
             <div>
               <input
                 (keyup)="tempPublishableKey=$event.target.value"
@@ -381,27 +272,23 @@
           </label>
         </div>
 
-        <div *ngIf="storage.saveKeyLocally" class="flex-1">
-          <strong>🔑 Switchable keys</strong>
-          <div>
-            <ng-container *ngFor="let item of storage.privateKeys; let index=index">
-              <div class="flex">
-                <input type="text" maxLength="125" [value]="item.title || ''"
-                  (keyup)="item.title=$event.target.value" placeholder="key title"
-                />&nbsp;=&nbsp;
-                <input type="password" placeholder="🔑 value"
-                  (keyup)="item.value=$event.target.value"
-                  [value]="item.value || ''"
-                  style="width:100%"
-                />
-                <a (click)="storage.privateKeys.splice(index, 1)">❌</a>
-              </div>
-            </ng-container>
-            <button type="button" class="width-full"
-              (click)="storage.privateKeys.push({})"
-            >add key</button>
+        <ng-container *ngIf="storage.saveKeyLocally">
+          <div class="width-full"></div>
+
+          <div class="flex1">
+            <strong>👁 🗝 Switchable Public Keys</strong>
+            <div>
+              <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.publicKeys}"></ng-container>
+            </div>
           </div>
-        </div>
+
+          <div class="flex1">
+            <strong>🔐 Switchable Private Keys</strong>
+            <div>
+              <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
+            </div>
+          </div>
+        </ng-container>
       </div>
 
       <br />
@@ -558,7 +445,7 @@
         </small>
       </div>
       <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
-      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any web hooks. Use Source instead</div>
+      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any webhooks. Use Source instead</div>
     </div>
 
     <div *ngIf="editSourceRequest">
@@ -593,7 +480,7 @@
 
   <div *ngIf="api.card.result.token">
     <br />
-    <strong>Token Response</strong>
+    <strong>↘️ Token Response</strong>
     <textarea
       disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
     >{{ api.card.result.token | json }}</textArea>
@@ -602,7 +489,7 @@
   <div *ngIf="api.card.result.source">
     <br />
     <div style="display:flex">
-      <strong style="flex-grow:1">Source Response</strong>
+      <strong style="flex-grow:1">↘️ Source Response</strong>
       <small style="opacity:.5;font-size: 0.8em;">
         <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
           class="hover-highlight" (click)="copyText(api.card.result.source.id)"
@@ -615,7 +502,7 @@
   <div *ngIf="api.card.result.payment_method">
     <br />
     <div class="flex">
-      <strong>Payment Method Response</strong>
+      <strong>↘️ Payment Method Response</strong>
       <small class="opacity-50 text-xxs">
         <a class="hover-highlight cursor-pointer border radius-5 pad-xxs margin-xxs"
           (click)="copyText(api.card.result.payment_method.id)"
@@ -924,7 +811,7 @@
   </div>
   <div class="pos-rel">
     <small class="pos-abs opacity-half text-xxs">
-      This demo offers helpful web hook server functionality
+      This demo offers helpful webhook server functionality
     </small>
   </div>
 </ng-template>
@@ -977,20 +864,160 @@ npm run start
 </ng-template>
 
 <ng-template #privateKeyChange>
-  <a *ngIf="storage.privateKeys.length" class="flex-center flex-valign-center pad-left">
-    <span (click)="showPrivateKeyChange=true">💠</span>
-    <menu-options *ngIf="showPrivateKeyChange" title="key chain select" (close)="showPrivateKeyChange=false">
-      <ng-container *ngFor="let item of storage.privateKeys">
-        <ng-template #option>
-          <a class="border-bottom border-grey pad-xs hover-bg-energized"
-            (click)="tempPrivateKey=storage.privateKey=item.value;showPrivateKeyChange=false;save()"
-            [class.bg-warning]="storage.privateKey===item.value"
-            [title] = "(item.value | slice : 0 : 5) + '*****************' + (item.value | slice : -4)"
-          >
-            {{storage.privateKey===item.value ? '🔘' : '⚪️'}}&nbsp;{{item.title}}
-          </a>
-        </ng-template>
-      </ng-container>
-    </menu-options>
-  </a>
+  <key-changer [keys]="storage.privateKeys" [(value)]="storage.privateKey"
+    (valueChange) = "tempPrivateKey=$event;save()"
+  ></key-changer>
+</ng-template>
+
+<ng-template #cardTemplate>
+  <div class="tool-wrap flex1">
+    <label for="card-like-element" class="flex flex-wrap flex-valign-center color-white">
+      <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
+      <small class="underline">
+        <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
+      </small>
+    </label>
+
+    <div class="tool-panel">
+      <p class="text-xs text-xs opacity-80">Test &lt;stripe-card&gt; component by entering card details below</p>
+      <ng-container *ngTemplateOutlet="cardUi"></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #bankTemplate>
+  <div class="tool-wrap flex1">
+    <div class="flex flex-wrap flex-valign-bottom text-white">
+      <h3 class="margin-0 pad-0 flex-1">
+        <label for="card-like-element">🏦 Bank Account</label>
+      </h3>
+      <small class="underline">
+        <a href="https://stripe.com/docs/ach#testing-ach" target="_blank" class="text-xs no-a-style"
+        >demo accounts</a>
+      </small>
+    </div>
+    <div class="tool-panel">
+      <p class="text-xs text-xs opacity-80">Test &lt;stripe-bank&gt; component by entering bank details below</p>
+      <ng-container *ngTemplateOutlet="bankUi"></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #stripeServerTemplate>
+  <div class="bg-grey border-bottom flex-1"
+    [class.width-full]="showServerMethods"
+  >
+    <a class="flex-valign-center flex-wrap flex-right child-margin" (click)="showServerMethods = !showServerMethods">
+      <span>{{ showServerMethods ? '🔽' : '▶️'}}</span>
+      <span class="flex-1">
+        <h2 class="opacity-half margin-0 pad-0">🔗 Server Functionality</h2>
+        <small class="opacity-70">Helpful tools ONLY available in this demo by Stripe <strong>privateKey</strong></small>
+      </span>
+    </a>
+
+    <div *ngIf="showServerMethods">
+      <div class="pad flex-center">
+        <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+          <div class="flex">
+            <div class="flex-1">
+              <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+            </div>
+            <div class="flex-valign-bottom">
+              <div class="flex-wrap">
+                <button type="submit" class="active-bg-balanced">
+                  💾&nbsp;save
+                </button>
+
+                <button type="button" (click)="toggleServerMode()" class="active-bg-energized"
+                  [class.bg-assertive] = "!enableServerMode"
+                  [class.bg-balanced] = "enableServerMode"
+                  title = "tap to toggle enabled/disable and clear localStorage"
+                >{{ enableServerMode ? '☑️ enabled' : '◻️ disabled' }}</button>
+                <div class="width-full text-xxs pos-rel">
+                  <div class="pos-abs opacity-80">
+                    <label for="savePrivateKeyLocally" style="align-items: center">
+                      <input
+                        type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
+                        (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
+                        [checked] = "storage.savePrivateKeyLocally"
+                      />
+                      <span>💾 save in localStorage</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <br /><br />
+
+      <server-tools [api]="api" [apiGroups]="apiGroups" [storage]="storage"></server-tools>
+
+      <br />
+      <button (click)="showServerMethods = false" class="active-bg-energized">❌ close</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #webhookTemplate>
+  <div class="flex-1 bg-grey border-bottom text-white">
+    <div class="flex-valign-center flex-right flex-wrap child-margin"
+      (click)="showWebhookMethods = !showWebhookMethods"
+    >
+      <a>
+        {{ showWebhookMethods ? '🔽' : '▶️'}}
+      </a>
+      <a class="flex-1">
+        <h2 class="opacity-half margin-0 pad-0">🪝 Webhook Functionality</h2>
+        <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
+      </a>
+    </div>
+
+    <ng-container *ngIf="showWebhookMethods">
+      <br />
+
+      <div class="pad flex-center">
+        <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+          <div class="flex">
+            <div class="flex-1">
+              <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
+            </div>
+            <div>
+              <div class="invisible">🔐</div>
+              <button type="submit" class="active-bg-balanced">
+                💾&nbsp;save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <br />
+
+      <ng-container *ngTemplateOutlet="webhookFunctionality"></ng-container>
+      <br />
+      <button (click)="showWebhookMethods = false" class="active-bg-energized">❌ close</button>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #keysInputArray let-array="array">
+  <ng-container *ngFor="let item of array; let index=index">
+    <div class="flex-valign-center">
+      <input type="text" maxLength="125" [value]="item.title || ''"
+        (keyup)="item.title=$event.target.value" placeholder="key title"
+      />&nbsp;=&nbsp;
+      <input type="password" placeholder="🔑 value"
+        (keyup)="item.value=$event.target.value"
+        [value]="item.value || ''"
+        style="width:100%"
+      />
+      <a (click)="array.splice(index, 1)">❌</a>
+    </div>
+  </ng-container>
+  <button type="button" class="width-full"
+    (click)="array.push({})"
+  >add key</button>
 </ng-template>

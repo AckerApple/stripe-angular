@@ -1,5 +1,5 @@
 import { ISimpleRouteEditor, sample } from "./app.component.utils"
-import { create_customer } from "./customers.api"
+import { create_customer, customer_list_all } from "./customers.api"
 
 export interface BankData {
   data: stripe.BankAccountTokenOptions,
@@ -29,7 +29,7 @@ const verify_micro_deposits: ISimpleRouteEditor = {
   title: '🪙 🪙 Verify ACH micro deposits',
   request:{
     method: 'POST',
-    path: 'customers/${customer}/sources/${bank_token}/verify'
+    path: 'customers/:customer/sources/:bank_token/verify'
   },
   data: {
     amounts:[32, 45],
@@ -56,6 +56,11 @@ const verify_micro_deposits: ISimpleRouteEditor = {
     getTitle: () => 'customer ' + create_customer.result?.id,
     pasteKey: 'request.params.customer',
     valueKey: 'result.id',
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 Customer list 1️⃣',
+    pasteKey: 'request.params.customer',
+    valueKey: 'result.id',
   }],
 }
 
@@ -64,7 +69,7 @@ export const customer_source_get: ISimpleRouteEditor = {
   link: 'https://stripe.com/docs/api/customer_bank_accounts/retrieve',
   request: {
     method: 'GET',
-    path: 'customers/${customer}/sources/${source}'
+    path: 'customers/:customer/sources/:source'
   },
   messages: [{
     valueExpression: 'btok_',

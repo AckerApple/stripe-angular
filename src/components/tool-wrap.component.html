@@ -25,7 +25,7 @@
     </div>
 
     <a *ngIf="!showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
-      (click)="showForm = !showForm"
+      (click)="showForm = !showForm" [class.bg-info]="api.result"
     >show</a>
 
     <ng-container *ngIf="showForm">

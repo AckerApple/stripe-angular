@@ -1,0 +1,16 @@
+<a *ngIf="keys.length" class="flex-center flex-valign-center pad-left">
+  <span (click)="show=true">💠</span>
+  <menu-options *ngIf="show" title="key chain select" (close)="show=false">
+    <ng-container *ngFor="let item of keys">
+      <ng-template #option>
+        <a class="border-bottom border-grey pad-xs hover-bg-energized"
+          (click)="valueChange.emit(item.value);show=false;"
+          [class.bg-warning]="value===item.value"
+          [title] = "(item.value | slice : 0 : 5) + '*****************' + (item.value | slice : -4)"
+        >
+          {{value===item.value ? '🔘' : '⚪️'}}&nbsp;{{item.title}}
+        </a>
+      </ng-template>
+    </ng-container>
+  </menu-options>
+</a>

@@ -12,7 +12,8 @@ export const transfer_create: ISimpleRouteEditor = {
     path: 'transfers',
     headers: {
       'Stripe-Account': ''
-    }
+    },
+    removeHeaderValues: ['']
   },
   data: {
     amount: 400,
@@ -20,6 +21,7 @@ export const transfer_create: ISimpleRouteEditor = {
     destination: '',
     transfer_group: 'TEST_ORDER',
     metadata: {},
+    description: 'created using stripe-angular demo',
   },
   pastes: [{
     pasteKey: 'data.destination',
@@ -79,7 +81,7 @@ const transfers_get = {
   title: '1️⃣ Retrieve a transfer',
   description: 'Retrieves the details of an existing transfer. Supply the unique transfer ID from either a transfer creation request or the transfer list, and Stripe will return the corresponding transfer information.',
   request: {
-    method: 'GET', path: 'transfers/${id}'
+    method: 'GET', path: 'transfers/:id'
   },
   pastes: [{
     $api: () => transfers_list,

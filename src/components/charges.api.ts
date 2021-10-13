@@ -1,7 +1,7 @@
 import { ISimpleRouteEditor, sample } from "./app.component.utils"
 import { accounts_get, accounts_retrieve } from "./accounts.api"
-import { card, create_source, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_attach_source, customer_get } from "./customers.api"
+import { card, create_source, source_get } from "./cards.api"
+import { create_customer, customer_attach_source, customer_get, customer_list_all } from "./customers.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
 
 export const charge: ISimpleRouteEditor = {
@@ -115,6 +115,11 @@ export const charge: ISimpleRouteEditor = {
     $api: () => source_get,
     title: 'source GET customer',
     valueKey: 'result.customer',
+    pasteKey: 'data.customer',
+  },{
+    $api: () => customer_list_all,
+    title: '👤 🧾 Customer list 1️⃣',
+    valueKey: 'result.data.0.id',
     pasteKey: 'data.customer',
   },{
     $api: () => create_customer,

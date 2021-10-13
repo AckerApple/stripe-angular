@@ -26,7 +26,7 @@ declare const Plaid: any
   version: string = (packageJson as any).version;
 
   loaded: boolean
-  sending: boolean
+  sending: boolean // when stripe.js is communicating card/bank form entry
   cardComplete = false
   enableServerMode?: boolean = storage.privateKey ? true : false;
 
