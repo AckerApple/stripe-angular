@@ -125,8 +125,9 @@
                   </div>
                 </form>
               </ng-container>
-              <br />
             </div>
+
+            <br />
 
             <div class="flex-wrap flex-center">
               <!-- step 1 -->
@@ -863,6 +864,7 @@ npm run start
   >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
 </ng-template>
 
+<!-- 💠 -->
 <ng-template #privateKeyChange>
   <key-changer [keys]="storage.privateKeys" [(value)]="storage.privateKey"
     (valueChange) = "tempPrivateKey=$event;save()"

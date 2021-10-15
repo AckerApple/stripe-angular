@@ -1,7 +1,5 @@
-import { ISimpleRouteEditor, sample } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { accounts_get, accounts_retrieve } from "./accounts.api"
-import { card, create_source, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_attach_source, customer_get } from "./customers.api"
 
 export const balance_get: ISimpleRouteEditor = {
   title: '💵 Balance',

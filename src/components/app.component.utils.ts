@@ -1,10 +1,9 @@
-import * as hmacSHA256 from 'crypto-js/hmac-sha256';
-import * as formatHex from 'crypto-js/format-hex';
-import { EventEmitter } from "@angular/core"
-import formurlencoded from 'form-urlencoded';
-import { Subject } from 'rxjs';
+import * as hmacSHA256 from 'crypto-js/hmac-sha256'
+import * as formatHex from 'crypto-js/format-hex'
+import formurlencoded from 'form-urlencoded'
+import { ISimpleRouteEditor } from './typings'
 
-export const stripeServer = 'https://api.stripe.com/v1/';
+export const stripeServer = 'https://api.stripe.com/v1/'
 const sampleAddress = {
   city: 'Coconut Creek',
   country: null,
@@ -164,90 +163,12 @@ export function tryParse(data: string | any) {
   }
 }
 
-export interface ApiMessage {
-  message: string // '⚠️ It appears you are using a bank source which is NOT truly a source. Fetch bank sources using GET /customers/:id/sources',
-  valueKey: string // Only shows when value present. Example: request.params.id
-  valueExpression: string // Only shows when value matches expression ba_
-}
-
-export interface ApiPaste {
-  api?: ISimpleRouteEditor // default is current api
-  $api: () => ISimpleRouteEditor // default is current api
-  title?: string
-
-  valueKey: string // MUST be to a simple value detection (will not detect sub objects)
-  pasteValueKey?: string // if different from valueKey (typically used when a sub object reference involved)
-
-  // when no paste defined, "id" is the paste key
-  pasteKey?: string
-  paste?: (thisApi: ISimpleRouteEditor) => any
-  removeKeys?: string[] // ex: {balance, secret, ...keepTheRest}
-  removeValues?: any[] // deletes any values with null
-
-  getTitle?: (thisApi: ISimpleRouteEditor) => string
-}
-
-export interface LinkRef {
-  url: string
-  title: string
-}
-
 export interface PostWarning {
   message: string
 }
 
 export interface WarnResults {warnings?: PostWarning[]}
 export declare type PostWarnFunction = (data: Record<string, any>, thisApi: ISimpleRouteEditor) => PostWarning[] & WarnResults
-
-export interface RouteRequest {
-  params?: {[name: string]: string}
-  method: string
-  host?: string // base url example https://sandbox.plaid.com/
-  path: string,
-
-  headers?: {[name: string]: string}
-  removeHeaderValues?: any[]
-}
-
-export interface ISimpleRouteEditor {
-  title?: string
-  description?: string
-  hint?: string
-  warn?: string // description of things to keep in mind
-
-  links?: LinkRef[]
-  // maybe deprecated
-  link?: string // documentation link
-
-  // Input data. For POST requests, its the request post body. For GET its the URL variables (this may need to change)
-  data?: {[index:string]: any}
-  examples?: {[index:string]: any}[]
-
-  // last result
-  result?: {[index:string]: any} // Output data. Runtime data. For request, its the response body
-  pastes?: ApiPaste[]
-
-  messages?: ApiMessage[]
-
-  request?: RouteRequest
-
-  // data points that can be display links or copy action buttons
-  favKeys?: {
-    title?: string,
-    type?: 'link' | 'copy'
-    valueKey: string
-    get?: (data: any) => any
-  }[] // ['link_token']
-}
-
-export interface SmartRouteEditor extends ISimpleRouteEditor {
-  load: number
-  $result: Subject<any>
-  resultAt?: number
-  error?: any
-  $send: EventEmitter<{[index:string]: any}>
-  runtimeMessages: ApiMessage[]
-}
 
 
 function getUrlStorage() {
@@ -387,78 +308,6 @@ export function changeKey(
   }
 
   return current[ keys[0] ]
-}
-
-export function simpleMenuToSmart(
-  menu: {[name: string]: ISimpleRouteEditor}
-): {[name: string]: SmartRouteEditor} {
-  return Object.entries(menu).reduce((end, [key, value]) => {
-    end[ key ] = simpleRouteToSmart(value)
-    return end
-  }, menu as any)
-}
-
-function paramRequestUrlParams(request: RouteRequest) {
-  const identifiers = getStringIdentifiers(request.path)
-  const interps = getStringInterpolations(request.path)
-
-  if (interps.length) {
-    request.params = request.params || {}
-
-    // create data points for path interps
-    interps.forEach(result => {
-      const nameString = result[0]
-      const name = nameString.slice(2, nameString.length-1)
-      request.params[name] = request.params[name] || ''
-    })
-  }
-
-  if (identifiers.length) {
-    request.params = request.params || {}
-
-    // create data points for path identifiers
-    identifiers.forEach(result => {
-      const nameString = result[0]
-      const name = nameString.slice(2, nameString.length) // remove /:
-      request.params[name] = request.params[name] || ''
-    })
-  }
-}
-
-export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor {
-  const routeRef = route as SmartRouteEditor
-
-  if (routeRef.data && routeRef.examples) {
-    routeRef.examples.push({title: 'original data', data: routeRef.data})
-  }
-
-  if (routeRef.request) {
-    paramRequestUrlParams(routeRef.request)
-  }
-
-  // runtime tie memory paste-able data points
-  if (routeRef.pastes) {
-    routeRef.pastes.forEach((paste, index) => {
-      if (paste.$api) {
-        paste.api = paste.$api()
-
-        if (!paste.api) {
-          console.error(`could not populate api paste ${index}: ${routeRef.title}`)
-          throw 22
-        }
-      }
-
-      if (!paste.api) {
-        paste.api = routeRef // its a self ref paste
-      }
-    })
-  }
-
-  routeRef.$result = new EventEmitter()
-  routeRef.$send = new EventEmitter()
-  routeRef.load = 0
-
-  return routeRef
 }
 
 export const stringIdentifiers = /\/:[^\/]+(?=\/|$)/g;

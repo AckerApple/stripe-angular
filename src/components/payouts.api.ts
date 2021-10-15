@@ -1,5 +1,5 @@
-import { accounts_get, accounts_retrieve } from "./accounts.api"
-import { ISimpleRouteEditor } from "./app.component.utils"
+import { accounts_external_list, accounts_get, accounts_retrieve } from "./accounts.api"
+import { ISimpleRouteEditor } from "./typings"
 
 export const payouts_get: ISimpleRouteEditor = {
   title: '🧾 List all payouts',
@@ -26,6 +26,7 @@ export const payouts_get: ISimpleRouteEditor = {
 export const payouts_post: ISimpleRouteEditor = {
   title: '🆕 Create payout',
   description: 'To send funds to your own bank account, you create a new payout object.',
+  link: 'https://stripe.com/docs/api/payouts/create',
   request: {
     method: 'POST',
     path: 'payouts',
@@ -47,6 +48,15 @@ export const payouts_post: ISimpleRouteEditor = {
     $api: () => accounts_retrieve,
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
+  },{
+    title: 'External accounts 1️⃣',
+    $api: () => accounts_external_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.destination',
+    pastes: [{
+      pasteKey: 'data.source_type',
+      value: 'bank_account'
+    }]
   }]
 }
 

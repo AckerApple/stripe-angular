@@ -1,5 +1,5 @@
 import { accounts_get, accounts_retrieve } from "./accounts.api"
-import { ISimpleRouteEditor } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { charge } from "./charges.api"
 import { account_get } from "./common.api"
 import { payintent_create } from "./pay_intents.api"

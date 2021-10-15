@@ -1,4 +1,5 @@
-import { ISimpleRouteEditor, sample } from "./app.component.utils"
+import { sample } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 // import { plaid_stripeBankCreate, bank, cardApis } from "./getApis.function"
 import { card, create_source, payment_method_get, source_get } from "./cards.api"

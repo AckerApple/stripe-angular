@@ -1,23 +1,59 @@
-<div class="flex-wrap flex-center child-margin-smx">
-  <ng-container *ngFor="let group of apiGroups">
-    <a class="pad-v-xxs pad-h border-bottom-3 border-white" (click)="showGroup=group"
-      [class.bg-grey-2x]="showGroup === group"
-    >{{group.title}}</a>
-  </ng-container>
-</div>
+<div class="flex-wrap flex-center">
+  <div>
+    <div class="child-margin-smx"
+      [ngClass]="showGroup ? 'text-left text-xs' : 'flex-wrap flex-center'"
+    >
+      <div *ngFor="let group of apiGroups" class="cursor-pointer hover-bg-info pad-v-xxs pad-h"
+        [class.bg-grey-2x]="showGroup === group"
+        [ngClass] = "!showGroup && 'border-bottom-3 border-white'"
+        (click)="showGroup=group;showApi=null"
+      >
+        <a>{{group.title}}</a>
+      </div>
+    </div>
+  </div>
 
-<ng-container *ngFor="let group of apiGroups">
-  <ng-container *ngIf="showGroup === group">
-    <div class="flex-center child-margin">
-      <a class="no-a-style text-smx" *ngFor="let item of group.links" [href]="item.url" target="_blank">
-        <span class="underline">{{item.title || item.url}}</span>
+
+  <div *ngIf="showGroup" [class.flex-1]="!showApi"
+    [ngStyle]="showApi ? {} : {'max-width':'75vw'}"
+  >
+    <div class="child-pad"
+      [ngClass]="showApi ? 'text-left text-xs' : 'flex-wrap'"
+    >
+      <a *ngFor="let api of showGroup.apis" (click)="showApi=api"
+        class="flex2 hover-bg-info block"
+        [class.bg-grey-2x]="showApi === api"
+      >
+        {{api.title}}
+        <div *ngIf="api.request" class="pad-left opacity-70 text-xxs" style="overflow-wrap:break-word">
+          {{api.request.method}}&nbsp;/{{api.request.path}}
+        </div>
       </a>
     </div>
-    <div *ngIf="group.description" class="flex-center">
-      <p class="opacity-70 text-smx margin" style="max-width: 1200px;">{{group.description}}</p>
-    </div>
-    <div class="flex-wrap flex-center">
-      <tool-wrap *ngFor="let api of group.apis" class="flex1 flex-stacked" [api]="api" [(format)]="storage.format"></tool-wrap>
-    </div>
-  </ng-container>
-</ng-container>
+  </div>
+
+  <a id="serverToolsWrap"></a>
+  <tool-wrap *ngIf="showApi" class="flex1"
+    [api]="showApi" [(format)]="storage.format" [showForm]="1"
+  >
+    <ng-template #footer>
+      <div *ngIf="showApi.related.length" class="radius-5 bg-dark text-center margin-top">
+        <a class="pad-smx block" (click)="showRelated = !showRelated">
+          {{ showApi.related.length }} related tasks
+        </a>
+        <div class="flex-wrap text-xs child-pad">
+          <ng-container *ngFor="let related of showApi.related">
+            <a *ngIf="showRelated || showApi[ related.relation.valueKey ]" href="#serverToolsWrap"
+              class="no-a-style flex2 flex-valign-center hover-bg-positive active-bg-energized"
+              (click)="gotoApi(related.api, related.relation)"
+              [class.opacity-half]="!showApi[ related.relation.valueKey ]"
+            >
+              {{related.api.title}}
+            </a>
+          </ng-container>
+        </div>
+      </div>
+
+    </ng-template>
+  </tool-wrap>
+</div>

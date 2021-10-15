@@ -14,15 +14,16 @@
         {{api.request.method}}&nbsp;/{{api.request.path}}
       </span>
 
-      <!--pastes-->
+      <!-- 💠 pastes -->
       <ng-container *ngIf="showForm && api.pastes?.length">
         <div class="flex-1 flex-right">
           <pastes-menu [api]="api" [pastes]="api.pastes"></pastes-menu>
         </div>
       </ng-container>
 
-      <div *ngIf="api.description" class="text-xxs opacity-60">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{api.description}}</div>
     </div>
+
+    <div *ngIf="api.description" class="text-xxs opacity-60">{{api.description}}</div>
 
     <a *ngIf="!showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
       (click)="showForm = !showForm" [class.bg-info]="api.result"
@@ -38,7 +39,7 @@
         </ng-template>
       </simple-route-edit>
 
-      <div class="flex-center text-xs pad-top-xs opacity-70">
+      <div class="flex-valign-center flex-center text-xs pad-top-xs opacity-70">
         <small *ngFor="let item of api.links" class="pad-h-xs underline">
           <a [href]="item.url" class="text-white no-a-style" target="_blank"
           >{{item.title}}</a>
@@ -51,7 +52,6 @@
         </small>
       </div>
     </ng-container>
-
 
     <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
   </div>

@@ -7,8 +7,10 @@ import { getApis } from './getApis.function'
 import { apiGroups } from './apis'
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, SmartRouteEditor, stringInterpolations, simpleRouteToSmart, simpleMenuToSmart, ISimpleRouteEditor, stringIdentifiers,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers,
 } from "./app.component.utils"
+import { SmartRouteEditor } from "./typings"
+import { simpleMenuToSmart, simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { serverSide as plaidServerSide } from "./plaid.apis"
 import { create_customer } from "./customers.api"
 

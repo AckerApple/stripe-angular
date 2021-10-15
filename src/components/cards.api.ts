@@ -1,6 +1,6 @@
 // import { customerApis } from './getApis.function'
 import { create_customer, customer_get_sources } from './customers.api'
-import { ISimpleRouteEditor } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 
 export const cardRemoveKeys = [
   'wallet', 'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'generated_from',

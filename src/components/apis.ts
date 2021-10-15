@@ -1,4 +1,4 @@
-import { LinkRef, ISimpleRouteEditor } from "./app.component.utils"
+import { LinkRef, ISimpleRouteEditor } from "./typings"
 import { apis as customerApis } from './customers.api'
 import { apis as disputesApis } from './disputes.api'
 import { apis as accountsApis } from './accounts.api'
@@ -10,7 +10,7 @@ import { apis as commonApis } from "./common.api"
 import { apis as chargesApis } from "./charges.api"
 import { apis as cardApis } from "./cards.api"
 
-interface ApiGroup {
+export interface ApiGroup {
   title: string
   links?: LinkRef[]
   description?: string
@@ -61,6 +61,9 @@ export const apiGroups: ApiGroup[] = [{
   links: [{
     url: 'https://stripe.com/docs/api/payouts',
     title: '📕 API docs'
+  },{
+    url: 'https://stripe.com/docs/connect/testing#payouts',
+    title: '🔬 test payout account numbers'
   }]
 },{
   title: '🤝 Transfers',

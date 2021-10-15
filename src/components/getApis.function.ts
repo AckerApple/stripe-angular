@@ -1,4 +1,5 @@
-import { ISimpleRouteEditor, sample, simpleMenuToSmart, SmartRouteEditor } from "./app.component.utils"
+import { simpleMenuToSmart } from "./simpleRouteToSmart.function"
+import { ISimpleRouteEditor, SmartRouteEditor } from "./typings"
 
 import { plaid_createPublicToken } from './plaid.apis'
 import { bank } from './banks.api'

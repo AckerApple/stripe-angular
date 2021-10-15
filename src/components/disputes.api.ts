@@ -1,4 +1,4 @@
-import { ISimpleRouteEditor } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 
 const disputes_list: ISimpleRouteEditor = {
   title: '🧾 List all disputes',

@@ -1,10 +1,12 @@
-import { ISimpleRouteEditor, sample } from "./app.component.utils"
+import { sample } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { card, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_get, customer_get_payment_methods, customer_list_all } from "./customers.api"
+import { create_customer, customer_get, customer_get_payment_methods, customer_get_sources, customer_list_all } from "./customers.api"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
+  description: 'Creates a PaymentIntent object',
   links: [{
     title: '📕 API docs',
     url: 'https://stripe.com/docs/api/payment_intents'
@@ -64,6 +66,27 @@ export const payintent_create: ISimpleRouteEditor = {
       metadata: sample.metadata,
       setup_future_usage: 'off_session',
     }
+  },{
+    title: 'Source ach_debit with transfer',
+    data: {
+      amount: 10000,
+      confirm: "true",
+      currency: "usd",
+      metadata: {
+        entity_id: "entity_id_abc_123",
+        site_abb: "wal",
+        env: "dev",
+        order_id: "stripe-angular-testings"
+      },
+      transfer_group: "TEST_ORDER",
+      source: "",
+      customer: "",
+      transfer_data: {
+        amount: 7000,
+        destination: "acct_1JkUxsS7GjacJ5J0"
+      },
+      payment_method_types: ["ach_debit"]
+    }
   }],
   pastes: [{
     $api: () => accounts_get,
@@ -112,8 +135,18 @@ export const payintent_create: ISimpleRouteEditor = {
     pasteKey: 'data.payment_method',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'method '+payment_method_get.result.brand+' '+payment_method_get.result.last4,
+    title: 'pay method GET 1️⃣',
     valueKey: 'result.id',
+    pasteKey: 'data.payment_method',
+  },{
+    $api: () => source_get,
+    title: 'source GET 1️⃣',
+    valueKey: 'result.id',
+    pasteKey: 'data.payment_method',
+  },{
+    $api: () => customer_get_sources,
+    title: '🧾 👤 Customer list sources 1️⃣',
+    valueKey: 'result.data.0.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => payment_method_get,

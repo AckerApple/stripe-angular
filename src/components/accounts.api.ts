@@ -1,4 +1,4 @@
-import { ISimpleRouteEditor } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card } from "./cards.api"
 // import { cardApis, bank } from "./getApis.function"
@@ -32,7 +32,45 @@ export const accounts_create: ISimpleRouteEditor = {
     metadata: {
       order_id: '6735' // value in Stripe docs
     }
-  }
+  },
+  examples: [{
+    title: 'individual',
+    data: {
+      business_type: "individual",
+      country: 'US',
+      type: 'custom',
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
+      },
+      email: "jenny.rosen@example.com",
+      individual: {
+        email: "jenny.rosen@example.com",
+        first_name: "jenny",
+        last_name: 'rosen',
+        phone: '000-000-0000',
+        ssn_last_4: '0000',
+        dob: {day:'01', month: '01', year: '1901'},
+        address: {
+          city: "coconut creek",
+          country: "US",
+          line1: "address_full_match​",
+          postal_code: "33066",
+          state: "FL"
+        },
+        metadata: {
+          'stripe-angular': 'demo'
+        }
+      },
+      metadata: {
+        order_id: '6735' // value in Stripe docs
+      }
+    },
+  }]
 }
 
 export const accounts_get: ISimpleRouteEditor = {
@@ -126,6 +164,29 @@ export const accounts_update: ISimpleRouteEditor = {
     title: '1️⃣ Accounts retrieve',
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
+    pastes: [{
+      pasteKey: 'data', valueKey:'result',
+      removeKeys: [
+        'id', 'object', 'created', 'charges_enabled',
+        'country', 'details_submitted',
+        'external_accounts', 'future_requirements',
+        'payouts_enabled', 'requirements', 'type',
+
+        'individual.id', 'individual.account', 'individual.object', 'individual.created',
+        'individual.id_number_provided',
+        'individual.relationship',
+        'individual.requirements',
+        'individual.ssn_last_4_provided',
+        'individual.future_requirements',
+        'individual.verification.status',
+
+        'company.tax_id_provided',
+        'capabilities.transfers',
+        'capabilities.card_payments',
+        'settings.dashboard'
+      ],
+      removeValues: [null]
+    }]
   },{
     $api: () => accounts_create,
     title: '🆕 Accounts create',
@@ -152,6 +213,16 @@ export const accounts_retrieve: ISimpleRouteEditor = {
     $api: () => accounts_get,
     title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => accounts_update,
+    // title: '⬆️ Accounts Update 1️⃣',
+    valueKey: 'result.id',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => accounts_create,
+    // title: '🆕 Account Create',
+    valueKey: 'result.id',
     pasteKey: 'request.params.id',
   }]
 }

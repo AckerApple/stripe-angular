@@ -1,4 +1,5 @@
-import { ISimpleRouteEditor, sample } from "./app.component.utils"
+import { sample } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { create_customer, customer_list_all } from "./customers.api"
 
 export interface BankData {

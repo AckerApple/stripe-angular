@@ -1,6 +1,7 @@
 import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
 import { flatten, removeFlats } from "./app.component"
-import { changeKey, copyText, SmartRouteEditor } from "./app.component.utils"
+import { changeKey, copyText } from "./app.component.utils"
+import { SmartRouteEditor } from "./typings"
 
 @Component({
   selector: 'simple-route-edit',
@@ -24,7 +25,7 @@ import { changeKey, copyText, SmartRouteEditor } from "./app.component.utils"
   copyText = copyText
   changeKey = changeKey
 
-  ngOnInit(){
+  ngOnChanges(){
     this.showPost = this.config.data ? true : false
     if (this.config.request) {
       this.showParams = this.config.request.params ? true : false

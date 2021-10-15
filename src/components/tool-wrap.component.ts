@@ -1,5 +1,5 @@
 import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
-import { SmartRouteEditor } from "./app.component.utils"
+import { SmartRouteEditor } from "./typings"
 
 @Component({
   selector: 'tool-wrap',

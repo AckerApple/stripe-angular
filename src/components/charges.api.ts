@@ -1,4 +1,5 @@
-import { ISimpleRouteEditor, sample } from "./app.component.utils"
+import { sample } from "./app.component.utils"
+import { ISimpleRouteEditor } from "./typings"
 import { accounts_get, accounts_retrieve } from "./accounts.api"
 import { card, create_source, source_get } from "./cards.api"
 import { create_customer, customer_attach_source, customer_get, customer_list_all } from "./customers.api"
