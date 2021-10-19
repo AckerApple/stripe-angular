@@ -26,6 +26,10 @@ import { copyText } from "./app.component.utils"
     this.evalShowKids()
   }
 
+  typeof(v) {
+    return typeof(v)
+  }
+
   evalShowKids() {
     this.showLevels = (this.showLevels>=0 && this.showLevels) || (this.showLevels === -1 && !this.key && this.isObject() ? 2 : 0)
 

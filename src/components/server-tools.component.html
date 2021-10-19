@@ -8,27 +8,41 @@
         [ngClass] = "!showGroup && 'border-bottom-3 border-white'"
         (click)="showGroup=group;showApi=null"
       >
-        <a>{{group.title}}</a>
+        <a>{{group.icon}} {{group.title}}</a>
       </div>
     </div>
   </div>
 
-
   <div *ngIf="showGroup" [class.flex-1]="!showApi"
-    [ngStyle]="showApi ? {} : {'max-width':'75vw'}"
+    [ngStyle]="showApi ? {} : {'max-width':'75vw'}" class="flex-stacked"
   >
-    <div class="child-pad"
-      [ngClass]="showApi ? 'text-left text-xs' : 'flex-wrap'"
-    >
-      <a *ngFor="let api of showGroup.apis" (click)="showApi=api"
-        class="flex2 hover-bg-info block"
-        [class.bg-grey-2x]="showApi === api"
+    <div class="flex-1">
+      <div class="child-pad"
+        [ngClass]="showApi ? 'text-left text-xs' : 'flex-wrap'"
       >
-        {{api.title}}
-        <div *ngIf="api.request" class="pad-left opacity-70 text-xxs" style="overflow-wrap:break-word">
-          {{api.request.method}}&nbsp;/{{api.request.path}}
+        <a *ngFor="let api of showGroup.apis" (click)="showApi=api"
+          class="flex2 hover-bg-info block"
+          [class.bg-grey-2x]="showApi === api"
+        >
+          {{api.title}}
+          <div *ngIf="api.request" class="pad-left opacity-70 text-xxs" style="overflow-wrap:break-word">
+            {{api.request.method}}&nbsp;/{{api.request.path}}
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- additional links -->
+    <div *ngIf="!showApi && showGroup.links?.length" class="text-xs pad-top-xxs flex-center opacity-30 hover-opacity-70 bg-white">
+      <div class="text-dark pad-h text-center">
+        <small class="opacity-70">🔗 Additional resources</small>
+        <div class="flex-valign-center flex-center child-margin">
+          <small *ngFor="let item of showGroup.links" class="underline">
+            <a [href]="item.url" class="no-a-style" target="_blank"
+            >{{item.title}}</a>
+          </small>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 
@@ -48,7 +62,7 @@
               (click)="gotoApi(related.api, related.relation)"
               [class.opacity-half]="!showApi[ related.relation.valueKey ]"
             >
-              {{related.api.title}}
+              {{related.group?.icon ? related.group.icon + ' ' : ''}}{{related.title}}
             </a>
           </ng-container>
         </div>

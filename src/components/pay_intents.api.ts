@@ -1,8 +1,9 @@
 import { sample } from "./app.component.utils"
 import { ISimpleRouteEditor } from "./typings"
-import { accounts_get, accounts_retrieve } from "./accounts.api"
+import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_get, customer_get_payment_methods, customer_get_sources, customer_list_all } from "./customers.api"
+import { create_customer, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
+import { refunds_list, refunds_retrieve } from "./refunds.api"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
@@ -16,6 +17,9 @@ export const payintent_create: ISimpleRouteEditor = {
   },{
     url: 'https://stripe.com/docs/api/payment_intents/create#create_payment_intent-off_session',
     title: 'off_session'
+  },{
+    url: 'https://stripe.com/docs/payments/payment-intents#future-usage',
+    title: 'setup_future_usage'
   }],
   favKeys: [{
     valueKey: 'result.id',
@@ -38,6 +42,7 @@ export const payintent_create: ISimpleRouteEditor = {
     currency: 'usd',
     setup_future_usage: 'off_session',
     metadata: sample.metadata,
+    statement_descriptor: 'stripe-angular data',
     transfer_group: 'TEST_ORDER',
     // application_fee_amount: 0, // only usable with transfer
   },
@@ -51,6 +56,7 @@ export const payintent_create: ISimpleRouteEditor = {
         destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
       },
       metadata: sample.metadata,
+      statement_descriptor: 'stripe-angular with xfer',
       setup_future_usage: 'off_session',
     }
   },{
@@ -64,6 +70,7 @@ export const payintent_create: ISimpleRouteEditor = {
         destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
       },
       metadata: sample.metadata,
+      statement_descriptor: 'stripe-angular application_fee_amount',
       setup_future_usage: 'off_session',
     }
   },{
@@ -89,11 +96,6 @@ export const payintent_create: ISimpleRouteEditor = {
     }
   }],
   pastes: [{
-    $api: () => accounts_get,
-    title: 'Accounts list 1️⃣',
-    pasteKey: 'data.transfer_data.destination',
-    valueKey: 'result.data.0.id'
-  },{
     $api: () => accounts_retrieve,
     title: 'Accounts retrieve by id',
     pasteKey: 'data.transfer_data.destination',
@@ -102,15 +104,26 @@ export const payintent_create: ISimpleRouteEditor = {
     $api: () => customer_list_all,
     title: '🧾 customer list 1️⃣',
     valueKey: 'result.data.0.id',
-    pasteKey: 'data.customer'
+    pasteKey: 'data.customer',
+    pastes: [{
+      pasteKey: 'data.payment_method',
+      valueKey: 'result.data.0.default_source',
+      valueMatches: [{expression: '^(?!ba_)'}]
+    },{
+      pasteKey: 'data.source',
+      valueKey: 'result.data.0.default_source',
+      valueMatches: [{expression: '^ba_'}],
+      pastes: [{
+        pasteKey: 'data.payment_method_types',
+        value: ['ach_debit', 'card']
+      }]
+    }]
   },{
     $api: () => create_customer,
-    getTitle: () => 'customer '+create_customer.result.description,
     valueKey: 'result.id',
     pasteKey: 'data.customer'
   },{
     $api: () => customer_get,
-    getTitle: () => 'GET customer ' + customer_get.data.id,
     valueKey: 'data.id',
     pasteKey: 'data.customer',
   },{
@@ -118,19 +131,20 @@ export const payintent_create: ISimpleRouteEditor = {
     title: '🧾 💳 Customer GET payment methods',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.payment_method',
+    pastes: [{
+      valueKey: 'result.data.0.customer',
+      pasteKey: 'data.customer'
+    }]
   },{
     $api: () => card,
-    getTitle: () => 'method ' + card.result.payment_method?.card.brand+' '+card.result.payment_method.card.last4,
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => card,
-    getTitle: () => 'source '+card.result.source?.card?.brand+' '+card.result.source.card.last4,
     valueKey: 'result.source.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => card,
-    getTitle: () => 'token '+card.result.token.card.brand+' '+card.result.token.card.last4,
     valueKey: 'result.token.card.id',
     pasteKey: 'data.payment_method',
   },{
@@ -146,18 +160,56 @@ export const payintent_create: ISimpleRouteEditor = {
   },{
     $api: () => customer_get_sources,
     title: '🧾 👤 Customer list sources 1️⃣',
-    valueKey: 'result.data.0.id',
-    pasteKey: 'data.payment_method',
+    valueKey: 'result.data.0.customer',
+    pasteKey: 'data.customer',
+    pastes: [{
+      valueKey: 'result.data.0.id',
+      pasteKey: 'data.payment_method',
+      valueMatches: [{expression: '^(?!ba_)'}] // do NOT paste for banks
+    },{
+      valueKey: 'result.data.0.id',
+      pasteKey: 'data.source',
+      valueMatches: [{expression: '^ba_'}] // only paste for banks
+    },{
+      pasteKey: 'data.payment_method_types',
+      value: ["ach_debit"],
+      valueMatches: [{
+        expression: 'ba_', valueKey: 'result.data.0.id' // only paste for banks
+      }],
+    }]
+  },{
+    $api: () => customer_get_source,
+    valueKey: 'result.customer',
+    pasteKey: 'data.customer',
+    pastes: [{
+      valueKey: 'result.id',
+      pasteKey: 'data.payment_method',
+      valueMatches: [{expression: '^(?!ba_)'}] // do NOT paste for banks
+    },{
+      valueKey: 'result.id',
+      pasteKey: 'data.source',
+      valueMatches: [{expression: '^ba_'}] // only paste for banks
+    },{
+      pasteKey: 'data.payment_method_types',
+      value: ["ach_debit"],
+      valueMatches: [{
+        expression: 'ba_', valueKey: 'result.id' // only paste for banks
+      }],
+    }]
   },{
     $api: () => payment_method_get,
     title:'pay method customer',
     valueKey: 'result.customer',
     pasteKey: 'data.customer',
   },{
-    title: 'accounts list 1️⃣',
-    $api: () => accounts_get,
+    title: 'Create pay intent as another account',
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
+  },{
+    $api: () => accounts_list,
+    pasteKey: 'data.transfer_data.destination',
+    valueKey: 'result.data.0.id'
   },{
     title: 'accounts GET',
     $api: () => accounts_retrieve,
@@ -167,16 +219,28 @@ export const payintent_create: ISimpleRouteEditor = {
 }
 
 const payintent_cancel: ISimpleRouteEditor = {
-  title: '🚫 🧧 Cancel Pay Intent',
+  title: '🚫 Cancel Pay Intent',
   link: 'https://stripe.com/docs/api/payment_intents/cancel',
   request: {
     method: 'POST',
     path: 'payment_intents/:id/cancel'
   },
   data: {
-    id: '',
     cancellation_reason: 'requested_by_customer', // duplicate, fraudulent, requested_by_customer, or abandoned
-  }
+  },
+  pastes:[{
+    $api: () => payintent_create,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => payintent_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => payintent_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id'
+  }]
 }
 
 export const payintent_retrieve: ISimpleRouteEditor = {
@@ -195,6 +259,14 @@ export const payintent_retrieve: ISimpleRouteEditor = {
     $api: () => payintent_list,
     pasteKey: 'request.params.id',
     valueKey: 'result.data.0.id'
+  },{
+    $api: () => refunds_list,
+    valueKey: 'result.data.0.payment_intent',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => refunds_retrieve,
+    valueKey: 'result.payment_intent',
+    pasteKey: 'request.params.id'
   }]
 }
 
@@ -262,7 +334,7 @@ export const payintent_update: ISimpleRouteEditor = {
     pasteKey: 'request.params.id',
     valueKey: 'result.id',
   },{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.data.0.id'
@@ -278,12 +350,10 @@ export const payintent_update: ISimpleRouteEditor = {
     pasteKey: 'data.customer'
   },{
     $api: () => create_customer,
-    getTitle: () => 'customer '+create_customer.result.description,
     valueKey: 'result.id',
     pasteKey: 'data.customer'
   },{
     $api: () => customer_get,
-    getTitle: () => 'GET customer ' + customer_get.data.id,
     valueKey: 'data.id',
     pasteKey: 'data.customer',
   },{
@@ -293,22 +363,18 @@ export const payintent_update: ISimpleRouteEditor = {
     pasteKey: 'data.payment_method',
   },{
     $api: () => card,
-    getTitle: () => 'method ' + card.result.payment_method?.card.brand+' '+card.result.payment_method.card.last4,
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => card,
-    getTitle: () => 'source '+card.result.source?.card?.brand+' '+card.result.source.card.last4,
     valueKey: 'result.source.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => card,
-    getTitle: () => 'token '+card.result.token.card.brand+' '+card.result.token.card.last4,
     valueKey: 'result.token.card.id',
     pasteKey: 'data.payment_method',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'method '+payment_method_get.result.brand+' '+payment_method_get.result.last4,
     valueKey: 'result.id',
     pasteKey: 'data.payment_method',
   },{
@@ -318,7 +384,7 @@ export const payintent_update: ISimpleRouteEditor = {
     pasteKey: 'data.customer',
   },{
     title: 'accounts list 1️⃣',
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
@@ -346,12 +412,10 @@ export const payintent_list: ISimpleRouteEditor = {
     pasteKey: 'data.customer',
   },{
     $api: () => create_customer,
-    getTitle: () => 'customer '+create_customer.result.description,
     valueKey: 'result.id',
     pasteKey: 'data.customer'
   },{
     $api: () => customer_get,
-    getTitle: () => 'GET customer ' + customer_get.data.id,
     valueKey: 'data.id',
     pasteKey: 'data.customer',
   },{

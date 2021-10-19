@@ -54,7 +54,6 @@ const verify_micro_deposits: ISimpleRouteEditor = {
     title: 'bank token',
   },{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result?.id,
     pasteKey: 'request.params.customer',
     valueKey: 'result.id',
   },{
@@ -65,7 +64,7 @@ const verify_micro_deposits: ISimpleRouteEditor = {
   }],
 }
 
-export const customer_source_get: ISimpleRouteEditor = {
+export const bank_source_get: ISimpleRouteEditor = {
   title: '1️⃣ 👤 🏦 Retrieve a bank account',
   link: 'https://stripe.com/docs/api/customer_bank_accounts/retrieve',
   request: {
@@ -91,5 +90,5 @@ export const customer_source_get: ISimpleRouteEditor = {
 }
 
 export const apis = [
-  verify_micro_deposits, customer_source_get
+  verify_micro_deposits, bank_source_get
 ]

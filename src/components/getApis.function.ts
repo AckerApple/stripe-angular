@@ -29,12 +29,10 @@ const confirm_pay_intent: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => payintent_retrieve,
-    getTitle: () => 'pay intent client_secret',
     pasteKey: 'data.client_secret',
     valueKey: 'result.client_secret',
   },{
     $api: () => payintent_create,
-    getTitle: () => 'created pay intent',
     pasteKey: 'data.client_secret',
     valueKey: 'result.client_secret',
   }]

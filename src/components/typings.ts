@@ -1,5 +1,6 @@
 import { EventEmitter } from "@angular/core"
 import { Subject } from 'rxjs'
+import { ApiGroup } from "./apis"
 
 export interface RouteRequest {
   params?: {[name: string]: string}
@@ -11,25 +12,30 @@ export interface RouteRequest {
   removeHeaderValues?: any[]
 }
 
+interface RelatedApi {
+  api:SmartRouteEditor
+  relation: Paste
+  title?: string // maybe deprecated
+  group?: ApiGroup
+}
+
 export interface SmartRouteEditor extends ISimpleRouteEditor {
   load: number
   $result: Subject<any>
   resultAt?: number
   error?: any
   $send: EventEmitter<{[index:string]: any}>
-  related: {api:SmartRouteEditor, relation: Paste}[]
+  related: RelatedApi[]
   runtimeMessages: ApiMessage[]
 }
 
 export interface ApiPaste extends Paste {
   $api: () => ISimpleRouteEditor | SmartRouteEditor // default is current api
   title?: string
+  // titlePrepend?: string // Intended to appear in front of dynamic title
 
   // deprecated? (maybe not, this is runtime edition)
   api?: SmartRouteEditor // ISimpleRouteEditor // default is current api
-
-  // deprecated?
-  getTitle?: (thisApi: ISimpleRouteEditor) => string
 }
 
 export interface LinkRef {
@@ -43,9 +49,16 @@ export interface ApiMessage {
   valueExpression: string // Only shows when value matches expression ba_
 }
 
+export interface PasteMatch {
+  expression: string
+  valueKey?: string // when not the valueKey of original Paste
+}
+
 export interface Paste {
-  value?: string
+  value?: any
   valueKey?: string // MUST be to a simple value detection (will not detect sub objects)
+
+  valueMatches?: PasteMatch[] // value must match expression
 
   // when no paste defined, "id" is the paste key
   pasteKey?: string // must target simple value

@@ -89,6 +89,7 @@
 <div class="flex-wrap">
   <button type="button"
     (click)="config.$send.emit(config.data)" class="bg-balanced flex-1"
+    [disabled] = "config.load"
   >
     {{config.result ? '⬇️' : '⬆️'}} {{ config.request ? 'request' : 'execute'}}
   </button>

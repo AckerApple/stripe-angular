@@ -1,4 +1,4 @@
-import { accounts_external_list, accounts_get, accounts_retrieve } from "./accounts.api"
+import { accounts_external_list, accounts_list, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const payouts_get: ISimpleRouteEditor = {
@@ -17,7 +17,6 @@ export const payouts_get: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => payouts_get,
-    // getTitle: (api) => api.result?.data[0].id,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.starting_after',
   }]
@@ -40,7 +39,7 @@ export const payouts_post: ISimpleRouteEditor = {
   },
   pastes: [{
     title: 'accounts list 1️⃣',
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
@@ -72,7 +71,6 @@ export const payouts_cancel: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => payouts_get,
-    // getTitle: (api) => api.result?.data[0].id,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
   }]
@@ -90,7 +88,6 @@ export const payouts_reverse: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => payouts_get,
-    // getTitle: (api) => api.result?.data[0].id,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
   }]

@@ -7,7 +7,7 @@
             (click)="pasteByPaste( item )"
             [title]="item.api[ item.valueKey ]"
             class="pointer pad-xxs hover-bg-energized text-xxs active-bg-balanced"
-          >{{ item.pasteKey && item.api[item.valueKey] === api[ item.pasteKey ] ? '☑️' : '↙️' }} set <strong>{{item.pasteKey}}</strong> = {{ item.title || (item.getTitle && item.getTitle(api)) || item.api.title || item.api[ item.valueKey ] }}</a>
+          >{{ item.pasteKey && item.api[item.valueKey] === api[ item.pasteKey ] ? '☑️' : '↙️' }} set <strong>{{item.pasteKey}}</strong> = {{ item.title || item.api.title || item.api[ item.valueKey ] }}</a>
         </ng-template>
       </ng-container>
     </ng-container>

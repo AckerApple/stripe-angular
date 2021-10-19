@@ -1,6 +1,6 @@
 import { sample } from "./app.component.utils"
 import { ISimpleRouteEditor } from "./typings"
-import { accounts_get, accounts_retrieve } from "./accounts.api"
+import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, create_source, source_get } from "./cards.api"
 import { create_customer, customer_attach_source, customer_get, customer_list_all } from "./customers.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
@@ -16,6 +16,9 @@ export const charge: ISimpleRouteEditor = {
   },{
     url: 'https://stripe.com/docs/connect/direct-charges#collecting-fees',
     title: 'collecting fees'
+  },{
+    title: 'debit connected accounts',
+    url: 'https://stripe.com/docs/connect/account-debits'
   }],
   favKeys: [{valueKey: 'result.id'}],
   request: {
@@ -48,7 +51,7 @@ export const charge: ISimpleRouteEditor = {
     }
   }],
   pastes: [{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.data.0.id'
@@ -58,7 +61,7 @@ export const charge: ISimpleRouteEditor = {
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.id'
   },{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     pasteKey: 'data.source',
     valueKey: 'result.data.0.id'
@@ -69,44 +72,36 @@ export const charge: ISimpleRouteEditor = {
     valueKey: 'result.id'
   },{
     $api: () => create_customer,
-    getTitle: () => 'customer bank ' + create_customer.result.sources.data[0].bank_name + ' ' + create_customer.result.sources.data[0].last4,
     valueKey: 'result.sources.data.0.bank_name',
     pasteKey: 'data.source',
   },{
     $api: () => create_source,
     valueKey: 'result.id',
     pasteKey: 'data.source',
-    getTitle: () => 'source ' + create_source.result.type,
   },{
     $api: () => customer_attach_source,
     valueKey: 'result.id',
     pasteKey: 'data.source',
-    getTitle: () => '👤 🏦 use attached '+ (customer_attach_source.result?.bank_name || customer_attach_source.result?.type),
   }/*,{ // does not work with payment methods
     $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.payment_method',
-    getTitle: () => '💳 method '+card.result.payment_method?.card.brand+' '+card.result.payment_method?.card.last4,
   }*/,{
     $api: () => card,
     valueKey: 'result.token.id',
     pasteKey: 'data.source',
-    getTitle: () => '🪙 token '+card.result.token.card.brand+' '+card.result.token.card.last4,
   },{
     $api: () => card,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
-    getTitle: () => '💳 source '+card.result.source.card.brand+' '+card.result.source.card.last4,
   },{
     $api: () => create_customer,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
-    getTitle: () => '👤 customer '+create_customer.result?.description,
   },{
     $api: () => create_customer,
     valueKey: 'result.sources.0.id',
     pasteKey: 'data.source',
-    getTitle: () => '👤 💳 source '+(create_customer.result?.sources?.length && create_customer.result.sources[0].object),
   },{
     $api: () => customer_get,
     valueKey: 'result.id',

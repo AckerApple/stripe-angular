@@ -88,13 +88,14 @@ declare const Plaid: any
     metadata: sample.metadata
   }
 
-  create_customer = simpleRouteToSmart(create_customer)
   api = getApis()
   plaidServerApis = simpleMenuToSmart(plaidServerSide)
   apiGroups = apiGroups.map(group => {
-    group.apis = group.apis.map(simpleRouteToSmart) as any
+    group.apis = group.apis.map(api => simpleRouteToSmart(api, group)) as any
     return group
   })
+
+  create_customer = simpleRouteToSmart(create_customer)
 
   changeKey = changeKey
   copyText = copyText
@@ -338,7 +339,13 @@ declare const Plaid: any
 
   flatten(ob: any) {
     removeFlats(ob) // remove any previous dot notations to ensure those value updated
-    flatten(ob, ob)
+    // a limited set of fields to flatten
+    const limitedCopy = {
+      result:ob.result,
+      data:ob.data,
+      request:ob.request
+    }
+    flatten(limitedCopy, ob) // only flatten known changing parts of a route (avoid flattening "pastes")
   }
 
   // local server communications

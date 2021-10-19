@@ -73,7 +73,7 @@ export const accounts_create: ISimpleRouteEditor = {
   }]
 }
 
-export const accounts_get: ISimpleRouteEditor = {
+export const accounts_list: ISimpleRouteEditor = {
   title: '🧾 List all accounts',
   links: [{
     title: 'docs',
@@ -90,7 +90,7 @@ export const accounts_get: ISimpleRouteEditor = {
     limit: 3,
   },
   pastes: [{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.starting_after',
   }]
@@ -118,7 +118,7 @@ export const account_links_create: ISimpleRouteEditor = {
      // metadata: sample.metadata // not available here
   },
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.account',
@@ -155,7 +155,7 @@ export const accounts_update: ISimpleRouteEditor = {
     }
   },
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: '🧾 Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
@@ -210,7 +210,7 @@ export const accounts_retrieve: ISimpleRouteEditor = {
     path: 'accounts/:id'
   },
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
@@ -241,7 +241,7 @@ export const accounts_delete: ISimpleRouteEditor = {
     path: 'accounts/:id'
   },
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts GET 1️⃣ result',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
@@ -266,7 +266,7 @@ export const account_login_link: ISimpleRouteEditor = {
     redirect_url: window.location.href,
   },
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
@@ -317,7 +317,7 @@ export const external_accounts_create: ISimpleRouteEditor = {
     valueKey: 'result.id',
     pasteKey: 'request.params.account',
   },{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
@@ -355,7 +355,7 @@ export const accounts_external_list: ISimpleRouteEditor = {
     }
   }],
   pastes:[{
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
   }]
@@ -431,7 +431,7 @@ const application_fees_refunds: ISimpleRouteEditor = {
 }
 
 export const apis = [
-  accounts_get, accounts_create, accounts_update, accounts_retrieve, accounts_delete,
+  accounts_list, accounts_create, accounts_update, accounts_retrieve, accounts_delete,
   account_links_create, account_login_link,
   external_accounts_create, accounts_external_list, external_accounts_retrieve,
   application_fees_list, application_fees_retrieve,

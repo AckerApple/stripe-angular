@@ -1,8 +1,9 @@
-import { accounts_get, accounts_retrieve } from "./accounts.api"
+import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./typings"
 import { charge } from "./charges.api"
 import { account_get } from "./common.api"
 import { payintent_create } from "./pay_intents.api"
+import { sample } from "./app.component.utils"
 
 export const transfer_create: ISimpleRouteEditor = {
   title: '🆕 Create Transfer',
@@ -25,7 +26,7 @@ export const transfer_create: ISimpleRouteEditor = {
   },
   pastes: [{
     pasteKey: 'data.destination',
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     title: 'Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
   },{
@@ -55,7 +56,7 @@ export const transfer_create: ISimpleRouteEditor = {
     title: 'created pay intent'
   },{
     title: 'accounts list 1️⃣',
-    $api: () => accounts_get,
+    $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
@@ -77,7 +78,7 @@ const transfers_list = {
   }
 }
 
-const transfers_get = {
+const transfers_get: ISimpleRouteEditor = {
   title: '1️⃣ Retrieve a transfer',
   description: 'Retrieves the details of an existing transfer. Supply the unique transfer ID from either a transfer creation request or the transfer list, and Stripe will return the corresponding transfer information.',
   request: {
@@ -90,6 +91,72 @@ const transfers_get = {
   }]
 }
 
+const transfer_reversals_list: ISimpleRouteEditor = {
+  title: '↩️ 🧾 List all reversals',
+  description: 'list of the reversals belonging to a specific transfer. Note that the 10 most recent reversals are always available by default on the transfer object.',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/transfer_reversals/list'
+  }],
+  request: {
+    method: 'GET', path: 'transfers/:transferId/reversals'
+  },
+  pastes: [{
+    $api: () => transfers_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.transferId'
+  }]
+}
+
+const transfer_reversals_retrieve: ISimpleRouteEditor = {
+  title: '↩️ 1️⃣ Retrieve reversal',
+  description: 'By default, you can see the 10 most recent reversals stored directly on the transfer object, but you can also retrieve details about a specific reversal stored on the transfer.',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/transfer_reversals/retrieve'
+  }],
+  request: {
+    method: 'GET', path: 'transfers/:transferId/reversals/:reversalId'
+  },
+  pastes: [{
+    $api: () => transfer_reversals_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.reversalId',
+    pastes: [{
+      valueKey: 'result.data.0.transfer',
+      pasteKey: 'request.params.transferId'
+    }]
+  }]
+}
+
+const create_transfer_reversal: ISimpleRouteEditor = {
+  title: '↩️ 🆕 Create a transfer reversal',
+  description: 'When reversing transfers, you can optionally reverse part of the transfer. You can do so as many times as you wish until the entire transfer has been reversed.',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/transfer_reversals/create'
+  }],
+  request: {
+    method: 'POST', path: 'transfers/:transferId/reversals'
+  },
+  data: {
+    amount: 0,
+    description: 'stripe-angular demo',
+    refund_application_fee: false,
+    metadata: sample.metadata,
+  },
+  pastes: [{
+    $api: () => transfers_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.transferId',
+    pastes: [{
+      pasteKey: 'data.amount',
+      valueKey: 'result.data.0.amount'
+    }]
+  }]
+}
+
 export const apis = [
-  transfer_create, transfers_list, transfers_get
+  transfer_create, transfers_list, transfers_get,
+  create_transfer_reversal, transfer_reversals_list, transfer_reversals_retrieve
 ]

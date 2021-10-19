@@ -59,7 +59,6 @@ export const get_paymethods: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
   }]
@@ -83,12 +82,10 @@ export const source_get: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => card,
-    getTitle: () => 'use source '+card.result.source?.card.brand+' '+card.result.source?.card.last4,
     valueKey: 'result.source.id',
     pasteKey: 'request.params.id',
   }, {
     $api: () => create_source,
-    getTitle: () => 'source '+ create_source.result.type,
     valueKey: 'create_source.result.id',
     pasteKey: 'request.params.id',
   },{
@@ -147,7 +144,6 @@ export const payment_method_get: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => card,
-    getTitle: () => 'pm '+card.result.payment_method?.card?.brand+' '+card.result.payment_method?.card?.last4,
     valueKey: 'result.payment_method.id',
     pasteKey: 'request.params.id',
   }]
@@ -176,17 +172,14 @@ export const payment_method_update: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => card,
-    getTitle: () => 'pay method type ' + card.result.payment_method.type,
     valueKey: 'result.payment_method.id',
     pasteKey: 'request.params.id'
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method type ' + payment_method_get.result.type,
     valueKey: 'result.id',
     pasteKey: 'request.params.id'
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method type ' + payment_method_get.result.type,
     valueKey: 'result',
     pasteKey: 'data',
     removeKeys: cleanPayMethodKeys,

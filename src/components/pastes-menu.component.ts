@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core"
-import { ApiPaste, ISimpleRouteEditor, Paste, SmartRouteEditor } from "./typings"
+import { ApiPaste, ISimpleRouteEditor, Paste, PasteMatch, SmartRouteEditor } from "./typings"
 import { removeValues } from './removeValues.function'
 
 // declare type PasteFav = [string, string, string | ((data: any) => any)]
@@ -39,19 +39,19 @@ import { removeValues } from './removeValues.function'
 export function pasteFromOnto(
   pasteConfig: Paste, apiFrom: ISimpleRouteEditor, apiOnto: ISimpleRouteEditor
 ) {
-    // paste by function
-    if (pasteConfig.paste) {
-      (pasteConfig.paste as any)(apiOnto, apiFrom)
-    }
+  // paste by function
+  if (pasteConfig.paste) {
+    (pasteConfig.paste as any)(apiOnto, apiFrom)
+  }
 
-    if (pasteConfig.pasteKey) {
-      pasteKeyFromOnto(pasteConfig.pasteKey, pasteConfig, apiFrom, apiOnto)
-    }
+  if (pasteConfig.pasteKey) {
+    pasteKeyFromOnto(pasteConfig.pasteKey, pasteConfig, apiFrom, apiOnto)
+  }
 
-    // sub paste definitions (meaning one paste actually results in multiple things pasted)
-    if (pasteConfig.pastes) {
-      pasteConfig.pastes.forEach(paste => pasteFromOnto(paste, apiFrom, apiOnto))
-    }
+  // sub paste definitions (meaning one paste actually results in multiple things pasted)
+  if (pasteConfig.pastes) {
+    pasteConfig.pastes.forEach(paste => pasteFromOnto(paste, apiFrom, apiOnto))
+  }
 }
 
 export function removeKeys(keys: string[], cleanData: any) {
@@ -88,19 +88,45 @@ function pasteKeyFromOnto(
   pasteKey: string, item: Paste, from: any, onto: ISimpleRouteEditor
 ): void {
   const keyName: string = pasteKey // || 'id'
-  const valueKey = item.pasteValueKey || item.valueKey
-  let value = item.value || valueKey.split('.')
-    .reduce((all, now) => all ? all[now] : undefined, from)
+  const value = getPasteValueFrom(item, from)
 
-  if (item.removeKeys) {
-    value = removeKeys(item.removeKeys, value) // remove keys from value
-  }
-
-  if (item.removeValues) {
-    value = removeValues(value, item.removeValues)
+  // validate to paste
+  if( item.valueMatches) {
+    const valid = pasteValueFromMatches(item, from)
+    // console.log('can we paste', keyName, value, valid)
+    if (!valid) {
+      return
+    }
   }
 
   pasteValueOnto(onto, keyName, value)
+}
+
+function getPasteValueFrom(item: Paste | PasteMatch, from: any) {
+  const asPaste = item as Paste
+  const valueKey = asPaste.pasteValueKey || item.valueKey
+
+  let value = asPaste.value || valueKey.split('.')
+    .reduce((all, now) => all ? all[now] : undefined, from)
+
+  if (asPaste.removeKeys) {
+    value = removeKeys(asPaste.removeKeys, value) // remove keys from value
+  }
+
+  if (asPaste.removeValues) {
+    value = removeValues(value, asPaste.removeValues)
+  }
+
+  return value
+}
+
+function pasteValueFromMatches(item: Paste, from: any): boolean {
+  // const value = getPasteValueFrom(item, from)
+  return item.valueMatches.find(valConfig => {
+    const value = getPasteValueFrom(valConfig, from)
+    const found = value.search(new RegExp(valConfig.expression, 'gi')) >= 0
+    return found
+  }) ? true : false
 }
 
 function pasteValueOnto(onto: any, keyName: string, value: any) {

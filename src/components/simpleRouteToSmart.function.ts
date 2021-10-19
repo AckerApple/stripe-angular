@@ -1,8 +1,12 @@
 import { EventEmitter } from "@angular/core"
+import { ApiGroup } from "./apis"
 import { getStringIdentifiers, getStringInterpolations } from "./app.component.utils"
-import { ISimpleRouteEditor, RouteRequest, SmartRouteEditor } from "./typings"
+import { ApiPaste, ISimpleRouteEditor, Paste, RouteRequest, SmartRouteEditor } from "./typings"
 
-export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor {
+export function simpleRouteToSmart(
+  route: ISimpleRouteEditor,
+  group?: ApiGroup
+): SmartRouteEditor {
   const routeRef = route as SmartRouteEditor
   routeRef.related = routeRef.related || []
 
@@ -16,29 +20,7 @@ export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor 
 
   // runtime tie memory paste-able data points
   if (routeRef.pastes) {
-    routeRef.pastes.forEach((paste, index) => {
-      let pasteApi = paste.api as SmartRouteEditor
-
-      if (paste.$api) {
-        pasteApi = paste.api = paste.$api() as SmartRouteEditor
-        if (!pasteApi) {
-          const msg = `could not populate api paste ${index}: ${routeRef.title}`
-          throw new Error(msg)
-        }
-      }
-
-      if (!pasteApi) {
-        pasteApi = paste.api = routeRef // its a self ref paste
-      }
-
-      const selfReferencing = pasteApi === routeRef
-      if(!selfReferencing) {
-        pasteApi.related = pasteApi.related || []
-        pasteApi.related.push({
-          api: routeRef, relation: paste,
-        })
-      }
-    })
+    smartPastes(routeRef.pastes, routeRef, group)
   }
 
   routeRef.$result = new EventEmitter()
@@ -46,6 +28,55 @@ export function simpleRouteToSmart(route: ISimpleRouteEditor): SmartRouteEditor 
   routeRef.load = 0
 
   return routeRef
+}
+
+function smartPastes(
+  pastes: ApiPaste[],
+  api: SmartRouteEditor,
+  group?: ApiGroup // to be used for title reference icons
+) {
+  pastes.forEach((paste, index) => {
+    let pasteApi = paste.api as SmartRouteEditor
+
+    if (paste.$api) {
+      pasteApi = paste.api = paste.$api() as SmartRouteEditor
+      if (!pasteApi) {
+        const msg = `could not populate api paste ${index}: ${api.title}`
+        throw new Error(msg)
+      }
+    }
+
+    makePasteSmart(paste)
+
+    if (!pasteApi) {
+      pasteApi = paste.api = api // its a self ref paste
+    }
+
+
+    // relating apis by pastes
+    const selfReferencing = pasteApi === api
+    if(!selfReferencing) {
+      pasteApi.related = pasteApi.related || []
+      pasteApi.related.push({
+        api, relation: paste, group,
+        title: api.title || paste.title,
+      })
+    }
+  })
+}
+
+function makePasteSmart(paste: Paste) {
+  if (paste.valueMatches) {
+    paste.valueMatches.forEach(item => {
+      if (!item.valueKey) {
+        item.valueKey = paste.valueKey
+      }
+    })
+  }
+
+  if (paste.pastes) {
+    paste.pastes.forEach(pasteChild => makePasteSmart(pasteChild))
+  }
 }
 
 function paramRequestUrlParams(request: RouteRequest) {

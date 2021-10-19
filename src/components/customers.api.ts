@@ -21,12 +21,10 @@ export const create_customer: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => create_source,
-    getTitle: () => 'source '+create_source.result.type,
     valueKey: 'result.id',
     pasteKey: 'data.source',
   },{
     $api: () => card,
-    getTitle: () => 'method '+card.result.payment_method.card.brand+' '+card.result.payment_method.card.last4,
     valueKey: 'result.payment_method.id',
     paste: (myApi: ISimpleRouteEditor) => {
       myApi.data.payment_method = card.result.payment_method.id
@@ -35,12 +33,10 @@ export const create_customer: ISimpleRouteEditor = {
     }
   },{
     $api: () => bank,
-    getTitle: () => bank.result?.bank_account.bank_name+' '+bank.result?.bank_account.last4,
     valueKey: 'result.id',
     pasteKey: 'data.source',
   },{
     $api: () => card,
-    getTitle: () => 'source '+card.result.source.card.brand+' '+card.result.source.card.last4,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
   },{
@@ -83,7 +79,6 @@ export const delete_customer: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result?.id,
     pasteKey: 'request.params.id',
     valueKey: 'result.id',
   },{
@@ -122,12 +117,10 @@ export const customer_update: ISimpleRouteEditor = {
     pasteKey: 'request.params.id',
   },{
     $api: () => card,
-    getTitle: () => 'source ' + card.result.source.card.brand + ' ' + card.result.source.card.last4,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
   },{
     $api: () => card,
-    getTitle: () => 'pay method ' + card.result.payment_method.card.brand+' '+card.result.payment_method.card.last4,
     valueKey: 'result.payment_method.card',
     paste: (thisApi: ISimpleRouteEditor) => Object.assign(thisApi.data, getCustomerUpdatePayMethodPaste(customer_update.data))
   }]
@@ -166,7 +159,7 @@ export const customer_attach_method: ISimpleRouteEditor = {
     path: 'payment_methods/:paymentMethodId/attach'
   },
   data: {
-    customer: ''
+    customer: '', metadata: sample.metadata
   },
   pastes: [{
     $api: () => create_customer,
@@ -179,7 +172,6 @@ export const customer_attach_method: ISimpleRouteEditor = {
     valueKey: 'result.data.0.id',
     pasteKey: 'data.customer'
   },{
-    getTitle: () => 'method '+card.result.payment_method.card.brand+' '+card.result.payment_method.card.last4,
     $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'request.params.paymentMethodId'
@@ -195,7 +187,7 @@ export const customer_attach_source: ISimpleRouteEditor = {
     path: 'customers/:id/sources'
   },
   data: {
-    source: ''
+    source: '', metadata: sample.metadata
   },
   pastes: [{
     $api: () => bank,
@@ -206,7 +198,6 @@ export const customer_attach_source: ISimpleRouteEditor = {
     $api: () => create_source,
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
-    getTitle: () => '🆕 Created source ' + create_source.result.type, // typically create_source.request.type = 'ach_credit_transfer'
   },{
     $api: () => card,
     valueKey: 'result.source.id',
@@ -227,11 +218,15 @@ export const customer_attach_source: ISimpleRouteEditor = {
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
     title: '🧾 Customer list 1️⃣',
+  }, {
+    $api: () => customer_get_sources,
+    valueKey: 'result.data.0.customer',
+    pasteKey: 'request.params.id',
   }],
 }
 
 export const customer_detach_method: ISimpleRouteEditor = {
-  title: '❌ 💳 Detach payment method',
+  title: '❌ 💳 delete/detach payment method',
   request: {
     method: 'POST',
     path: 'payment_methods/:id/detach'
@@ -248,23 +243,27 @@ export const customer_get_sources: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
     pasteKey: 'request.params.id'
   },{
     $api: () => customer_list_all,
-    title: 'GET customers[0]',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
   },{
     $api: () => customer_get,
-    title: 'Customer GET 1️⃣',
     valueKey: 'result.id',
+    pasteKey: 'request.params.id'
+  }, {
+    $api: () => customer_attach_source,
+    valueKey: 'result.data.customer',
+    pasteKey: 'request.params.id'
+  }, {
+    $api: () => customer_delete_source,
+    valueKey: 'request.params.customer',
     pasteKey: 'request.params.id'
   }]
 }
@@ -278,12 +277,10 @@ export const customer_get_source: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
     pasteKey: 'request.params.customer'
   },{
@@ -300,7 +297,7 @@ export const customer_get_source: ISimpleRouteEditor = {
 }
 
 const customer_delete_source: ISimpleRouteEditor = {
-  title: '❌ 💳 DELETE Customer Source',
+  title: '❌ 💳 delete/detach source',
   links: [{
     title: 'delete customer bank',
     url: 'https://stripe.com/docs/api/customer_bank_accounts/delete'
@@ -314,29 +311,38 @@ const customer_delete_source: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
     pasteKey: 'request.params.customer'
   },{
     $api: () => customer_list_all,
     title: 'GET customers[0]',
     valueKey: 'result.data.0.id',
-    pasteKey: 'request.params.customer'
+    pasteKey: 'request.params.customer',
   },{
     $api: () => customer_get_sources,
     title: 'GET customer.sources[0].id',
     valueKey: 'result.data.0.id',
-    pasteKey: 'request.params.source'
+    pasteKey: 'request.params.source',
+    pastes: [{
+      valueKey: 'result.data.0.customer',
+      pasteKey: 'request.params.customer',
+    }]
   }, {
     $api: () => create_source,
-    getTitle: () => 'source ' + create_source.result?.id,
     pasteKey: 'request.params.source',
     valueKey: 'result.id',
+  }, {
+    $api: () => customer_attach_source,
+    pasteKey: 'request.params.source',
+    valueKey: 'result.id',
+    pastes: [{
+      valueKey: 'result.customer',
+      pasteKey: 'request.params.customer'
+    }]
   }]
 }
 
@@ -354,12 +360,10 @@ export const customer_get_payment_methods: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => create_customer,
-    getTitle: () => 'customer ' + create_customer.result.id,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
   },{
     $api: () => payment_method_get,
-    getTitle: () => 'pay method customer ' + payment_method_get.result.customer,
     valueKey: 'result.customer',
     pasteKey: 'data.customer'
   },{

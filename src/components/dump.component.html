@@ -43,17 +43,20 @@
 
       <!-- object -->
       <ng-template #dumpObject>
-        <div class="border border-radius-5 bg-info flex-stacked text-sm text-dark">
-          <a *ngIf="key" class="text-white strong text-xxs border-white pad-xxs bg-positive flex-1 flex-valign-center"
-            [class.border-bottom] = "show"
-            (click)="show = !show"
-          >{{key}}</a>
-          <div *ngIf="!key || showKids || show || (show==undefined && showLevels > 0)" class="flex-wrap">
-            <ng-container *ngFor="let item of value | keyvalue : unsorted">
-              <dump [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showKids"
-                class="flex-wrap child-margin-xxs pad-xxs"
-              ></dump>
-            </ng-container>
+        <div class="flex1">
+          <div class="border border-radius-5 bg-info flex-stacked text-sm text-dark">
+            <a *ngIf="key" class="text-white strong text-xxs border-white pad-xxs bg-positive flex-1 flex-valign-center"
+              [class.border-bottom] = "show"
+              (click)="show = !show"
+            >{{key}}</a>
+            <div *ngIf="!key || showKids || show || (show==undefined && showLevels > 0)" class="flex-wrap">
+              <ng-container *ngFor="let item of value | keyvalue : unsorted">
+                <dump [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showKids"
+                  class="flex-wrap child-margin-xxs pad-xxs"
+                  [class.flex1] = "!item.value || typeof(item.value) !== 'object'"
+                ></dump>
+              </ng-container>
+            </div>
           </div>
         </div>
       </ng-template>
@@ -62,7 +65,7 @@
 </ng-template>
 
 <ng-template #dumpSimple let-key="key" let-value="value">
-  <div class="text-xs text-dark">
+  <div class="flex1 text-xs text-dark">
     <div *ngIf="key" class="strong text-xxs border-white border-bottom">{{key}}</div>
     <ng-container *ngIf="value.search && (value.slice(0,8)==='https://' || value.slice(0,7)==='http://');else simpleValue">
       <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
