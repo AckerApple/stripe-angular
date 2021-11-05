@@ -137,15 +137,6 @@ export const payintent_create: ISimpleRouteEditor = {
     valueKey: 'data.id',
     pasteKey: 'data.customer',
   },{
-    $api: () => customer_get_payment_methods,
-    title: '🧾 💳 Customer GET payment methods',
-    valueKey: 'result.data.0.id',
-    pasteKey: 'data.payment_method',
-    pastes: [{
-      valueKey: 'result.data.0.customer',
-      pasteKey: 'data.customer'
-    }]
-  },{
     $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.payment_method',
@@ -167,6 +158,14 @@ export const payintent_create: ISimpleRouteEditor = {
     title: 'source GET 1️⃣',
     valueKey: 'result.id',
     pasteKey: 'data.payment_method',
+  },{
+    $api: () => customer_get_payment_methods,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.payment_method',
+    pastes: [{
+      valueKey: 'result.data.0.customer',
+      pasteKey: 'data.customer'
+    }]
   },{
     $api: () => customer_get_sources,
     valueKey: 'result.data.0.customer',

@@ -90,7 +90,7 @@
       [class.flex-wrap] = "!scope.showGroup"
       (click)="switchToGroup(group, scope, parentScope, level)"
     >
-      <ng-container *ngTemplateOutlet="groupTemplate || defaultGroupTemplate;context:{group:group, scope:scope, selected:scope.showGroup === group, defaultTemplate: defaultGroupTemplate}"></ng-container>
+      <ng-container *ngTemplateOutlet="groupTemplate || defaultGroupTemplate;context:{group:group, scope:scope, current:scope.showGroup, selected:scope.showGroup === group, defaultTemplate: defaultGroupTemplate}"></ng-container>
 
       <!-- fallback template when groupTemplate not provided -->
       <ng-template #defaultGroupTemplate>

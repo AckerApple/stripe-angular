@@ -443,32 +443,91 @@ export const external_accounts_create: ISimpleRouteEditor = {
   }],
   pastes:[{
     $api: () => accounts_retrieve,
-    title: 'Accounts GET',
     valueKey: 'result.id',
     pasteKey: 'request.params.account',
   },{
     $api: () => accounts_create,
-    title: '🆕 Accounts Create',
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => accounts_update,
     valueKey: 'result.id',
     pasteKey: 'request.params.account',
   },{
     $api: () => accounts_list,
-    title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
   },{
     $api: () => bank,
-    title: 'bank token',
     valueKey: 'result.id',
     pasteKey: 'data.external_account',
   },{
     $api: () => card,
-    title: 'card token',
     valueKey: 'result.token.id',
     pasteKey: 'data.external_account',
   },{
     $api: () => card,
-    title: 'card pay method',
+    valueKey: 'result.payment_method.id',
+    pasteKey: 'data.external_account',
+  }, {
+    $api: () => plaid_stripeBankCreate,
+    valueKey: 'result.stripe_bank_account_token',
+    pasteKey: 'data.external_account'
+  }]
+}
+
+export const external_accounts_update: ISimpleRouteEditor = {
+  title: '⬆️ ♣️ ↔️ 🏦 Update external account',
+  links: [{
+    title: 'docs',
+    url: 'https://stripe.com/docs/api/external_account_bank_accounts/update'
+  }],
+  request:{
+    method: 'POST',
+    path: 'accounts/:account/external_accounts/:id'
+  },
+  data: {
+    default_for_currency: false,
+    external_account: 'btok_ or pm_',
+    metadata: {
+      order_id: '6784'
+    }
+  },
+  messages: [{
+    valueKey: 'data.external_account',
+    valueExpression: 'ba_',
+    message: '⚠️ It appears you are using a bank account identifier. Expected bank token (btok_...)'
+  },{
+    valueKey: 'data.external_account',
+    valueExpression: 'pm_',
+    message: '⚠️ It appears you are using a payment method. Expected card token (tok_...)'
+  }],
+  pastes:[{
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => accounts_create,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => accounts_update,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => accounts_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.account',
+  },{
+    $api: () => bank,
+    valueKey: 'result.id',
+    pasteKey: 'data.external_account',
+  },{
+    $api: () => card,
+    valueKey: 'result.token.id',
+    pasteKey: 'data.external_account',
+  },{
+    $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.external_account',
   }, {
@@ -480,6 +539,10 @@ export const external_accounts_create: ISimpleRouteEditor = {
 
 export const accounts_external_list: ISimpleRouteEditor = {
   title: '🧾 🏦 💳 List all external accounts',
+  links: [{
+    title: '📕 API Docs',
+    url: 'https://stripe.com/docs/api/external_account_bank_accounts/list'
+  }],
   request:{
     method: 'GET',
     path: 'accounts/:account/external_accounts',

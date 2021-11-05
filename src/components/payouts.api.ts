@@ -62,9 +62,9 @@ export const payouts_post: ISimpleRouteEditor = {
   data: {
     amount: 200,
     currency: 'usd',
+    statement_descriptor: 'stripe-angular payout demo'
   },
   pastes: [{
-    title: 'accounts list 1️⃣',
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
@@ -104,17 +104,14 @@ export const payouts_update: ISimpleRouteEditor = {
     currency: 'usd',
   },
   pastes: [{
-    title: 'accounts list 1️⃣',
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
-    title: 'accounts GET',
     $api: () => accounts_retrieve,
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
-    title: 'External accounts 1️⃣',
     $api: () => accounts_external_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.destination',
