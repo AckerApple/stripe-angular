@@ -1,5 +1,5 @@
 // import { customerApis } from './getApis.function'
-import { create_customer, customer_get_sources } from './customers.api'
+import { create_customer, customer_get_payment_methods, customer_get_sources } from './customers.api'
 import { ISimpleRouteEditor } from "./typings"
 
 export const cardRemoveKeys = [
@@ -26,7 +26,7 @@ export const cleanSourceRemoveKeys = [
 
 export const card: ISimpleRouteEditor = {
   title: '💳 Card Element',
-  result: {}, // where source, payment_method, and token will go
+  // result: {}, // where source, payment_method, and token will go
 }
 
 export const create_source: ISimpleRouteEditor = {
@@ -93,6 +93,12 @@ export const source_get: ISimpleRouteEditor = {
     title: 'GET customer.sources[0].id',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.source'
+  }, {
+    $api: () => customer_get_payment_methods,
+    valueKey: 'result.data.0.id',
+    valueMatches: [{
+      expression: 'src_'
+    }]
   }],
 }
 
@@ -146,6 +152,9 @@ export const payment_method_get: ISimpleRouteEditor = {
     $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'request.params.id',
+  }, {
+    $api: () => customer_get_payment_methods,
+    valueKey: 'result.data.0.id'
   }]
 }
 

@@ -4,7 +4,7 @@
     <td>
       <br />
       <div class="margin pad text-white text-center">
-        <h1 style="margin:0;">🐠 stripe-angular {{version}}</h1>
+        <h1 style="margin:0;" (click)="downloadAllGroupsJson()">🐠 stripe-angular {{version}}</h1>
         <div class="flex-center flex-wrap child-margin flex-valign-center">
           <p>🎛 Dashboard for testing Stripe with Angular. Includes testing for many related work flows.</p>
           <div class="text-xxs">
@@ -27,7 +27,7 @@
           <div class="tool-wrap flex1">
             <h3 class="margin-0 text-left text-white">⚙️ Settings</h3>
             <div class="pad text-left flex-1 radius-5" style="background-color:#888;">
-              <p class="text-xs opacity-80">Ensure you are testing with the right secrets</p>
+              <p class="text-xs opacity-80">Settings <b>required</b> to properly interact with this tool</p>
               <ng-container *ngTemplateOutlet="keyInfoUi"></ng-container>
             </div>
           </div>
@@ -36,7 +36,7 @@
           <ng-container *ngIf="stripe && !changekey">
             <ng-container *ngTemplateOutlet="cardTemplate"></ng-container>
             <ng-container *ngTemplateOutlet="bankTemplate"></ng-container>
-            <tool-wrap class="flex1 flex-center" [api]="api.confirm_pay_intent" [(format)]="storage.format"></tool-wrap>
+            <tool-wrap class="flex1 flex-center" [api]="api.confirm_pay_intent" [(format)]="storage.format" showForm="1"></tool-wrap>
           </ng-container>
         </div>
 
@@ -54,117 +54,85 @@
         </div>
       </ng-container>
 
-      <br /><br />
+      <div>
+        <group-tools [groups]="allGroups" [storage]="storage" selectedGroupClass="text-xs bg-grey-2x margin-1">
+          <!--change default group displays-->
+          <ng-template #groupTemplate let-defaultTemplate="defaultTemplate" let-group="group" let-selected="selected">
+            <ng-container [ngSwitch]="group.title">
 
-      <div class="text-white flex-wrap flex-center child-margin-xs" style="max-width: 100vw">
-        <!-- server functionality -->
-        <ng-container *ngTemplateOutlet="stripeServerTemplate"></ng-container>
-        <!-- webhook functionality -->
-        <ng-container *ngTemplateOutlet="webhookTemplate"></ng-container>
+              <ng-container *ngSwitchCase="'🐠 Stripe Functionality'">
+                <ng-container *ngTemplateOutlet="stripeGroupTemplate;context:{selected:selected}"></ng-container>
+              </ng-container>
 
-        <div class="flex-1 text-white bg-grey border-bottom" style="max-width: 100vw">
-          <div class="flex-valign-center flex-right flex-wrap child-margin"
-            (click)="showPlaidMethods = !showPlaidMethods"
-          >
-            <a>
-              {{ showPlaidMethods ? '🔽' : '▶️'}}
-            </a>
-            <a class="flex-1">
-              <h2 class="opacity-half margin-0 pad-0">🏦 Plaid Functionality</h2>
-              <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>plaidConfig</strong></small>
-            </a>
-          </div>
+              <ng-container *ngSwitchCase="'🪝 Webhook Functionality'">
+                <ng-container *ngTemplateOutlet="webhookGroupTemplate;context:{selected:selected}"></ng-container>
+              </ng-container>
 
-          <ng-container *ngIf="showPlaidMethods">
-            <div class="pad flex-center flex-wrap">
-              <ng-container *ngIf="localServerActive">
-                <br />
-                <form class="flex-1" (submit)="save()" action="javascript:">
-                  <div class="flex-1 flex-wrap flex-center flex-valign-center child-margin-xxs">
-                    <div class="flex-1 max-width-800">
-                      <strong>🆔 CLIENT_ID</strong>
-                      <div>
-                        <input type="password" class="width-full"
-                          (keyup)="storage.plaid.client_id=$event.target.value;"
-                          [value]="storage.plaid.client_id || null"
-                          placeholder="Plaid > Team > Keys > client_id"
-                        />
-                      </div>
-                      <div *ngIf="storage.plaid.client_id?.length > 12" class="text-xs opacity-third pad-xxs pos-abs">
-                        {{ storage.plaid.client_id | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.client_id | slice : 8 : storage.plaid.client_id.length).length) }}
-                      </div>
-                    </div>
+              <ng-container *ngSwitchCase="'🏦 Plaid Functionality'">
+                <ng-container *ngTemplateOutlet="plaidGroupTemplate;context:{selected:selected}"></ng-container>
+              </ng-container>
 
-                    <div class="flex-1 max-width-800">
-                      <strong>👂 SECRET</strong>
-                      <div>
-                        <input type="password" class="width-full"
-                          (keyup)="storage.plaid.secret=$event.target.value;"
-                          [value]="storage.plaid.secret || null"
-                          placeholder="Plaid > Team > Keys > Sandbox"
-                        />
-                      </div>
-                      <div *ngIf="storage.plaid.secret?.length > 12" class="text-xs opacity-third pad-xxs pos-abs">
-                        {{ storage.plaid.secret | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.secret | slice : 8 : storage.plaid.secret.length).length) }}
-                      </div>
-                    </div>
+              <ng-container *ngSwitchDefault>
+                <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-template>
 
-                    <div>
-                      <div class="invisible">🔐</div>
-                      <button type="submit" class="active-bg-balanced">
-                        💾&nbsp;save
-                      </button>
-                    </div>
+          <ng-template #groupBody let-selected="selected" let-group="group" let-defaultTemplate="defaultTemplate">
+            <ng-container [ngSwitch]="group?.title">
+              <ng-container *ngSwitchCase="'🐠 Stripe Functionality'">
+                <div *ngIf="!selected" class="pad text-white width-full">
+                  <ng-container *ngTemplateOutlet="stripeKeyForm"></ng-container>
+                </div>
+                <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'🪝 Webhook Functionality'">
+                <div *ngIf="!selected" class="pad text-white width-full">
+                  <ng-container *ngTemplateOutlet="webhookKeyForm"></ng-container>
+                </div>
+                <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'🏦 Plaid Functionality'">
+                <div *ngIf="!selected" class="pad text-white width-full">
+                  <ng-container *ngTemplateOutlet="plaidKeyForm"></ng-container>
+                </div>
+                <ng-container *ngIf="storage.plaid.client_id">
+                  <!-- only UI works if no local server -->
+                  <div *ngIf="!localServerActive" class="pad border-blue border-3">
+                    <ng-container *ngTemplateOutlet="warnNoLocalServer"></ng-container>
+                    <tool-wrap class="flex1 flex-stacked" [api]="api.plaid_createPublicToken" [(format)]="storage.format"></tool-wrap>
                   </div>
-                  <div class="flex-center child-margin-xxs">
-                    <div class="pos-rel text-xxs opacity-70 width-30vw">
-                      <div class="pos-abs flex-center width-full text-center pad-top-3x">
-                        <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </ng-container>
-            </div>
 
-            <br />
-
-            <div class="flex-wrap flex-center">
-              <!-- step 1 -->
-              <ng-container *ngIf="localServerActive">
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_linkTokenCreate" [(format)]="storage.format"></tool-wrap>
+                  <!-- display everything when server available -->
+                  <ng-container *ngIf="localServerActive">
+                    <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
+                  </ng-container>
+                </ng-container>
               </ng-container>
 
-              <!-- UI create public token: step 2 -->
-              <tool-wrap class="flex1 flex-stacked" [api]="api.plaid_createPublicToken" [(format)]="storage.format"></tool-wrap>
-
-              <ng-container *ngIf="localServerActive">
-                <!-- step 3 & 4 -->
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_publicTokenExchange" [(format)]="storage.format"></tool-wrap>
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.plaid_stripeBankCreate" [(format)]="storage.format"></tool-wrap>
-
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getAccounts" [(format)]="storage.format"></tool-wrap>
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getLinkToken" [(format)]="storage.format"></tool-wrap>
-                <tool-wrap class="flex1 flex-stacked" [api]="plaidServerApis.getAuth" [(format)]="storage.format"></tool-wrap>
+              <ng-container *ngSwitchDefault>
+                <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
               </ng-container>
-            </div>
-
-            <div *ngIf="!localServerActive" class="pad">
-              <ng-container *ngTemplateOutlet="warnNoLocalServer"></ng-container>
-            </div>
-          </ng-container>
-        </div>
+            </ng-container>
+          </ng-template>
+        </group-tools>
       </div>
 
-      <br />
+      <br /><br />
 
       <div class="tool-wrap" style="align-items: center;">
         <h2
           style="margin:0;text-align:left;color:white;"
         >📕 Best of Resources</h2>
         <div style="border-radius:5px;background-color:#888;text-align:left;padding:1em;">
-          <ng-container *ngTemplateOutlet="resources"></ng-container>
-        </div>
+          <div class="text-center flex-center flex-wrap">
+              <a *ngFor="let item of links" [href]="item.url"
+                target="_blank" class="resource-link no-a-style hover-bg-positive active-bg-balanced"
+              >{{item.title}}</a>
+            </div>
+          </div>
       </div>
       <br />
     </td>
@@ -173,7 +141,7 @@
 
 
 <ng-template #keyInfoUi>
-  <div *ngIf="!changekey else storageForm">
+  <div *ngIf="storage.key && !changekey else storageForm">
     <div class="flex flex-wrap child-margin text-smx">
       <div class="flex-1">
         <strong>🗝 Publishable Key</strong>
@@ -204,138 +172,123 @@
 
     <br />
 
-    <button type="button" (click)="copyShareUrl()" class="active-bg-energized"
+    <button type="button" (click)="copyShareUrl()" class=" hover-bg-positive active-bg-balanced"
       style="width:50%"
     >✍️ copy share url</button>
 
-    <button type="button" class="active-bg-energized"
+    <button type="button" class=" hover-bg-positive active-bg-balanced"
       (click)="changekey=!changekey"
       style="width:50%"
     >🔧 edit</button>
-
-    <ng-container *ngIf="publishableKey=='pk_test_5JZuHhxsinNGc5JanVWWKSKq'">
-      <br />
-      <br />
-      <div style="font-size:0.75em;">
-        <strong style="font-size:1.2em;color:orange;">WARNING</strong>: You need to enter your own key above.
-        <p>
-          You will have limited functionality without entering your own Stripe key. <a href="https://dashboard.stripe.com/register" target="_blank">
-          create account</a>
-        </p>
-      </div>
-    </ng-container>
   </div>
 </ng-template>
 
 <ng-template #storageForm>
-  <div *ngIf="changekey">
-    <form action="javascript:" (submit)="save();changekey=false">
-      <div class="flex-wrap flex-top child-margin">
-        <div class="flex-1">
+  <form action="javascript:" (submit)="save();changekey=false">
+    <div class="flex-wrap flex-top child-margin">
+      <div class="flex-1">
+        <div>
+          <div class="flex-apart flex-valign-center">
+            <strong>👁 🗝 publishableKey</strong>
+            <a class="text-xxs text-white" href="https://dashboard.stripe.com/test/apikeys" target="_blank">stripe keys</a>
+            <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
+              (valueChange) = "tempPublishableKey=$event;save()"
+            ></key-changer>
+          </div>
           <div>
-            <div class="flex-apart">
-              <strong>👁 🗝 publishableKey</strong>
-              <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
-                (valueChange) = "tempPublishableKey=$event;save()"
-              ></key-changer>
-            </div>
-            <div>
-              <input
-                (keyup)="tempPublishableKey=$event.target.value"
-                [value]="tempPublishableKey"
-                style="width:100%"
-              />
-            </div>
-            <div class="pos-rel text-xxs opacity-70">
-              <div class="pos-abs">
-                <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="enableServerMode || storage.webhookSigningSecret" class="flex-1">
-          <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
-        </div>
-
-        <div *ngIf="enableServerMode || storage.privateKey" class="flex-1">
-          <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
-        </div>
-
-        <div>
-          <label for="enableServerMode" style="align-items: center">
-            <input
-              type="checkbox" name="enableServerMode" id="enableServerMode"
-              (change)="toggleServerMode()"
-              [checked] = "enableServerMode"
+            <input style="width:100%" placeholder="Stripe UI public key"
+              (keyup)="tempPublishableKey=$event.target.value"
+              [value]="tempPublishableKey || null"
             />
-            <span> 🔗 enable server functionality</span>
-          </label>
+          </div>
         </div>
-
-        <ng-container *ngIf="storage.saveKeyLocally">
-          <div class="width-full"></div>
-
-          <div class="flex1">
-            <strong>👁 🗝 Switchable Public Keys</strong>
-            <div>
-              <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.publicKeys}"></ng-container>
-            </div>
-          </div>
-
-          <div class="flex1">
-            <strong>🔐 Switchable Private Keys</strong>
-            <div>
-              <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
-            </div>
-          </div>
-        </ng-container>
       </div>
 
-      <br />
+      <div *ngIf="enableServerMode || storage.privateKey" class="flex-1">
+        <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+      </div>
 
-      <!-- reusable metadata -->
+      <div *ngIf="enableServerMode || storage.webhookSigningSecret" class="flex-1">
+        <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
+      </div>
+
+      <ng-container *ngIf="storage.saveKeyLocally">
+        <div class="width-full"></div>
+
+        <div class="flex1">
+          <strong>👁 🗝 Switchable Public Keys</strong>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.publicKeys}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🔐 Switchable Private Keys</strong>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
+          </div>
+        </div>
+      </ng-container>
+
       <div>
-        <div>
-          <strong>
-            <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
-              <input
-                type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
-                (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
-                [checked] = "storage.saveRequestsLocal"
-              /> Reuse metadata in all requests
-            </label>
-          </strong>
-        </div>
-        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
-          (change)="updateStorageMeta($event.target.value)"
-        >{{ storage.metadata | json }}</textArea>
+        <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
       </div>
 
-      <br />
-
-      <!-- Removed 8/16/21 to prevent revealing sensitive info
-        <div>
-          <strong>Your local storage</strong>
-          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
-          >{{ storage | json }}</textArea>
-        </div>
-      -->
-
-      <div class="flex-wrap child-margin-xs flex-center child-flex-1">
-        <button *ngIf="storage.privateKey || storage.key"
-          type="button" (click)="deleteLocalStorage()"
-          class="active-bg-energized bg-black text-white"
-        >🗑 clear localStorage</button>
-
-        <button type="button" (click)="changekey = !changekey"
-          class="bg-grey text-white active-bg-energized"
-        >❌ cancel</button>
-
-        <button type="submit" class="active-bg-energized">💾 save</button>
+      <div>
+        <label for="enableServerMode" style="align-items: center">
+          <input
+            type="checkbox" name="enableServerMode" id="enableServerMode"
+            (change)="toggleServerMode()"
+            [checked] = "enableServerMode"
+          />
+          <span> 🔗 enable server functionality</span>
+        </label>
       </div>
-    </form>
-  </div>
+    </div>
+
+    <br />
+
+    <!-- reusable metadata -->
+    <div>
+      <div>
+        <strong>
+          <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
+            <input
+              type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
+              (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
+              [checked] = "storage.saveRequestsLocal"
+            /> Reuse metadata in all requests
+          </label>
+        </strong>
+      </div>
+      <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
+        (change)="updateStorageMeta($event.target.value)"
+      >{{ storage.metadata | json }}</textArea>
+    </div>
+
+    <br />
+
+    <!-- Removed 8/16/21 to prevent revealing sensitive info
+      <div>
+        <strong>Your local storage</strong>
+        <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
+        >{{ storage | json }}</textArea>
+      </div>
+    -->
+
+    <div class="flex-wrap child-margin-xs flex-center child-flex-1">
+      <button *ngIf="storage.privateKey || storage.key"
+        type="button" (click)="deleteLocalStorage()"
+        class="hover-bg-positive active-bg-balanced bg-black text-white"
+      >🗑 clear localStorage</button>
+
+      <button type="button" (click)="changekey = !changekey"
+        class="bg-grey text-white hover-bg-positive active-bg-balanced"
+      >❌ cancel</button>
+
+      <button type="submit" class="hover-bg-positive active-bg-balanced">💾 save</button>
+    </div>
+  </form>
 </ng-template>
 
 <ng-template #cardUi>
@@ -345,7 +298,7 @@
       (changed) = "api.card.changedEvent = $event"
       [options] = "options"
       [(complete)]="cardComplete"
-      (catch)="sending=false;lastError=$event"
+      (catch)="api.card.error=$event;sending=false;lastError=$event"
       (invalidChange)="sending=false;lastError=$event"
       (cardMounted) = "setCardElements($event)"
 
@@ -364,6 +317,10 @@
     ...awaiting card entry above...
   </div>-->
 
+  <div *ngIf="api.card.error" class="margin-xs pad-xs bg-danger">
+    {{ api.card.error.message ? api.card.error.message : (api.card.error | json) }}
+  </div>
+
   <div class="text-center opacity-70">
     <small
       [class.text-assertive]="!cardComplete"
@@ -372,50 +329,47 @@
   </div>
 
   <div class="pad-top">
-    <div class="flex-wrap">
-      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
+    <div class="flex-wrap child-margin-1">
+      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
-        style="background-color:#99FFFF;"
-      >💳 create payment method</button>
+      >💳 create pay method</button>
 
-      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
+      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
-        style="background-color:#99FFFF;"
         title="Using Payment Method instead is recommended"
       >💳 create source</button>
 
-      <button type="button" class="flex-1 active-bg-balanced" [disabled]="!cardComplete"
+      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
         (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-        style="background-color:#99FFFF;"
         title="Using Payment Method instead is recommended"
       >🪙 create token</button>
     </div>
 
     <div class="text-xs pad-v">
-      <h4>Common copy/paste card numbers</h4>
+      <h4>📋 copy/paste card numbers</h4>
 
-      <div class="flex-wrap child-margin-xxs child-flex-1 text-center">
-        <a (click)="copyText('4000056655665556')" class="border border-white pad-xxs radius-10 active-bg-balanced"
-          title="Recommended for most success across all functionality. Even works for external_accounts"
-        >⭐️ <span class="text-xs">4000056655665556</span> visa debit 📋</a>
-
-        <a (click)="copyText('4242424242424242')" class="border border-white pad-xxs radius-10 active-bg-balanced"
-          title="General success. Cannot be used for **Accounts** (Card no is for credit card, only debit cards allowed)"
-        ><span class="text-xs">4242424242424242</span> visa 📋</a>
-
-        <a (click)="copyText('4000002500003155')" class="border border-white pad-xxs radius-10 active-bg-balanced"
-          title=""
-        >✍️ <span class="text-xs">4000002500003155</span> needs one-time auth 📋</a>
-
-        <a (click)="copyText('4000000000003220')" class="border border-white pad-xxs radius-10 active-bg-balanced"
-          title=""
-        >✍️ <span class="text-xs">4000000000003220</span> needs auth 📋</a>
+      <div class="flex-wrap child-margin-1 text-center text-xs">
+        <ng-container *ngFor="let item of testNums">
+          <a (click)="copyText(item.number)" class="flex-1 hover-bg-positive active-bg-balanced radius-10 bg-dark"
+            [title]="item.description"
+          >
+            <div [class.pad-h-2x]="item.icon">
+              <span *ngIf="item.icon" class="pos-rel">
+                <span class="pos-abs" style="right:3px;bottom:-2px">{{item.icon}}</span>
+              </span>
+              <span>{{item.number}}</span>
+            </div>
+            <div class="text-sm opacity-half">{{item.hint}}</div>
+          </a>
+        </ng-container>
       </div>
     </div>
 
+    <br />
+
     <!--<h4>Additional functionality</h4>-->
     <div class="flex-wrap">
-      <button type="button" class="flex-1"
+      <button type="button" class="flex-1 hover-bg-positive active-bg-balanced"
         (click)="editOptions=!editOptions"
         [style.background-color] = "editOptions && '#0099CC' || null"
       >🔧 options</button>
@@ -424,7 +378,7 @@
 
     <div *ngIf="editExtraData">
       <br />
-      <div style="display:flex;justify-content:space-between">
+      <div class="flex-apart">
         <strong title="Card specific way of providing token related info (includes metadata)"
         >🪙 token data</strong>
         <small>
@@ -438,7 +392,7 @@
 
     <div *ngIf="editPaymentMethodRequest">
       <br />
-      <div style="display:flex;justify-content:space-between">
+      <div class="flex-apart">
         <div>💳 payment method data</div>
         <small>
           <a href="https://stripe.com/docs/payments/payment-methods/overview" target="_blank">overview</a>&nbsp;
@@ -540,8 +494,7 @@
   <br />
 
   <div style="text-align:right;">
-    <button
-      type="button"
+    <button type="button" class="hover-bg-positive active-bg-balanced"
       (click)="lastError=null;sending=true;stripeBank.createToken(api.bank.data)"
     >🪙 create token</button>
   </div>
@@ -572,7 +525,7 @@
       </tHead>
       <tr class="text-xs">
         <td>
-          <button type="button" class="active-bg-energized"
+          <button type="button" class="hover-bg-positive active-bg-balanced"
             (click)="createCustomerByToken(api.bank.result)"
             title = "Connect the bank token created above with a Stripe customer"
           >👤 new customer by 🪙 token</button>
@@ -628,7 +581,7 @@
           />
         </div>
       </div>
-      <button type="button" (click)="verifyBank()" class="active-bg-energized">verify</button>
+      <button type="button" (click)="verifyBank()" class="hover-bg-positive active-bg-balanced">verify</button>
 
       <div *ngIf="api.bank.verifyResponse">
         <br />
@@ -643,7 +596,7 @@
 
 <style>
 	.resource-link {
-    flex-grow:1;margin:.3em;padding:.3em;text-decoration: none;
+    margin:.2em;padding:.2em;text-decoration: none;
     border-radius:5px;border:1px solid rgba(233, 233, 233, 0.678);
   }
 
@@ -656,102 +609,19 @@
   }
 </style>
 
-<ng-template #resources>
-  <h4>🚀 Setup and starter docs</h4>
-  <div class="text-center flex-center flex-wrap">
-    <a href="https://stripe.com/docs/payouts"
-      target="_blank" class="resource-link"
-    >
-      💰 Receiving payouts
-      <div class="text-xxxs opacity-half">connecting Stripe to your bank account</div>
-    </a>
-
-    <a href="https://stripe.dev/elements-examples/"
-      target="_blank" class="resource-link"
-    >🎨 stripe elements examples</a>
-
-    <a href="https://www.youtube.com/watch?v=2kc-FjU2-mY"
-      target="_blank" class="resource-link"
-    >🎥 🔐 Customer Authentication & 3D Secure</a>
-
-    <a href="https://stripe.com/docs/sources/ach-credit-transfer"
-      target="_blank" class="resource-link"
-      title="Receiving money from your customers"
-    >🏦 ACH credit transfer</a>
-
-    <a href="https://plaid.com/docs/auth/partnerships/stripe/"
-      target="_blank" class="resource-link"
-      title="becoming outdated by beta Plaid but still useful docs"
-    >🏦 Plaid + Stripe</a>
-    <a href="https://plaid.com/docs/quickstart/#how-it-works"
-      target="_blank" class="resource-link"
-    >🏦 Plaid quickstart</a>
-    <a href="https://stripe.com/docs/ach#using-plaid"
-      target="_blank" class="resource-link"
-      title="becoming outdated by beta Plaid but still useful docs"
-    >🏦 Plaid from Stripe POV</a>
-    <a href="https://www.youtube.com/watch?v=aVJz1OUKcIM"
-      target="_blank" class="resource-link"
-      title="becoming outdated by beta Plaid but still useful docs"
-    >🏦 🎥 Plaid + Stripe Youtube</a>
-    <a href="https://plaid.com/docs/api/"
-      target="_blank" class="resource-link"
-    >🏦 Plaid API Overview</a>
-  </div>
-
-  <h4>🔬 Technical implementation docs</h4>
-  <div style="text-align:center;display:flex;justify-content: center;flex-wrap:wrap">
-    <a href="https://stripe.com/docs/api/events/types"
-      target="_blank" class="resource-link"
-    >🪝 Webhooks types of events</a>
-
-    <a href="https://github.com/AckerApple/stripe-angular/blob/gh-pages/src/components/app.component.ts"
-      target="_blank" class="resource-link"
-    >🐠 demo code on github</a>
-
-    <a href="https://stripe.com/docs/error-codes"
-      target="_blank" class="resource-link"
-    >🔴 error codes</a>
-
-      <a href="https://stripe.com/docs/js"
-      target="_blank" class="resource-link"
-    >📄 stripe.js docs</a>
-
-    <a href="https://stripe.com/docs/api/sources/object#source_object-type"
-      target="_blank" class="resource-link"
-    >📄 source types</a>
-
-    <a href="https://www.youtube.com/watch?v=_1EX-DrikoA"
-      target="_blank" class="resource-link"
-    >🎥 🏦 ACH bank account setup</a>
-
-    <a href="https://stripe.com/docs/payments/payment-intents/migration/charges"
-      target="_blank" class="resource-link"
-    >Pay Intent API VS. Charges API</a>
-
-    <a href="https://stripe.com/docs/api/cards/update"
-      target="_blank" class="resource-link"
-    >💳 update source card</a>
-
-    <a href="https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge"
-      target="_blank" class="resource-link"
-    >💳 ✅ check card valid without charge</a>
-  </div>
-</ng-template>
-
 <ng-template #optionalCardControls>
-  <button type="button" class="active-bg-energized flex-1"
+  <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
     (click)="editSourceRequest=!editSourceRequest"
     [style.background-color] = "editSourceRequest && '#0099CC' || null"
     title="Using Payment Method instead is recommended"
   >💳 source data</button>
 
-  <button type="button" class="active-bg-energized flex-1"
+  <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
     (click)="editPaymentMethodRequest=!editPaymentMethodRequest"
     [style.background-color] = "editPaymentMethodRequest && '#0099CC' || null"
   >💳 payment method data</button>
 
-  <button type="button" class="active-bg-energized flex-1"
+  <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
     (click)="editExtraData=!editExtraData"
     [style.background-color] = "editExtraData && '#0099CC' || null"
     title="Using Payment Method instead is recommended"
@@ -775,28 +645,6 @@
   <div class="pos-rel text-xxs opacity-70">
     <div class="pos-abs">
       <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #webhookFunctionality>
-  <div class="flex-wrap flex-center">
-    <div *ngIf="storage.webhookSigningSecret" class="tool-wrap">
-      <div style="display:flex;flex-wrap:wrap;align-items: baseline;">
-        <h3 style="margin:0;padding:0;flex-grow:1;color:white">
-          <label for="card-like-element">
-            🔬 Generate Test Header String
-          </label>
-        </h3>
-        <small>
-          <a href="https://www.npmjs.com/package/stripe#testing-webhook-signing" style="color:white;" target="_blank"
-          >api docs</a>
-        </small>
-      </div>
-      <div class="tool-panel">
-        Paste your payload below to encode into a signing secret
-        <simple-route-edit [config]="api.testHeader" copy="result" [(format)]="storage.format"></simple-route-edit>
-      </div>
     </div>
   </div>
 </ng-template>
@@ -832,7 +680,7 @@
           <small class="opacity-70">Additional functionality available, run the following commands in a local terminal:</small>
         </div>
       </div>
-<pre class="bg-dark pad-xs margin-0">
+<pre class="bg-dark pad-xs margin-0 text-white">
 git clone --branch gh-pages https://github.com/ackerapple/stripe-angular
 cd stripe-angular
 npm install --production
@@ -840,7 +688,7 @@ npm run start
 </pre>
     </div>
     <div class="text-right">
-      <button (click)="localServerActive = true" class="active-bg-energized">
+      <button (click)="localServerActive = true" class="hover-bg-positive active-bg-balanced">
         🔧 show tools anyways
       </button>
     </div>
@@ -905,106 +753,6 @@ npm run start
   </div>
 </ng-template>
 
-<ng-template #stripeServerTemplate>
-  <div class="bg-grey border-bottom flex-1"
-    [class.width-full]="showServerMethods"
-  >
-    <a class="flex-valign-center flex-wrap flex-right child-margin" (click)="showServerMethods = !showServerMethods">
-      <span>{{ showServerMethods ? '🔽' : '▶️'}}</span>
-      <span class="flex-1">
-        <h2 class="opacity-half margin-0 pad-0">🔗 Server Functionality</h2>
-        <small class="opacity-70">Helpful tools ONLY available in this demo by Stripe <strong>privateKey</strong></small>
-      </span>
-    </a>
-
-    <div *ngIf="showServerMethods">
-      <div class="pad flex-center">
-        <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
-          <div class="flex">
-            <div class="flex-1">
-              <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
-            </div>
-            <div class="flex-valign-bottom">
-              <div class="flex-wrap">
-                <button type="submit" class="active-bg-balanced">
-                  💾&nbsp;save
-                </button>
-
-                <button type="button" (click)="toggleServerMode()" class="active-bg-energized"
-                  [class.bg-assertive] = "!enableServerMode"
-                  [class.bg-balanced] = "enableServerMode"
-                  title = "tap to toggle enabled/disable and clear localStorage"
-                >{{ enableServerMode ? '☑️ enabled' : '◻️ disabled' }}</button>
-                <div class="width-full text-xxs pos-rel">
-                  <div class="pos-abs opacity-80">
-                    <label for="savePrivateKeyLocally" style="align-items: center">
-                      <input
-                        type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
-                        (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
-                        [checked] = "storage.savePrivateKeyLocally"
-                      />
-                      <span>💾 save in localStorage</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <br /><br />
-
-      <server-tools [api]="api" [apiGroups]="apiGroups" [storage]="storage"></server-tools>
-
-      <br />
-      <button (click)="showServerMethods = false" class="active-bg-energized">❌ close</button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #webhookTemplate>
-  <div class="flex-1 bg-grey border-bottom text-white">
-    <div class="flex-valign-center flex-right flex-wrap child-margin"
-      (click)="showWebhookMethods = !showWebhookMethods"
-    >
-      <a>
-        {{ showWebhookMethods ? '🔽' : '▶️'}}
-      </a>
-      <a class="flex-1">
-        <h2 class="opacity-half margin-0 pad-0">🪝 Webhook Functionality</h2>
-        <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
-      </a>
-    </div>
-
-    <ng-container *ngIf="showWebhookMethods">
-      <br />
-
-      <div class="pad flex-center">
-        <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
-          <div class="flex">
-            <div class="flex-1">
-              <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
-            </div>
-            <div>
-              <div class="invisible">🔐</div>
-              <button type="submit" class="active-bg-balanced">
-                💾&nbsp;save
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <br />
-
-      <ng-container *ngTemplateOutlet="webhookFunctionality"></ng-container>
-      <br />
-      <button (click)="showWebhookMethods = false" class="active-bg-energized">❌ close</button>
-    </ng-container>
-  </div>
-</ng-template>
-
 <ng-template #keysInputArray let-array="array">
   <ng-container *ngFor="let item of array; let index=index">
     <div class="flex-valign-center">
@@ -1019,7 +767,147 @@ npm run start
       <a (click)="array.splice(index, 1)">❌</a>
     </div>
   </ng-container>
-  <button type="button" class="width-full"
+  <button type="button" class="width-full hover-bg-positive active-bg-balanced"
     (click)="array.push({})"
   >add key</button>
+</ng-template>
+
+<ng-template #stripeGroupTemplate let-selected="selected">
+  <div class="flex1 text-white pad hover-bg-positive margin-xxs"
+    [class.bg-grey-3x]="selected" [class.bg-grey]="!selected"
+    >
+    <h2 class="opacity-half margin-0 pad-0">🔗 Server Functionality</h2>
+    <small class="opacity-70">Helpful tools ONLY available in this demo by Stripe <strong>privateKey</strong></small>
+  </div>
+</ng-template>
+
+<ng-template #webhookGroupTemplate let-selected="selected">
+  <div class="flex1 text-white pad hover-bg-positive margin-xxs"
+    [class.bg-grey-3x]="selected" [class.bg-grey]="!selected"
+  >
+    <h2 class="opacity-half margin-0 pad-0">🪝 Webhook Functionality</h2>
+    <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>webhookSigningSecret</strong></small>
+  </div>
+</ng-template>
+
+<ng-template #plaidGroupTemplate let-selected="selected">
+  <div class="flex1 text-white pad hover-bg-positive margin-xxs"
+    [class.bg-grey-3x]="selected" [class.bg-grey]="!selected"
+  >
+    <h2 class="opacity-half margin-0 pad-0">🏦 Plaid Functionality</h2>
+    <small class="opacity-70">Helpful tools ONLY available in this demo by using entered <strong>plaidConfig</strong></small>
+  </div>
+</ng-template>
+
+<ng-template #stripeKeyForm>
+  <div class="pad flex-center">
+    <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+      <div class="flex">
+        <div class="flex-1">
+          <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+        </div>
+        <div class="flex-valign-bottom">
+          <div class="flex-wrap">
+            <button type="submit" class="active-bg-balanced">
+              💾&nbsp;save
+            </button>
+
+            <button type="button" (click)="toggleServerMode()" class="hover-bg-positive active-bg-balanced"
+              [class.bg-assertive] = "!enableServerMode"
+              [class.bg-balanced] = "enableServerMode"
+              title = "tap to toggle enabled/disable and clear localStorage"
+            >{{ enableServerMode ? '☑️ enabled' : '◻️ disabled' }}</button>
+            <div class="width-full text-xxs pos-rel">
+              <div class="pos-abs opacity-80">
+                <label for="savePrivateKeyLocally" style="align-items: center">
+                  <input
+                    type="checkbox" name="savePrivateKeyLocally" id="savePrivateKeyLocally"
+                    (change)="storage.savePrivateKeyLocally = !storage.savePrivateKeyLocally"
+                    [checked] = "storage.savePrivateKeyLocally"
+                  />
+                  <span>💾 save in localStorage</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #plaidKeyForm>
+  <div class="pad flex-center flex-wrap" *ngIf="localServerActive">
+    <br />
+    <form class="flex-1" (submit)="save()" action="javascript:">
+      <div class="flex-1 flex-wrap flex-center flex-valign-center child-margin-xxs">
+        <div class="flex-1 max-width-800">
+          <div class="flex-apart">
+            <strong>🆔 CLIENT_ID</strong>
+            <a href="https://dashboard.plaid.com/team/keys" target="_blank" class="text-xxs text-white">plaid keys</a>
+          </div>
+          <div>
+            <input type="password" class="width-full"
+              (keyup)="storage.plaid.client_id=$event.target.value;"
+              [value]="storage.plaid.client_id || null"
+              placeholder="Plaid > Team > Keys > client_id"
+            />
+          </div>
+          <a *ngIf="storage.plaid.client_id?.length > 12" class="hover-bg-positive active-bg-balanced text-xs opacity-third pad-xxs pos-abs"
+            (click)="copyText(storage.plaid.client_id)"
+          >
+            {{ storage.plaid.client_id | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.client_id | slice : 8 : storage.plaid.client_id.length).length) }}
+          </a>
+        </div>
+
+        <div class="flex-1 max-width-800">
+          <strong>👂 SECRET</strong>
+          <div>
+            <input type="password" class="width-full"
+              (keyup)="storage.plaid.secret=$event.target.value;"
+              [value]="storage.plaid.secret || null"
+              placeholder="Plaid > Team > Keys > Sandbox"
+            />
+          </div>
+          <a *ngIf="storage.plaid.secret?.length > 12" class="hover-bg-positive active-bg-balanced text-xs opacity-third pad-xxs pos-abs"
+            (click)="copyText(storage.plaid.secret)"
+          >
+            {{ storage.plaid.secret | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.secret | slice : 8 : storage.plaid.secret.length).length) }}
+          </a>
+        </div>
+
+        <div>
+          <div class="invisible">🔐</div>
+          <button type="submit" class="active-bg-balanced">
+            💾&nbsp;save
+          </button>
+        </div>
+      </div>
+      <div class="flex-center child-margin-xxs">
+        <div class="pos-rel text-xxs opacity-70 width-30vw">
+          <div class="pos-abs flex-center width-full text-center margin-top-3x">
+            <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #webhookKeyForm>
+  <div class="pad flex-center">
+    <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
+      <div class="flex">
+        <div class="flex-1">
+          <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
+        </div>
+        <div>
+          <div class="invisible">🔐</div>
+          <button type="submit" class="active-bg-balanced">
+            💾&nbsp;save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </ng-template>

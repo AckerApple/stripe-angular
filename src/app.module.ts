@@ -2,7 +2,10 @@ import { NgModule } from "@angular/core"
 import { BrowserModule } from "@angular/platform-browser"
 
 import { AppComponent } from "./components/app.component"
-import { ServerToolsComponent } from "./components/server-tools.component"
+
+import { GroupToolsComponent } from "./components/group-tools.component"
+import { ToolRelationsComponent } from "./components/tool-relations.component"
+
 import { SimpleRouteEditComponent } from "./components/simple-route-edit.component"
 import { DumpComponent } from "./components/dump.component"
 import { PastesMenuComponent } from "./components/pastes-menu.component"
@@ -23,8 +26,11 @@ import { StripeModule } from "stripe-angular"
     MenuOptionsComponent,
     KeyChangerComponent,
     DumpComponent,
-    ServerToolsComponent,
+
+    GroupToolsComponent,
+    ToolRelationsComponent,
     ToolWrapComponent,
+
     SimpleRouteEditComponent,
   ],
   bootstrap:[ AppComponent ]

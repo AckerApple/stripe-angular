@@ -1,7 +1,8 @@
+import { plaid_stripeBankCreate } from "./plaid.apis"
+import { apis as persons, persons_create, persons_list, persons_update } from './persons.api'
 import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card } from "./cards.api"
-// import { cardApis, bank } from "./getApis.function"
 
 
 export const accounts_create: ISimpleRouteEditor = {
@@ -12,6 +13,12 @@ export const accounts_create: ISimpleRouteEditor = {
   },{
     title: '🔬 testing data',
     url: 'https://stripe.com/docs/connect/testing'
+  }, {
+    url: 'https://stripe.com/docs/connect/manage-payout-schedule',
+    title: 'Managing payout schedule'
+  }, {
+    title: 'mcc (merchant category code)',
+    url: 'https://stripe.com/docs/connect/setting-mcc',
   }],
   // warn: '⚠️ From a web page, only live keys can access this method. Goto "Server-side communications only" section, below.',
   request:{
@@ -29,12 +36,58 @@ export const accounts_create: ISimpleRouteEditor = {
         requested: true,
       },
     },
+    settings: {
+      payouts: {
+        debit_negative_balances: true,
+        schedule: {
+          delay_days: 2,
+          interval: 'daily'
+        }
+      },
+    },
     metadata: {
       order_id: '6735' // value in Stripe docs
     }
   },
   examples: [{
-    title: 'individual',
+    title: 'company full details',
+    data: {
+      business_type: "company",
+      country: 'US',
+      type: 'custom',
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
+      },
+      email: "info@company.com",
+      company: {
+        owners_provided: true,
+        tax_id: '000000000',
+        name: "stripe-angular",
+        phone: "0000000000",
+        address: {
+          city: "Cupertino",
+          country: "US",
+          line1: "One Apple Park Way",
+          line2: null,
+          postal_code: "95014",
+          state: "CA"
+        }
+      },
+      business_profile: {
+        mcc: '5734',
+        url: "https://ackerapple.github.io/stripe-angular/"
+      },
+      metadata: {
+        'stripe-angular': 'demo'
+      }
+    }
+  },{
+    title: 'individual full details',
     data: {
       business_type: "individual",
       country: 'US',
@@ -56,20 +109,34 @@ export const accounts_create: ISimpleRouteEditor = {
         ssn_last_4: '0000',
         dob: {day:'01', month: '01', year: '1901'},
         address: {
-          city: "coconut creek",
+          line1: "One Apple Park Way", // address_full_match​
+          city: "Cupertino",
           country: "US",
-          line1: "address_full_match​",
-          postal_code: "33066",
-          state: "FL"
+          postal_code: "95014",
+          state: "CA"
         },
         metadata: {
           'stripe-angular': 'demo'
         }
       },
+      business_profile: {
+        mcc: '5734',
+        url: "https://ackerapple.github.io/stripe-angular/"
+      },
       metadata: {
         order_id: '6735' // value in Stripe docs
       }
     },
+  }],
+  pastes: [{
+    title: 'manual payouts',
+    pasteKey: 'data.settings.payouts',
+    value: {
+      debit_negative_balances: true,
+      schedule: {
+        interval: 'manual'
+      },
+    }
   }]
 }
 
@@ -119,17 +186,14 @@ export const account_links_create: ISimpleRouteEditor = {
   },
   pastes:[{
     $api: () => accounts_list,
-    title: 'Accounts GET 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.account',
   },{
     $api: () => accounts_create,
-    title: '🆕 Accounts Create',
     valueKey: 'result.id',
     pasteKey: 'data.account',
   },{
     $api: () => accounts_retrieve,
-    title: '1️⃣ Accounts retrieve',
     valueKey: 'result.id',
     pasteKey: 'data.account',
   }]
@@ -150,15 +214,69 @@ export const accounts_update: ISimpleRouteEditor = {
     path: 'accounts/:id'
   },
   data: {
+    tos_acceptance: {
+      date: '1634847444',
+      ip: '0.0.0.0'
+    },
     metadata: {
       order_id: '6735' // value in Stripe docs
     }
   },
   pastes:[{
+    title: 'apples address',
+    pasteKey: 'data.individual.address',
+    value: {
+      line1: "One Apple Park Way", // address_full_match​
+      city: "Cupertino",
+      country: "US",
+      postal_code: "95014",
+      state: "CA"
+    }
+  },{
+    title: 'tos_acceptance',
+    pasteKey: 'data.tos_acceptance',
+    value: {
+      date: '1634847444',
+      ip: '0.0.0.0'
+    }
+  },{
+    title: 'manual payouts',
+    pasteKey: 'data.settings.payouts',
+    value: {
+      debit_negative_balances: true,
+      schedule: {
+        interval: 'manual'
+      },
+    }
+  },{
     $api: () => accounts_list,
     title: '🧾 Accounts list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id',
+    pastes: [{
+      pasteKey: 'data', valueKey:'result.data.0',
+      removeKeys: [
+        'id', 'object', 'created', 'charges_enabled',
+        'controller',
+        'country', 'details_submitted',
+        'external_accounts', 'future_requirements',
+        'payouts_enabled', 'requirements', 'type',
+
+        'individual.id', 'individual.account', 'individual.object', 'individual.created',
+        'individual.id_number_provided',
+        'individual.relationship',
+        'individual.requirements',
+        'individual.ssn_last_4_provided',
+        'individual.future_requirements',
+        'individual.verification.status',
+
+        'company.tax_id_provided',
+        'capabilities.transfers',
+        'capabilities.card_payments',
+        'settings.dashboard'
+      ],
+      removeValues: [null]
+    }]
   },{
     $api: () => accounts_retrieve,
     title: '1️⃣ Accounts retrieve',
@@ -168,6 +286,7 @@ export const accounts_update: ISimpleRouteEditor = {
       pasteKey: 'data', valueKey:'result',
       removeKeys: [
         'id', 'object', 'created', 'charges_enabled',
+        'controller',
         'country', 'details_submitted',
         'external_accounts', 'future_requirements',
         'payouts_enabled', 'requirements', 'type',
@@ -223,6 +342,22 @@ export const accounts_retrieve: ISimpleRouteEditor = {
     $api: () => accounts_create,
     // title: '🆕 Account Create',
     valueKey: 'result.id',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => persons_list,
+    valueKey: 'request.params.id',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => persons_create,
+    valueKey: 'result.account',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => persons_update,
+    valueKey: 'result.account',
+    pasteKey: 'request.params.id',
+  }, {
+    $api: () => external_accounts_create,
+    valueKey: 'result.account',
     pasteKey: 'request.params.id',
   }]
 }
@@ -336,6 +471,10 @@ export const external_accounts_create: ISimpleRouteEditor = {
     title: 'card pay method',
     valueKey: 'result.payment_method.id',
     pasteKey: 'data.external_account',
+  }, {
+    $api: () => plaid_stripeBankCreate,
+    valueKey: 'result.stripe_bank_account_token',
+    pasteKey: 'data.external_account'
   }]
 }
 
@@ -433,7 +572,62 @@ const application_fees_refunds: ISimpleRouteEditor = {
 export const apis = [
   accounts_list, accounts_create, accounts_update, accounts_retrieve, accounts_delete,
   account_links_create, account_login_link,
+]
+
+const externalAccounts = [
   external_accounts_create, accounts_external_list, external_accounts_retrieve,
+]
+
+const applicationFees = [
   application_fees_list, application_fees_retrieve,
   application_fees_refunds_create, application_fees_refunds_retrieve, application_fees_refunds_update, application_fees_refunds
 ]
+
+export const accountsGroup = {
+  title: 'Accounts', apis,
+  icon: '♣️',
+  description: 'This is an object representing a Stripe account. You can retrieve it to see properties on the account like its current e-mail address or if the account is enabled yet to make live charges.',
+  links: [{
+    title: '📕 API docs',
+    url: 'https://stripe.com/docs/api/accounts'
+  }, {
+    title: '👁 Verify custom account identity',
+    url: 'https://stripe.com/docs/connect/identity-verification'
+  }, {
+    title: 'Test custom account verification',
+    url: 'https://stripe.com/docs/connect/testing-verification#blocked-payouts'
+  }],
+  groups: [{
+    title: 'Application Fees',
+    icon: '🤌',
+    description: 'When you collect a transaction fee on top of a charge made for your user (using Connect), an Application Fee object is created in your account. You can list, retrieve, and refund application fees.',
+    apis: applicationFees,
+    links: [{
+      title: '📕 API Docs',
+      url: 'https://stripe.com/docs/api/application_fees'
+    }]
+
+  },{
+    title: 'External Accounts',
+    icon: '↔️',
+    description: 'External Accounts are transfer destinations on Account objects for connected accounts. They can be bank accounts or debit cards.',
+    apis: externalAccounts,
+    links: [{
+      title: '📕 API Docs',
+      url: 'https://stripe.com/docs/api/external_accounts'
+    }]
+
+  }, {
+    title: 'Persons',
+    icon: '🙍',
+    description: 'This is an object representing a person associated with a Stripe account',
+    apis: persons,
+    links: [{
+      title: '📕 API Docs',
+      url: 'https://stripe.com/docs/api/persons'
+    }, {
+      url: 'https://stripe.com/docs/connect/identity-verification-api#person-information',
+      title: 'Person info guide'
+    }]
+  }]
+}

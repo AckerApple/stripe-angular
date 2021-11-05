@@ -74,6 +74,7 @@
       <div (click)="copyText(value)" class="cursor-pointer hover-bg-warning active-bg-energized"
         [class.text-balanced]="value === true"
         [class.text-assertive]="value === false"
+        [title] = "value.constructor?.name === 'Number' && value > 1000000000 ? value > 946702800000 ? 'Milliseconds > Unix epoch:\n' + (value | date : 'long') : 'Seconds > Unix epoch:\n' + (value*1000 | date : 'long') : ''"
       >{{value}}</div>
     </ng-template>
   </div>

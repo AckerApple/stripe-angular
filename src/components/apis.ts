@@ -1,35 +1,27 @@
-import { LinkRef, ISimpleRouteEditor } from "./typings"
+import { payintents } from './pay_intents.api'
 import { apis as customerApis } from './customers.api'
-import { apis as disputesApis } from './disputes.api'
-import { apis as accountsApis } from './accounts.api'
-import { apis as payoutApis } from './payouts.api'
-import { apis as payIntentsApis } from './pay_intents.api'
-import { apis as bankApis } from "./banks.api"
 import { apis as transferApis } from "./transfers.api"
-import { apis as commonApis } from "./common.api"
+import { disputes } from './disputes.api'
+import { accountsGroup, apis as accountsApis } from './accounts.api'
 import { apis as chargesApis } from "./charges.api"
-import { apis as cardApis } from "./cards.api"
+import { apis as payoutApis } from './payouts.api'
 import { apis as refundApis } from "./refunds.api"
+import { apis as commonApis } from "./common.api"
+import { apis as bankApis } from "./banks.api"
+import { apis as cardApis } from "./cards.api"
+import { ApiGroup } from "./typings"
+import { plaidApis } from "./plaid.apis"
+import { testHeader } from './getApis.function'
 
-export interface ApiGroup {
-  title: string
-  icon?: string // emoji
-  links?: LinkRef[]
-  description?: string
-  apis?: ISimpleRouteEditor[]
+const customers: ApiGroup = {
+  icon: '👤',
+  title: 'Customers', apis: customerApis,
+  description: 'Customer objects allow you to perform recurring charges, and to track multiple charges, that are associated with the same customer. The API allows you to create, delete, and update your customers. You can retrieve individual customers as well as a list of all your customers.'
 }
 
 export const apiGroups: ApiGroup[] = [{
   title: 'Common', apis: commonApis,
-},{
-  title: 'Accounts', apis: accountsApis,
-  icon: '♣️',
-  description: 'This is an object representing a Stripe account. You can retrieve it to see properties on the account like its current e-mail address or if the account is enabled yet to make live charges.',
-  links: [{
-    title: '📕 API docs',
-    url: 'https://stripe.com/docs/api/accounts'
-  }]
-},{
+}, accountsGroup,{
   title: 'Banks', apis: bankApis,
   icon: '🏦',
 },{
@@ -43,30 +35,7 @@ export const apiGroups: ApiGroup[] = [{
     url : 'https://stripe.com/docs/api/charges',
     title: '📕 API docs'
   }]
-},{
-  title: 'Disputes', apis: disputesApis,
-  icon: '🦶',
-  description: 'A dispute occurs when a customer questions your charge with their card issuer. When this happens, you\'re given the opportunity to respond to the dispute with evidence that shows that the charge is legitimate.',
-  links: [{
-    url : 'https://stripe.com/docs/api/disputes',
-    title: '📕 API docs'
-  }]
-},{
-  icon: '👤',
-  title: 'Customers', apis: customerApis,
-  description: 'Customer objects allow you to perform recurring charges, and to track multiple charges, that are associated with the same customer. The API allows you to create, delete, and update your customers. You can retrieve individual customers as well as a list of all your customers.'
-},{
-  icon: '🧧',
-  title: 'Pay Intents', apis: payIntentsApis,
-  description: 'A PaymentIntent guides you through the process of collecting a payment from your customer.',
-  links: [{
-    title: '📕 API docs',
-    url: 'https://stripe.com/docs/api/payment_intents'
-  },{
-    title: '📦 💵 👤 💰 🛳 multiple charges & transfers',
-    url: 'https://stripe.com/docs/connect/charges-transfers'
-  }],
-},{
+},customers, disputes, payintents,{
   icon: '💸',
   title: 'Payouts',
   description: 'A Payout object is created when you receive funds from Stripe, or when you initiate a payout to either a bank account or debit card of a connected Stripe account.',
@@ -77,6 +46,9 @@ export const apiGroups: ApiGroup[] = [{
   },{
     url: 'https://stripe.com/docs/connect/testing#payouts',
     title: '🔬 test payout account numbers'
+  }, {
+    url: 'https://stripe.com/docs/connect/manage-payout-schedule',
+    title: 'Managing payout schedule'
   }]
 },{
   title: 'Refunds',
@@ -86,6 +58,12 @@ export const apiGroups: ApiGroup[] = [{
   links: [{
     title: '📕 API docs',
     url: 'https://stripe.com/docs/api/refunds'
+  }, {
+    title: 'guide',
+    url: 'https://stripe.com/docs/refunds'
+  }, {
+    title: 'takes 5-10 business days',
+    url: 'https://stripe.com/docs/refunds#tracing-refunds'
   }]
 },{
   icon: '🤝',
@@ -100,3 +78,23 @@ export const apiGroups: ApiGroup[] = [{
     url: 'https://stripe.com/docs/connect/charges-transfers'
   }]
 }]
+
+export const stripeGroup = {
+  title: '🐠 Stripe Functionality',
+  groups: apiGroups,
+  description: 'Helpful tools ONLY available in this demo by Stripe privateKey'
+}
+
+export const webhookGroup = {
+  title: '🪝 Webhook Functionality',
+  apis: [ testHeader ],
+  description: 'Helpful tools ONLY available in this demo by using entered webhookSigningSecret'
+}
+
+export const plaidGroup = {
+  title: '🏦 Plaid Functionality',
+  apis: plaidApis,
+  description: 'Helpful tools ONLY available in this demo by using entered plaidConfig'
+}
+
+export const allGroups: ApiGroup[] = [stripeGroup, webhookGroup, plaidGroup]

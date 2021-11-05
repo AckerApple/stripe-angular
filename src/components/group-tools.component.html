@@ -1,0 +1,117 @@
+<div class="flex-wrap flex-center width-full">
+  <ng-container *ngTemplateOutlet="groupsDisplay;context:{groups: groups, scope: scope, level:0}"></ng-container>
+</div>
+
+<ng-template #groupsDisplay let-groups="groups" let-scope="scope" let-level="level" let-parentGroup="parentGroup" let-parentScope="parentScope">
+  <div *ngIf="currentLevel < level + 3"
+    [ngClass]="(scope.showGroup || parentScope?.showApi) ? selectedGroupClass : 'flex-wrap flex-center flex1'"
+    [class.flex-stacked]="(scope.showGroup || parentScope?.showApi || scope.scope?.showApi) ? true : false"
+    [class.flex1]="parentGroup && !scope.showGroup"
+  >
+    <!-- list of apis within a parent group -->
+    <ng-container *ngIf="parentGroup && parentGroup.apis">
+      <ng-container *ngTemplateOutlet="groupBody || groupBodyDefault;context:{selected:scope.showApi, group:parentGroup, defaultTemplate:groupBodyDefault}"></ng-container>
+      <ng-template #groupBodyDefault>
+        <ng-container *ngTemplateOutlet="apiListItems;context:{group:parentGroup, scope:parentScope, level:level}"></ng-container>
+      </ng-template>
+    </ng-container>
+
+    <!-- list of groups to choose from -->
+    <ng-container *ngTemplateOutlet="innerGroupsDisplay;context:{groups:groups, scope:scope, level:level, parentGroup:parentGroup, parentScope:parentScope}"></ng-container>
+
+    <!-- a selected groups additional links -->
+    <div *ngIf="parentGroup && !parentScope.showApi && !scope.showGroup && parentGroup?.links?.length"
+      class="text-xs pad-top-xxs flex-center opacity-50 hover-opacity-70 bg-white width-full"
+    >
+      <div class="text-dark pad-h text-center">
+        <small class="opacity-70">🔗 Additional resources</small>
+        <div class="flex-valign-center flex-center child-margin">
+          <small *ngFor="let item of parentGroup.links" class="underline">
+            <a [href]="item.url" class="no-a-style" target="_blank"
+            >{{item.title}}</a>
+          </small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- list of apis within currently selected group -->
+  <div *ngIf="scope.showGroup && !scope.showGroup.groups && scope.showGroup.apis"
+    style="align-content: start;"
+    [ngClass]="scope.showApi ? selectedGroupClass : 'flex-wrap flex-center flex-valign-top'"
+    [class.flex1] = "!scope.showApi && !scope.scope?.showGroup"
+    [class.flex-stacked]="scope.showApi"
+  >
+    <ng-container *ngTemplateOutlet="groupBody || groupBodyDefault;context:{selected:scope.scope?.showGroup || scope.showApi, group:scope.showGroup, defaultTemplate:groupBodyDefault}"></ng-container>
+    <ng-template #groupBodyDefault>
+      <ng-container *ngTemplateOutlet="apiListItems;context:{group:scope.showGroup, scope:scope, level:level+1}"></ng-container>
+    </ng-template>
+  </div>
+
+  <!-- recursive groups -->
+  <ng-container *ngIf="scope.showGroup && (scope.showGroup.groups || scope.showGroup.apis)">
+    <ng-container *ngIf="scope.showGroup && scope.showGroup.groups">
+      <ng-container *ngTemplateOutlet="groupsDisplay;context:{parentScope:scope, parentGroup: scope.showGroup, groups:scope.showGroup.groups, scope: scope.scope || paramSubScope(scope, level+1), level: level+1}"></ng-container>
+    </ng-container>
+  </ng-container>
+
+  <!-- one api interaction -->
+  <ng-container *ngTemplateOutlet="toolWrap;context:{api: scope.showApi || undefined, scope: scope}"></ng-container>
+</ng-template>
+
+<!-- api list descriptions -->
+<ng-template #apiListItems let-group="group" let-scope="scope" let-level="level">
+    <a *ngFor="let api of group.apis" (click)="apiListItemToggle(api, scope, level)"
+      class="hover-bg-positive active-bg-balanced pad margin-xxs"
+      [class.flex2]="!scope.showApi && !scope.scope?.showGroup"
+      [class.bg-grey-3x]="scope.showApi === api" [class.bg-grey]="scope.showApi !== api"
+      [class.hide-xs]="scope.showApi && scope.showApi !== api"
+    >
+      {{api.title}}
+      <div *ngIf="api.request" class="pad-left opacity-70 text-xxs" style="overflow-wrap:break-word">
+        {{api.request.method}}&nbsp;/{{api.request.path}}
+      </div>
+
+      <div class="flex-1 text-smx max-width-80vw">
+        <div *ngIf="api.hint" class="text-xs opacity-80 pad-left">{{api.hint}}</div>
+      </div>
+    </a>
+</ng-template>
+
+<!-- output each group within an array of groups-->
+<ng-template #innerGroupsDisplay let-groups="groups" let-scope="scope" let-level="level" let-parentGroup="parentGroup" let-parentScope="parentScope">
+  <ng-container *ngTemplateOutlet="groupBody || groupTopDefault;context:{selected:scope.showGroup, group:parentGroup, defaultTemplate:groupTopDefault}"></ng-container>
+
+  <ng-template #groupTopDefault>
+    <a *ngFor="let group of groups" class="cursor-pointer margin-xxs"
+      [class.hide-xs]="(scope.showGroup && scope.showGroup !== group) || parentScope?.showApi"
+      [class.flex2] = "!scope.showGroup && !parentScope?.showApi"
+      [class.flex-wrap] = "!scope.showGroup"
+      (click)="switchToGroup(group, scope, parentScope, level)"
+    >
+      <ng-container *ngTemplateOutlet="groupTemplate || defaultGroupTemplate;context:{group:group, scope:scope, selected:scope.showGroup === group, defaultTemplate: defaultGroupTemplate}"></ng-container>
+
+      <!-- fallback template when groupTemplate not provided -->
+      <ng-template #defaultGroupTemplate>
+        <div class="flex1 hover-bg-positive active-bg-balanced pad"
+          [class.bg-grey-3x]="scope.showGroup === group" [class.bg-grey]="scope.showGroup !== group"
+        >
+          <span>{{group.icon}} {{group.title}}</span>
+        </div>
+      </ng-template>
+    </a>
+  </ng-template>
+</ng-template>
+
+<ng-template #toolWrap let-api="api" let-scope="scope">
+  <tool-wrap *ngIf="api" class="flex1"  id="serverToolsWrap" name="serverToolsWrap"
+    [api]="api" [(format)]="storage.format" [allowHide]="false"
+  >
+    <ng-template #footer>
+      <tool-relations [api]="api" [showRelated]="showRelated"
+        [(showApi)] = "scope.showApi" (showApiChange)="scope.showGroup = getGroupByApi($event, scope.showGroup)"
+      ></tool-relations>
+    </ng-template>
+  </tool-wrap>
+</ng-template>

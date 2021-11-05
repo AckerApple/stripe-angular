@@ -5,6 +5,7 @@ import { SmartRouteEditor } from "./typings"
   selector: 'tool-wrap',
   templateUrl: './tool-wrap.component.html'
 }) export class ToolWrapComponent {
+  @Input() allowHide: boolean
   @Input() showForm: boolean
   @Input() api: SmartRouteEditor
   @Input() format: 'json' | 'small' = 'small'

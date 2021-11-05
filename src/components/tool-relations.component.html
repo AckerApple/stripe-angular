@@ -1,0 +1,18 @@
+<div *ngIf="api.smarts.related.length" class="radius-5 bg-dark text-center margin-top">
+  <a class="pad-smx block" (click)="showRelated = !showRelated">
+    {{ api.smarts.related.length }} related tasks
+  </a>
+  <div class="flex-wrap text-xs child-pad">
+    <ng-container *ngFor="let related of api.smarts.related">
+      <a *ngIf="showRelated || related.show"
+        href="#serverToolsWrap"
+        class="no-a-style flex2 flex-stacked flex-left flex-valign-center hover-bg-positive active-bg-energized"
+        (click)="gotoApi(related.api, related.relation)"
+        [class.opacity-half]="!related.show"
+      >
+        {{related.group?.icon ? related.group.icon + ' ' : ''}}{{related.title}}
+        <div class="pad-left-2x opacity-half text-xxs">{{related.relation.valueKey}} = {{related.relation.pasteKey}}</div>
+      </a>
+    </ng-container>
+  </div>
+</div>

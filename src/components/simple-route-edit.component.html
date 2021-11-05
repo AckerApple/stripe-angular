@@ -24,7 +24,7 @@
 
 <ng-container *ngIf="showHeaders">
   <div class="pos-rel">
-    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs opacity-half">🈁 http headers</div>
+    <div class="pos-abs right-0 top-0 text-xxxs pad-xxs opacity-half">🈁 http headers</div>
   </div>
   <textarea wrap="off" style="width:100%;height:10vh;min-height:125px;"
     (change)="changeByString(config.request, 'headers', $event.target.value)"
@@ -34,7 +34,7 @@
 
 <ng-container *ngIf="showPost">
   <div class="pos-rel">
-    <div class="pos-abs right-0 top-0 text-xxxs text-dark pad-xxs flex">
+    <div class="pos-abs right-0 top-0 text-xxxs pad-xxs flex">
       <span class="opacity-half">🧾 input data</span>
       <a *ngIf="config.examples" class="flex-center flex-valign-center pad-left"
         (click)="showExamples=!showExamples"
@@ -79,7 +79,7 @@
 
 <ng-container *ngTemplateOutlet="prependFormFooter"></ng-container>
 
-<ng-container *ngFor="let item of config.runtimeMessages">
+<ng-container *ngFor="let item of config.smarts.runtimeMessages">
   <div class="bg-warning text-dark pad margin-v text-xs">{{item.message}}</div>
 </ng-container>
 
@@ -87,29 +87,29 @@
 
 <!-- buttons -->
 <div class="flex-wrap">
-  <button type="button"
-    (click)="config.$send.emit(config.data)" class="bg-balanced flex-1"
-    [disabled] = "config.load"
+  <button type="button" class="bg-balanced flex-1 hover-bg-positive active-bg-balanced"
+    (click)="config.smarts.$send.emit(config.data)"
+    [disabled] = "config.smarts.load"
   >
     {{config.result ? '⬇️' : '⬆️'}} {{ config.request ? 'request' : 'execute'}}
   </button>
 
-  <button type="button" class="flex-1"
-    (click)="showPost = !showPost" [class.bg-info]="showPost"
+  <button type="button" class="flex-1 hover-bg-positive active-bg-balanced"
+    (click)="showPost = !showPost" [ngClass]="showPost && 'bg-info text-dark'"
   >🧾 inputs</button>
 
   <ng-container *ngIf="config.request">
-    <button type="button" *ngIf="config.request.params" class="flex-1"
-      (click)="showParams = !showParams" [class.bg-info]="showParams"
+    <button type="button" *ngIf="config.request.params" class="flex-1 hover-bg-positive active-bg-balanced"
+      (click)="showParams = !showParams" [ngClass]="showParams && 'bg-info text-dark'"
     >🔗 params</button>
-    <button type="button" class="flex-1"
-      (click)="showHeaders = !showHeaders" [class.bg-info]="showHeaders"
+    <button type="button" class="flex-1 hover-bg-positive active-bg-balanced"
+      (click)="showHeaders = !showHeaders" [ngClass]="showHeaders && 'bg-info text-dark'"
     >🈁 headers</button>
   </ng-container>
 </div>
 
 <div>
-  <span *ngIf="config.load" class="nowrap">🔄 loading</span>
+  <span *ngIf="config.smarts.load" class="nowrap">🔄 loading</span>
 </div>
 
 <ng-container *ngIf="config.result">

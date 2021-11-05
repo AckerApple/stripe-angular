@@ -1,18 +1,22 @@
 import { Component } from "@angular/core"
-import { string as demoTemplate } from "./templates/app.component.template"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
 import { bank } from "./banks.api"
 import { getApis } from './getApis.function'
-import { apiGroups } from './apis'
+
+// TODO: end up with apis.json
+import { allGroups } from './apis'
+//import * as allGroups from './apis.json'
+
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers, flatten, removeFlats,
 } from "./app.component.utils"
-import { SmartRouteEditor } from "./typings"
-import { simpleMenuToSmart, simpleRouteToSmart } from "./simpleRouteToSmart.function"
-import { serverSide as plaidServerSide } from "./plaid.apis"
+import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
+import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { create_customer } from "./customers.api"
+import { card } from "./cards.api"
+import { links } from "./links"
 
 const storage: localSchema = getProjectLocalStorage()
 
@@ -22,6 +26,7 @@ declare const Plaid: any
   selector:"app",
   templateUrl: './app.component.html'
 }) export class AppComponent {
+  links = links
   stripe:stripe.Stripe
   cardElement: any // StripeJs Element (TODO: DataType this)
 
@@ -46,7 +51,6 @@ declare const Plaid: any
 
   lastError:Error
   stripeBank: stripe.Stripe
-  demoTemplate:string = demoTemplate
 
   localServerActive: boolean
 
@@ -88,38 +92,66 @@ declare const Plaid: any
     metadata: sample.metadata
   }
 
-  api = getApis()
-  plaidServerApis = simpleMenuToSmart(plaidServerSide)
-  apiGroups = apiGroups.map(group => {
-    group.apis = group.apis.map(api => simpleRouteToSmart(api, group)) as any
-    return group
-  })
+  // every end point within groups
+  allGroups = simpleGroupsToSmart(allGroups as ApiGroup[])
 
-  create_customer = simpleRouteToSmart(create_customer)
+  api = getApis() // common apis (UI confirm_pay_intent, web hook testHeader, and plaid_createPublicToken)
+  plaidServerApis = this.allGroups.find(group => group.title === '🏦 Plaid Functionality').apis as SmartRouteEditor[]
+  apiGroups = this.allGroups.find(group => group.title === '🐠 Stripe Functionality').groups
+
+  create_customer = simpleRouteToSmart(create_customer, this.allGroups)
 
   changeKey = changeKey
   copyText = copyText
 
+  testNums = [{
+    number: '4000056655665556',
+    icon: '⭐️',
+    hint: 'visa debit',
+    description: 'Recommended for most success across all functionality. Even works for external_accounts'
+  },{
+    number: '4242424242424242',
+    hint: 'visa',
+    description: 'General success. Cannot be used for **Accounts** (Card no is for credit card, only debit cards allowed)'
+  },{
+    number: '4000002500003155',
+    icon: '✍️',
+    hint: 'requires 1-time auth'
+  },{
+    number: '4000000000003220',
+    icon: '✍️',
+    hint: 'requires auth'
+  },{
+    number: '4000000000000259',
+    icon: '🦶',
+    hint: 'will dispute as fraud'
+  }]
+
+  // temp
+  showApi: boolean
+  showRelated: boolean
+
   constructor(public StripeScriptTag: StripeScriptTag){
+    (card as any).result = {} // must pre-populate this
+
     this.checkLocalServer()
 
-    this.api.confirm_pay_intent.$send.subscribe(data => this.confirmPayIntent())
-    this.api.testHeader.$send.subscribe(data => this.createTestHeader(data))
+    this.api.confirm_pay_intent.smarts.$send.subscribe(data => this.confirmPayIntent())
+    this.api.testHeader.smarts.$send.subscribe(data => this.createTestHeader(data))
 
     // listen to results to flatten
     Object.values(this.api).forEach(api => this.subApi(api))
 
     // plaid
-    this.api.plaid_createPublicToken.$send.subscribe(data => this.plaidCreateModal(data))
+    this.api.plaid_createPublicToken.smarts.$send.subscribe(data => this.plaidCreateModal(data))
 
-    const stripeEachRouteReg = api =>
-      this.subApi(api) && api.$send.subscribe(data => this.stripeRouteRequest(api,data))
+    // route all stripe requests
+    this.subToStripeApiGroups(this.apiGroups)
 
-    this.apiGroups.forEach(group => group.apis.forEach(stripeEachRouteReg))
-
+    // route all plaid requests
     Object.values(this.plaidServerApis)
       .forEach(api =>
-        this.subApi(api) && api.$send.subscribe(data => this.plaidRouteRequest(api,data))
+        this.subApi(api) && api.smarts.$send.subscribe(data => this.plaidRouteRequest(api,data))
       )
 
     if (Object.keys(storage.metadata).length) {
@@ -129,64 +161,100 @@ declare const Plaid: any
     storage.plaid = storage.plaid || {}
   }
 
-  subApi(api: SmartRouteEditor) {
-    // listen to results to flatten
-    api.$result.subscribe(_data => this.flatten(api))
-    return api
+  downloadAllGroupsJson() {
+    download('apis.json', this.getAllGroupsJson())
   }
 
-  checkLocalServer() {
-    return request({url: 'http://localhost:3000/health-check'})
-    .then((res: {name: string}) =>
-      this.localServerActive = res?.name === 'stripe-angular'
-    )
-    .catch(() => {
-      console.warn('Connection to local server unavailable')
-      this.localServerActive = false
-    })
+  getAllGroupsJson() {
+    const json = JSON.stringify(this.getAllGroupsSave(), null, 2)
+    return json
   }
 
-  createTestHeader(data: any) {
-    const payload = JSON.stringify(data)
-    const result = generateTestHeaderString({
-      payload, secret: this.storage.webhookSigningSecret
-    })
-    // const result = stripe.webhooks.generateTestHeaderString(data)
-    this.api.testHeader.result = {result}
+  getAllGroupsSave() {
+    return getAllGroupsSave(this.allGroups)
   }
 
-  defaultMetadata(meta: Record<string, any>) {
-    storage.requests.source.metadata = meta
-    storage.requests.paymentMethod.metadata = meta
-
-    const metaCheck = (data: any) => {
-      if (data?.metadata) {
-        data.metadata = meta
-      }
-    }
-
-    const applyMeta = api => {
-      if (api.examples) {
-        api.examples.map(x => x.data).forEach(metaCheck)
+  subToStripeApiGroups(groups) {
+    // route all stripe requests
+    groups.forEach(group => {
+      if (group.groups) {
+        this.subToStripeApiGroups(group.groups)
       }
 
-      metaCheck(api.data)
-    }
-
-    apiGroups.forEach(group => group.apis.forEach(applyMeta))
-
-    this.extraData.metadata = meta;
-    (this.api.bank.data as any).metadata = meta
+      group.apis.forEach((api: SmartRouteEditor) =>
+        this.subApi(api) && api.smarts.$send.subscribe(data => this.stripeRouteRequest(api,data))
+      )
+    })
   }
 
-  ngOnInit() {
-    // inject script tag onto document and save
-    this.save()
-    .then( () => this.loaded=true )
-    .catch(e => {
-      this.lastError=e
-      return Promise.reject(e)
-    })
+  async ngOnInit() {
+    try {
+      await this.tryLoadStripe()
+      this.loaded = true
+    } catch (err) {
+      this.lastError = err
+      return Promise.reject(err)
+    }
+  }
+
+  async tryLoadStripe() {
+    return this.loadStripe()
+  }
+
+  save() {
+    const saveKeyLocally = this.storage.saveKeyLocally
+    const savePrivateKeyLocally = this.storage.savePrivateKeyLocally
+
+    if (this.tempPublishableKey && this.storage.key !== this.tempPublishableKey) {
+      this.loaded = false // cause everything Stripe to redraw
+    }
+
+    this.storage.key = this.tempPublishableKey || this.storage.key
+
+    this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
+    this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
+
+    const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
+    if (storeLocally) {
+      const cloneStorage = this.getSaveableStorage()
+      const storageString = JSON.stringify(cloneStorage)
+      localStorage.stripeAngular = storageString
+
+      cloneStorage.privateKey = this.storage.privateKey?.length // never show
+
+      // this.log('saved to localStorage', cloneStorage)
+    }
+
+    return this.tryLoadStripe()
+  }
+
+  loadStripe(): Promise<stripe.Stripe> {
+    return this.StripeScriptTag.setPublishableKey(this.storage.key || 'xyz')
+    .then(stripe => {
+      this.stripe=stripe
+      setTimeout(() => this.loaded = true, 200)
+      return stripe
+    });
+  }
+
+  getSaveableStorage() {
+    const cloneStorage = JSON.parse(JSON.stringify(this.storage))
+    delete cloneStorage.temp
+
+    if (!cloneStorage.saveKeyLocally) {
+      delete cloneStorage.key
+    }
+
+    if (!cloneStorage.savePrivateKeyLocally) {
+      delete cloneStorage.privateKey
+      delete storage.webhookSigningSecret
+    }
+
+    if (!cloneStorage.saveRequestsLocal) {
+      delete cloneStorage.requests
+    }
+
+    return cloneStorage
   }
 
   deleteLocalStorage() {
@@ -218,50 +286,6 @@ declare const Plaid: any
     alert('copied')
   }
 
-  async save(): Promise<stripe.Stripe>{
-    const saveKeyLocally = this.storage.saveKeyLocally
-    const savePrivateKeyLocally = this.storage.savePrivateKeyLocally
-    this.tempPublishableKey
-    this.storage.key = this.tempPublishableKey || this.storage.key
-
-    this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
-    this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
-
-    const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
-    if (storeLocally) {
-      const cloneStorage = this.getSaveableStorage()
-      const storageString = JSON.stringify(cloneStorage)
-      localStorage.stripeAngular = storageString
-
-      cloneStorage.privateKey = this.storage.privateKey?.length // never show
-
-      // this.log('saved to localStorage', cloneStorage)
-    }
-
-    return this.StripeScriptTag.setPublishableKey(this.storage.key)
-      .then(stripe =>this.stripe=stripe);
-  }
-
-  getSaveableStorage() {
-    const cloneStorage = JSON.parse(JSON.stringify(this.storage))
-    delete cloneStorage.temp
-
-    if (!cloneStorage.saveKeyLocally) {
-      delete cloneStorage.key
-    }
-
-    if (!cloneStorage.savePrivateKeyLocally) {
-      delete cloneStorage.privateKey
-      delete storage.webhookSigningSecret
-    }
-
-    if (!cloneStorage.saveRequestsLocal) {
-      delete cloneStorage.requests
-    }
-
-    return cloneStorage
-  }
-
   changeSourceRequest(data:string){
     let source;
 
@@ -283,6 +307,93 @@ declare const Plaid: any
       this.storage.requests.source = source
       this.save()
     }
+  }
+
+  subApi(api: SmartRouteEditor) {
+    // listen to results to flatten
+    api.smarts.$result.subscribe(_data => this.afterApiResult(api))
+    return api
+  }
+
+  afterApiResult(api: SmartRouteEditor) {
+    this.flatten(api)
+
+    api.smarts.related.forEach(related => {
+      const value = api[ related.relation.valueKey ]
+      let valid = true
+
+      if (related.relation.valueMatches) {
+        valid = related.relation.valueMatches.every(test => {
+          if (test.valueKey) {
+            return api[ test.valueKey ].search(new RegExp(test.expression, 'gi')) >= 0
+          }
+
+          return value.search(new RegExp(test.expression, 'gi')) >= 0
+        }) ? true : false
+      }
+
+      related.show = valid
+    })
+  }
+
+  checkLocalServer() {
+    return request({url: 'http://localhost:3000/health-check'})
+    .then((res: {name: string}) =>
+      this.localServerActive = res?.name === 'stripe-angular'
+    )
+    .catch(() => {
+      console.warn('Connection to local server unavailable')
+      this.localServerActive = false
+    })
+  }
+
+  createTestHeader(data: any) {
+    const payload = JSON.stringify(data)
+    const result = generateTestHeaderString({
+      payload, secret: this.storage.webhookSigningSecret
+    })
+    // const result = stripe.webhooks.generateTestHeaderString(data)
+    this.api.testHeader.result = {result}
+  }
+
+  defaultMetadata(meta: Record<string, any>) {
+    storage.requests.source.metadata = meta
+    storage.requests.paymentMethod.metadata = meta
+
+    const metaCheck = (data: any) => {
+      if (data?.metadata) {
+        data.metadata = meta
+      }
+
+      // loop an object looking for submetadata. Warn: not circular reference protected (👀 seen)
+      if (isObject(data)) {
+        Object.values(data).forEach(subData => {
+          if (isObject(subData)) {
+            metaCheck(subData)
+          }
+        })
+      }
+    }
+
+    const applyMeta = api => {
+      if (api.examples) {
+        api.examples.map(x => x.data).forEach(metaCheck)
+      }
+
+      metaCheck(api.data)
+    }
+
+    const applyGroupMetadata = group => {
+      if (group.groups) {
+        group.groups.forEach(applyGroupMetadata)
+      }
+
+      group.apis.forEach(applyMeta)
+    }
+    this.apiGroups.forEach(applyGroupMetadata)
+
+    this.extraData.metadata = meta;
+    (this.api.bank.data as any).metadata = meta
   }
 
   changePaymentMethodRequest(data:string){
@@ -369,24 +480,24 @@ declare const Plaid: any
   }
 
   plaidCreateModal(configs: any) {
-    ++this.api.plaid_createPublicToken.load
+    ++this.api.plaid_createPublicToken.smarts.load
 
     const pasteConfig = {
       onSuccess: (public_token, metadata) => {
-        --this.api.plaid_createPublicToken.load
+        --this.api.plaid_createPublicToken.smarts.load
         const result = {
           public_token: public_token,
           metadata: metadata,
         }
         this.api.plaid_createPublicToken.result = result
-        this.api.plaid_createPublicToken.$result.next(result)
+        this.api.plaid_createPublicToken.smarts.$result.next(result)
       },
       onExit: (err, metadata) => {
-        --this.api.plaid_createPublicToken.load
+        --this.api.plaid_createPublicToken.smarts.load
         this.api.plaid_createPublicToken.error = err
         const result = {metadata}
         this.api.plaid_createPublicToken.result = result
-        this.api.plaid_createPublicToken.$result.next(result)
+        this.api.plaid_createPublicToken.smarts.$result.next(result)
       },
       /*
       onLoad: () => {},
@@ -413,7 +524,7 @@ declare const Plaid: any
   verifyBank() {
     const base = stripeServer + 'customers/'
     const cusId = this.create_customer.result.id;
-    const bankId = bank.result.bank_account.id;
+    const bankId = (bank as any).result.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
     request({
@@ -488,7 +599,7 @@ function resultSetter(
 ): (res: any) => SmartRouteEditor {
   return (res) => {
     const parsed = tryParse(res)
-    route.resultAt = Date.now()
+    route.smarts.resultAt = Date.now()
 
     if (parsed.error) {
       route.error = parsed.error
@@ -497,7 +608,7 @@ function resultSetter(
 
     delete route.error
     route.result = parsed
-    route.$result.next(route)
+    route.smarts.$result.next(route)
 
     return route
   }
@@ -534,7 +645,7 @@ export function requestByRouter(
 ) {
   delete route.result
   delete route.error
-  ++route.load
+  ++route.smarts.load
 
   let url: string = options.baseUrl || route.request.host || ''
 
@@ -597,7 +708,7 @@ export function requestByRouter(
       console.error('err', err)
       return Promise.reject(err)
     })
-    .finally(() => --route.load)
+    .finally(() => --route.smarts.load)
 }
 
 interface StripeRouterRequestOptions extends RouterRequestOptions {
@@ -614,49 +725,67 @@ export function stripeRequestByRouter(
   return requestByRouter(route, options)
 }
 
-export function removeFlats<T>(data: T): T {
-  const removes = Object.keys(data).filter(key => key.indexOf('.')>=0)
-  removes.forEach(key => delete data[key])
-  return data
+function simpleGroupsToSmart(groups: ApiGroup[]) {
+  const groupMapper = group => {
+    if (group.groups) {
+      group.groups = group.groups.map(groupMapper)
+    }
+
+    if (group.apis) {
+      group.apis = group.apis.map(api => simpleRouteToSmart(api, groups)) as any
+    }
+
+    return group
+  }
+
+  return groups.map(groupMapper)
 }
 
-export function flatten<T>(
-  data: T, response = data,
-  {
-    flatKey = "", onlyLastKey = false, seen = [], original = data
-  }: {
-    flatKey?: string,
-    onlyLastKey?: boolean, // text key value display (instead of x.y.z just get z)
-    seen?: any[], original?: T
-  } = {}
-) {
-  const entries = Object.entries(data)
-  for (const [key, value] of entries) {
-    let newFlatKey;
-    if (!isNaN(parseInt(key)) && flatKey.includes("[]")) {
-      newFlatKey = (flatKey.charAt(flatKey.length - 1) == "." ? flatKey.slice(0, -1) : flatKey) + `[${key}]`;
-    } else if (!flatKey.includes(".") && flatKey.length > 0) {
-      newFlatKey = `${flatKey}.${key}`;
-    } else {
-      newFlatKey = `${flatKey}${key}`;
+function isObject(obj: any) {
+  return obj && typeof(obj) === 'object' && !(obj instanceof Array)
+}
+
+function getAllGroupsSave(groups: SmartApiGroup[]) {
+  return groups.map(group => {
+    const newGroup = {...group}
+
+    // remove apis smarts
+    if (newGroup.apis) {
+      newGroup.apis = newGroup.apis.map(api => {
+        const newApi = {...api}
+        delete newApi.smarts
+        delete newApi.result
+
+        Object.keys(newApi).forEach(key => {
+          if (key.indexOf('result.') === 0
+          || key.indexOf('request.') === 0
+          ) {
+            delete newApi[key]
+          }
+        })
+
+        return newApi
+      })
     }
 
-    const isValObject = typeof value === "object" && value !== null && Object.keys(value).length > 0
-    if (isValObject && !seen.includes(value) && value !== original) {
-      seen.push(value)
-      flatten(value, response, {flatKey: `${newFlatKey}.`, onlyLastKey, seen, original});
-    } else {
-      if(onlyLastKey){
-        newFlatKey = newFlatKey.split(".").pop();
-      }
-      if (Array.isArray(response)) {
-        response.push({
-          [newFlatKey.replace("[]", "")]: value
-        });
-      } else {
-        response[newFlatKey.replace("[]", "")] = value;
-      }
+    // recurse
+    if (newGroup.groups) {
+      newGroup.groups = getAllGroupsSave(newGroup.groups)
     }
-  }
-  return response;
+
+    return newGroup
+  })
+}
+
+export function download(filename: string, text: string) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }

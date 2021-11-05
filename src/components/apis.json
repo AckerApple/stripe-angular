@@ -1,0 +1,4774 @@
+[
+  {
+    "title": "🐠 Stripe Functionality",
+    "groups": [
+      {
+        "title": "Common",
+        "apis": [
+          {
+            "title": "GET Account",
+            "description": "Get details of Stripe account being used",
+            "request": {
+              "method": "GET",
+              "path": "account"
+            },
+            "pastes": [
+              {
+                "title": "Accounts GET 1️⃣ header",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              }
+            ],
+            "_id": 325.90000000596046
+          },
+          {
+            "title": "💵 Balance",
+            "link": "https://stripe.com/docs/api/balance/balance_retrieve",
+            "description": "Retrieves the current account balance, based on the authentication that was used to make the request",
+            "request": {
+              "method": "GET",
+              "path": "balance",
+              "headers": {
+                "Stripe-Account": ""
+              },
+              "removeHeaderValues": [
+                ""
+              ]
+            },
+            "pastes": [
+              {
+                "title": "Account GET 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 325.90000000596046,
+                  "knownTitle": "GET Account"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "💵 GET destination ♣️account balance",
+                "valueKey": "result.transfer_data.destination",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "title": "💵 GET destination ♣️account balance",
+                "valueKey": "result.data.0.transfer_data.destination",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              }
+            ],
+            "_id": 327.70000000298023
+          },
+          {
+            "title": "1️⃣ GET Token",
+            "description": "Retrieves the token with the given ID",
+            "link": "https://stripe.com/docs/api/tokens/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "tokens/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 351.40000000596046,
+                  "knownTitle": "🏦 Bank Account"
+                }
+              }
+            ],
+            "_id": 351.20000000298023
+          },
+          {
+            "title": "🪜 GET Prices",
+            "link": "https://stripe.com/docs/api/prices",
+            "description": "Prices define the unit cost, currency, and (optional) billing cycle for both recurring and one-time purchases of products",
+            "request": {
+              "method": "GET",
+              "path": "prices"
+            },
+            "_id": 351.6000000089407
+          },
+          {
+            "title": "🙅 List all disputes",
+            "link": "https://stripe.com/docs/api/disputes/list",
+            "description": "Returns a list of your disputes.",
+            "request": {
+              "method": "GET",
+              "path": "disputes"
+            },
+            "_id": 353.40000000596046
+          },
+          {
+            "title": "🤌 GET Application Fees",
+            "description": "Get details of Stripe account being used",
+            "request": {
+              "method": "GET",
+              "path": "application_fees"
+            },
+            "_id": 353.40000000596046
+          }
+        ]
+      },
+      {
+        "title": "Accounts",
+        "apis": [
+          {
+            "title": "🧾 List all accounts",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/accounts/list"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "accounts"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.starting_after"
+              }
+            ],
+            "_id": 326.6000000089407
+          },
+          {
+            "title": "🆕 Create account",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/accounts/create"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              },
+              {
+                "url": "https://stripe.com/docs/connect/manage-payout-schedule",
+                "title": "Managing payout schedule"
+              },
+              {
+                "title": "mcc (merchant category code)",
+                "url": "https://stripe.com/docs/connect/setting-mcc"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "accounts"
+            },
+            "data": {
+              "country": "US",
+              "type": "custom",
+              "capabilities": {
+                "card_payments": {
+                  "requested": true
+                },
+                "transfers": {
+                  "requested": true
+                }
+              },
+              "settings": {
+                "payouts": {
+                  "debit_negative_balances": true,
+                  "schedule": {
+                    "delay_days": 2,
+                    "interval": "daily"
+                  }
+                }
+              },
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "examples": [
+              {
+                "title": "company full details",
+                "data": {
+                  "business_type": "company",
+                  "country": "US",
+                  "type": "custom",
+                  "capabilities": {
+                    "card_payments": {
+                      "requested": true
+                    },
+                    "transfers": {
+                      "requested": true
+                    }
+                  },
+                  "email": "info@company.com",
+                  "company": {
+                    "owners_provided": true,
+                    "tax_id": "000000000",
+                    "name": "stripe-angular",
+                    "phone": "0000000000",
+                    "address": {
+                      "city": "Cupertino",
+                      "country": "US",
+                      "line1": "One Apple Park Way",
+                      "line2": null,
+                      "postal_code": "95014",
+                      "state": "CA"
+                    }
+                  },
+                  "business_profile": {
+                    "mcc": "5734",
+                    "url": "https://ackerapple.github.io/stripe-angular/"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              },
+              {
+                "title": "individual full details",
+                "data": {
+                  "business_type": "individual",
+                  "country": "US",
+                  "type": "custom",
+                  "capabilities": {
+                    "card_payments": {
+                      "requested": true
+                    },
+                    "transfers": {
+                      "requested": true
+                    }
+                  },
+                  "email": "jenny.rosen@example.com",
+                  "individual": {
+                    "email": "jenny.rosen@example.com",
+                    "first_name": "jenny",
+                    "last_name": "rosen",
+                    "phone": "000-000-0000",
+                    "ssn_last_4": "0000",
+                    "dob": {
+                      "day": "01",
+                      "month": "01",
+                      "year": "1901"
+                    },
+                    "address": {
+                      "line1": "One Apple Park Way",
+                      "city": "Cupertino",
+                      "country": "US",
+                      "postal_code": "95014",
+                      "state": "CA"
+                    },
+                    "metadata": {
+                      "entity_id": "entity_id_abc_123",
+                      "env": "dev",
+                      "order_id": "stripe-angular-testings"
+                    }
+                  },
+                  "business_profile": {
+                    "mcc": "5734",
+                    "url": "https://ackerapple.github.io/stripe-angular/"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "country": "US",
+                  "type": "custom",
+                  "capabilities": {
+                    "card_payments": {
+                      "requested": true
+                    },
+                    "transfers": {
+                      "requested": true
+                    }
+                  },
+                  "settings": {
+                    "payouts": {
+                      "debit_negative_balances": true,
+                      "schedule": {
+                        "delay_days": 2,
+                        "interval": "daily"
+                      }
+                    }
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              }
+            ],
+            "pastes": [
+              {
+                "title": "manual payouts",
+                "pasteKey": "data.settings.payouts",
+                "value": {
+                  "debit_negative_balances": true,
+                  "schedule": {
+                    "interval": "manual"
+                  }
+                }
+              }
+            ],
+            "_id": 353.90000000596046
+          },
+          {
+            "title": "⬆️ Update account",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/accounts/update"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "accounts/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "tos_acceptance": {
+                "date": "1634847444",
+                "ip": "0.0.0.0"
+              },
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "title": "apples address",
+                "pasteKey": "data.individual.address",
+                "value": {
+                  "line1": "One Apple Park Way",
+                  "city": "Cupertino",
+                  "country": "US",
+                  "postal_code": "95014",
+                  "state": "CA"
+                }
+              },
+              {
+                "title": "tos_acceptance",
+                "pasteKey": "data.tos_acceptance",
+                "value": {
+                  "date": "1634847444",
+                  "ip": "0.0.0.0"
+                }
+              },
+              {
+                "title": "manual payouts",
+                "pasteKey": "data.settings.payouts",
+                "value": {
+                  "debit_negative_balances": true,
+                  "schedule": {
+                    "interval": "manual"
+                  }
+                }
+              },
+              {
+                "title": "🧾 Accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "pastes": [
+                  {
+                    "pasteKey": "data",
+                    "valueKey": "result.data.0",
+                    "removeKeys": [
+                      "id",
+                      "object",
+                      "created",
+                      "charges_enabled",
+                      "controller",
+                      "country",
+                      "details_submitted",
+                      "external_accounts",
+                      "future_requirements",
+                      "payouts_enabled",
+                      "requirements",
+                      "type",
+                      "individual.id",
+                      "individual.account",
+                      "individual.object",
+                      "individual.created",
+                      "individual.id_number_provided",
+                      "individual.relationship",
+                      "individual.requirements",
+                      "individual.ssn_last_4_provided",
+                      "individual.future_requirements",
+                      "individual.verification.status",
+                      "company.tax_id_provided",
+                      "capabilities.transfers",
+                      "capabilities.card_payments",
+                      "settings.dashboard"
+                    ],
+                    "removeValues": [
+                      null
+                    ]
+                  }
+                ],
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "1️⃣ Accounts retrieve",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "pastes": [
+                  {
+                    "pasteKey": "data",
+                    "valueKey": "result",
+                    "removeKeys": [
+                      "id",
+                      "object",
+                      "created",
+                      "charges_enabled",
+                      "controller",
+                      "country",
+                      "details_submitted",
+                      "external_accounts",
+                      "future_requirements",
+                      "payouts_enabled",
+                      "requirements",
+                      "type",
+                      "individual.id",
+                      "individual.account",
+                      "individual.object",
+                      "individual.created",
+                      "individual.id_number_provided",
+                      "individual.relationship",
+                      "individual.requirements",
+                      "individual.ssn_last_4_provided",
+                      "individual.future_requirements",
+                      "individual.verification.status",
+                      "company.tax_id_provided",
+                      "capabilities.transfers",
+                      "capabilities.card_payments",
+                      "settings.dashboard"
+                    ],
+                    "removeValues": [
+                      null
+                    ]
+                  }
+                ],
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "🆕 Accounts create",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 353.90000000596046,
+                  "knownTitle": "🆕 Create account"
+                }
+              }
+            ],
+            "_id": 357.80000001192093
+          },
+          {
+            "title": "1️⃣ Account retrieve",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/accounts/retrieve"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "accounts/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "title": "Accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 357.80000001192093,
+                  "knownTitle": "⬆️ Update account"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 353.90000000596046,
+                  "knownTitle": "🆕 Create account"
+                }
+              },
+              {
+                "valueKey": "request.params.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 356.30000001192093,
+                  "knownTitle": "📖 list persons by account"
+                }
+              },
+              {
+                "valueKey": "result.account",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 355.70000000298023,
+                  "knownTitle": "🆕 Create account person"
+                }
+              },
+              {
+                "valueKey": "result.account",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 356.1000000089407,
+                  "knownTitle": "⬆️ Update a person"
+                }
+              },
+              {
+                "valueKey": "result.account",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 353.40000000596046,
+                  "knownTitle": "♣️ ↔️ 🏦 💳 Attach external account"
+                }
+              }
+            ],
+            "_id": 328.6000000089407
+          },
+          {
+            "title": "❌ Account delete",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/accounts/delete"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "path": "accounts/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "title": "Accounts GET 1️⃣ result",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              }
+            ],
+            "_id": 360.30000001192093
+          },
+          {
+            "title": "🆕 🔗 Create account link",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/account_links/create"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "favKeys": [
+              {
+                "valueKey": "result.url",
+                "type": "link"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "account_links"
+            },
+            "data": {
+              "account": "",
+              "refresh_url": "http://localhost:4200/#serverToolsWrap",
+              "return_url": "http://localhost:4200/#serverToolsWrap",
+              "type": "account_onboarding"
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.account",
+                "_api": {
+                  "_id": 353.90000000596046,
+                  "knownTitle": "🆕 Create account"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              }
+            ],
+            "_id": 360.5
+          },
+          {
+            "title": "🔓 🔗 Create account login link",
+            "warn": "⚠️ for express accounts only",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/account/login_link"
+              },
+              {
+                "title": "🔬 testing data",
+                "url": "https://stripe.com/docs/connect/testing"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "accounts/:account/login_links",
+              "params": {
+                "account": ""
+              }
+            },
+            "data": {
+              "redirect_url": "http://localhost:4200/#serverToolsWrap"
+            },
+            "pastes": [
+              {
+                "title": "Accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "Accounts retrieve",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              }
+            ],
+            "_id": 360.90000000596046
+          }
+        ],
+        "icon": "♣️",
+        "description": "This is an object representing a Stripe account. You can retrieve it to see properties on the account like its current e-mail address or if the account is enabled yet to make live charges.",
+        "links": [
+          {
+            "title": "📕 API docs",
+            "url": "https://stripe.com/docs/api/accounts"
+          },
+          {
+            "title": "👁 Verify custom account identity",
+            "url": "https://stripe.com/docs/connect/identity-verification"
+          },
+          {
+            "title": "Test custom account verification",
+            "url": "https://stripe.com/docs/connect/testing-verification#blocked-payouts"
+          }
+        ],
+        "groups": [
+          {
+            "title": "Application Fees",
+            "icon": "🤌",
+            "description": "When you collect a transaction fee on top of a charge made for your user (using Connect), an Application Fee object is created in your account. You can list, retrieve, and refund application fees.",
+            "apis": [
+              {
+                "title": "🧾 🤌 List all application fees",
+                "link": "https://stripe.com/docs/api/application_fees/list",
+                "request": {
+                  "path": "application_fees",
+                  "method": "GET"
+                },
+                "data": {
+                  "limit": 3
+                },
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "1️⃣ 🤌 Retrieve an application fee",
+                "link": "https://stripe.com/docs/api/application_fees/retrieve",
+                "request": {
+                  "path": "application_fees/:id",
+                  "method": "GET",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "🆕 Create an application fee refund",
+                "link": "https://stripe.com/docs/api/fee_refunds/create",
+                "request": {
+                  "method": "POST",
+                  "path": "application_fees/:id/refunds",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "1️⃣ 🤌 ↩️ Retrieve an application fee refund",
+                "link": "https://stripe.com/docs/api/fee_refunds/retrieve",
+                "request": {
+                  "method": "GET",
+                  "path": "application_fees/:id/refunds/:id",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "⬆️ 🤌 ↩️ Update an application fee refund",
+                "link": "https://stripe.com/docs/api/fee_refunds/update",
+                "request": {
+                  "method": "POST",
+                  "path": "application_fees/:id/refunds/:id",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "data": {
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                },
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "🧾 🤌 ↩️ List all application fee refunds",
+                "link": "https://stripe.com/docs/api/fee_refunds/list",
+                "request": {
+                  "method": "GET",
+                  "path": "application_fees/:id/refunds",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "_id": 353.40000000596046
+              }
+            ],
+            "links": [
+              {
+                "title": "📕 API Docs",
+                "url": "https://stripe.com/docs/api/application_fees"
+              }
+            ]
+          },
+          {
+            "title": "External Accounts",
+            "icon": "↔️",
+            "description": "External Accounts are transfer destinations on Account objects for connected accounts. They can be bank accounts or debit cards.",
+            "apis": [
+              {
+                "title": "♣️ ↔️ 🏦 💳 Attach external account",
+                "links": [
+                  {
+                    "title": "docs",
+                    "url": "https://stripe.com/docs/api/external_account_bank_accounts/create"
+                  },
+                  {
+                    "title": "🔬 testing data",
+                    "url": "https://stripe.com/docs/connect/testing"
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "path": "accounts/:account/external_accounts",
+                  "params": {
+                    "account": ""
+                  }
+                },
+                "data": {
+                  "external_account": "btok_ or pm_",
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                },
+                "messages": [
+                  {
+                    "valueKey": "data.external_account",
+                    "valueExpression": "ba_",
+                    "message": "⚠️ It appears you are using a bank account identifier. Expected bank token (btok_...)"
+                  },
+                  {
+                    "valueKey": "data.external_account",
+                    "valueExpression": "pm_",
+                    "message": "⚠️ It appears you are using a payment method. Expected card token (tok_...)"
+                  }
+                ],
+                "pastes": [
+                  {
+                    "title": "Accounts GET",
+                    "valueKey": "result.id",
+                    "pasteKey": "request.params.account",
+                    "_api": {
+                      "_id": 328.6000000089407,
+                      "knownTitle": "1️⃣ Account retrieve"
+                    }
+                  },
+                  {
+                    "title": "🆕 Accounts Create",
+                    "valueKey": "result.id",
+                    "pasteKey": "request.params.account",
+                    "_api": {
+                      "_id": 353.90000000596046,
+                      "knownTitle": "🆕 Create account"
+                    }
+                  },
+                  {
+                    "title": "Accounts GET 1️⃣",
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "request.params.account",
+                    "_api": {
+                      "_id": 326.6000000089407,
+                      "knownTitle": "🧾 List all accounts"
+                    }
+                  },
+                  {
+                    "title": "bank token",
+                    "valueKey": "result.id",
+                    "pasteKey": "data.external_account",
+                    "_api": {
+                      "_id": 351.40000000596046,
+                      "knownTitle": "🏦 Bank Account"
+                    }
+                  },
+                  {
+                    "title": "card token",
+                    "valueKey": "result.token.id",
+                    "pasteKey": "data.external_account",
+                    "_api": {
+                      "_id": 354.80000001192093,
+                      "knownTitle": "💳 Card Element"
+                    }
+                  },
+                  {
+                    "title": "card pay method",
+                    "valueKey": "result.payment_method.id",
+                    "pasteKey": "data.external_account",
+                    "_api": {
+                      "_id": 354.80000001192093,
+                      "knownTitle": "💳 Card Element"
+                    }
+                  },
+                  {
+                    "valueKey": "result.stripe_bank_account_token",
+                    "pasteKey": "data.external_account",
+                    "_api": {
+                      "_id": 355.20000000298023,
+                      "knownTitle": "🐠 🏦 ➕ Stripe Bank Create"
+                    }
+                  }
+                ],
+                "_id": 353.40000000596046
+              },
+              {
+                "title": "🧾 🏦 💳 List all external accounts",
+                "request": {
+                  "method": "GET",
+                  "path": "accounts/:account/external_accounts",
+                  "params": {
+                    "account": ""
+                  }
+                },
+                "data": {
+                  "limit": 3
+                },
+                "examples": [
+                  {
+                    "title": "bank_account search",
+                    "data": {
+                      "object": "bank_account",
+                      "limit": 3
+                    }
+                  },
+                  {
+                    "title": "original data",
+                    "data": {
+                      "limit": 3
+                    }
+                  }
+                ],
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "request.params.account",
+                    "_api": {
+                      "_id": 326.6000000089407,
+                      "knownTitle": "🧾 List all accounts"
+                    }
+                  }
+                ],
+                "_id": 355.30000001192093
+              },
+              {
+                "title": "🏦 💳 GET external_account 1️⃣",
+                "request": {
+                  "method": "GET",
+                  "path": "accounts/:account/external_accounts/:external_account",
+                  "params": {
+                    "account": "",
+                    "external_account": ""
+                  }
+                },
+                "link": "https://stripe.com/docs/api/external_account_bank_accounts/retrieve",
+                "_id": 355.6000000089407
+              }
+            ],
+            "links": [
+              {
+                "title": "📕 API Docs",
+                "url": "https://stripe.com/docs/api/external_accounts"
+              }
+            ]
+          },
+          {
+            "title": "Persons",
+            "icon": "🙍",
+            "description": "This is an object representing a person associated with a Stripe account",
+            "apis": [
+              {
+                "title": "🆕 Create account person",
+                "links": [
+                  {
+                    "title": "docs",
+                    "url": "https://stripe.com/docs/api/persons/create"
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "path": "accounts/:id/persons",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "data": {
+                  "relationship": {
+                    "representative": true,
+                    "executive": true,
+                    "title": "CEO"
+                  },
+                  "first_name": "jenny",
+                  "last_name": "rosen",
+                  "ssn_last_4": "0000",
+                  "email": "info@company.com",
+                  "dob": {
+                    "day": "01",
+                    "month": "01",
+                    "year": "1901"
+                  },
+                  "phone": "0000000000",
+                  "address": {
+                    "city": "Cupertino",
+                    "country": "US",
+                    "line1": "One Apple Park Way",
+                    "line2": null,
+                    "postal_code": "95014",
+                    "state": "CA"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                },
+                "examples": [
+                  {
+                    "title": "original data",
+                    "data": {
+                      "relationship": {
+                        "representative": true,
+                        "executive": true,
+                        "title": "CEO"
+                      },
+                      "first_name": "jenny",
+                      "last_name": "rosen",
+                      "ssn_last_4": "0000",
+                      "email": "info@company.com",
+                      "dob": {
+                        "day": "01",
+                        "month": "01",
+                        "year": "1901"
+                      },
+                      "phone": "0000000000",
+                      "address": {
+                        "city": "Cupertino",
+                        "country": "US",
+                        "line1": "One Apple Park Way",
+                        "line2": null,
+                        "postal_code": "95014",
+                        "state": "CA"
+                      },
+                      "metadata": {
+                        "entity_id": "entity_id_abc_123",
+                        "env": "dev",
+                        "order_id": "stripe-angular-testings"
+                      }
+                    }
+                  }
+                ],
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "request.params.id",
+                    "_api": {
+                      "_id": 326.6000000089407,
+                      "knownTitle": "🧾 List all accounts"
+                    }
+                  },
+                  {
+                    "valueKey": "result.id",
+                    "pasteKey": "request.params.id",
+                    "_api": {
+                      "_id": 328.6000000089407,
+                      "knownTitle": "1️⃣ Account retrieve"
+                    }
+                  },
+                  {
+                    "valueKey": "result.id",
+                    "pasteKey": "request.params.id",
+                    "_api": {
+                      "_id": 353.90000000596046,
+                      "knownTitle": "🆕 Create account"
+                    }
+                  }
+                ],
+                "_id": 355.70000000298023
+              },
+              {
+                "title": "⬆️ Update a person",
+                "links": [
+                  {
+                    "title": "docs",
+                    "url": "https://stripe.com/docs/api/persons/update"
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "path": "accounts/:account/persons/:person",
+                  "params": {
+                    "account": "",
+                    "person": ""
+                  }
+                },
+                "data": {
+                  "relationship": {},
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                },
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "request.params.person",
+                    "pastes": [
+                      {
+                        "valueKey": "result.data.0.account",
+                        "pasteKey": "request.params.account"
+                      }
+                    ],
+                    "_api": {
+                      "_id": 356.30000001192093,
+                      "knownTitle": "📖 list persons by account"
+                    }
+                  }
+                ],
+                "_id": 356.1000000089407
+              },
+              {
+                "title": "📖 list persons by account",
+                "description": "Returns a list of people associated with the account’s legal entity. The people are returned sorted by creation date, with the most recent people appearing first.",
+                "links": [
+                  {
+                    "title": "docs",
+                    "url": "https://stripe.com/docs/api/persons/list"
+                  }
+                ],
+                "request": {
+                  "method": "GET",
+                  "path": "accounts/:id/persons",
+                  "params": {
+                    "id": ""
+                  }
+                },
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "request.params.id",
+                    "_api": {
+                      "_id": 326.6000000089407,
+                      "knownTitle": "🧾 List all accounts"
+                    }
+                  },
+                  {
+                    "valueKey": "result.id",
+                    "pasteKey": "request.params.id",
+                    "_api": {
+                      "_id": 328.6000000089407,
+                      "knownTitle": "1️⃣ Account retrieve"
+                    }
+                  }
+                ],
+                "_id": 356.30000001192093
+              }
+            ],
+            "links": [
+              {
+                "title": "📕 API Docs",
+                "url": "https://stripe.com/docs/api/persons"
+              },
+              {
+                "url": "https://stripe.com/docs/connect/identity-verification-api#person-information",
+                "title": "Person info guide"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Banks",
+        "apis": [
+          {
+            "title": "🪙 🪙 Verify ACH micro deposits",
+            "request": {
+              "method": "POST",
+              "path": "customers/:customer/sources/:bank_token/verify",
+              "params": {
+                "customer": "",
+                "bank_token": ""
+              }
+            },
+            "data": {
+              "amounts": [
+                32,
+                45
+              ]
+            },
+            "warn": "⚠️ Bank account token must be associated with customer",
+            "links": [
+              {
+                "url": "https://stripe.com/docs/api/customer_bank_accounts/verify",
+                "title": "api docs"
+              },
+              {
+                "url": "https://stripe.com/docs/ach#testing-ach",
+                "title": "test ach numbers"
+              },
+              {
+                "url": "https://stripe.com/docs/ach#authorization",
+                "title": "charge authorization"
+              }
+            ],
+            "pastes": [
+              {
+                "valueKey": "result.bank_account.id",
+                "pasteKey": "request.params.bank_token",
+                "title": "bank token",
+                "_api": {
+                  "_id": 351.40000000596046,
+                  "knownTitle": "🏦 Bank Account"
+                }
+              },
+              {
+                "pasteKey": "request.params.customer",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "🧾 Customer list 1️⃣",
+                "pasteKey": "request.params.customer",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              }
+            ],
+            "_id": 361.30000001192093
+          },
+          {
+            "title": "1️⃣ 👤 🏦 Retrieve a bank account",
+            "link": "https://stripe.com/docs/api/customer_bank_accounts/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "customers/:customer/sources/:source",
+              "params": {
+                "customer": "",
+                "source": ""
+              }
+            },
+            "messages": [
+              {
+                "valueExpression": "btok_",
+                "valueKey": "request.params.source",
+                "message": "⚠️ It appears you are using a bank token which is NOT usable here. Use bank account id \"ba_\" instead"
+              }
+            ],
+            "pastes": [
+              {
+                "title": "created customer",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "new bank account",
+                "valueKey": "result.bank_account.id",
+                "pasteKey": "request.params.source",
+                "_api": {
+                  "_id": 351.40000000596046,
+                  "knownTitle": "🏦 Bank Account"
+                }
+              }
+            ],
+            "_id": 361.80000001192093
+          }
+        ],
+        "icon": "🏦"
+      },
+      {
+        "title": "Cards",
+        "apis": [
+          {
+            "title": "🆕 💳 Create source",
+            "link": "https://stripe.com/docs/sources/ach-credit-transfer",
+            "hint": "Typically used for credit-transfer/wires",
+            "favKeys": [
+              {
+                "valueKey": "result.id"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "sources"
+            },
+            "data": {
+              "type": "ach_credit_transfer",
+              "currency": "usd",
+              "owner": {
+                "email": "jenny.rosen@example.com"
+              }
+            },
+            "_id": 362.1000000089407
+          },
+          {
+            "title": "1️⃣ 💳 GET Source",
+            "link": "https://stripe.com/docs/api/sources/retrieve",
+            "messages": [
+              {
+                "valueExpression": "ba_",
+                "valueKey": "request.params.id",
+                "message": "⚠️ It appears you are using a bank source which is NOT truly a source. Fetch bank sources using GET /customers/:id/sources"
+              },
+              {
+                "valueExpression": "btok_",
+                "valueKey": "request.params.id",
+                "message": "⚠️ It appears you are using a bank token which is NOT a source"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "sources/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "create_source.result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "🆕 💳 Create source"
+                }
+              },
+              {
+                "title": "GET customer.sources[0].id",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.source",
+                "_api": {
+                  "_id": 362.5,
+                  "knownTitle": "🧾 💳 Sources list"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "valueMatches": [
+                  {
+                    "expression": "src_"
+                  }
+                ],
+                "_api": {
+                  "_id": 362.6000000089407,
+                  "knownTitle": "🧾 💳 list payment methods"
+                }
+              }
+            ],
+            "_id": 362.1000000089407
+          },
+          {
+            "title": "⬆️ 💳 UPDATE Source",
+            "link": "https://stripe.com/docs/api/sources/update",
+            "request": {
+              "method": "POST",
+              "path": "sources/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              },
+              "owner": {}
+            },
+            "pastes": [
+              {
+                "title": "GET source",
+                "valueKey": "result",
+                "pasteKey": "data",
+                "removeKeys": [
+                  "card.wallet",
+                  "card.checks",
+                  "card.three_d_secure_usage",
+                  "card.fingerprint",
+                  "card.last4",
+                  "card.generated_from",
+                  "card.country",
+                  "card.brand",
+                  "card.address_line1_check",
+                  "card.address_zip_check",
+                  "card.cvc_check",
+                  "card.funding",
+                  "card.three_d_secure",
+                  "card.name",
+                  "card.tokenization_method",
+                  "card.dynamic_last4",
+                  "card.networks.available",
+                  "card.networks.preferred",
+                  "owner.verified_address",
+                  "owner.verified_email",
+                  "owner.verified_name",
+                  "owner.verified_phone",
+                  "id",
+                  "amount",
+                  "object",
+                  "client_secret",
+                  "created",
+                  "flow",
+                  "livemode",
+                  "address",
+                  "status",
+                  "type",
+                  "usage",
+                  "currency",
+                  "statement_descriptor",
+                  "customer"
+                ],
+                "removeValues": [
+                  null
+                ],
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "1️⃣ 💳 GET Source"
+                }
+              },
+              {
+                "title": "GET source id",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "1️⃣ 💳 GET Source"
+                }
+              },
+              {
+                "title": "stripejs source id",
+                "valueKey": "result.source.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "title": "stripejs source element",
+                "valueKey": "result.source.id",
+                "pasteValueKey": "result.source",
+                "pasteKey": "data",
+                "removeKeys": [
+                  "card.wallet",
+                  "card.checks",
+                  "card.three_d_secure_usage",
+                  "card.fingerprint",
+                  "card.last4",
+                  "card.generated_from",
+                  "card.country",
+                  "card.brand",
+                  "card.address_line1_check",
+                  "card.address_zip_check",
+                  "card.cvc_check",
+                  "card.funding",
+                  "card.three_d_secure",
+                  "card.name",
+                  "card.tokenization_method",
+                  "card.dynamic_last4",
+                  "card.networks.available",
+                  "card.networks.preferred",
+                  "owner.verified_address",
+                  "owner.verified_email",
+                  "owner.verified_name",
+                  "owner.verified_phone",
+                  "id",
+                  "amount",
+                  "object",
+                  "client_secret",
+                  "created",
+                  "flow",
+                  "livemode",
+                  "address",
+                  "status",
+                  "type",
+                  "usage",
+                  "currency",
+                  "statement_descriptor",
+                  "customer"
+                ],
+                "removeValues": [
+                  null
+                ],
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              }
+            ],
+            "_id": 362.80000001192093
+          },
+          {
+            "title": "💳 GET Payment Methods",
+            "link": "https://stripe.com/docs/api/payment_methods/list",
+            "request": {
+              "method": "GET",
+              "path": "payment_methods"
+            },
+            "data": {
+              "type": "card"
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              }
+            ],
+            "_id": 363.70000000298023
+          },
+          {
+            "title": "1️⃣ 💳 GET Payment Method",
+            "link": "https://stripe.com/docs/api/payment_methods/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "payment_methods/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.payment_method.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 362.6000000089407,
+                  "knownTitle": "🧾 💳 list payment methods"
+                }
+              }
+            ],
+            "_id": 363.80000001192093
+          },
+          {
+            "title": "⬆️ 💳 UPDATE Payment Method",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/payment_methods/update"
+              },
+              {
+                "title": "update pay details",
+                "url": "https://stripe.com/docs/payments/checkout/subscriptions/update-payment-details"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payment_methods/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "billing_details": {},
+              "card": {
+                "exp_month": "03",
+                "exp_year": "2022"
+              },
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.payment_method.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "valueKey": "result",
+                "pasteKey": "data",
+                "removeKeys": [
+                  "wallet",
+                  "checks",
+                  "three_d_secure_usage",
+                  "fingerprint",
+                  "last4",
+                  "generated_from",
+                  "country",
+                  "brand",
+                  "address_line1_check",
+                  "address_zip_check",
+                  "cvc_check",
+                  "funding",
+                  "three_d_secure",
+                  "name",
+                  "tokenization_method",
+                  "dynamic_last4",
+                  "networks.available",
+                  "networks.preferred",
+                  "object",
+                  "checks",
+                  "available",
+                  "created",
+                  "livemode",
+                  "type",
+                  "customer"
+                ],
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              }
+            ],
+            "_id": 364.30000001192093
+          }
+        ],
+        "icon": "💳"
+      },
+      {
+        "title": "Charges",
+        "apis": [
+          {
+            "title": "🆕 Create Charge",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/charges"
+              },
+              {
+                "url": "https://stripe.com/docs/payments/payment-intents/migration/charges",
+                "title": "prefer pay intents"
+              },
+              {
+                "url": "https://stripe.com/docs/connect/direct-charges#collecting-fees",
+                "title": "collecting fees"
+              },
+              {
+                "title": "debit connected accounts",
+                "url": "https://stripe.com/docs/connect/account-debits"
+              }
+            ],
+            "favKeys": [
+              {
+                "valueKey": "result.id"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "charges"
+            },
+            "data": {
+              "amount": 999,
+              "currency": "usd",
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "examples": [
+              {
+                "title": "Transfer to Stripe Account",
+                "data": {
+                  "amount": 999,
+                  "currency": "usd",
+                  "transfer_data": {
+                    "amount": 850,
+                    "destination": "{{CONNECTED_STRIPE_ACCOUNT_ID}}"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              },
+              {
+                "title": "application fee",
+                "data": {
+                  "amount": 999,
+                  "currency": "usd",
+                  "application_fee_amount": 100,
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "amount": 999,
+                  "currency": "usd",
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              }
+            ],
+            "pastes": [
+              {
+                "title": "Accounts list 1️⃣",
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "Accounts retrieve by id",
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "Accounts list 1️⃣",
+                "pasteKey": "data.source",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "Accounts retrieve by id",
+                "pasteKey": "data.source",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "valueKey": "result.sources.data.0.bank_name",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "🆕 💳 Create source"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 365.90000000596046,
+                  "knownTitle": "👤 ➡️ 💳 🏦 attach pay source"
+                }
+              },
+              {
+                "valueKey": "result.token.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.sources.0.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "title": "👤 GET Customer",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              },
+              {
+                "title": "source GET customer",
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "1️⃣ 💳 GET Source"
+                }
+              },
+              {
+                "title": "👤 🧾 Customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "title": "new 👤 customer default_source",
+                "valueKey": "result.default_source",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "new 👤 customer default_source",
+                "valueKey": "result.default_source",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              }
+            ],
+            "_id": 365
+          },
+          {
+            "title": "🧾 List all charges",
+            "description": "Returns a list of charges you’ve previously created. The charges are returned in sorted order, with the most recent charges appearing first.",
+            "link": "https://stripe.com/docs/api/charges/list",
+            "request": {
+              "method": "GET",
+              "path": "charges"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "title": "🆕 Pay intent create",
+                "pasteKey": "data.payment_intent",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "title": "1️⃣ Pay intent retrieve",
+                "pasteKey": "data.payment_intent",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "title": "🧾 Pay intent list 1️⃣",
+                "pasteKey": "data.payment_intent",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              }
+            ],
+            "_id": 367.5
+          },
+          {
+            "title": "1️⃣ Retrieve a charge",
+            "link": "https://stripe.com/docs/api/charges/list",
+            "description": "Retrieves the details of a charge that has previously been created. Supply the unique charge ID that was returned from your previous request, and Stripe will return the corresponding charge information. The same information is returned when creating or refunding the charge.",
+            "request": {
+              "method": "GET",
+              "path": "charges/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "title": "🧾 Charges list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 367.5,
+                  "knownTitle": "🧾 List all charges"
+                }
+              }
+            ],
+            "_id": 368
+          },
+          {
+            "title": "⬆️ Update a charge",
+            "link": "https://stripe.com/docs/api/charges/update",
+            "description": "Updates the specified charge by setting the values of the parameters passed. Any parameters not provided will be left unchanged.",
+            "request": {
+              "method": "POST",
+              "path": "charges/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "title": "🧾 Charges list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 367.5,
+                  "knownTitle": "🧾 List all charges"
+                }
+              },
+              {
+                "title": "1️⃣ Charges GET",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 368,
+                  "knownTitle": "1️⃣ Retrieve a charge"
+                }
+              }
+            ],
+            "_id": 368.20000000298023
+          },
+          {
+            "title": "Capture a charge",
+            "link": "https://stripe.com/docs/api/charges/capture",
+            "description": "Capture the payment of an existing, uncaptured, charge. This is the second half of the two-step payment flow, where first you created a charge with the capture option set to false.",
+            "request": {
+              "method": "POST",
+              "path": "charges/:id/capture",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "title": "🧾 Charges list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 367.5,
+                  "knownTitle": "🧾 List all charges"
+                }
+              },
+              {
+                "title": "1️⃣ Charges GET",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 368,
+                  "knownTitle": "1️⃣ Retrieve a charge"
+                }
+              }
+            ],
+            "_id": 368.6000000089407
+          }
+        ],
+        "icon": "💵",
+        "description": "To charge a credit or a debit card, you create a Charge object. You can retrieve and refund individual charges as well as list all charges. Charges are identified by a unique, random ID.",
+        "links": [
+          {
+            "url": "https://stripe.com/docs/api/charges",
+            "title": "📕 API docs"
+          }
+        ]
+      },
+      {
+        "icon": "👤",
+        "title": "Customers",
+        "apis": [
+          {
+            "title": "🧾 List all customers",
+            "link": "https://stripe.com/docs/api/customers/list",
+            "request": {
+              "method": "GET",
+              "path": "customers"
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.starting_after",
+                "title": "next customer"
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.starting_after",
+                "title": "🆕 created customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              }
+            ],
+            "data": {
+              "limit": 3,
+              "created[lte]": 1635974261192
+            },
+            "_id": 361.6000000089407
+          },
+          {
+            "title": "🆕 Create Customer",
+            "link": "https://stripe.com/docs/api/customers",
+            "favKeys": [
+              {
+                "valueKey": "result.id"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "customers"
+            },
+            "data": {
+              "description": "some new customer",
+              "email": "jenny.rosen@example.com",
+              "name": "jenny rosen",
+              "phone": "561-561-5611",
+              "address": {
+                "city": "Coconut Creek",
+                "country": null,
+                "line1": "1234 sw 1st ct",
+                "line2": null,
+                "postal_code": "33066",
+                "state": "FL"
+              },
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "🆕 💳 Create source"
+                }
+              },
+              {
+                "valueKey": "result.payment_method.id",
+                "pastes": [
+                  {
+                    "valueKey": "result.payment_method.id",
+                    "pasteKey": "data.payment_method"
+                  },
+                  {
+                    "valueKey": "data.invoice_settings",
+                    "pasteKey": "data.invoice_settings"
+                  },
+                  {
+                    "valueKey": "data.invoice_settings.default_payment_method",
+                    "pasteKey": "result.payment_method.id"
+                  }
+                ],
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 351.40000000596046,
+                  "knownTitle": "🏦 Bank Account"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "title": "plaid bank token",
+                "valueKey": "result.stripe_bank_account_token",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 355.20000000298023,
+                  "knownTitle": "🐠 🏦 ➕ Stripe Bank Create"
+                }
+              }
+            ],
+            "_id": 361.5
+          },
+          {
+            "title": "1️⃣ GET Customer",
+            "link": "https://stripe.com/docs/api/customers/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "customers/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "title": "🆕 created customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "source GET customer",
+                "valueKey": "result.customer",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "1️⃣ 💳 GET Source"
+                }
+              },
+              {
+                "title": "🧾 customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              }
+            ],
+            "_id": 366.70000000298023
+          },
+          {
+            "title": "⬆️ UPDATE Customer",
+            "links": [
+              {
+                "title": "docs",
+                "url": "https://stripe.com/docs/api/customers/update"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "customers/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "title": "created customer id",
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "created customer data",
+                "valueKey": "result",
+                "pasteKey": "data",
+                "removeKeys": [
+                  "account_balance",
+                  "balance",
+                  "object",
+                  "cards",
+                  "created",
+                  "delinquent",
+                  "livemode",
+                  "sources",
+                  "data",
+                  "subscriptions",
+                  "tax_ids"
+                ],
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "🧾 customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.payment_method.card",
+                "pasteKey": "data",
+                "pastes": [
+                  {
+                    "pasteKey": "data.payment_method",
+                    "valueKey": "result.payment_method.id"
+                  },
+                  {
+                    "valueKey": "result.payment_method.id",
+                    "pasteKey": "data.invoice_settings.default_payment_method"
+                  }
+                ],
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              }
+            ],
+            "_id": 372.40000000596046
+          },
+          {
+            "title": "❌ Delete Customer",
+            "link": "https://stripe.com/docs/api/customers/delete",
+            "request": {
+              "method": "DELETE",
+              "path": "customers/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "GET customers[0]",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              }
+            ],
+            "_id": 373.5
+          },
+          {
+            "title": "🧾 💳 list payment methods",
+            "link": "https://stripe.com/docs/api/payment_methods/list",
+            "request": {
+              "method": "GET",
+              "path": "payment_methods"
+            },
+            "data": {
+              "customer": "",
+              "limit": 3,
+              "type": "card"
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "🧾 Customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              }
+            ],
+            "_id": 362.6000000089407
+          },
+          {
+            "title": "👤 ➡️ 💳 Attach pay method",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payment_methods/attach"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payment_methods/:paymentMethodId/attach",
+              "params": {
+                "paymentMethodId": ""
+              }
+            },
+            "data": {
+              "customer": ""
+            },
+            "pastes": [
+              {
+                "title": "created customer",
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "title": "🧾 Customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.payment_method.id",
+                "pasteKey": "request.params.paymentMethodId",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              }
+            ],
+            "_id": 374.30000001192093
+          },
+          {
+            "title": "❌ 💳 delete/detach payment method",
+            "request": {
+              "method": "POST",
+              "path": "payment_methods/:id/detach",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {},
+            "_id": 374.70000000298023
+          },
+          {
+            "title": "👤 ➡️ 💳 🏦 attach pay source",
+            "link": "https://stripe.com/docs/sources/customers#attaching-a-source-to-a-new-customer-object",
+            "favKeys": [
+              {
+                "valueKey": "result.id"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "customers/:id/sources",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "source": "",
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.source",
+                "title": "🏦 bank token",
+                "_api": {
+                  "_id": 351.40000000596046,
+                  "knownTitle": "🏦 Bank Account"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.source",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "🆕 💳 Create source"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.source",
+                "title": "🆕 💳 Created card source",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.stripe_bank_account_token",
+                "pasteKey": "data.source",
+                "title": "plaid bank token",
+                "_api": {
+                  "_id": 355.20000000298023,
+                  "knownTitle": "🐠 🏦 ➕ Stripe Bank Create"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "title": "🆕 Created customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "title": "🧾 Customer list 1️⃣",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.data.0.customer",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 362.5,
+                  "knownTitle": "🧾 💳 Sources list"
+                }
+              }
+            ],
+            "_id": 365.90000000596046
+          },
+          {
+            "title": "🧾 💳 Sources list",
+            "link": "https://stripe.com/docs/api/cards/list",
+            "request": {
+              "method": "GET",
+              "path": "customers/:id/sources",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.customer",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              },
+              {
+                "valueKey": "result.data.customer",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 365.90000000596046,
+                  "knownTitle": "👤 ➡️ 💳 🏦 attach pay source"
+                }
+              },
+              {
+                "valueKey": "request.params.customer",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 378.80000001192093,
+                  "knownTitle": "❌ 💳 delete/detach source"
+                }
+              }
+            ],
+            "_id": 362.5
+          },
+          {
+            "title": "1️⃣ 👤 💳 Source retrieve 1️⃣",
+            "link": "https://stripe.com/docs/api/cards/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "customers/:customer/sources/:source",
+              "params": {
+                "customer": "",
+                "source": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.customer",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "GET customers[0]",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "title": "GET customer.sources[0].id",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.source",
+                "_api": {
+                  "_id": 362.5,
+                  "knownTitle": "🧾 💳 Sources list"
+                }
+              }
+            ],
+            "_id": 379
+          },
+          {
+            "title": "❌ 💳 delete/detach source",
+            "links": [
+              {
+                "title": "delete customer bank",
+                "url": "https://stripe.com/docs/api/customer_bank_accounts/delete"
+              },
+              {
+                "title": "delete customer card",
+                "url": "https://stripe.com/docs/api/cards/delete"
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "path": "customers/:customer/sources/:source",
+              "params": {
+                "customer": "",
+                "source": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "result.customer",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "GET customers[0]",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "title": "GET customer.sources[0].id",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.source",
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.customer",
+                    "pasteKey": "request.params.customer"
+                  }
+                ],
+                "_api": {
+                  "_id": 362.5,
+                  "knownTitle": "🧾 💳 Sources list"
+                }
+              },
+              {
+                "pasteKey": "request.params.source",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "🆕 💳 Create source"
+                }
+              },
+              {
+                "pasteKey": "request.params.source",
+                "valueKey": "result.id",
+                "pastes": [
+                  {
+                    "valueKey": "result.customer",
+                    "pasteKey": "request.params.customer"
+                  }
+                ],
+                "_api": {
+                  "_id": 365.90000000596046,
+                  "knownTitle": "👤 ➡️ 💳 🏦 attach pay source"
+                }
+              }
+            ],
+            "_id": 378.80000001192093
+          }
+        ],
+        "description": "Customer objects allow you to perform recurring charges, and to track multiple charges, that are associated with the same customer. The API allows you to create, delete, and update your customers. You can retrieve individual customers as well as a list of all your customers."
+      },
+      {
+        "title": "Disputes",
+        "apis": [
+          {
+            "title": "🧾 List all disputes",
+            "link": "https://stripe.com/docs/api/disputes/list",
+            "request": {
+              "method": "GET",
+              "path": "disputes"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.starting_after"
+              }
+            ],
+            "_id": 380.6000000089407
+          },
+          {
+            "title": "1️⃣ Retrieve a dispute",
+            "link": "https://stripe.com/docs/api/disputes/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "disputes/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.id",
+                "_api": {
+                  "_id": 380.6000000089407,
+                  "knownTitle": "⬆️ Update a dispute"
+                }
+              }
+            ],
+            "_id": 380.6000000089407
+          },
+          {
+            "title": "⬆️ Update a dispute",
+            "link": "https://stripe.com/docs/api/disputes/update",
+            "request": {
+              "method": "POST",
+              "path": "disputes/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "evidence": {
+                "uncategorized_text": "winning_evidence"
+              },
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "examples": [
+              {
+                "title": "losing_evidence",
+                "data": {
+                  "evidence": {
+                    "uncategorized_text": "losing_evidence"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "evidence": {
+                    "uncategorized_text": "winning_evidence"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              }
+            ],
+            "pastes": [
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 380.6000000089407,
+                  "knownTitle": "🧾 List all disputes"
+                }
+              }
+            ],
+            "_id": 380.6000000089407
+          },
+          {
+            "title": "🚫 close a dispute",
+            "description": "Closing the dispute for a charge indicates that you do not have any evidence to submit and are essentially dismissing the dispute, acknowledging it as lost.",
+            "link": "https://stripe.com/docs/api/disputes/close",
+            "request": {
+              "method": "POST",
+              "path": "disputes/:id/close",
+              "params": {
+                "id": ""
+              }
+            },
+            "_id": 381.1000000089407
+          },
+          {
+            "title": "🆕 Create issuing dispute",
+            "description": "Creates an Issuing Dispute object. Individual pieces of evidence within the evidence object are optional at this point",
+            "links": [
+              {
+                "title": "API docs",
+                "url": "https://stripe.com/docs/api/issuing/disputes/create"
+              },
+              {
+                "title": "Services docs",
+                "url": "https://stripe.com/docs/issuing/purchases/disputes#creation"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "issuing/disputes"
+            },
+            "data": {
+              "transaction": "",
+              "evidence": {
+                "reason": "not_received",
+                "not_received": {
+                  "expected_at": 1590000000,
+                  "explanation": "Never shipped",
+                  "product_description": "Baseball bat",
+                  "product_type": "merchandise"
+                }
+              }
+            },
+            "examples": [
+              {
+                "title": "fraudulent",
+                "data": {
+                  "transaction": "",
+                  "evidence": {
+                    "reason": "fraudulent",
+                    "fraudulent": {
+                      "explanation": "Purchase was unrecognized."
+                    }
+                  }
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "transaction": "",
+                  "evidence": {
+                    "reason": "not_received",
+                    "not_received": {
+                      "expected_at": 1590000000,
+                      "explanation": "Never shipped",
+                      "product_description": "Baseball bat",
+                      "product_type": "merchandise"
+                    }
+                  }
+                }
+              }
+            ],
+            "_id": 381.1000000089407
+          }
+        ],
+        "icon": "🖐",
+        "description": "A dispute occurs when a customer questions your charge with their card issuer. When this happens, you're given the opportunity to respond to the dispute with evidence that shows that the charge is legitimate.",
+        "links": [
+          {
+            "url": "https://stripe.com/docs/api/disputes",
+            "title": "📕 API docs"
+          }
+        ]
+      },
+      {
+        "icon": "🧧",
+        "title": "Pay Intents",
+        "apis": [
+          {
+            "title": "🆕 Create Pay Intent",
+            "description": "Creates a PaymentIntent object",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payment_intents"
+              },
+              {
+                "url": "https://stripe.com/docs/connect/direct-charges#collecting-fees",
+                "title": "collecting fees"
+              },
+              {
+                "url": "https://stripe.com/docs/api/payment_intents/create#create_payment_intent-off_session",
+                "title": "off_session"
+              },
+              {
+                "url": "https://stripe.com/docs/payments/payment-intents#future-usage",
+                "title": "setup_future_usage"
+              }
+            ],
+            "favKeys": [
+              {
+                "valueKey": "result.id"
+              },
+              {
+                "valueKey": "result.client_secret"
+              },
+              {
+                "type": "link",
+                "valueKey": "result.next_action.use_stripe_sdk.stripe_js",
+                "title": "secure payment verify link"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payment_intents",
+              "headers": {
+                "Stripe-Account": ""
+              },
+              "removeHeaderValues": [
+                ""
+              ]
+            },
+            "data": {
+              "amount": 999,
+              "confirm": "true",
+              "currency": "usd",
+              "setup_future_usage": "off_session",
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              },
+              "statement_descriptor": "stripe-angular data",
+              "transfer_group": "TEST_ORDER",
+              "payment_method": "pm_card_visa"
+            },
+            "examples": [
+              {
+                "title": "Transfer to Stripe Account",
+                "data": {
+                  "amount": 999,
+                  "currency": "usd",
+                  "transfer_data": {
+                    "amount": 850,
+                    "destination": "{{CONNECTED_STRIPE_ACCOUNT_ID}}"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  },
+                  "statement_descriptor": "stripe-angular with xfer",
+                  "setup_future_usage": "off_session"
+                }
+              },
+              {
+                "title": "application fee",
+                "data": {
+                  "amount": 999,
+                  "currency": "usd",
+                  "application_fee_amount": 100,
+                  "transfer_data": {
+                    "destination": "{{CONNECTED_STRIPE_ACCOUNT_ID}}"
+                  },
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  },
+                  "statement_descriptor": "stripe-angular application_fee_amount",
+                  "setup_future_usage": "off_session"
+                }
+              },
+              {
+                "title": "Source ach_debit with transfer",
+                "data": {
+                  "amount": 10000,
+                  "confirm": "true",
+                  "currency": "usd",
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  },
+                  "transfer_group": "TEST_ORDER",
+                  "source": "",
+                  "customer": "",
+                  "transfer_data": {
+                    "amount": 7000,
+                    "destination": "acct_1JkUxsS7GjacJ5J0"
+                  },
+                  "payment_method_types": [
+                    "ach_debit"
+                  ]
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "amount": 999,
+                  "confirm": "true",
+                  "currency": "usd",
+                  "setup_future_usage": "off_session",
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  },
+                  "statement_descriptor": "stripe-angular data",
+                  "transfer_group": "TEST_ORDER",
+                  "payment_method": "pm_card_visa"
+                }
+              }
+            ],
+            "pastes": [
+              {
+                "pasteKey": "data.payment_method",
+                "value": "pm_card_createDispute"
+              },
+              {
+                "title": "Accounts retrieve by id",
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "🧾 customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "pastes": [
+                  {
+                    "pasteKey": "data.payment_method",
+                    "valueKey": "result.data.0.default_source",
+                    "valueMatches": [
+                      {
+                        "expression": "^(?!ba_)"
+                      }
+                    ]
+                  },
+                  {
+                    "pasteKey": "data.source",
+                    "valueKey": "result.data.0.default_source",
+                    "valueMatches": [
+                      {
+                        "expression": "^ba_"
+                      }
+                    ],
+                    "pastes": [
+                      {
+                        "pasteKey": "data.payment_method_types",
+                        "value": [
+                          "ach_debit",
+                          "card"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "data.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              },
+              {
+                "title": "🧾 💳 Customer GET payment methods",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.payment_method",
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.customer",
+                    "pasteKey": "data.customer"
+                  }
+                ],
+                "_api": {
+                  "_id": 362.6000000089407,
+                  "knownTitle": "🧾 💳 list payment methods"
+                }
+              },
+              {
+                "valueKey": "result.payment_method.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.token.card.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "title": "pay method GET 1️⃣",
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "source GET 1️⃣",
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 362.1000000089407,
+                  "knownTitle": "1️⃣ 💳 GET Source"
+                }
+              },
+              {
+                "valueKey": "result.data.0.customer",
+                "pasteKey": "data.customer",
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "data.payment_method",
+                    "valueMatches": [
+                      {
+                        "expression": "^(?!ba_)"
+                      }
+                    ]
+                  },
+                  {
+                    "valueKey": "result.data.0.id",
+                    "pasteKey": "data.source",
+                    "valueMatches": [
+                      {
+                        "expression": "^ba_"
+                      }
+                    ]
+                  },
+                  {
+                    "pasteKey": "data.payment_method_types",
+                    "value": [
+                      "ach_debit"
+                    ],
+                    "valueMatches": [
+                      {
+                        "expression": "ba_",
+                        "valueKey": "result.data.0.id"
+                      }
+                    ]
+                  }
+                ],
+                "_api": {
+                  "_id": 362.5,
+                  "knownTitle": "🧾 💳 Sources list"
+                }
+              },
+              {
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "pastes": [
+                  {
+                    "valueKey": "result.id",
+                    "pasteKey": "data.payment_method",
+                    "valueMatches": [
+                      {
+                        "expression": "^(?!ba_)"
+                      }
+                    ]
+                  },
+                  {
+                    "valueKey": "result.id",
+                    "pasteKey": "data.source",
+                    "valueMatches": [
+                      {
+                        "expression": "^ba_"
+                      }
+                    ]
+                  },
+                  {
+                    "pasteKey": "data.payment_method_types",
+                    "value": [
+                      "ach_debit"
+                    ],
+                    "valueMatches": [
+                      {
+                        "expression": "ba_",
+                        "valueKey": "result.id"
+                      }
+                    ]
+                  }
+                ],
+                "_api": {
+                  "_id": 379,
+                  "knownTitle": "1️⃣ 👤 💳 Source retrieve 1️⃣"
+                }
+              },
+              {
+                "title": "pay method customer",
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "Create pay intent as another account",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "valueKey": "result",
+                "pasteKey": "data",
+                "removeKeys": [
+                  "id",
+                  "object",
+                  "amount_capturable",
+                  "amount_received",
+                  "application",
+                  "canceled_at",
+                  "cancellation_reason",
+                  "charges",
+                  "client_secret",
+                  "created",
+                  "last_payment_error",
+                  "livemode",
+                  "next_action",
+                  "review",
+                  "status"
+                ],
+                "removeValues": [
+                  null
+                ],
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_method",
+                "pastes": [
+                  {
+                    "valueKey": "result.customer",
+                    "pasteKey": "data.customer"
+                  }
+                ],
+                "_api": {
+                  "_id": 374.30000001192093,
+                  "knownTitle": "👤 ➡️ 💳 Attach pay method"
+                }
+              }
+            ],
+            "_id": 328.80000001192093
+          },
+          {
+            "title": "1️⃣ Retrieve Pay Intent by id",
+            "link": "https://stripe.com/docs/api/payment_intents/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "payment_intents/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "title": "🆕 Created pay intent",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              },
+              {
+                "valueKey": "result.data.0.payment_intent",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 384.70000000298023,
+                  "knownTitle": "🧾 List all refunds"
+                }
+              },
+              {
+                "valueKey": "result.payment_intent",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 385,
+                  "knownTitle": "1️⃣ GET refund"
+                }
+              },
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 385.30000001192093,
+                  "knownTitle": "👍 Confirm Pay Intent"
+                }
+              },
+              {
+                "valueKey": "result.payment_intent",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 385.40000000596046,
+                  "knownTitle": "🆕 Create Refund"
+                }
+              }
+            ],
+            "_id": 367.80000001192093
+          },
+          {
+            "title": "🧾 List all PaymentIntents",
+            "link": "https://stripe.com/docs/api/payment_intents/retrieve",
+            "request": {
+              "method": "GET",
+              "path": "payment_intents"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "title": "pay method customer",
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "data.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              },
+              {
+                "title": "Customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              }
+            ],
+            "_id": 350.80000001192093
+          },
+          {
+            "title": "⬆️ Update Pay Intent by id",
+            "link": "https://stripe.com/docs/api/payment_intents/update",
+            "request": {
+              "method": "POST",
+              "path": "payment_intents/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "title": "1️⃣ Pay intent retrieve by id",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "title": "🧾 Pay intent list 1️⃣",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              },
+              {
+                "title": "🆕 Created pay intent",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "title": "Accounts list 1️⃣",
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "Accounts retrieve by id",
+                "pasteKey": "data.transfer_data.destination",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "🧾 customer list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.6000000089407,
+                  "knownTitle": "🧾 List all customers"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 361.5,
+                  "knownTitle": "🆕 Create Customer"
+                }
+              },
+              {
+                "valueKey": "data.id",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 366.70000000298023,
+                  "knownTitle": "1️⃣ GET Customer"
+                }
+              },
+              {
+                "title": "🧾 💳 Customer GET payment methods",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 362.6000000089407,
+                  "knownTitle": "🧾 💳 list payment methods"
+                }
+              },
+              {
+                "valueKey": "result.payment_method.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.source.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.token.card.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 354.80000001192093,
+                  "knownTitle": "💳 Card Element"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_method",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "pay method customer",
+                "valueKey": "result.customer",
+                "pasteKey": "data.customer",
+                "_api": {
+                  "_id": 363.80000001192093,
+                  "knownTitle": "1️⃣ 💳 GET Payment Method"
+                }
+              },
+              {
+                "title": "accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              }
+            ],
+            "_id": 386.40000000596046
+          },
+          {
+            "title": "👍 Confirm Pay Intent",
+            "description": "If a pay intent requires verification",
+            "links": [
+              {
+                "title": "3d-secure",
+                "url": "https://stripe.com/docs/payments/3d-secure#confirm-payment-intent"
+              },
+              {
+                "title": "📕 api docs",
+                "url": "https://stripe.com/docs/api/payment_intents/confirm"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payment_intents/:id/confirm",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "client_secret": "",
+              "return_url": "http://localhost:4200/#serverToolsWrap"
+            },
+            "pastes": [
+              {
+                "title": "🆕 Created pay intent",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              },
+              {
+                "title": "xxx",
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "valueMatches": [
+                  {
+                    "expression": "requires_confirmation",
+                    "valueKey": "result.status"
+                  }
+                ],
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              }
+            ],
+            "_id": 385.30000001192093
+          },
+          {
+            "title": "📥 Capture Pay Intent",
+            "link": "https://stripe.com/docs/api/payment_intents/capture",
+            "request": {
+              "method": "POST",
+              "path": "payment_intents/:id/capture",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "pasteKey": "request.params.id",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              }
+            ],
+            "_id": 389.70000000298023
+          },
+          {
+            "title": "🚫 Cancel Pay Intent",
+            "link": "https://stripe.com/docs/api/payment_intents/cancel",
+            "request": {
+              "method": "POST",
+              "path": "payment_intents/:id/cancel",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "cancellation_reason": "requested_by_customer"
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              }
+            ],
+            "_id": 390.40000000596046
+          }
+        ],
+        "description": "A PaymentIntent guides you through the process of collecting a payment from your customer.",
+        "links": [
+          {
+            "title": "📕 API docs",
+            "url": "https://stripe.com/docs/api/payment_intents"
+          },
+          {
+            "title": "📦 💵 👤 💰 🛳 multiple charges & transfers",
+            "url": "https://stripe.com/docs/connect/charges-transfers"
+          }
+        ]
+      },
+      {
+        "icon": "💸",
+        "title": "Payouts",
+        "description": "A Payout object is created when you receive funds from Stripe, or when you initiate a payout to either a bank account or debit card of a connected Stripe account.",
+        "apis": [
+          {
+            "title": "🧾 List all payouts",
+            "description": "Returns a list of existing payouts sent to third-party bank accounts or that Stripe has sent you. The payouts are returned in sorted order, with the most recently created payouts appearing first.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payouts/list"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "payouts"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.starting_after"
+              }
+            ],
+            "_id": 390.90000000596046
+          },
+          {
+            "title": "🆕 Create payout",
+            "description": "To send funds to your own bank account, you create a new payout object.",
+            "links": [
+              {
+                "url": "https://stripe.com/docs/api/payouts/create",
+                "title": "📕 API Docs"
+              },
+              {
+                "url": "https://stripe.com/docs/connect/testing-verification#blocked-payouts",
+                "title": "testing blocked payouts"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payouts",
+              "headers": {
+                "Stripe-Account": ""
+              }
+            },
+            "data": {
+              "amount": 200,
+              "currency": "usd"
+            },
+            "pastes": [
+              {
+                "title": "accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "External accounts 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.destination",
+                "pastes": [
+                  {
+                    "pasteKey": "data.source_type",
+                    "value": "bank_account"
+                  }
+                ],
+                "_api": {
+                  "_id": 355.30000001192093,
+                  "knownTitle": "🧾 🏦 💳 List all external accounts"
+                }
+              }
+            ],
+            "_id": 390.90000000596046
+          },
+          {
+            "title": "1️⃣ Retrieve a payout",
+            "description": "Retrieves the details of an existing payout. Supply the unique payout ID from either a payout creation request or the payout list, and Stripe will return the corresponding payout information.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payouts/retrieve"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "payouts/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 390.90000000596046,
+                  "knownTitle": "🧾 List all payouts"
+                }
+              },
+              {
+                "valueKey": "result.data.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 391.6000000089407,
+                  "knownTitle": "⬆️ Update a payout"
+                }
+              }
+            ],
+            "_id": 391.40000000596046
+          },
+          {
+            "title": "⬆️ Update a payout",
+            "description": "Updates the specified payout by setting the values of the parameters passed. Any parameters not provided will be left unchanged. This request accepts only the metadata as arguments.",
+            "links": [
+              {
+                "url": "https://stripe.com/docs/api/payouts/update",
+                "title": "📕 API Docs"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payouts/:id",
+              "headers": {
+                "Stripe-Account": ""
+              },
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "amount": 200,
+              "currency": "usd"
+            },
+            "pastes": [
+              {
+                "title": "accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "title": "External accounts 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.destination",
+                "pastes": [
+                  {
+                    "pasteKey": "data.source_type",
+                    "value": "bank_account"
+                  }
+                ],
+                "_api": {
+                  "_id": 355.30000001192093,
+                  "knownTitle": "🧾 🏦 💳 List all external accounts"
+                }
+              }
+            ],
+            "_id": 391.6000000089407
+          },
+          {
+            "title": "❌ Cancel payout",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payouts/cancel"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payouts/${id}/cancel",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 390.90000000596046,
+                  "knownTitle": "🧾 List all payouts"
+                }
+              }
+            ],
+            "_id": 392.40000000596046
+          },
+          {
+            "title": "↩️ Reverse payout",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/payouts/reverse"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "payouts/${id}/reverse",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 390.90000000596046,
+                  "knownTitle": "🧾 List all payouts"
+                }
+              }
+            ],
+            "_id": 392.80000001192093
+          }
+        ],
+        "links": [
+          {
+            "url": "https://stripe.com/docs/api/payouts",
+            "title": "📕 API docs"
+          },
+          {
+            "url": "https://stripe.com/docs/connect/testing#payouts",
+            "title": "🔬 test payout account numbers"
+          },
+          {
+            "url": "https://stripe.com/docs/connect/manage-payout-schedule",
+            "title": "Managing payout schedule"
+          }
+        ]
+      },
+      {
+        "title": "Refunds",
+        "icon": "↩️",
+        "description": "refund a charge that has previously been created but not yet refunded. Funds will be refunded to the credit or debit card that was originally charged.",
+        "apis": [
+          {
+            "title": "🆕 Create Refund",
+            "description": "Creating a new refund will refund a charge that has previously been created but not yet refunded. Funds will be refunded to the credit or debit card that was originally charged.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/refunds/create"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "refunds"
+            },
+            "data": {
+              "payment_intent": "",
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "examples": [
+              {
+                "title": "charge",
+                "data": {
+                  "charge": ""
+                }
+              },
+              {
+                "title": "original data",
+                "data": {
+                  "payment_intent": "",
+                  "metadata": {
+                    "entity_id": "entity_id_abc_123",
+                    "env": "dev",
+                    "order_id": "stripe-angular-testings"
+                  }
+                }
+              }
+            ],
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_intent",
+                "pastes": [
+                  {
+                    "valueKey": "result.amount",
+                    "pasteKey": "data.amount"
+                  }
+                ],
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_intent",
+                "pastes": [
+                  {
+                    "valueKey": "result.amount",
+                    "pasteKey": "data.amount"
+                  }
+                ],
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.payment_intent",
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.amount",
+                    "pasteKey": "data.amount"
+                  }
+                ],
+                "_api": {
+                  "_id": 350.80000001192093,
+                  "knownTitle": "🧾 List all PaymentIntents"
+                }
+              }
+            ],
+            "_id": 385.40000000596046
+          },
+          {
+            "title": "🧾 List all refunds",
+            "description": "Returns a list of all refunds you’ve previously created. The refunds are returned in sorted order, with the most recent refunds appearing first. For convenience, the 10 most recent refunds are always available by default on the charge object.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/refunds/list"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "refunds"
+            },
+            "data": {
+              "limit": 3
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "data.starting_after"
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.payment_intent",
+                "_api": {
+                  "_id": 367.80000001192093,
+                  "knownTitle": "1️⃣ Retrieve Pay Intent by id"
+                }
+              },
+              {
+                "valueKey": "result.id",
+                "pasteKey": "data.charge",
+                "_api": {
+                  "_id": 365,
+                  "knownTitle": "🆕 Create Charge"
+                }
+              }
+            ],
+            "_id": 384.70000000298023
+          },
+          {
+            "title": "1️⃣ GET refund",
+            "description": "Retrieves the details of an existing refund.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/refunds/retrieve"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "refunds/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 385.40000000596046,
+                  "knownTitle": "🆕 Create Refund"
+                }
+              },
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 384.70000000298023,
+                  "knownTitle": "🧾 List all refunds"
+                }
+              }
+            ],
+            "_id": 385
+          },
+          {
+            "title": "⬆️ Update refund",
+            "description": "Updates the specified refund by setting the values of the parameters passed. Any parameters not provided will be left unchanged.",
+            "links": [
+              {
+                "title": "📕 API docs",
+                "url": "https://stripe.com/docs/api/refunds/update"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "refunds/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "data": {
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "_id": 394.1000000089407
+          }
+        ],
+        "links": [
+          {
+            "title": "📕 API docs",
+            "url": "https://stripe.com/docs/api/refunds"
+          },
+          {
+            "title": "guide",
+            "url": "https://stripe.com/docs/refunds"
+          },
+          {
+            "title": "takes 5-10 business days",
+            "url": "https://stripe.com/docs/refunds#tracing-refunds"
+          }
+        ]
+      },
+      {
+        "icon": "🤝",
+        "title": "Transfers",
+        "description": "A Transfer object is created when you move funds between Stripe accounts as part of Connect.",
+        "apis": [
+          {
+            "title": "🆕 Create Transfer",
+            "link": "https://stripe.com/docs/api/transfers/create",
+            "request": {
+              "method": "POST",
+              "path": "transfers",
+              "headers": {
+                "Stripe-Account": ""
+              },
+              "removeHeaderValues": [
+                ""
+              ]
+            },
+            "data": {
+              "amount": 400,
+              "currency": "usd",
+              "destination": "",
+              "transfer_group": "TEST_ORDER",
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              },
+              "description": "created using stripe-angular demo"
+            },
+            "pastes": [
+              {
+                "pasteKey": "data.destination",
+                "title": "Accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "pasteKey": "data.destination",
+                "title": "Accounts retrieve by id",
+                "valueKey": "data.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "pasteKey": "data.destination",
+                "title": "Account GET",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 325.90000000596046,
+                  "knownTitle": "GET Account"
+                }
+              },
+              {
+                "pasteKey": "data.destination",
+                "title": "Accounts retrieve by id",
+                "valueKey": "result.id",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              },
+              {
+                "pasteKey": "data.source_transaction",
+                "valueKey": "result.id",
+                "title": "created charge",
+                "_api": {
+                  "_id": 365,
+                  "knownTitle": "🆕 Create Charge"
+                }
+              },
+              {
+                "pasteKey": "data.source_transaction",
+                "valueKey": "result.id",
+                "title": "created pay intent",
+                "_api": {
+                  "_id": 328.80000001192093,
+                  "knownTitle": "🆕 Create Pay Intent"
+                }
+              },
+              {
+                "title": "accounts list 1️⃣",
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 326.6000000089407,
+                  "knownTitle": "🧾 List all accounts"
+                }
+              },
+              {
+                "title": "accounts GET",
+                "valueKey": "result.id",
+                "pasteKey": "request.headers.Stripe-Account",
+                "_api": {
+                  "_id": 328.6000000089407,
+                  "knownTitle": "1️⃣ Account retrieve"
+                }
+              }
+            ],
+            "_id": 394.1000000089407
+          },
+          {
+            "title": "🧾 List all transfers",
+            "description": "Returns a list of existing transfers sent to connected accounts. The transfers are returned in sorted order, with the most recently created transfers appearing first.",
+            "request": {
+              "method": "GET",
+              "path": "transfers"
+            },
+            "data": {
+              "limit": 3
+            },
+            "_id": 395.40000000596046
+          },
+          {
+            "title": "1️⃣ Retrieve a transfer",
+            "description": "Retrieves the details of an existing transfer. Supply the unique transfer ID from either a transfer creation request or the transfer list, and Stripe will return the corresponding transfer information.",
+            "request": {
+              "method": "GET",
+              "path": "transfers/:id",
+              "params": {
+                "id": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.id",
+                "_api": {
+                  "_id": 395.40000000596046,
+                  "knownTitle": "🧾 List all transfers"
+                }
+              }
+            ],
+            "_id": 395.40000000596046
+          },
+          {
+            "title": "↩️ 🆕 Create a transfer reversal",
+            "description": "When reversing transfers, you can optionally reverse part of the transfer. You can do so as many times as you wish until the entire transfer has been reversed.",
+            "links": [
+              {
+                "title": "📕 api docs",
+                "url": "https://stripe.com/docs/api/transfer_reversals/create"
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "path": "transfers/:transferId/reversals",
+              "params": {
+                "transferId": ""
+              }
+            },
+            "data": {
+              "amount": 0,
+              "description": "stripe-angular demo",
+              "refund_application_fee": false,
+              "metadata": {
+                "entity_id": "entity_id_abc_123",
+                "env": "dev",
+                "order_id": "stripe-angular-testings"
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.transferId",
+                "pastes": [
+                  {
+                    "pasteKey": "data.amount",
+                    "valueKey": "result.data.0.amount"
+                  }
+                ],
+                "_api": {
+                  "_id": 395.40000000596046,
+                  "knownTitle": "🧾 List all transfers"
+                }
+              }
+            ],
+            "_id": 395.6000000089407
+          },
+          {
+            "title": "↩️ 🧾 List all reversals",
+            "description": "list of the reversals belonging to a specific transfer. Note that the 10 most recent reversals are always available by default on the transfer object.",
+            "links": [
+              {
+                "title": "📕 api docs",
+                "url": "https://stripe.com/docs/api/transfer_reversals/list"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "transfers/:transferId/reversals",
+              "params": {
+                "transferId": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.transferId",
+                "_api": {
+                  "_id": 395.40000000596046,
+                  "knownTitle": "🧾 List all transfers"
+                }
+              }
+            ],
+            "_id": 395.80000001192093
+          },
+          {
+            "title": "↩️ 1️⃣ Retrieve reversal",
+            "description": "By default, you can see the 10 most recent reversals stored directly on the transfer object, but you can also retrieve details about a specific reversal stored on the transfer.",
+            "links": [
+              {
+                "title": "📕 api docs",
+                "url": "https://stripe.com/docs/api/transfer_reversals/retrieve"
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "path": "transfers/:transferId/reversals/:reversalId",
+              "params": {
+                "transferId": "",
+                "reversalId": ""
+              }
+            },
+            "pastes": [
+              {
+                "valueKey": "result.data.0.id",
+                "pasteKey": "request.params.reversalId",
+                "pastes": [
+                  {
+                    "valueKey": "result.data.0.transfer",
+                    "pasteKey": "request.params.transferId"
+                  }
+                ],
+                "_api": {
+                  "_id": 395.80000001192093,
+                  "knownTitle": "↩️ 🧾 List all reversals"
+                }
+              }
+            ],
+            "_id": 396
+          }
+        ],
+        "links": [
+          {
+            "title": "📕 API docs",
+            "url": "https://stripe.com/docs/api/transfers"
+          },
+          {
+            "title": "📦 💵 👤 💰 🛳 multiple charges & transfers",
+            "url": "https://stripe.com/docs/connect/charges-transfers"
+          }
+        ]
+      }
+    ],
+    "description": "Helpful tools ONLY available in this demo by Stripe privateKey"
+  },
+  {
+    "title": "🪝 Webhook Functionality",
+    "apis": [
+      {
+        "title": "🔬 Generate Test Header String",
+        "link": "https://www.npmjs.com/package/stripe#testing-webhook-signing",
+        "hint": "Paste your payload below to encode into a signing secret",
+        "data": {},
+        "_id": 396.1000000089407
+      }
+    ],
+    "description": "Helpful tools ONLY available in this demo by using entered webhookSigningSecret"
+  },
+  {
+    "title": "🏦 Plaid Functionality",
+    "apis": [
+      {
+        "title": "🔗 🪙 Link Token Create",
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "link/token/create"
+        },
+        "links": [
+          {
+            "title": "📕 docs",
+            "url": "https://plaid.com/docs/api/tokens/#linktokencreate"
+          },
+          {
+            "title": "test credentials",
+            "url": "https://plaid.com/docs/sandbox/test-credentials/"
+          }
+        ],
+        "favKeys": [
+          {
+            "valueKey": "result.link_token"
+          }
+        ],
+        "data": {
+          "url": "https://sandbox.plaid.com/link/token/create",
+          "data": {
+            "client_name": "Your application name here",
+            "user": {
+              "client_user_id": "user-or-entity-id-from-your-system"
+            },
+            "products": [
+              "auth"
+            ],
+            "country_codes": [
+              "US"
+            ],
+            "language": "en"
+          }
+        },
+        "_id": 396.1000000089407
+      },
+      {
+        "title": "📢 🪙 Create Public Token",
+        "hint": "🎨 UI javascript Plaid.create( config )",
+        "warn": "⚠️ Demo username/password ➡️ user_good/pass_good",
+        "link": "https://plaid.com/docs/api/tokens/#token-exchange-flow",
+        "data": {
+          "token": "",
+          "env": "sandbox"
+        },
+        "pastes": [
+          {
+            "title": "link_token",
+            "valueKey": "result.link_token",
+            "pasteKey": "data.token",
+            "_api": {
+              "_id": 396.1000000089407,
+              "knownTitle": "🔗 🪙 Link Token Create"
+            }
+          }
+        ],
+        "_id": 396.20000000298023
+      },
+      {
+        "title": "📢 🪙 🤝 Public Token Exchange",
+        "link": "https://plaid.com/docs/api/tokens/#itempublic_tokenexchange",
+        "favKeys": [
+          {
+            "valueKey": "result.access_token"
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "item/public_token/exchange"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/item/public_token/exchange",
+          "data": {
+            "public_token": ""
+          }
+        },
+        "pastes": [
+          {
+            "title": "public_token",
+            "valueKey": "result.public_token",
+            "pasteKey": "data.data.public_token",
+            "_api": {
+              "_id": 396.20000000298023,
+              "knownTitle": "📢 🪙 Create Public Token"
+            }
+          }
+        ],
+        "_id": 396.30000001192093
+      },
+      {
+        "title": "🐠 🏦 ➕ Stripe Bank Create",
+        "link": "https://plaid.com/docs/api/processors/#processorstripebank_account_tokencreate",
+        "favKeys": [
+          {
+            "valueKey": "result.stripe_bank_account_token"
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "processor/stripe/bank_account_token/create"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/processor/stripe/bank_account_token/create",
+          "data": {
+            "access_token": "",
+            "account_id": ""
+          }
+        },
+        "pastes": [
+          {
+            "title": "access_token",
+            "valueKey": "result.access_token",
+            "pasteKey": "data.data.access_token",
+            "_api": {
+              "_id": 396.30000001192093,
+              "knownTitle": "📢 🪙 🤝 Public Token Exchange"
+            }
+          },
+          {
+            "title": "public_token.accounts.0",
+            "valueKey": "result.metadata.accounts.0.id",
+            "pasteKey": "data.data.account_id",
+            "_api": {
+              "_id": 396.20000000298023,
+              "knownTitle": "📢 🪙 Create Public Token"
+            }
+          }
+        ],
+        "_id": 355.20000000298023
+      },
+      {
+        "title": "💸 Get Accounts",
+        "link": "https://plaid.com/docs/api/accounts/#accountsget",
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "accounts/get"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/accounts/get",
+          "data": {
+            "access_token": ""
+          }
+        },
+        "pastes": [
+          {
+            "title": "access_token",
+            "valueKey": "result.access_token",
+            "pasteKey": "data.data.access_token",
+            "_api": {
+              "_id": 396.30000001192093,
+              "knownTitle": "📢 🪙 🤝 Public Token Exchange"
+            }
+          }
+        ],
+        "_id": 396.80000001192093
+      },
+      {
+        "title": "🔗 🪙 GET Link Token",
+        "link": "https://plaid.com/docs/api/tokens/#linktokenget",
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "link/token/get"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/link/token/get",
+          "data": {
+            "link_token": ""
+          }
+        },
+        "pastes": [
+          {
+            "title": "link_token",
+            "valueKey": "result.link_token",
+            "pasteKey": "data.data.link_token",
+            "_api": {
+              "_id": 396.1000000089407,
+              "knownTitle": "🔗 🪙 Link Token Create"
+            }
+          }
+        ],
+        "_id": 396.90000000596046
+      },
+      {
+        "title": "🏦 🆔 auth get",
+        "link": "https://plaid.com/docs/api/products/#authget",
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "auth/get"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/auth/get",
+          "data": {
+            "access_token": ""
+          }
+        },
+        "pastes": [
+          {
+            "title": "access_token",
+            "valueKey": "result.access_token",
+            "pasteKey": "data.access_token",
+            "_api": {
+              "_id": 396.30000001192093,
+              "knownTitle": "📢 🪙 🤝 Public Token Exchange"
+            }
+          }
+        ],
+        "_id": 397.20000000298023
+      },
+      {
+        "title": "Get account balance",
+        "link": "https://plaid.com/docs/api/products/#accountsbalanceget",
+        "request": {
+          "method": "POST",
+          "host": "http://localhost:3000/plaid/",
+          "path": "accounts/balance/get"
+        },
+        "data": {
+          "url": "https://sandbox.plaid.com/accounts/balance/get",
+          "data": {
+            "access_token": ""
+          }
+        },
+        "pastes": [
+          {
+            "valueKey": "result.access_token",
+            "pasteKey": "data.data.access_token",
+            "_api": {
+              "_id": 396.30000001192093,
+              "knownTitle": "📢 🪙 🤝 Public Token Exchange"
+            }
+          }
+        ],
+        "_id": 397.30000001192093
+      }
+    ],
+    "description": "Helpful tools ONLY available in this demo by using entered plaidConfig"
+  }
+]

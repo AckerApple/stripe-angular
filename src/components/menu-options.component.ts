@@ -14,6 +14,7 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
   interval: any
 
   ngAfterViewInit(){
+    console.log(-2)
     this.updatePosition()
     this.interval = setInterval(() => this.updatePosition(), 5000)
   }
@@ -23,6 +24,7 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
   }
 
   updatePosition() {
+    console.log(-1)
     this.handlePosition( this.absElement.nativeElement.firstChild, this.absElement.nativeElement )
   }
 
@@ -39,10 +41,10 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
       dropdown.style.left = '0';
       dropdown.style.right = 'auto';
       dropdown.style.transform = `translateX(${-placeholderRect.x + screenPadding}px)`;
-    } else if (dropdownRightX > window.outerWidth) {
+    } else if (dropdownRightX > window.innerWidth) {
       dropdown.style.left = 'auto';
       dropdown.style.right = '0';
-      dropdown.style.transform = `translateX(${(window.outerWidth - placeholderRightX) - screenPadding}px)`;
+      dropdown.style.transform = `translateX(${(window.innerWidth - placeholderRightX) - screenPadding}px)`;
     }
   }
 }

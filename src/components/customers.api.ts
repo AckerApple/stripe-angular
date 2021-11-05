@@ -26,11 +26,16 @@ export const create_customer: ISimpleRouteEditor = {
   },{
     $api: () => card,
     valueKey: 'result.payment_method.id',
-    paste: (myApi: ISimpleRouteEditor) => {
-      myApi.data.payment_method = card.result.payment_method.id
-      myApi.data.invoice_settings = myApi.data.invoice_settings||{}
-      myApi.data.invoice_settings.default_payment_method = card.result.payment_method.id
-    }
+    pastes: [{
+      valueKey: 'result.payment_method.id',
+      pasteKey: 'data.payment_method',
+    },{
+      valueKey: 'data.invoice_settings',
+      pasteKey: 'data.invoice_settings',
+    }, {
+      valueKey: 'data.invoice_settings.default_payment_method',
+      pasteKey: 'result.payment_method.id',
+    }]
   },{
     $api: () => bank,
     valueKey: 'result.id',
@@ -120,9 +125,17 @@ export const customer_update: ISimpleRouteEditor = {
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
   },{
+    // set default card
     $api: () => card,
     valueKey: 'result.payment_method.card',
-    paste: (thisApi: ISimpleRouteEditor) => Object.assign(thisApi.data, getCustomerUpdatePayMethodPaste(customer_update.data))
+    pasteKey: 'data',
+    pastes: [{
+      pasteKey: 'data.payment_method',
+      valueKey: 'result.payment_method.id',
+    }, {
+      valueKey: 'result.payment_method.id',
+      pasteKey: 'data.invoice_settings.default_payment_method',
+    }]
   }]
 }
 
@@ -153,13 +166,17 @@ export const customer_get: ISimpleRouteEditor = {
 
 export const customer_attach_method: ISimpleRouteEditor = {
   title: '👤 ➡️ 💳 Attach pay method',
-  favKeys: [{valueKey: 'result.id'}],
+  links: [{
+    title: '📕 API docs',
+    url: 'https://stripe.com/docs/api/payment_methods/attach'
+  }],
   request: {
     method: 'POST',
     path: 'payment_methods/:paymentMethodId/attach'
   },
   data: {
-    customer: '', metadata: sample.metadata
+    customer: '',
+    // metadata: sample.metadata // not supported here
   },
   pastes: [{
     $api: () => create_customer,
@@ -373,11 +390,11 @@ export const customer_get_payment_methods: ISimpleRouteEditor = {
     pasteKey: 'data.customer'
   }]
 }
-
+/*
 export function getCustomerUpdatePayMethodPaste(
   customer: any
 ) {
-  const payMethodId = card.result.payment_method?.id
+  const payMethodId = (card as any).result.payment_method?.id
   const clone = {
     ...customer
   }
@@ -386,10 +403,10 @@ export function getCustomerUpdatePayMethodPaste(
   clone.invoice_settings.default_payment_method = payMethodId
   return clone
 }
+*/
 
 export const apis = [
-  create_customer, customer_list_all, customer_get, customer_update, delete_customer,
+  customer_list_all, create_customer, customer_get, customer_update, delete_customer,
   customer_get_payment_methods, customer_attach_method, customer_detach_method,
   customer_attach_source, customer_get_sources, customer_get_source, customer_delete_source,
-
 ]

@@ -2,7 +2,7 @@ import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { ISimpleRouteEditor } from "./typings"
 import { charge } from "./charges.api"
 import { account_get } from "./common.api"
-import { payintent_create } from "./pay_intents.api"
+import { payintent_create, payintent_list } from "./pay_intents.api"
 import { sample } from "./app.component.utils"
 
 export const transfer_create: ISimpleRouteEditor = {
@@ -25,42 +25,38 @@ export const transfer_create: ISimpleRouteEditor = {
     description: 'created using stripe-angular demo',
   },
   pastes: [{
-    pasteKey: 'data.destination',
     $api: () => accounts_list,
-    title: 'Accounts list 1️⃣',
+    pasteKey: 'data.destination',
     valueKey: 'result.data.0.id',
   },{
-    pasteKey: 'data.destination',
     $api: () => accounts_retrieve,
-    title: 'Accounts retrieve by id',
+    pasteKey: 'data.destination',
     valueKey: 'data.id',
   },{
-    pasteKey: 'data.destination',
     $api: () => account_get,
-    title: 'Account GET',
+    pasteKey: 'data.destination',
     valueKey: 'result.id',
   },{
-    pasteKey: 'data.destination',
     $api: () => accounts_retrieve,
-    title: 'Accounts retrieve by id',
+    pasteKey: 'data.destination',
     valueKey: 'result.id',
   },{
     $api: () => charge,
     pasteKey: 'data.source_transaction',
     valueKey: 'result.id',
-    title: 'created charge'
   },{
     $api: () => payintent_create,
     pasteKey: 'data.source_transaction',
-    valueKey: 'result.id',
-    title: 'created pay intent'
+    valueKey: 'result.charges.data.0.id',
   },{
-    title: 'accounts list 1️⃣',
+    $api: () => payintent_list,
+    pasteKey: 'data.source_transaction',
+    valueKey: 'result.data.0.charges.data.0.id',
+  },{
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
-    title: 'accounts GET',
     $api: () => accounts_retrieve,
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'

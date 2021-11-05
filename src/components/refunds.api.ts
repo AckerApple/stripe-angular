@@ -1,4 +1,5 @@
 import { sample } from "./app.component.utils"
+import { charge } from "./charges.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
 import { ISimpleRouteEditor } from "./typings"
 
@@ -63,7 +64,20 @@ export const refunds_list: ISimpleRouteEditor = {
   },
   data: {
     limit: 3
-  }
+  },
+  pastes: [{
+    $api: () => refunds_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.starting_after'
+  }, {
+    $api: () => payintent_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'data.payment_intent'
+  }, {
+    $api: () => charge,
+    valueKey: 'result.id',
+    pasteKey: 'data.charge'
+  }]
 }
 
 export const refunds_update: ISimpleRouteEditor = {

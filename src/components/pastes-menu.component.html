@@ -1,13 +1,13 @@
 <a (click)="showPastes = !showPastes">💠
   <menu-options *ngIf="showPastes" title="quick pastes">
     <ng-container *ngFor="let item of pastes">
-      <ng-container *ngIf="item.api[ item.valueKey ]">
+      <ng-container *ngIf="item.value || (item.api && item.api[ item.valueKey ])">
         <ng-template #option>
           <a
             (click)="pasteByPaste( item )"
-            [title]="item.api[ item.valueKey ]"
+            [title]="item.value || item.api[ item.valueKey ]"
             class="pointer pad-xxs hover-bg-energized text-xxs active-bg-balanced"
-          >{{ item.pasteKey && item.api[item.valueKey] === api[ item.pasteKey ] ? '☑️' : '↙️' }} set <strong>{{item.pasteKey}}</strong> = {{ item.title || item.api.title || item.api[ item.valueKey ] }}</a>
+          >{{ item.pasteKey && (item.value || item.api[item.valueKey]) === api[ item.pasteKey ] ? '☑️' : '↙️' }} set <strong>{{item.pasteKey}}</strong> = {{ item.title || item.value || item.api?.title || item.api[ item.valueKey ] }}</a>
         </ng-template>
       </ng-container>
     </ng-container>

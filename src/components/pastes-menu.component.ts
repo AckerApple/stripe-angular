@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core"
-import { ApiPaste, ISimpleRouteEditor, Paste, PasteMatch, SmartRouteEditor } from "./typings"
+import { ISimpleRouteEditor, Paste, PasteMatch, SmartApiPaste, SmartRouteEditor } from "./typings"
 import { removeValues } from './removeValues.function'
 
 // declare type PasteFav = [string, string, string | ((data: any) => any)]
@@ -8,22 +8,12 @@ import { removeValues } from './removeValues.function'
   selector: 'pastes-menu',
   templateUrl: './pastes-menu.component.html'
 }) export class PastesMenuComponent {
-  @Input() pastes: ApiPaste[]
+  @Input() pastes: SmartApiPaste[]
   @Input() api: SmartRouteEditor
 
   showPastes?: boolean
 
-  /*readyPastes: ApiPaste[] = []
-  ngOnChanges( _changes:any ){
-    this.readyPastes.length = 0
-    this.pastes?.forEach(item => {
-      if (item.api[ item.valueKey ]) {
-        this.readyPastes.push(item)
-      }
-    })
-  }*/
-
-  pasteByPaste(item: ApiPaste) {
+  pasteByPaste(item: SmartApiPaste) {
     try {
       this.pasteFrom(item, item.api || item.$api())
     } catch (err) {
@@ -39,11 +29,6 @@ import { removeValues } from './removeValues.function'
 export function pasteFromOnto(
   pasteConfig: Paste, apiFrom: ISimpleRouteEditor, apiOnto: ISimpleRouteEditor
 ) {
-  // paste by function
-  if (pasteConfig.paste) {
-    (pasteConfig.paste as any)(apiOnto, apiFrom)
-  }
-
   if (pasteConfig.pasteKey) {
     pasteKeyFromOnto(pasteConfig.pasteKey, pasteConfig, apiFrom, apiOnto)
   }
@@ -78,8 +63,6 @@ export function removeKeys(keys: string[], cleanData: any) {
     return varName
   })
 
-  // console.log('removeKeys', keys, cleanData, deepClone, deepClone.id, deepClone.individual?.id)
-
   return deepClone
 }
 
@@ -93,7 +76,7 @@ function pasteKeyFromOnto(
   // validate to paste
   if( item.valueMatches) {
     const valid = pasteValueFromMatches(item, from)
-    // console.log('can we paste', keyName, value, valid)
+
     if (!valid) {
       return
     }
@@ -106,8 +89,12 @@ function getPasteValueFrom(item: Paste | PasteMatch, from: any) {
   const asPaste = item as Paste
   const valueKey = asPaste.pasteValueKey || item.valueKey
 
-  let value = asPaste.value || valueKey.split('.')
-    .reduce((all, now) => all ? all[now] : undefined, from)
+  let value = asPaste.value
+
+  if (valueKey) {
+    value = valueKey.split('.')
+      .reduce((all, now) => all ? all[now] : undefined, from)
+  }
 
   if (asPaste.removeKeys) {
     value = removeKeys(asPaste.removeKeys, value) // remove keys from value

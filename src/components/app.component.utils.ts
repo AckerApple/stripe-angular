@@ -204,7 +204,7 @@ function getLocalStorage() {
 export function getProjectLocalStorage(): localSchema {
   const storage = getUrlStorage() || getLocalStorage() || {}
 
-  storage.key = storage.key || localStorage?.stripeAnguarKey || "pk_test_5JZuHhxsinNGc5JanVWWKSKq"
+  storage.key = storage.key || localStorage?.stripeAnguarKey;
   storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
   storage.privateKeys = storage.privateKeys || []
   storage.publicKeys = storage.publicKeys || []
@@ -318,4 +318,51 @@ export function getStringIdentifiers(string: String): RegExpMatchArray[] {
 export const stringInterpolations = /\$\{\s*[^\}]+\s*\}/g;
 export function getStringInterpolations(string: String): RegExpMatchArray[] {
   return [...string.matchAll(stringInterpolations)]
+}
+
+export function flatten<T>(
+  data: T, response = data,
+  {
+    flatKey = "", onlyLastKey = false, seen = [], original = data
+  }: {
+    flatKey?: string,
+    onlyLastKey?: boolean, // text key value display (instead of x.y.z just get z)
+    seen?: any[], original?: T
+  } = {}
+) {
+  const entries = Object.entries(data)
+  for (const [key, value] of entries) {
+    let newFlatKey;
+    if (!isNaN(parseInt(key)) && flatKey.includes("[]")) {
+      newFlatKey = (flatKey.charAt(flatKey.length - 1) == "." ? flatKey.slice(0, -1) : flatKey) + `[${key}]`;
+    } else if (!flatKey.includes(".") && flatKey.length > 0) {
+      newFlatKey = `${flatKey}.${key}`;
+    } else {
+      newFlatKey = `${flatKey}${key}`;
+    }
+
+    const isValObject = typeof value === "object" && value !== null && Object.keys(value).length > 0
+    if (isValObject && !seen.includes(value) && value !== original) {
+      seen.push(value)
+      flatten(value, response, {flatKey: `${newFlatKey}.`, onlyLastKey, seen, original});
+    } else {
+      if(onlyLastKey){
+        newFlatKey = newFlatKey.split(".").pop();
+      }
+      if (Array.isArray(response)) {
+        response.push({
+          [newFlatKey.replace("[]", "")]: value
+        });
+      } else {
+        response[newFlatKey.replace("[]", "")] = value;
+      }
+    }
+  }
+  return response;
+}
+
+export function removeFlats<T>(data: T): T {
+  const removes = Object.keys(data).filter(key => key.indexOf('.')>=0)
+  removes.forEach(key => delete data[key])
+  return data
 }

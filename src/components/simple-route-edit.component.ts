@@ -1,6 +1,5 @@
 import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
-import { flatten, removeFlats } from "./app.component"
-import { changeKey, copyText } from "./app.component.utils"
+import { flatten, removeFlats, changeKey, copyText } from "./app.component.utils"
 import { SmartRouteEditor } from "./typings"
 
 @Component({
@@ -66,6 +65,6 @@ import { SmartRouteEditor } from "./typings"
       )
     }
 
-    this.config.runtimeMessages = messages
+    this.config.smarts.runtimeMessages = messages
   }
 }

@@ -1,6 +1,8 @@
 import { ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { payintent_create, payintent_list } from "./pay_intents.api"
+import { bank } from "./banks.api"
+import { menu } from "./getApis.function"
 
 export const balance_get: ISimpleRouteEditor = {
   title: '💵 Balance',
@@ -85,9 +87,25 @@ const application_fees_get: ISimpleRouteEditor = {
   }
 }
 
+export const token_retrieve: ISimpleRouteEditor = {
+  title: '1️⃣ GET Token',
+  description: 'Retrieves the token with the given ID',
+  link: 'https://stripe.com/docs/api/tokens/retrieve',
+  request:{
+    method: 'GET',
+    path: 'tokens/:id'
+  },
+  pastes: [{
+    $api: () => menu.bank,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.id'
+  }]
+}
+
 export const apis = [
   account_get,
   balance_get,
+  token_retrieve,
   prices_get,
   disputes_get,
   application_fees_get,

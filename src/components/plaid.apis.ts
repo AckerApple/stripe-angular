@@ -5,10 +5,15 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
   request: {
     method: 'POST',
     host: 'http://localhost:3000/plaid/',
-    // host: 'https://sandbox.plaid.com/',
     path: 'link/token/create'
   },
-  link: 'https://plaid.com/docs/api/tokens/#linktokencreate',
+  links: [{
+    title: '📕 docs',
+    url: 'https://plaid.com/docs/api/tokens/#linktokencreate'
+  }, {
+    title: 'test credentials',
+    url: 'https://plaid.com/docs/sandbox/test-credentials/'
+  }],
   favKeys: [{valueKey: 'result.link_token'}],
   data: {
     url: 'https://sandbox.plaid.com/link/token/create',
@@ -29,7 +34,8 @@ const plaid_linkTokenCreate: ISimpleRouteEditor = {
 
 export const plaid_createPublicToken: ISimpleRouteEditor = {
   title: '📢 🪙 Create Public Token',
-  hint: 'javascript Plaid.create( config )',
+  // description: '',
+  hint: '🎨 UI javascript Plaid.create( config )',
   warn: '⚠️ Demo username/password ➡️ user_good/pass_good',
   link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
   // favKeys: [{valueKey: 'result.public_token'},{valueKey: 'result.metadata.accounts.0.id'}],
@@ -163,6 +169,28 @@ const getAuth: ISimpleRouteEditor = {
   }]
 }
 
+const getAccountBalance: ISimpleRouteEditor = {
+  title: 'Get account balance',
+  link: 'https://plaid.com/docs/api/products/#accountsbalanceget',
+  request: {
+    method: 'POST',
+    host: 'http://localhost:3000/plaid/',
+    path: 'accounts/balance/get',
+  },
+  data: {
+    url: 'https://sandbox.plaid.com/accounts/balance/get',
+    data: {
+      access_token: ""
+    }
+  },
+  pastes: [{
+    $api: () => plaid_publicTokenExchange,
+    valueKey: 'result.access_token',
+    pasteKey: 'data.data.access_token'
+  }]
+}
+
+
 /*const getProcessorIdentity: ISimpleRouteEditor = {
   title: '🏦 🆔 get processor identity',
   link: 'https://plaid.com/docs/api/processors/#processoridentityget',
@@ -180,10 +208,14 @@ const getAuth: ISimpleRouteEditor = {
 }*/
 
 export const serverSide = {
-  plaid_publicTokenExchange,
-  plaid_linkTokenCreate,
-  plaid_stripeBankCreate,
+  plaid_linkTokenCreate, // 1
+  plaid_createPublicToken, // 2
+  plaid_publicTokenExchange, // 3
+  plaid_stripeBankCreate, // 4
   getAccounts,
   getLinkToken,
   getAuth,
+  getAccountBalance,
 }
+
+export const plaidApis: ISimpleRouteEditor[] = Object.values(serverSide)

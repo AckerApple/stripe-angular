@@ -1,9 +1,10 @@
 import { sample } from "./app.component.utils"
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, payment_method_get, source_get } from "./cards.api"
-import { create_customer, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
-import { refunds_list, refunds_retrieve } from "./refunds.api"
+import { create_customer, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
+import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
+import { removeValues } from "./removeValues.function"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
@@ -44,6 +45,7 @@ export const payintent_create: ISimpleRouteEditor = {
     metadata: sample.metadata,
     statement_descriptor: 'stripe-angular data',
     transfer_group: 'TEST_ORDER',
+    // payment_method: 'pm_card_visa',
     // application_fee_amount: 0, // only usable with transfer
   },
   examples: [{
@@ -96,6 +98,14 @@ export const payintent_create: ISimpleRouteEditor = {
     }
   }],
   pastes: [{
+    title: 'success test card',
+    pasteKey: 'data.payment_method',
+    value: 'pm_card_visa'
+  },{
+    title: 'will be disputed',
+    pasteKey: 'data.payment_method',
+    value: 'pm_card_createDispute'
+  },{
     $api: () => accounts_retrieve,
     title: 'Accounts retrieve by id',
     pasteKey: 'data.transfer_data.destination',
@@ -159,7 +169,6 @@ export const payintent_create: ISimpleRouteEditor = {
     pasteKey: 'data.payment_method',
   },{
     $api: () => customer_get_sources,
-    title: '🧾 👤 Customer list sources 1️⃣',
     valueKey: 'result.data.0.customer',
     pasteKey: 'data.customer',
     pastes: [{
@@ -215,6 +224,20 @@ export const payintent_create: ISimpleRouteEditor = {
     $api: () => accounts_retrieve,
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
+  }, {
+    $api: () => payintent_retrieve,
+    valueKey: 'result',
+    pasteKey: 'data',
+    removeKeys: ['id', 'object', 'amount_capturable', 'amount_received', 'application', 'canceled_at', 'cancellation_reason', 'charges', 'client_secret', 'created', 'last_payment_error', 'livemode', 'next_action', 'review', 'status'],
+    removeValues: [null]
+  }, {
+    $api: () => customer_attach_method,
+    valueKey: 'result.id',
+    pasteKey: 'data.payment_method',
+    pastes: [{
+      valueKey: 'result.customer',
+      pasteKey: 'data.customer',
+    }]
   }]
 }
 
@@ -267,15 +290,34 @@ export const payintent_retrieve: ISimpleRouteEditor = {
     $api: () => refunds_retrieve,
     valueKey: 'result.payment_intent',
     pasteKey: 'request.params.id'
+  }, {
+    $api: () => payintent_confirm,
+    pasteKey: 'request.params.id',
+    valueKey: 'result.id',
+  }, {
+    $api: () => refund_create,
+    valueKey: 'result.payment_intent',
+    pasteKey: 'request.params.id'
   }]
 }
 
 export const payintent_confirm: ISimpleRouteEditor = {
   title: '👍 Confirm Pay Intent',
-  link: 'https://stripe.com/docs/api/payment_intents/confirm',
+  description: 'If a pay intent requires verification',
+  links: [{
+    title: '3d-secure',
+    url: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent'
+  }, {
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/payment_intents/confirm'
+  }],
   request: {
     method: 'POST',
     path: 'payment_intents/:id/confirm'
+  },
+  data: {
+    client_secret: "",
+    return_url: window.location.href
   },
   pastes: [{
     $api: () => payintent_create,
@@ -286,6 +328,15 @@ export const payintent_confirm: ISimpleRouteEditor = {
     $api: () => payintent_list,
     pasteKey: 'request.params.id',
     valueKey: 'result.data.0.id'
+  }, {
+    title: 'xxx',
+    $api: () => payintent_retrieve,
+    pasteKey: 'request.params.id',
+    valueKey: 'result.id',
+    valueMatches: [{
+      expression: 'requires_confirmation',
+      valueKey: 'result.status'
+    }]
   }]
 }
 
@@ -297,8 +348,11 @@ export const payintent_capture: ISimpleRouteEditor = {
     path: 'payment_intents/:id/capture'
   },
   pastes: [{
+    $api: () => payintent_retrieve,
+    pasteKey: 'request.params.id',
+    valueKey: 'result.id',
+  },{
     $api: () => payintent_create,
-    title: '🆕 Created pay intent',
     pasteKey: 'request.params.id',
     valueKey: 'result.id',
   }, {
@@ -435,3 +489,16 @@ export const apis = [
   payintent_capture,
   payintent_cancel,
 ]
+
+export const payintents: ApiGroup = {
+  icon: '🧧',
+  title: 'Pay Intents', apis,
+  description: 'A PaymentIntent guides you through the process of collecting a payment from your customer.',
+  links: [{
+    title: '📕 API docs',
+    url: 'https://stripe.com/docs/api/payment_intents'
+  },{
+    title: '📦 💵 👤 💰 🛳 multiple charges & transfers',
+    url: 'https://stripe.com/docs/connect/charges-transfers'
+  }],
+}

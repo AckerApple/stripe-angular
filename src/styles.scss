@@ -38,3 +38,12 @@ body {
 @media only screen and (max-width: 800px) {
   .tool-wrap {min-width: 80vw}
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color:#EEE
+  }
+  button, input, textarea {
+    background-color: #222;color:#EEE
+  }
+}

@@ -1,9 +1,24 @@
 import { EventEmitter } from "@angular/core"
 import { Subject } from 'rxjs'
-import { ApiGroup } from "./apis"
+
+export interface SmartApiGroup extends ApiGroup {
+  groups?: SmartApiGroup[]
+  apis?: SmartRouteEditor[]
+}
+
+export interface ApiGroup {
+  title: string
+  icon?: string // emoji
+  links?: LinkRef[]
+  description?: string
+  groups?: ApiGroup[]
+
+  apis?: ISimpleRouteEditor[]
+}
 
 export interface RouteRequest {
   params?: {[name: string]: string}
+  query?: {[name: string]: string}
   method: string
   host?: string // base url example https://sandbox.plaid.com/
   path: string,
@@ -13,28 +28,27 @@ export interface RouteRequest {
 }
 
 interface RelatedApi {
-  api:SmartRouteEditor
+  api: SmartRouteEditor
   relation: Paste
   title?: string // maybe deprecated
   group?: ApiGroup
-}
 
-export interface SmartRouteEditor extends ISimpleRouteEditor {
-  load: number
-  $result: Subject<any>
-  resultAt?: number
-  error?: any
-  $send: EventEmitter<{[index:string]: any}>
-  related: RelatedApi[]
-  runtimeMessages: ApiMessage[]
+  // part of smart route
+  show?: boolean
 }
 
 export interface ApiPaste extends Paste {
-  $api: () => ISimpleRouteEditor | SmartRouteEditor // default is current api
   title?: string
-  // titlePrepend?: string // Intended to appear in front of dynamic title
 
-  // deprecated? (maybe not, this is runtime edition)
+  _api?: {
+    _id: number, knownTitle: string
+  }
+
+  // TODO: deprecate this in favor of identifier
+  $api?: () => ISimpleRouteEditor | SmartRouteEditor // default is current api
+}
+
+export interface SmartApiPaste extends ApiPaste {
   api?: SmartRouteEditor // ISimpleRouteEditor // default is current api
 }
 
@@ -66,7 +80,7 @@ export interface Paste {
 
   pastes?: Paste[] // sub pastes (paste two things for one)
 
-  paste?: (thisApi: ISimpleRouteEditor) => any
+  // paste?: (thisApi: ISimpleRouteEditor) => any
   removeKeys?: string[] // ex: {balance, secret, ...keepTheRest}
   removeValues?: any[] // deletes any values with null
 }
@@ -86,7 +100,6 @@ export interface ISimpleRouteEditor {
   examples?: {[index:string]: any}[]
 
   // last result
-  result?: {[index:string]: any} // Output data. Runtime data. For request, its the response body
   pastes?: ApiPaste[]
 
   messages?: ApiMessage[]
@@ -100,4 +113,23 @@ export interface ISimpleRouteEditor {
     valueKey: string
     get?: (data: any) => any
   }[] // ['link_token']
+}
+
+export interface ToolSmarts {
+  smartAt?: number // prevents being made smart twice which will corrupt if done twice
+  pastes: SmartApiPaste[]
+  related: RelatedApi[]
+  runtimeMessages: ApiMessage[]
+  resultAt?: number
+  $result: Subject<any>
+  load: number
+  $send: EventEmitter<{[index:string]: any}>
+}
+
+export interface SmartRouteEditor extends ISimpleRouteEditor {
+  _id: number
+  error?: any
+  result?: {[index:string]: any} // Output data. Runtime data. For request, its the response body
+
+  smarts: ToolSmarts
 }

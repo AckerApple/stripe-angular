@@ -1,6 +1,6 @@
 <div class="tool-wrap flex-stacked flex-1">
   <div class="flex-wrap flex-valign-center">
-    <div (click)="showForm = !showForm" class="flex-1 cursor-pointer">
+    <div (click)="showForm = !showForm" class="flex-1" [class.cursor-pointer]="allowHide">
       <strong class="margin-0 pad-0 text-white">
         <label for="card-like-element">
           {{api.title}}
@@ -15,9 +15,9 @@
       </span>
 
       <!-- 💠 pastes -->
-      <ng-container *ngIf="showForm && api.pastes?.length">
+      <ng-container *ngIf="(!allowHide || showForm) && api.pastes?.length">
         <div class="flex-1 flex-right">
-          <pastes-menu [api]="api" [pastes]="api.pastes"></pastes-menu>
+          <pastes-menu [api]="api" [pastes]="api.smarts.pastes"></pastes-menu>
         </div>
       </ng-container>
 
@@ -25,11 +25,11 @@
 
     <div *ngIf="api.description" class="text-xxs opacity-60">{{api.description}}</div>
 
-    <a *ngIf="!showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
+    <a *ngIf="allowHide && !showForm" class="opacity-half block text-center pad-smx bg-grey radius-10"
       (click)="showForm = !showForm" [class.bg-info]="api.result"
     >show</a>
 
-    <ng-container *ngIf="showForm">
+    <ng-container *ngIf="!allowHide || showForm">
       <simple-route-edit [config]="api" [(format)]="format" (formatChange)="formatChange.emit($event)">
         <ng-template #requestHeaderItems>
           <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
