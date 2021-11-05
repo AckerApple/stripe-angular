@@ -4,6 +4,7 @@ import { payintent_create, payintent_list } from "./pay_intents.api"
 import { bank } from "./banks.api"
 import { menu } from "./getApis.function"
 import { transfer_create } from "./transfers.api"
+import { payouts_post } from "./payouts.api"
 
 export const balance_get: ISimpleRouteEditor = {
   title: '💵 Balance',
@@ -43,6 +44,10 @@ export const balance_get: ISimpleRouteEditor = {
     $api: () => payintent_list,
     title: '💵 GET destination ♣️account balance',
     valueKey: 'result.data.0.transfer_data.destination',
+    pasteKey: 'request.headers.Stripe-Account'
+  }, {
+    $api: () => payouts_post,
+    valueKey: 'request.headers.Stripe-Account',
     pasteKey: 'request.headers.Stripe-Account'
   }]
 }

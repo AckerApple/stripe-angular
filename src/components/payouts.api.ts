@@ -1,4 +1,5 @@
 import { accounts_external_list, accounts_list, accounts_retrieve } from "./accounts.api"
+import { balance_get } from "./common.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const payouts_list: ISimpleRouteEditor = {
@@ -51,6 +52,9 @@ export const payouts_post: ISimpleRouteEditor = {
   },{
     url: 'https://stripe.com/docs/connect/testing-verification#blocked-payouts',
     title: 'testing blocked payouts'
+  }, {
+    url: 'https://stripe.com/docs/connect/instant-payouts#instant-payouts',
+    title: 'Instant Payouts'
   }],
   request: {
     method: 'POST',
@@ -65,6 +69,10 @@ export const payouts_post: ISimpleRouteEditor = {
     statement_descriptor: 'stripe-angular payout demo'
   },
   pastes: [{
+    title: 'instant payout',
+    pasteKey: 'data.method',
+    value: 'instant',
+  }, {
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.headers.Stripe-Account'
@@ -82,6 +90,10 @@ export const payouts_post: ISimpleRouteEditor = {
       pasteKey: 'data.source_type',
       value: 'bank_account'
     }]
+  }, {
+    $api: () => balance_get,
+    valueKey: 'request.headers.Stripe-Account',
+    pasteKey: 'request.headers.Stripe-Account'
   }]
 }
 
