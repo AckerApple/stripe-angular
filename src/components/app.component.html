@@ -100,9 +100,9 @@
                 </div>
                 <ng-container *ngIf="storage.plaid.client_id">
                   <!-- only UI works if no local server -->
-                  <div *ngIf="!localServerActive" class="pad border-blue border-3">
-                    <ng-container *ngTemplateOutlet="warnNoLocalServer"></ng-container>
+                  <div *ngIf="!localServerActive" class="pad">
                     <tool-wrap class="flex1 flex-stacked" [api]="api.plaid_createPublicToken" [(format)]="storage.format"></tool-wrap>
+                    <ng-container *ngTemplateOutlet="warnNoLocalServer"></ng-container>
                   </div>
 
                   <!-- display everything when server available -->
