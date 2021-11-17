@@ -35,6 +35,7 @@ export interface localSchema {
   privateKeys: KeyInfo[] // switchable keys
   publicKeys: KeyInfo[] // switchable keys
   webhookSigningSecret?: string
+
   saveRequestsLocal?: boolean
   saveKeyLocally?: boolean
   savePrivateKeyLocally?: boolean
@@ -50,6 +51,9 @@ export interface localSchema {
   plaid?: {
     client_id?: string,
     secret?: string,
+
+    clientIds?: string[],
+    secrets?: string[],
   }
 
   temp: {[index: string]: any}
@@ -206,8 +210,13 @@ export function getProjectLocalStorage(): localSchema {
 
   storage.key = storage.key || localStorage?.stripeAnguarKey;
   storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
+
   storage.privateKeys = storage.privateKeys || []
   storage.publicKeys = storage.publicKeys || []
+  storage.plaid = storage.plaid || {}
+  storage.plaid.clientIds = storage.plaid.clientIds || []
+  storage.plaid.secrets = storage.plaid.secrets || []
+
 
   storage.requests = storage.requests || {
     // passed along when token or sources created

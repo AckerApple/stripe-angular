@@ -37,7 +37,13 @@ export const plaid_createPublicToken: ISimpleRouteEditor = {
   // description: '',
   hint: '🎨 UI javascript Plaid.create( config )',
   warn: '⚠️ Demo username/password ➡️ user_good/pass_good',
-  link: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
+  links: [{
+    url: 'https://plaid.com/docs/api/tokens/#token-exchange-flow',
+    title: 'docs'
+  }, {
+    url: 'https://plaid.com/docs/auth/coverage/testing/',
+    title: 'micro auth flows'
+  }],
   // favKeys: [{valueKey: 'result.public_token'},{valueKey: 'result.metadata.accounts.0.id'}],
   data:{
     token: '',
@@ -165,7 +171,29 @@ const getAuth: ISimpleRouteEditor = {
     title: 'access_token',
     $api: () => plaid_publicTokenExchange,
     valueKey: 'result.access_token',
-    pasteKey: 'data.access_token'
+    pasteKey: 'data.data.access_token'
+  }]
+}
+
+const getItem: ISimpleRouteEditor = {
+  title: '🏦 item get',
+  link: 'https://plaid.com/docs/api/items/#itemget',
+  request: {
+    method: 'POST',
+    host: 'http://localhost:3000/plaid/',
+    path: 'item/get'
+  },
+  data: {
+    url: 'https://sandbox.plaid.com/item/get',
+    data: {
+      "access_token": ""
+    }
+  },
+  pastes: [{
+    title: 'access_token',
+    $api: () => plaid_publicTokenExchange,
+    valueKey: 'result.access_token',
+    pasteKey: 'data.data.access_token'
   }]
 }
 
@@ -215,6 +243,7 @@ export const serverSide = {
   getAccounts,
   getLinkToken,
   getAuth,
+  getItem,
   getAccountBalance,
 }
 

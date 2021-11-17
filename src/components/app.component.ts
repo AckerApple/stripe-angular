@@ -35,7 +35,7 @@ declare const Plaid: any
   loaded: boolean
   sending: boolean // when stripe.js is communicating card/bank form entry
   cardComplete = false
-  enableServerMode?: boolean = storage.privateKey ? true : false;
+  enableServerMode?: boolean = storage.savePrivateKeyLocally || storage.privateKey ? true : false;
 
   showPrivateKeyChange?: boolean
   showServerMethods?: boolean
@@ -195,6 +195,10 @@ declare const Plaid: any
       this.lastError = err
       return Promise.reject(err)
     }
+
+    if (typeof Plaid === 'undefined') {
+      console.warn('🏦 Plaid JS has not been loaded!')
+    }
   }
 
   async tryLoadStripe() {
@@ -212,20 +216,28 @@ declare const Plaid: any
     this.storage.key = this.tempPublishableKey || this.storage.key
 
     this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
+    console.log('tempPrivateKey', this.tempPrivateKey)
     this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
+    console.log('this.storage.privateKey', this.storage.privateKey)
 
     const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
     if (storeLocally) {
-      const cloneStorage = this.getSaveableStorage()
-      const storageString = JSON.stringify(cloneStorage)
-      localStorage.stripeAngular = storageString
-
-      cloneStorage.privateKey = this.storage.privateKey?.length // never show
-
-      // this.log('saved to localStorage', cloneStorage)
+      this.write()
+    } else {
+      this.log('skipped writing local storage')
     }
 
+
     return this.tryLoadStripe()
+  }
+
+  write() {
+    const cloneStorage = this.getSaveableStorage()
+    console.log('cloneStorage', cloneStorage)
+    const storageString = JSON.stringify(cloneStorage)
+    localStorage.stripeAngular = storageString
+    // cloneStorage.privateKey = this.storage.privateKey?.length // never show
+    // this.log('saved to localStorage', cloneStorage)
   }
 
   loadStripe(): Promise<stripe.Stripe> {
@@ -243,15 +255,18 @@ declare const Plaid: any
 
     if (!cloneStorage.saveKeyLocally) {
       delete cloneStorage.key
+      console.log(0)
     }
 
     if (!cloneStorage.savePrivateKeyLocally) {
       delete cloneStorage.privateKey
       delete storage.webhookSigningSecret
+      console.log(1)
     }
 
     if (!cloneStorage.saveRequestsLocal) {
       delete cloneStorage.requests
+      console.log(2)
     }
 
     return cloneStorage
@@ -437,11 +452,11 @@ declare const Plaid: any
         delete this.storage.webhookSigningSecret
         // delete this.tempPublishableKey
         this.save()
-        return this.enableServerMode = false
+        return this.storage.savePrivateKeyLocally = this.enableServerMode = false
       }
     }
 
-    this.enableServerMode = true
+    this.storage.savePrivateKeyLocally = this.enableServerMode = true
   }
 
   stripeRouteRequest(route: SmartRouteEditor, post: any) {
@@ -480,6 +495,7 @@ declare const Plaid: any
   }
 
   plaidCreateModal(configs: any) {
+    this.log('🏦 Creating Plaid modal...')
     ++this.api.plaid_createPublicToken.smarts.load
 
     const pasteConfig = {
@@ -493,6 +509,10 @@ declare const Plaid: any
         this.api.plaid_createPublicToken.smarts.$result.next(result)
       },
       onExit: (err, metadata) => {
+        if (err) {
+          console.error(err)
+        }
+
         --this.api.plaid_createPublicToken.smarts.load
         this.api.plaid_createPublicToken.error = err
         const result = {metadata}
@@ -506,6 +526,7 @@ declare const Plaid: any
     }
 
     Plaid.create({...pasteConfig, ...configs}).open()
+    this.log('🏦 Plaid modal created')
   }
 
   // a source or token converted into a customer
@@ -645,6 +666,11 @@ export function requestByRouter(
 ) {
   delete route.result
   delete route.error
+
+  if (!route.request) {
+    return console.warn('not an api request')
+  }
+
   ++route.smarts.load
 
   let url: string = options.baseUrl || route.request.host || ''

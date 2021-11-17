@@ -154,7 +154,7 @@
         </div>
       </div>
 
-      <div *ngIf="storage.privateKey" class="flex1">
+      <div *ngIf="storage.privateKey || storage.privateKeys" class="flex1">
         <strong>🔐 Private Key</strong>
         <div class="flex">
           <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
@@ -226,6 +226,20 @@
           <strong>🔐 Switchable Private Keys</strong>
           <div>
             <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🏦 🆔 Switchable Plaid IDs</strong>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.clientIds}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🏦 👂 Switchable secrets</strong>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.secrets}"></ng-container>
           </div>
         </div>
       </ng-container>
@@ -844,7 +858,13 @@ npm run start
         <div class="flex-1 max-width-800">
           <div class="flex-apart">
             <strong>🆔 CLIENT_ID</strong>
-            <a href="https://dashboard.plaid.com/team/keys" target="_blank" class="text-xxs text-white">plaid keys</a>
+
+            <a href="https://dashboard.plaid.com/team/keys"
+              target="_blank" class="text-xxs text-white no-a-style"
+            >🔑🔗</a>
+            <key-changer [keys]="storage.plaid.clientIds" [(value)]="storage.plaid.client_id"
+              (valueChange) = "save()"
+            ></key-changer>
           </div>
           <div>
             <input type="password" class="width-full"
@@ -856,12 +876,17 @@ npm run start
           <a *ngIf="storage.plaid.client_id?.length > 12" class="hover-bg-positive active-bg-balanced text-xs opacity-third pad-xxs pos-abs"
             (click)="copyText(storage.plaid.client_id)"
           >
-            {{ storage.plaid.client_id | slice : 0 : 6 }}{{ 'x'.repeat((storage.plaid.client_id | slice : 8 : storage.plaid.client_id.length).length) }}
+            {{ storage.plaid.client_id }}
           </a>
         </div>
 
         <div class="flex-1 max-width-800">
-          <strong>👂 SECRET</strong>
+          <div class="flex-apart">
+            <strong>👂 SECRET</strong>
+            <key-changer [keys]="storage.plaid.secrets" [(value)]="storage.plaid.secret"
+              (valueChange) = "save()"
+            ></key-changer>
+          </div>
           <div>
             <input type="password" class="width-full"
               (keyup)="storage.plaid.secret=$event.target.value;"
