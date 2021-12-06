@@ -375,3 +375,23 @@ export function removeFlats<T>(data: T): T {
   removes.forEach(key => delete data[key])
   return data
 }
+
+export function getSaveableStorage(storage: any) {
+  const cloneStorage = JSON.parse(JSON.stringify(storage))
+  delete cloneStorage.temp
+
+  if (!cloneStorage.saveKeyLocally) {
+    delete cloneStorage.key
+  }
+
+  if (!cloneStorage.savePrivateKeyLocally) {
+    delete cloneStorage.privateKey
+    delete cloneStorage.webhookSigningSecret
+  }
+
+  if (!cloneStorage.saveRequestsLocal) {
+    delete cloneStorage.requests
+  }
+
+  return cloneStorage
+}

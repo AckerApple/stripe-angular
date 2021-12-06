@@ -34,6 +34,9 @@ export const apiGroups: ApiGroup[] = [{
   links: [{
     url : 'https://stripe.com/docs/api/charges',
     title: '📕 API docs'
+  }, {
+    url: 'https://stripe.com/docs/refunds#tracing-refunds',
+    title: 'tracing & failed refunds'
   }]
 },customers, disputes, payintents,{
   icon: '💸',

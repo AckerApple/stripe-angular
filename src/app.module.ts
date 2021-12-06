@@ -12,6 +12,7 @@ import { PastesMenuComponent } from "./components/pastes-menu.component"
 import { MenuOptionsComponent } from "./components/menu-options.component"
 import { KeyChangerComponent } from "./components/key-changer.component"
 import { ToolWrapComponent } from "./components/tool-wrap.component"
+import { SettingsComponent } from "./components/settings.component"
 export { AppComponent } from "./components/app.component"
 import { StripeModule } from "stripe-angular"
 
@@ -25,6 +26,8 @@ import { StripeModule } from "stripe-angular"
     PastesMenuComponent,
     MenuOptionsComponent,
     KeyChangerComponent,
+    SettingsComponent,
+
     DumpComponent,
 
     GroupToolsComponent,

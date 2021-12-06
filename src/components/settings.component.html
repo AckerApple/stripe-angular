@@ -1,0 +1,249 @@
+<div *ngIf="storage.key && !edit else storageForm">
+  <div class="flex flex-wrap text-smx child-margin">
+    <div class="flex-1">
+      <strong>🗝 Publishable Key</strong>
+      <div class="flex">
+        <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
+        >{{ storage.key | slice : 0 : 16 }}...</div>
+        <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
+          (valueChange) = "tempPublishableKey=$event;save()"
+        ></key-changer>
+      </div>
+    </div>
+
+    <div *ngIf="storage.privateKey || storage.privateKeys" class="flex1">
+      <strong>🔐 Private Key</strong>
+      <div class="flex">
+        <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
+        <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
+      </div>
+    </div>
+
+    <div *ngIf="storage.webhookSigningSecret" class="flex-1">
+      <strong>🪝 Webhook Signing Secret</strong>
+      <div class="hover-highlight cursor-pointer"
+      (click)="copyText(storage.webhookSigningSecret)"
+      >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="flex flex-wrap child-margin-xxs">
+    <button type="button" (click)="copyShareUrl()" class="flex1 hover-bg-positive active-bg-balanced"
+    >✍️ copy share url</button>
+
+    <button type="button" class="flex1 hover-bg-positive active-bg-balanced"
+      (click)="edit = !edit"
+    >🔧 edit</button>
+  </div>
+</div>
+
+<ng-template #storageForm>
+  <form action="javascript:" (submit)="save();edit=false">
+    <div class="flex-wrap flex-top child-margin-h-smx child-margin-v">
+      <div class="flex-1">
+        <div>
+          <div class="flex-apart flex-valign-center">
+            <strong>👁 🗝 publishableKey</strong>
+            <a class="text-xxs text-white" target="_blank"
+              href="https://dashboard.stripe.com/test/apikeys"
+            >stripe keys</a>
+            <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
+              (valueChange) = "tempPublishableKey=$event;save()"
+            ></key-changer>
+          </div>
+          <div>
+            <input style="width:100%" placeholder="Stripe UI public key"
+              (keyup)="tempPublishableKey=$event.target.value"
+              [value]="tempPublishableKey || null"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="enableServerMode" style="align-items: center">
+          <input
+            type="checkbox" name="enableServerMode" id="enableServerMode"
+            (change)="toggleServerMode()"
+            [checked] = "enableServerMode"
+          />
+          <span> 🔗 enable server functionality</span>
+        </label>
+      </div>
+
+      <div *ngIf="enableServerMode || storage.privateKey" class="flex-1">
+        <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
+      </div>
+
+      <div *ngIf="enableServerMode || storage.webhookSigningSecret" class="flex-1">
+        <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
+      </div>
+
+      <ng-container *ngIf="enableServerMode || storage.saveKeyLocally">
+        <div class="width-full"></div>
+
+        <div class="flex1">
+          <strong>👁 🗝 Switchable Public Keys</strong>
+          <small class="block opacity-half text-xxxs text-center">
+            Store multiple keys for convenient switching
+          </small>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.publicKeys}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🔐 Switchable Private Keys</strong>
+          <small class="block opacity-half text-xxxs text-center">
+            Store multiple keys for convenient switching
+          </small>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🏦 🆔 Switchable Plaid IDs</strong>
+          <small class="block opacity-half text-xxxs text-center">
+            Store multiple keys for convenient switching
+          </small>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.clientIds}"></ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="enableServerMode" class="flex1">
+          <strong>🏦 👂 Switchable secrets</strong>
+          <small class="block opacity-half text-xxxs text-center">
+            Store multiple keys for convenient switching
+          </small>
+          <div>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.secrets}"></ng-container>
+          </div>
+        </div>
+      </ng-container>
+
+      <div>
+        <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- reusable metadata -->
+    <div>
+      <div>
+        <strong>
+          <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
+            <input
+              type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
+              (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
+              [checked] = "storage.saveRequestsLocal"
+            /> Reuse metadata in all requests
+          </label>
+        </strong>
+      </div>
+      <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
+        (change)="updateStorageMeta($event.target.value)"
+      >{{ storage.metadata | json }}</textArea>
+    </div>
+
+    <br />
+
+    <!-- Removed 8/16/21 to prevent revealing sensitive info
+      <div>
+        <strong>Your local storage</strong>
+        <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
+        >{{ storage | json }}</textArea>
+      </div>
+    -->
+
+    <div class="flex-wrap child-margin-xxs flex-center child-flex-1">
+      <button *ngIf="storage.privateKey || storage.key"
+        type="button" (click)="deleteLocalStorage()"
+        class="hover-bg-positive active-bg-balanced bg-black text-white"
+      >🗑 clear localStorage</button>
+
+      <button type="button" (click)="edit = !edit"
+        class="bg-grey text-white hover-bg-positive active-bg-balanced"
+      >❌ cancel</button>
+
+      <button type="submit" class="bg-balanced hover-bg-positive active-bg-energized">💾 save</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #editPrivateKey>
+  <div class="flex-apart">
+    <strong
+      title="This demo offers helpful server functionality"
+    >🔐 Private Key</strong>
+    <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
+  </div>
+  <div>
+    <input type="password"
+      (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
+      [value]="tempPrivateKey"
+      style="width:100%"
+    />
+  </div>
+  <div class="pos-rel text-xxs opacity-70">
+    <div class="pos-abs">
+      <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<!-- 💠 -->
+<ng-template #privateKeyChange>
+  <key-changer [keys]="storage.privateKeys" [(value)]="storage.privateKey"
+    (valueChange) = "tempPrivateKey=$event;save()"
+  ></key-changer>
+</ng-template>
+
+<ng-template #maskedPrivateKey>
+  <div class="hover-highlight cursor-pointer"
+    (click)="copyText(storage.privateKey)"
+  >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
+</ng-template>
+
+<ng-template #keysInputArray let-array="array">
+  <div class="flex-valign-bottom">
+    <div class="flex-1" *ngIf="array.length">
+      <div *ngFor="let item of array; let index=index" class="flex-valign-center child-margin-xxs">
+        <input type="text" maxLength="125" [value]="item.title || ''"
+          (keyup)="item.title=$event.target.value" placeholder="key title"
+          class="flex-1"
+        /><span>=</span>
+        <input type="password" placeholder="🔑 value" class="flex-1"
+          (keyup)="item.value=$event.target.value"
+          [value]="item.value || ''"
+          style="width:100%"
+        />
+        <a class="text-smx" (click)="array.splice(index, 1)">❌</a>
+      </div>
+    </div>
+    <button type="button" class="hover-bg-positive active-bg-dark radius-10 bg-balanced margin-xxs"
+      [class.flex-1]="!array.length"
+      (click)="array.push({})"
+    >+</button>
+  </div>
+</ng-template>
+
+<ng-template #editWebhookSecret>
+  <strong>🪝 webhookSigningSecret</strong>
+  <div>
+    <input type="password"
+      (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"
+      [value]="tempWebhookSigningSecret"
+      style="width:100%"
+    />
+  </div>
+  <div class="pos-rel">
+    <small class="pos-abs opacity-half text-xxs">
+      This demo offers helpful webhook server functionality
+    </small>
+  </div>
+</ng-template>

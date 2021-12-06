@@ -10,7 +10,7 @@ import { allGroups } from './apis'
 
 import {
   RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers, flatten, removeFlats,
+  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers, flatten, removeFlats, getSaveableStorage,
 } from "./app.component.utils"
 import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
 import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
@@ -35,16 +35,8 @@ declare const Plaid: any
   loaded: boolean
   sending: boolean // when stripe.js is communicating card/bank form entry
   cardComplete = false
-  enableServerMode?: boolean = storage.savePrivateKeyLocally || storage.privateKey ? true : false;
 
-  showPrivateKeyChange?: boolean
-  showServerMethods?: boolean
-  showWebhookMethods?: boolean
-  showPlaidMethods: boolean
-
-  tempPublishableKey = storage.key
   tempWebhookSigningSecret = storage.webhookSigningSecret
-  tempPrivateKey = storage.privateKey// localStorage?.stripeAngularPrivateKey;
 
   storage: localSchema = storage
   localStorage = localStorage
@@ -209,16 +201,7 @@ declare const Plaid: any
     const saveKeyLocally = this.storage.saveKeyLocally
     const savePrivateKeyLocally = this.storage.savePrivateKeyLocally
 
-    if (this.tempPublishableKey && this.storage.key !== this.tempPublishableKey) {
-      this.loaded = false // cause everything Stripe to redraw
-    }
-
-    this.storage.key = this.tempPublishableKey || this.storage.key
-
     this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
-    console.log('tempPrivateKey', this.tempPrivateKey)
-    this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
-    console.log('this.storage.privateKey', this.storage.privateKey)
 
     const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
     if (storeLocally) {
@@ -227,12 +210,11 @@ declare const Plaid: any
       this.log('skipped writing local storage')
     }
 
-
     return this.tryLoadStripe()
   }
 
   write() {
-    const cloneStorage = this.getSaveableStorage()
+    const cloneStorage = getSaveableStorage(this.storage)
     console.log('cloneStorage', cloneStorage)
     const storageString = JSON.stringify(cloneStorage)
     localStorage.stripeAngular = storageString
@@ -249,29 +231,6 @@ declare const Plaid: any
     });
   }
 
-  getSaveableStorage() {
-    const cloneStorage = JSON.parse(JSON.stringify(this.storage))
-    delete cloneStorage.temp
-
-    if (!cloneStorage.saveKeyLocally) {
-      delete cloneStorage.key
-      console.log(0)
-    }
-
-    if (!cloneStorage.savePrivateKeyLocally) {
-      delete cloneStorage.privateKey
-      delete storage.webhookSigningSecret
-      console.log(1)
-    }
-
-    if (!cloneStorage.saveRequestsLocal) {
-      delete cloneStorage.requests
-      console.log(2)
-    }
-
-    return cloneStorage
-  }
-
   deleteLocalStorage() {
     localStorage.stripeAngular = null
     delete localStorage.stripeAngular
@@ -281,24 +240,6 @@ declare const Plaid: any
     localStorage.stripeAngularKey = null;
     delete localStorage.stripeAngularPrivateKey;
     delete localStorage.stripeAngularKey;
-  }
-
-  copyShareUrl() {
-    const storage = this.getSaveableStorage()
-
-    // do let next client auto assume saving these
-    delete storage.saveRequestsLocal
-    delete storage.savePrivateKeyLocally
-    delete storage.saveKeyLocally
-
-    if (storage.privateKey && !confirm('include private server key?')) {
-      delete storage.privateKey
-    }
-
-    const storageString = encodeURI(JSON.stringify(storage))
-    const url = window.location.href.split('?').shift() + '?storage=' + storageString
-    copyText(url)
-    alert('copied')
   }
 
   changeSourceRequest(data:string){
@@ -439,24 +380,6 @@ declare const Plaid: any
 
   log(...args) {
     console.log(...args);
-  }
-
-  toggleServerMode() {
-    if (this.enableServerMode) {
-      if (confirm('Confirm to delete secrets and private keys')) {
-        delete this.showServerMethods
-        localStorage.stripeAngularPrivateKey = null
-        delete localStorage.stripeAngularPrivateKey
-        delete this.tempPrivateKey
-        delete this.storage.privateKey
-        delete this.storage.webhookSigningSecret
-        // delete this.tempPublishableKey
-        this.save()
-        return this.storage.savePrivateKeyLocally = this.enableServerMode = false
-      }
-    }
-
-    this.storage.savePrivateKeyLocally = this.enableServerMode = true
   }
 
   stripeRouteRequest(route: SmartRouteEditor, post: any) {
