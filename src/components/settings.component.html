@@ -20,7 +20,7 @@
     </div>
 
     <div *ngIf="storage.webhookSigningSecret" class="flex-1">
-      <div class="flex-apart">
+      <div>
         <strong>🪝 Webhook Signing Secret</strong>
         <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
           (valueChange) = "storage.webhookSigningSecret=tempWebhookSigningSecret=$event;save()"

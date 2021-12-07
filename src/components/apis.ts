@@ -95,6 +95,9 @@ export const webhookGroup = {
   links: [{
     title: 'webhooks signatures',
     url: 'https://stripe.com/docs/webhooks/signatures'
+  }, {
+    title: 'event types',
+    url: 'https://stripe.com/docs/api/events/types'
   }],
 }
 
