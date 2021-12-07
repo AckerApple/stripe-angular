@@ -6,6 +6,7 @@ import { KeyInfo } from './app.component.utils'
   templateUrl: './key-changer.component.html'
 }) export class KeyChangerComponent {
   @Input() keys: KeyInfo[]
+
   @Input() value: string
   @Output() valueChange: EventEmitter<string> = new EventEmitter()
 }

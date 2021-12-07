@@ -6,9 +6,13 @@ import { copyText, getSaveableStorage, localSchema } from './app.component.utils
   templateUrl: './settings.component.html'
 }) export class SettingsComponent {
   @Input() storage: localSchema
+
   @Input() edit: boolean
+  @Output() editChange: EventEmitter<boolean> = new EventEmitter()
+
   @Output() saveChange: EventEmitter<void> = new EventEmitter()
 
+  tempWebhookSigningSecret: string
   tempPublishableKey: string
   tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
   enableServerMode?: boolean
@@ -18,6 +22,7 @@ import { copyText, getSaveableStorage, localSchema } from './app.component.utils
   ngOnInit(){
     this.tempPrivateKey = this.storage.privateKey// localStorage?.stripeAngularPrivateKey;
     this.tempPublishableKey = this.storage.key
+    this.tempWebhookSigningSecret = this.storage.webhookSigningSecret
     this.enableServerMode = this.storage.savePrivateKeyLocally || this.storage.privateKey ? true : false;
   }
 

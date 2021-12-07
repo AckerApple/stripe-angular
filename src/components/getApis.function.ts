@@ -8,14 +8,23 @@ import { payintent_create, payintent_retrieve } from "./pay_intents.api"
 
 export const testHeader: ISimpleRouteEditor = {
   title: '🔬 Generate Test Header String',
-  link: 'https://www.npmjs.com/package/stripe#testing-webhook-signing',
+  links: [{
+    url: 'https://www.npmjs.com/package/stripe#testing-webhook-signing',
+    title: '📕 api docs'
+  },{
+    title: 'webhooks signatures',
+    url: 'https://stripe.com/docs/webhooks/signatures'
+  }],
   hint: 'Paste your payload below to encode into a signing secret',
   data: {}
 }
 
 const confirm_pay_intent: ISimpleRouteEditor = {
   title: '👍 UI Confirm Pay Intent',
-  link: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/payments/3d-secure#confirm-payment-intent'
+  }],
   description: 'If a pay intent requires verification, use the form below',
   favKeys: [{
     valueKey: 'result.id'

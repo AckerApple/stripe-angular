@@ -20,9 +20,14 @@
     </div>
 
     <div *ngIf="storage.webhookSigningSecret" class="flex-1">
-      <strong>🪝 Webhook Signing Secret</strong>
+      <div class="flex-apart">
+        <strong>🪝 Webhook Signing Secret</strong>
+        <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
+          (valueChange) = "storage.webhookSigningSecret=tempWebhookSigningSecret=$event;save()"
+        ></key-changer>
+      </div>
       <div class="hover-highlight cursor-pointer"
-      (click)="copyText(storage.webhookSigningSecret)"
+        (click)="copyText(storage.webhookSigningSecret)"
       >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
     </div>
   </div>
@@ -34,14 +39,14 @@
     >✍️ copy share url</button>
 
     <button type="button" class="flex1 hover-bg-positive active-bg-balanced"
-      (click)="edit = !edit"
+      (click)="editChange.emit(edit = !edit)"
     >🔧 edit</button>
   </div>
 </div>
 
 <ng-template #storageForm>
-  <form action="javascript:" (submit)="save();edit=false">
-    <div class="flex-wrap flex-top child-margin-h-smx child-margin-v">
+  <form (submit)="save();editChange.emit(edit=false)">
+    <div class="flex-wrap flex-top child-margin">
       <div class="flex-1">
         <div>
           <div class="flex-apart flex-valign-center">
@@ -104,25 +109,40 @@
           </div>
         </div>
 
-        <div *ngIf="enableServerMode" class="flex1">
-          <strong>🏦 🆔 Switchable Plaid IDs</strong>
+        <div class="flex1">
+          <strong>🪝 Switchable Webhook Secrets</strong>
           <small class="block opacity-half text-xxxs text-center">
             Store multiple keys for convenient switching
           </small>
           <div>
-            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.clientIds}"></ng-container>
+            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.webhookSigningSecrets}"></ng-container>
           </div>
         </div>
 
-        <div *ngIf="enableServerMode" class="flex1">
-          <strong>🏦 👂 Switchable secrets</strong>
-          <small class="block opacity-half text-xxxs text-center">
-            Store multiple keys for convenient switching
-          </small>
-          <div>
-            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.secrets}"></ng-container>
+        <fieldset class="radius-10">
+          <legend>🏦 Plaid</legend>
+          <div class="flex-wrap flex-top child-margin">
+            <div class="flex1">
+              <strong>🆔 Switchable Plaid CLIENT_IDs</strong>
+              <small class="block opacity-half text-xxxs text-center">
+                Store multiple keys for convenient switching
+              </small>
+              <div>
+                <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.clientIds}"></ng-container>
+              </div>
+            </div>
+
+            <div *ngIf="enableServerMode" class="flex1">
+              <strong>👂 Switchable secrets</strong>
+              <small class="block opacity-half text-xxxs text-center">
+                Store multiple keys for convenient switching
+              </small>
+              <div>
+                <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.secrets}"></ng-container>
+              </div>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </ng-container>
 
       <div>
@@ -166,7 +186,7 @@
         class="hover-bg-positive active-bg-balanced bg-black text-white"
       >🗑 clear localStorage</button>
 
-      <button type="button" (click)="edit = !edit"
+      <button type="button" (click)="editChange.emit(edit = !edit)"
         class="bg-grey text-white hover-bg-positive active-bg-balanced"
       >❌ cancel</button>
 
@@ -211,7 +231,7 @@
 
 <ng-template #keysInputArray let-array="array">
   <div class="flex-valign-bottom">
-    <div class="flex-1" *ngIf="array.length">
+    <div class="flex-1" *ngIf="array?.length">
       <div *ngFor="let item of array; let index=index" class="flex-valign-center child-margin-xxs">
         <input type="text" maxLength="125" [value]="item.title || ''"
           (keyup)="item.title=$event.target.value" placeholder="key title"
@@ -226,24 +246,29 @@
       </div>
     </div>
     <button type="button" class="hover-bg-positive active-bg-dark radius-10 bg-balanced margin-xxs"
-      [class.flex-1]="!array.length"
+      [class.flex-1]="!array?.length"
       (click)="array.push({})"
     >+</button>
   </div>
 </ng-template>
 
 <ng-template #editWebhookSecret>
-  <strong>🪝 webhookSigningSecret</strong>
+  <div class="flex-apart">
+    <strong>🪝 webhookSigningSecret</strong>
+    <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
+      (valueChange) = "tempWebhookSigningSecret=$event;save()"
+    ></key-changer>
+  </div>
   <div>
     <input type="password"
-      (keyup)="tempWebhookSigningSecret=$event.target.value;log('tempWebhookSigningSecret length update' + tempWebhookSigningSecret.length)"
+      (keyup)="tempWebhookSigningSecret=$event.target.value"
       [value]="tempWebhookSigningSecret"
       style="width:100%"
     />
-  </div>
-  <div class="pos-rel">
-    <small class="pos-abs opacity-half text-xxs">
-      This demo offers helpful webhook server functionality
-    </small>
+    <div class="pos-rel text-xxs opacity-70">
+      <div class="pos-abs">
+        {{ tempWebhookSigningSecret | slice : 0 : 8 }}*****************{{ tempWebhookSigningSecret | slice : -6 }}
+      </div>
+    </div>
   </div>
 </ng-template>

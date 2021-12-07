@@ -19,21 +19,6 @@
     <!-- list of groups to choose from -->
     <ng-container *ngTemplateOutlet="innerGroupsDisplay;context:{groups:groups, scope:scope, level:level, parentGroup:parentGroup, parentScope:parentScope}"></ng-container>
 
-    <!-- a selected groups additional links -->
-    <div *ngIf="parentGroup && !parentScope.showApi && !scope.showGroup && parentGroup?.links?.length"
-      class="text-xs pad-top-xxs flex-center opacity-50 hover-opacity-70 bg-white width-full"
-    >
-      <div class="text-dark pad-h text-center">
-        <small class="opacity-70">🔗 Additional resources</small>
-        <div class="flex-valign-center flex-center child-margin">
-          <small *ngFor="let item of parentGroup.links" class="underline">
-            <a [href]="item.url" class="no-a-style" target="_blank"
-            >{{item.title}}</a>
-          </small>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- list of apis within currently selected group -->
@@ -47,6 +32,21 @@
     <ng-template #groupBodyDefault>
       <ng-container *ngTemplateOutlet="apiListItems;context:{group:scope.showGroup, scope:scope, level:level+1}"></ng-container>
     </ng-template>
+
+    <!-- a selected groups additional links -->
+    <div *ngIf="scope.showGroup && !scope.showApi && scope.showGroup?.links?.length"
+      class="text-xs margin-xxs flex-center opacity-50 hover-opacity-70 bg-white width-full"
+    >
+      <div class="text-dark pad-h text-center">
+        <small class="opacity-70">🔗 Additional resources</small>
+        <div class="flex-valign-center flex-center child-margin">
+          <small *ngFor="let item of scope.showGroup.links" class="underline">
+            <a [href]="item.url" class="no-a-style" target="_blank"
+            >{{item.title}}</a>
+          </small>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- recursive groups -->

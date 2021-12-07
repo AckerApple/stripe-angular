@@ -14,7 +14,6 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
   interval: any
 
   ngAfterViewInit(){
-    console.log(-2)
     this.updatePosition()
     this.interval = setInterval(() => this.updatePosition(), 5000)
   }
@@ -24,7 +23,6 @@ import { Component, ContentChild, ContentChildren, ElementRef, EventEmitter, Inp
   }
 
   updatePosition() {
-    console.log(-1)
     this.handlePosition( this.absElement.nativeElement.firstChild, this.absElement.nativeElement )
   }
 

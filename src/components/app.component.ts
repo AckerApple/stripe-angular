@@ -36,8 +36,6 @@ declare const Plaid: any
   sending: boolean // when stripe.js is communicating card/bank form entry
   cardComplete = false
 
-  tempWebhookSigningSecret = storage.webhookSigningSecret
-
   storage: localSchema = storage
   localStorage = localStorage
 
@@ -201,25 +199,21 @@ declare const Plaid: any
     const saveKeyLocally = this.storage.saveKeyLocally
     const savePrivateKeyLocally = this.storage.savePrivateKeyLocally
 
-    this.storage.webhookSigningSecret = this.tempWebhookSigningSecret || this.storage.webhookSigningSecret
-
     const storeLocally = saveKeyLocally || savePrivateKeyLocally || this.storage.saveRequestsLocal
     if (storeLocally) {
       this.write()
+      this.log('💾 wrote to localStorage')
     } else {
-      this.log('skipped writing local storage')
+      this.log('⏭ skipped writing localStorage')
     }
 
     return this.tryLoadStripe()
   }
 
-  write() {
+  write(): void {
     const cloneStorage = getSaveableStorage(this.storage)
-    console.log('cloneStorage', cloneStorage)
     const storageString = JSON.stringify(cloneStorage)
     localStorage.stripeAngular = storageString
-    // cloneStorage.privateKey = this.storage.privateKey?.length // never show
-    // this.log('saved to localStorage', cloneStorage)
   }
 
   loadStripe(): Promise<stripe.Stripe> {

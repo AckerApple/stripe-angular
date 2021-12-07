@@ -91,13 +91,21 @@ export const stripeGroup = {
 export const webhookGroup = {
   title: '🪝 Webhook Functionality',
   apis: [ testHeader ],
-  description: 'Helpful tools ONLY available in this demo by using entered webhookSigningSecret'
+  description: 'Helpful tools ONLY available in this demo by using entered webhookSigningSecret',
+  links: [{
+    title: 'webhooks signatures',
+    url: 'https://stripe.com/docs/webhooks/signatures'
+  }],
 }
 
 export const plaidGroup = {
   title: '🏦 Plaid Functionality',
   apis: plaidApis,
-  description: 'Helpful tools ONLY available in this demo by using entered plaidConfig'
+  description: 'Helpful tools ONLY available in this demo by using entered plaidConfig',
+  links: [{
+    title: '🎛 login dashboard',
+    url: 'https://dashboard.plaid.com/overview'
+  }]
 }
 
 export const allGroups: ApiGroup[] = [stripeGroup, webhookGroup, plaidGroup]

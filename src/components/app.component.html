@@ -26,9 +26,9 @@
         <div class="flex-wrap flex-center">
           <div class="tool-wrap flex1">
             <h3 class="margin-0 text-left text-white">⚙️ Settings</h3>
-            <div class="pad text-left flex-1 radius-5" style="background-color:#888;">
-              <p class="text-xs opacity-80">Settings <b>required</b> to properly interact with this tool</p>
-              <settings [storage]="storage" [edit]="changekey" (save)="save()"></settings>
+            <div class="text-left flex-1 radius-5" style="background-color:#888;">
+              <p class="pad text-xs opacity-80">Settings <b>required</b> to properly interact with this tool</p>
+              <settings [storage]="storage" [(edit)]="changekey" (saveChange)="save()"></settings>
             </div>
           </div>
 

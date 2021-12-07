@@ -4,7 +4,7 @@
     <ng-container *ngFor="let item of keys">
       <ng-template #option>
         <a class="border-bottom border-grey pad-xs hover-bg-energized"
-          (click)="valueChange.emit(item.value);show=false;"
+          (click)="valueChange.emit(value=item.value);show=false;"
           [class.bg-warning]="value===item.value"
           [title] = "(item.value | slice : 0 : 5) + '*****************' + (item.value | slice : -4)"
         >
