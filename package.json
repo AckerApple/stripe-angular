@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "0.0.36",
+  "version": "0.0.39",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1100.6",
     "@angular/common": "^11.0.7",
+    "@angular/cli": "^11.0.7",
     "@angular/compiler": "^11.0.7",
     "@angular/compiler-cli": "^11.0.7",
     "@angular/core": "^11.0.7",

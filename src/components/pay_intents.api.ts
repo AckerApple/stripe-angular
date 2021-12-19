@@ -5,6 +5,7 @@ import { card, payment_method_get, source_get } from "./cards.api"
 import { create_customer, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
 import { removeValues } from "./removeValues.function"
+import { bank } from "./banks.api"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
@@ -237,6 +238,21 @@ export const payintent_create: ISimpleRouteEditor = {
       valueKey: 'result.customer',
       pasteKey: 'data.customer',
     }]
+  },{
+    title: 'ach_debit',
+    pasteKey: 'data.payment_method_types',
+    value: ["ach_debit"],
+    removeKeys: ['setup_future_usage']
+  },{
+    $api: ()=> bank,
+    valueKey: 'result.bank_account.id',
+    pasteKey: 'request.params.bank_token',
+    title: 'bank token',
+    pastes: [{
+      pasteKey: 'data.payment_method_types',
+      value: ["ach_debit"],  
+    }],
+    removeKeys: ['setup_future_usage']
   }]
 }
 
