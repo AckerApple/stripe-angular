@@ -6,19 +6,19 @@ import { getApis } from './getApis.function'
 
 // TODO: end up with apis.json
 import { allGroups } from './apis'
-//import * as allGroups from './apis.json'
+import { localSchema, storage } from './storage'
+import { request, requestByRouter, RequestOptions, RouterRequestOptions } from './request.utils'
+// TODO: import * as allGroups from './apis.json'
 
 import {
-  RequestOptions, request, sample, localSchema, getProjectLocalStorage,
-  copyText, tryParse, stripeServer, generateTestHeaderString, changeKey, stringInterpolations, stringIdentifiers, flatten, removeFlats, getSaveableStorage,
+  sample, copyText, tryParse, stripeServer, changeKey, flatten, removeFlats, getSaveableStorage,
 } from "./app.component.utils"
+import { generateTestHeaderString } from "./webhook.utils"
 import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
 import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { create_customer } from "./customers.api"
 import { card } from "./cards.api"
 import { links } from "./links"
-
-const storage: localSchema = getProjectLocalStorage()
 
 declare const Plaid: any
 
@@ -128,6 +128,7 @@ declare const Plaid: any
 
     this.api.confirm_pay_intent.smarts.$send.subscribe(data => this.confirmPayIntent())
     this.api.testHeader.smarts.$send.subscribe(data => this.createTestHeader(data))
+    this.api.webhookPost.smarts.$send.subscribe(data => this.sendWebhookPost(data))
 
     // listen to results to flatten
     Object.values(this.api).forEach(api => this.subApi(api))
@@ -149,6 +150,29 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
+  }
+
+  sendWebhookPost(data: any) {
+    const stripeHeader = this.createTestHeader(data)
+
+    const requestOptions: RequestOptions = {
+      url: storage.webhookServer,
+      headers: {
+        "stripe-signature": stripeHeader
+      }
+    }
+    
+    const options: RouterRequestOptions = {
+      // post: data,
+      json: data,
+      baseUrl: storage.webhookServer,
+      request: requestOptions,
+    }
+    // options.request.authorizationBearer = options.privateKey
+
+    console.log('options', options)
+
+    return requestByRouter(this.api.webhookPost, options)
   }
 
   downloadAllGroupsJson() {
@@ -187,7 +211,7 @@ declare const Plaid: any
     }
 
     if (typeof Plaid === 'undefined') {
-      console.warn('🏦 Plaid JS has not been loaded!')
+      console.warn('🟠 🏦 Plaid JS has not been loaded!')
     }
   }
 
@@ -292,20 +316,22 @@ declare const Plaid: any
       this.localServerActive = res?.name === 'stripe-angular'
     )
     .catch(() => {
-      console.warn('Connection to local server unavailable')
+      console.warn('🟠 Connection to local server unavailable')
       this.localServerActive = false
     })
   }
 
-  createTestHeader(data: any) {
+  createTestHeader(data: any): string {
     const payload = JSON.stringify(data)
     const result = generateTestHeaderString({
       payload, secret: this.storage.webhookSigningSecret
     })
     // const result = stripe.webhooks.generateTestHeaderString(data)
     this.api.testHeader.result = {result}
+    return result
   }
 
+  /** crawls all data points that may contain metadata and converts to set metadata */
   defaultMetadata(meta: Record<string, any>) {
     storage.requests.source.metadata = meta
     storage.requests.paymentMethod.metadata = meta
@@ -325,10 +351,14 @@ declare const Plaid: any
       }
     }
 
-    const applyMeta = api => {
+    const applyMeta = (api: SmartRouteEditor) => {
       if (api.examples) {
         api.examples.map(x => x.data).forEach(metaCheck)
       }
+      
+      if (api.smarts?.pastes) {
+        api.smarts.pastes.map(x => x.value).forEach(metaCheck)
+    }
 
       metaCheck(api.data)
     }
@@ -338,9 +368,12 @@ declare const Plaid: any
         group.groups.forEach(applyGroupMetadata)
       }
 
-      group.apis.forEach(applyMeta)
+      if (group.apis) {
+        group.apis.forEach(applyMeta)
+      }
     }
-    this.apiGroups.forEach(applyGroupMetadata)
+    // this.apiGroups.forEach(applyGroupMetadata)
+    this.allGroups.forEach(applyGroupMetadata)
 
     this.extraData.metadata = meta;
     (this.api.bank.data as any).metadata = meta
@@ -427,7 +460,7 @@ declare const Plaid: any
       },
       onExit: (err, metadata) => {
         if (err) {
-          console.error(err)
+          console.error('🔴 err', err)
         }
 
         --this.api.plaid_createPublicToken.smarts.load
@@ -477,11 +510,6 @@ declare const Plaid: any
       .then(result => bank.verifyResponse = tryParse(result))
   }
 
-
-  updateStorageMeta(stringData: string) {
-    this.storage.metadata = JSON.parse(stringData)
-  }
-
   setCardElements(element: any) {
     this.cardElement = element
     this.log('card mounted')
@@ -521,137 +549,6 @@ export interface CardsData {
   token?:any
   source?:any
   payment_method?: stripe.paymentMethod.PaymentMethod
-}
-
-export interface RouterRequestOptions {
-  baseUrl?: string
-  post?: any,
-  json?: any,
-  id?: string,
-  query?: Record<string, string | number>
-  request?: RequestOptions
-}
-
-function resultSetter(
-  route: SmartRouteEditor
-): (res: any) => SmartRouteEditor {
-  return (res) => {
-    const parsed = tryParse(res)
-    route.smarts.resultAt = Date.now()
-
-    if (parsed.error) {
-      route.error = parsed.error
-      throw parsed.error
-    }
-
-    delete route.error
-    route.result = parsed
-    route.smarts.$result.next(route)
-
-    return route
-  }
-}
-
-function replaceStringVars(url: string, data: any): {url:string, data: any} {
-  // ${interpolations}
-  const regexp = stringInterpolations
-  const array = [...url.matchAll(regexp)]
-  for (let index = array.length - 1; index >= 0; --index) {
-    const result = array[index]
-    const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
-    const value = data[key]
-    // delete data[key] // remove from body data
-    url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
-  }
-
-  // :identifiers
-  const idRegexp = stringIdentifiers
-  const idArray = [...url.matchAll(idRegexp)]
-  for (let index = idArray.length - 1; index >= 0; --index) {
-    const result = idArray[index]
-    const key = result[0].slice(2, result[0].length).trim() // remove :
-    const value = data[key]
-    url = url.slice(0, result.index+1) + value + url.slice(result.index + result[0].length, url.length)
-  }
-
-  return {url, data}
-}
-
-export function requestByRouter(
-  route: SmartRouteEditor,
-  options: RouterRequestOptions
-) {
-  delete route.result
-  delete route.error
-
-  if (!route.request) {
-    return console.warn('not an api request')
-  }
-
-  ++route.smarts.load
-
-  let url: string = options.baseUrl || route.request.host || ''
-
-  if (options.id) {
-    const idSearch = /\$\{\s*id\s*\}/.exec(route.request.path)
-    if (idSearch.length > 0) {
-      url = url + route.request.path.slice(0, idSearch.index) + options.id + route.request.path.slice(idSearch.index + idSearch[0].length, url.length)
-    } else {
-      url = url + options.id
-    }
-  } else {
-    url = url + route.request.path
-  }
-
-  const rawData = options.post || options.json || route.data
-  const data = rawData ? JSON.parse(JSON.stringify(rawData)) : {} // clone
-
-  const params = route.request.params
-  const replaced = replaceStringVars(url, params)
-  url = replaced.url
-
-  let headers = route.request.headers
-
-  if (route.request.removeHeaderValues) {
-    headers = JSON.parse(JSON.stringify(headers)) // clone before deletes occur
-    Object.entries(headers).forEach(([key, value]) => {
-      if (route.request.removeHeaderValues.includes(value)) {
-        delete headers[key]
-      }
-    })
-  }
-
-  const reqOptions: RequestOptions = {
-    url, method: route.request.method, headers,
-    authorizationBearer: options.request?.authorizationBearer,
-  }
-
-  if (options.post) {
-    reqOptions.post = data
-  }
-
-  if (options.json) {
-    reqOptions.json = data
-  }
-
-  // GET convert POST to query params
-  if (route.request.method === 'GET' && reqOptions.post) {
-    options.query = reqOptions.post
-  }
-
-  if (options.query) {
-    const queryString = Object.keys(options.query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${options.query[key]}`,'')
-    reqOptions.url = reqOptions.url + '?' + queryString
-  }
-
-  return request(reqOptions)
-    .then(resultSetter(route))
-    .catch(err => {
-      route.error = err
-      console.error('err', err)
-      return Promise.reject(err)
-    })
-    .finally(() => --route.smarts.load)
 }
 
 interface StripeRouterRequestOptions extends RouterRequestOptions {

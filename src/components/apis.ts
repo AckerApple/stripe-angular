@@ -9,9 +9,9 @@ import { apis as refundApis } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { apis as bankApis } from "./banks.api"
 import { apis as cardApis } from "./cards.api"
+import { webhookGroup } from "./webhook.apis"
 import { ApiGroup } from "./typings"
 import { plaidApis } from "./plaid.apis"
-import { testHeader } from './getApis.function'
 
 const customers: ApiGroup = {
   icon: '👤',
@@ -86,19 +86,6 @@ export const stripeGroup = {
   title: '🐠 Stripe Functionality',
   groups: apiGroups,
   description: 'Helpful tools ONLY available in this demo by Stripe privateKey'
-}
-
-export const webhookGroup = {
-  title: '🪝 Webhook Functionality',
-  apis: [ testHeader ],
-  description: 'Helpful tools ONLY available in this demo by using entered webhookSigningSecret',
-  links: [{
-    title: 'webhooks signatures',
-    url: 'https://stripe.com/docs/webhooks/signatures'
-  }, {
-    title: 'event types',
-    url: 'https://stripe.com/docs/api/events/types'
-  }],
 }
 
 export const plaidGroup = {

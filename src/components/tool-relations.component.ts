@@ -1,6 +1,6 @@
 import { EventEmitter, Output, Component, Input } from "@angular/core"
-import { localSchema } from "./app.component.utils"
 import { pasteFromOnto } from "./pastes-menu.component"
+import { localSchema } from "./storage"
 import { Paste, SmartRouteEditor } from "./typings"
 
 @Component({

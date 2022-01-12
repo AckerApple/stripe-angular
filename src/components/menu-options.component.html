@@ -1,8 +1,8 @@
 <span #absElement class="pos-rel flex-valign-center flex-center">
   <div class="pos-abs bg-white text-dark border-2 nowrap" style="box-shadow:5px 10px rgba(0, 0, 0, 0.3);z-index:2">
     <div class="pos-rel text-xxs opacity-half" (click)="close.emit()">
-      <div class="pos-abs top-0 right-0 pad-xxs line-height-half">x</div>
-      <div class="text-center pad-xxs border-bottom border-grey">{{ title || 'options'}}</div>
+      <div class="pos-abs right-0 line-height-half text-xxs" style="top:6px;right:2px">❌</div>
+      <div class="text-center pad-xxs bg-grey text-white">{{ title || 'options'}}</div>
     </div>
     <div class="flex-stacked">
       <ng-container *ngFor="let item of options">

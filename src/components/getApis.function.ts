@@ -5,19 +5,7 @@ import { plaid_createPublicToken } from './plaid.apis'
 import { bank } from './banks.api'
 import { card } from "./cards.api"
 import { payintent_create, payintent_retrieve } from "./pay_intents.api"
-
-export const testHeader: ISimpleRouteEditor = {
-  title: '🔬 Generate Test Header String',
-  links: [{
-    url: 'https://www.npmjs.com/package/stripe#testing-webhook-signing',
-    title: '📕 api docs'
-  },{
-    title: 'webhooks signatures',
-    url: 'https://stripe.com/docs/webhooks/signatures'
-  }],
-  hint: 'Paste your payload below to encode into a signing secret',
-  data: {}
-}
+import { testHeader, webhookPost } from "./webhook.apis"
 
 const confirm_pay_intent: ISimpleRouteEditor = {
   title: '👍 UI Confirm Pay Intent',
@@ -55,6 +43,7 @@ export const menu = {
   bank, card, confirm_pay_intent, // UI
 
   testHeader, // webhhooks signing testing
+  webhookPost, // webhhooks POST testing
 
   plaid_createPublicToken, // UI
 }

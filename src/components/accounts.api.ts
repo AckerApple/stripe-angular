@@ -142,6 +142,7 @@ export const accounts_create: ISimpleRouteEditor = {
 
 export const accounts_list: ISimpleRouteEditor = {
   title: '🧾 List all accounts',
+  description: 'Returns a list of accounts connected to your platform via Connect. If you’re not a platform, the list is empty.',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/accounts/list'

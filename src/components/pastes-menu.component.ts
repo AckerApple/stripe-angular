@@ -17,7 +17,7 @@ import { removeValues } from './removeValues.function'
     try {
       this.pasteFrom(item, item.api || item.$api())
     } catch (err) {
-      console.error(`Failed to paste by config`, {api: this.api, paste:item}, err);
+      console.error(`🔴 Failed to paste by config`, {api: this.api, paste:item}, err);
     }
   }
 

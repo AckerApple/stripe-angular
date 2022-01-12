@@ -1,5 +1,5 @@
 import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
-import { localSchema } from "./app.component.utils"
+import { localSchema } from "./storage"
 import { ApiGroup, SmartRouteEditor } from "./typings"
 
 interface Scope {

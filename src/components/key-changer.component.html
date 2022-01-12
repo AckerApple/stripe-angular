@@ -1,6 +1,6 @@
 <a *ngIf="keys.length" class="flex-center flex-valign-center pad-left">
   <span (click)="show=true">💠</span>
-  <menu-options *ngIf="show" title="key chain select" (close)="show=false">
+  <menu-options *ngIf="show" title="🔑 key selection" (close)="show=false">
     <ng-container *ngFor="let item of keys">
       <ng-template #option>
         <a class="border-bottom border-grey pad-xs hover-bg-energized"

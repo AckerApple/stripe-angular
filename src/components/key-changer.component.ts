@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { KeyInfo } from './app.component.utils'
+import { KeyInfo } from './storage'
 
 @Component({
   selector: 'key-changer',

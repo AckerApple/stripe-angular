@@ -1,0 +1,33 @@
+<div class="flex-valign-bottom">
+  <div class="flex-1 child-pad-xxs flex-wrap" *ngIf="array?.length">
+    <div *ngFor="let item of array; let index=index" [class.bg-positive]="selected===item.value" class="flex-1">
+      <div class="flex-valign-center child-margin-xxs">
+        <div *ngIf="allowChange">
+          <input type="radio" [checked]="selected===item.value" (click)="selectedChange.emit(selected=item.value)" class="cursor-pointer" />
+        </div>
+        <input type="text" maxLength="125" [value]="item.title || ''"
+          (keyup)="item.title=$event.target.value" placeholder="Title"
+          class="flex-1"
+        /><span>=</span>
+        <div>
+          <input [type]="inputType" [placeholder]="inputPlaceholder" class="flex-1"
+            (keyup)="item.value=$event.target.value"
+            [value]="item.value || ''"
+            style="width:100%;min-width:15vw"
+          />
+          <ng-container *ngTemplateOutlet="valueFooter;context:{value:item.value}"></ng-container>
+        </div>
+        <a class="text-smx" (click)="array.splice(index, 1)" title="remove">❌</a>
+      </div>
+      <!-- footer -->
+      <ng-container *ngTemplateOutlet="footer;context:{value:item.value}"></ng-container>
+    </div>
+  </div>
+  <div class="pad-left-xxs pad-v-xs">
+    <a type="button" class="margin-left-xxs pad-v-xxs pad-h-xs hover-bg-balanced active-bg-dark radius-10 text-xxs bg-positive flex-valign-center"
+      title="add additional entry"
+      [class.flex-1]="!array?.length"
+      (click)="array.push({})"
+    >add</a>
+  </div>
+</div>

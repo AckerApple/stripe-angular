@@ -1,8 +1,8 @@
 <div *ngIf="storage.key && !edit else storageForm">
   <div class="flex flex-wrap text-smx child-margin">
     <div class="flex-1">
-      <strong>🗝 Publishable Key</strong>
-      <div class="flex">
+      <strong class="nowrap">🗝 Publishable Key</strong>
+      <div class="flex-valign-center">
         <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
         >{{ storage.key | slice : 0 : 16 }}...</div>
         <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
@@ -11,24 +11,16 @@
       </div>
     </div>
 
-    <div *ngIf="storage.privateKey || storage.privateKeys" class="flex1">
-      <strong>🔐 Private Key</strong>
-      <div class="flex">
-        <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
-        <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
-      </div>
-    </div>
-
     <div *ngIf="storage.webhookSigningSecret" class="flex-1">
-      <div>
-        <strong>🪝 Webhook Signing Secret</strong>
+      <strong class="nowrap">🪝 Webhook Signing Secret</strong>
+      <div class="flex-valign-center">
+        <div class="hover-highlight cursor-pointer"
+        (click)="copyText(storage.webhookSigningSecret)"
+        >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
         <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
-          (valueChange) = "storage.webhookSigningSecret=tempWebhookSigningSecret=$event;save()"
+        (valueChange) = "storage.webhookSigningSecret=$event;save()"
         ></key-changer>
       </div>
-      <div class="hover-highlight cursor-pointer"
-        (click)="copyText(storage.webhookSigningSecret)"
-      >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
     </div>
   </div>
 
@@ -46,128 +38,146 @@
 
 <ng-template #storageForm>
   <form (submit)="save();editChange.emit(edit=false)">
-    <div class="flex-wrap flex-top child-margin">
-      <div class="flex-1">
-        <div>
-          <div class="flex-apart flex-valign-center">
-            <strong>👁 🗝 publishableKey</strong>
-            <a class="text-xxs text-white" target="_blank"
+    <div class="flex-wrap child-margin-xxs child-pad-xxs">
+      
+      <div class="flex1 bg-grey">
+        <div class="flex-apart">
+          <strong class="nowrap">👁 🗝 Public Keys</strong>
+          <div class="flex-1 text-center pad-left">
+            <a class="text-xxs text-white opacity-half nowrap" target="_blank"
               href="https://dashboard.stripe.com/test/apikeys"
-            >stripe keys</a>
-            <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
-              (valueChange) = "tempPublishableKey=$event;save()"
-            ></key-changer>
+            >🔗 stripe keys</a>
           </div>
-          <div>
-            <input style="width:100%" placeholder="Stripe UI public key"
-              (keyup)="tempPublishableKey=$event.target.value"
-              [value]="tempPublishableKey || null"
-            />
-          </div>
+        </div>
+        <div>
+          <keys-input-array inputType="password" [array]="storage.publicKeys" [(selected)]="storage.key" allowChange="1" inputPlaceholder="🔑 value">
+            <ng-template #valueFooter let-value="value">
+              <div class="pos-rel width-full">
+                <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                  <masked-key [value]="value"></masked-key>
+                </div>      
+              </div>
+            </ng-template>
+          </keys-input-array>
         </div>
       </div>
 
-      <div>
-        <label for="enableServerMode" style="align-items: center">
-          <input
-            type="checkbox" name="enableServerMode" id="enableServerMode"
-            (change)="toggleServerMode()"
-            [checked] = "enableServerMode"
-          />
-          <span> 🔗 enable server functionality</span>
-        </label>
-      </div>
-
-      <div *ngIf="enableServerMode || storage.privateKey" class="flex-1">
-        <ng-container *ngTemplateOutlet="editPrivateKey"></ng-container>
-      </div>
-
-      <div *ngIf="enableServerMode || storage.webhookSigningSecret" class="flex-1">
-        <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
+      <div class="bg-grey flex1 nowrap">
+        <div>
+          <label for="enableServerMode">
+            <input
+              type="checkbox" name="enableServerMode" id="enableServerMode"
+              (change)="toggleServerMode()"
+              [checked] = "enableServerMode"
+            />
+            <span> 🔗 enable server functionality</span>
+          </label>
+        </div>
+        
+        <div class="pad-top">
+          <label for="saveKeyLocally">
+            <input
+              type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
+              (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
+              [checked] = "storage.saveKeyLocally"
+            />
+            <span> 💾 save in localStorage</span>
+          </label>  
+        </div>
       </div>
 
       <ng-container *ngIf="enableServerMode || storage.saveKeyLocally">
-        <div class="width-full"></div>
-
-        <div class="flex1">
-          <strong>👁 🗝 Switchable Public Keys</strong>
-          <small class="block opacity-half text-xxxs text-center">
-            Store multiple keys for convenient switching
-          </small>
+        <div *ngIf="enableServerMode" class="flex1 bg-grey">
+          <div class="flex-apart">
+            <strong class="nowrap">🔐 Private Keys</strong>
+            <div class="flex-1 text-center pad-left">
+              <a class="text-xxs text-white opacity-half nowrap" target="_blank"
+                href="https://dashboard.stripe.com/test/apikeys"
+              >🔗 stripe keys</a>
+            </div>
+          </div>
           <div>
-            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.publicKeys}"></ng-container>
+            <keys-input-array inputType="password" [array]="storage.privateKeys" [(selected)]="storage.privateKey" allowChange="1" inputPlaceholder="🔑 value">
+              <ng-template #valueFooter let-value="value">
+                <div class="pos-rel">
+                  <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                    <masked-key [value]="value"></masked-key>
+                  </div>      
+                </div>
+              </ng-template>
+            </keys-input-array>
           </div>
         </div>
 
-        <div *ngIf="enableServerMode" class="flex1">
-          <strong>🔐 Switchable Private Keys</strong>
-          <small class="block opacity-half text-xxxs text-center">
-            Store multiple keys for convenient switching
-          </small>
-          <div>
-            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.privateKeys}"></ng-container>
-          </div>
+        <div class="flex1 bg-grey">
+          <webhook-secret-edit (save)="save()"></webhook-secret-edit>
         </div>
 
-        <div class="flex1">
-          <strong>🪝 Switchable Webhook Secrets</strong>
-          <small class="block opacity-half text-xxxs text-center">
-            Store multiple keys for convenient switching
-          </small>
-          <div>
-            <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.webhookSigningSecrets}"></ng-container>
-          </div>
+        <div class="flex1 bg-grey">
+          <webhook-server-edit (save)="save()"></webhook-server-edit>
         </div>
 
         <fieldset class="radius-10">
           <legend>🏦 Plaid</legend>
-          <div class="flex-wrap flex-top child-margin">
-            <div class="flex1">
-              <strong>🆔 Switchable Plaid CLIENT_IDs</strong>
+          <div class="flex-wrap child-margin-xxs child-pad-xs">
+            <div class="flex1 bg-grey">
+              <strong class="nowrap">🆔 Plaid CLIENT_IDs</strong>
               <small class="block opacity-half text-xxxs text-center">
                 Store multiple keys for convenient switching
               </small>
               <div>
-                <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.clientIds}"></ng-container>
+                <keys-input-array inputType="password" [array]="storage.plaid.clientIds" [(selected)]="storage.plaid.client_id" allowChange="1" inputPlaceholder="🔑 value">
+                  <ng-template #valueFooter let-value="value">
+                    <div class="pos-rel width-full">
+                      <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                        <masked-key [value]="value"></masked-key>
+                      </div>      
+                    </div>
+                  </ng-template>
+                </keys-input-array>
               </div>
             </div>
 
-            <div *ngIf="enableServerMode" class="flex1">
-              <strong>👂 Switchable secrets</strong>
+            <div *ngIf="enableServerMode" class="flex1 bg-grey">
+              <strong class="nowrap">👂 Secrets</strong>
               <small class="block opacity-half text-xxxs text-center">
                 Store multiple keys for convenient switching
               </small>
               <div>
-                <ng-container *ngTemplateOutlet="keysInputArray;context:{array:storage.plaid.secrets}"></ng-container>
+                <keys-input-array inputType="password" [array]="storage.plaid.secrets" [selected]="storage.plaid.secret" allowChange="1" inputPlaceholder="🔑 value">
+                  <ng-template #valueFooter let-value="value">
+                    <div class="pos-rel width-full">
+                      <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                        <masked-key [value]="value"></masked-key>
+                      </div>      
+                    </div>
+                  </ng-template>
+                </keys-input-array>
               </div>
             </div>
           </div>
         </fieldset>
       </ng-container>
-
-      <div>
-        <ng-container *ngTemplateOutlet="localStorageCheck"></ng-container>
-      </div>
     </div>
 
-    <br />
-
     <!-- reusable metadata -->
-    <div>
+    <div class="margin-xxs pad-xs bg-grey">
       <div>
-        <strong>
-          <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
-            <input
-              type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
-              (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
-              [checked] = "storage.saveRequestsLocal"
-            /> Reuse metadata in all requests
-          </label>
-        </strong>
+        <div>
+          <strong>
+            <label for="saveRequestsLocal" title="Greatly assists coming back to this interface">
+              <input
+                type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
+                (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
+                [checked] = "storage.saveRequestsLocal"
+              /> Reuse metadata in all requests
+            </label>
+          </strong>
+        </div>
+        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
+          (change)="updateStorageMeta($event.target.value)"
+        >{{ storage.metadata | json }}</textArea>
       </div>
-      <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
-        (change)="updateStorageMeta($event.target.value)"
-      >{{ storage.metadata | json }}</textArea>
     </div>
 
     <br />
@@ -195,80 +205,9 @@
   </form>
 </ng-template>
 
-<ng-template #editPrivateKey>
-  <div class="flex-apart">
-    <strong
-      title="This demo offers helpful server functionality"
-    >🔐 Private Key</strong>
-    <ng-container *ngTemplateOutlet="privateKeyChange"></ng-container>
-  </div>
-  <div>
-    <input type="password"
-      (keyup)="tempPrivateKey=$event.target.value;log('tempPrivateKey length update' + tempPrivateKey.length)"
-      [value]="tempPrivateKey"
-      style="width:100%"
-    />
-  </div>
-  <div class="pos-rel text-xxs opacity-70">
-    <div class="pos-abs">
-      <ng-container *ngTemplateOutlet="maskedPrivateKey"></ng-container>
-    </div>
-  </div>
-</ng-template>
-
 <!-- 💠 -->
 <ng-template #privateKeyChange>
   <key-changer [keys]="storage.privateKeys" [(value)]="storage.privateKey"
     (valueChange) = "tempPrivateKey=$event;save()"
   ></key-changer>
-</ng-template>
-
-<ng-template #maskedPrivateKey>
-  <div class="hover-highlight cursor-pointer"
-    (click)="copyText(storage.privateKey)"
-  >{{ storage.privateKey | slice : 0 : 5 }}*****************{{ storage.privateKey | slice : -4 }}</div>
-</ng-template>
-
-<ng-template #keysInputArray let-array="array">
-  <div class="flex-valign-bottom">
-    <div class="flex-1" *ngIf="array?.length">
-      <div *ngFor="let item of array; let index=index" class="flex-valign-center child-margin-xxs">
-        <input type="text" maxLength="125" [value]="item.title || ''"
-          (keyup)="item.title=$event.target.value" placeholder="key title"
-          class="flex-1"
-        /><span>=</span>
-        <input type="password" placeholder="🔑 value" class="flex-1"
-          (keyup)="item.value=$event.target.value"
-          [value]="item.value || ''"
-          style="width:100%"
-        />
-        <a class="text-smx" (click)="array.splice(index, 1)">❌</a>
-      </div>
-    </div>
-    <button type="button" class="hover-bg-positive active-bg-dark radius-10 bg-balanced margin-xxs"
-      [class.flex-1]="!array?.length"
-      (click)="array.push({})"
-    >+</button>
-  </div>
-</ng-template>
-
-<ng-template #editWebhookSecret>
-  <div class="flex-apart">
-    <strong>🪝 webhookSigningSecret</strong>
-    <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
-      (valueChange) = "tempWebhookSigningSecret=$event;save()"
-    ></key-changer>
-  </div>
-  <div>
-    <input type="password"
-      (keyup)="tempWebhookSigningSecret=$event.target.value"
-      [value]="tempWebhookSigningSecret"
-      style="width:100%"
-    />
-    <div class="pos-rel text-xxs opacity-70">
-      <div class="pos-abs">
-        {{ tempWebhookSigningSecret | slice : 0 : 8 }}*****************{{ tempWebhookSigningSecret | slice : -6 }}
-      </div>
-    </div>
-  </div>
 </ng-template>

@@ -84,7 +84,6 @@
                 <div *ngIf="!selected && !storage.key" class=" width-full bg-warning pad text-dark margin">
                   ⚠️ To continue, you must enter a <b>privateKey</b> in the ⚙️ Settings form
                 </div>
-
                 <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
               </ng-container>
 
@@ -92,11 +91,9 @@
                 <div *ngIf="!selected && !storage.plaid.client_id" class="width-full bg-warning pad text-dark margin">
                   ⚠️ To continue, you must enter a <b>webhookSigningSecret</b> in the ⚙️ Settings form
                 </div>
-                <!--
-                  <div *ngIf="!selected" class="pad text-white width-full">
-                    <ng-container *ngTemplateOutlet="webhookKeyForm"></ng-container>
-                  </div>
-                -->
+                <div *ngIf="!selected" class="text-white width-full">
+                  <ng-container *ngTemplateOutlet="webhookKeyForm"></ng-container>
+                </div>
                 <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
               </ng-container>
 
@@ -205,8 +202,7 @@
     </div>
 
     <div class="text-xs pad-v">
-      <h4>📋 copy/paste card numbers</h4>
-
+      <h4 class="margin-bottom-xs">📋 copy/paste test card numbers</h4>
       <div class="flex-wrap child-margin-1 text-center text-xs">
         <ng-container *ngFor="let item of testNums">
           <a (click)="copyText(item.number)" class="flex-1 hover-bg-positive active-bg-balanced radius-10 bg-dark"
@@ -214,11 +210,11 @@
           >
             <div [class.pad-h-2x]="item.icon">
               <span *ngIf="item.icon" class="pos-rel">
-                <span class="pos-abs" style="right:3px;bottom:-2px">{{item.icon}}</span>
+                <span class="pos-abs" style="right:3px;bottom:-.7em">{{item.icon}}</span>
               </span>
               <span>{{item.number}}</span>
             </div>
-            <div class="text-sm opacity-half">{{item.hint}}</div>
+            <div class="text-sm opacity-half line-height-90">{{item.hint}}</div>
           </a>
         </ng-container>
       </div>
@@ -517,17 +513,6 @@ npm run start
   </div>
 </ng-template>
 
-<ng-template #localStorageCheck>
-  <label for="saveKeyLocally" style="align-items: center">
-    <input
-      type="checkbox" name="saveKeyLocally" id="saveKeyLocally"
-      (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
-      [checked] = "storage.saveKeyLocally"
-    />
-    <span>💾 save in localStorage</span>
-  </label>
-</ng-template>
-
 <ng-template #cardTemplate>
   <div class="tool-wrap flex1">
     <label for="card-like-element" class="flex flex-wrap flex-valign-center color-white">
@@ -659,18 +644,13 @@ npm run start
 </ng-template>
 
 <ng-template #webhookKeyForm>
-  <div class="pad flex-center">
-    <form class="flex-1 max-width-900" (submit)="save()" action="javascript:">
-      <div class="flex">
-        <div class="flex-1">
-          <ng-container *ngTemplateOutlet="editWebhookSecret"></ng-container>
-        </div>
-        <div>
-          <div class="invisible">🔐</div>
-          <button type="submit" class="active-bg-balanced">
-            💾&nbsp;save
-          </button>
-        </div>
+  <div class="flex-center">
+    <form (submit)="save()" action="javascript:">
+      <div class="flex-wrap child-margin-xxs child-pad-xxs">
+        <!--webhook secrets-->
+        <webhook-secret-edit (save)="save()" class="flex1 bg-grey"></webhook-secret-edit>
+        <!--webhook servers-->
+        <webhook-server-edit (save)="save()" class="flex1 bg-grey"></webhook-server-edit>
       </div>
     </form>
   </div>

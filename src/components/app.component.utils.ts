@@ -1,7 +1,5 @@
-import * as hmacSHA256 from 'crypto-js/hmac-sha256'
-import * as formatHex from 'crypto-js/format-hex'
-import formurlencoded from 'form-urlencoded'
 import { ISimpleRouteEditor } from './typings'
+import { localSchema } from './storage'
 
 export const stripeServer = 'https://api.stripe.com/v1/'
 const sampleAddress = {
@@ -24,92 +22,6 @@ export const sample = {
     phone: '561-561-5611',
     address: sampleAddress
   }
-}
-
-export interface KeyInfo {title: string, value: string}
-
-export interface localSchema {
-  key: string
-
-  privateKey: string
-  privateKeys: KeyInfo[] // switchable keys
-  publicKeys: KeyInfo[] // switchable keys
-  webhookSigningSecret?: string
-  webhookSigningSecrets?: string[]
-
-  saveRequestsLocal?: boolean
-  saveKeyLocally?: boolean
-  savePrivateKeyLocally?: boolean
-
-  metadata?: Record<string, any>
-  extraData?: any
-  requests?: {
-    resultView: 'json' | 'small'
-    source?: any
-    paymentMethod?: any
-  }
-
-  plaid?: {
-    client_id?: string,
-    secret?: string,
-
-    clientIds?: string[],
-    secrets?: string[],
-  }
-
-  temp: {[index: string]: any}
-}
-
-export interface RequestOptions {
-  url: string, method?: 'GET' | 'POST' | string
-  post?: {[x: string]: any}
-  headers?: {[x: string]: any}
-  json?: {[x: string]: any}
-  authorizationBearer?: string
-}
-
-export function request(
-  {url, method, post, json, headers, authorizationBearer}: RequestOptions
-) {
-  return new Promise((res, rej) => {
-    const req = new XMLHttpRequest();
-    const endMethod = method || (post || json ? 'POST' : 'GET')
-
-    // req.open(endMethod, url, true);
-    req.open(endMethod, url);
-    req.setRequestHeader('Accept', 'application/json')
-
-    if (authorizationBearer) {
-      req.setRequestHeader('Authorization', 'Bearer ' + authorizationBearer)
-    }
-
-    if (headers) {
-      Object.entries(headers).forEach(([name, value]) =>
-        req.setRequestHeader(name, value)
-      )
-    }
-
-    // const formPost = objectToUriForm(post)
-    if (post) {
-      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded charset=UTF-8')
-      const formPost = formurlencoded(post)
-      req.send( formPost )
-    } else if (json) {
-      const content = JSON.stringify(json)
-      // req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-      req.setRequestHeader("Content-Type", "application/json")
-      // req.setRequestHeader("Content-Length", content.length.toString())
-      req.send(content);
-    } else {
-      req.send()
-    }
-
-    req.onreadystatechange = () => {
-      if (req.readyState === 4) {
-        res( tryParse(req.responseText) )
-      }
-    }
-  })
 }
 
 function objectToUriForm(
@@ -215,6 +127,7 @@ export function getProjectLocalStorage(): localSchema {
   storage.privateKeys = storage.privateKeys || []
   storage.publicKeys = storage.publicKeys || []
   storage.webhookSigningSecrets = storage.webhookSigningSecrets instanceof Array ? storage.webhookSigningSecrets : []
+  storage.webhookServers = storage.webhookServers || []
 
   // 🏦 Plaid
   storage.plaid = storage.plaid || {}
@@ -255,46 +168,6 @@ export function copyText(text: string) {
   document.body.removeChild(copyText)
   // copyText.parentNode.removeChild(copyText)
 }
-
-/**
- * Generates a header to be used for webhook mocking
- *
- * @typedef {object} opts
- * @property {number} timestamp - Timestamp of the header. Defaults to Date.now()
- * @property {string} payload - JSON stringified payload object, containing the 'id' and 'object' parameters
- * @property {string} secret - Stripe webhook secret 'whsec_...'
- * @property {string} scheme - Version of API to hit. Defaults to 'v1'.
- * @property {string} signature - Computed webhook signature
- */
- export function generateTestHeaderString(opts) {
-  if (!opts) {
-    throw new Error('Options are required');
-  }
-
-  opts.timestamp = Math.floor(opts.timestamp) || Math.floor(Date.now() / 1000);
-  opts.scheme = opts.scheme || 'v1';
-
-  opts.signature =
-    opts.signature ||
-    _computeSignature(
-      opts.timestamp + '.' + opts.payload,
-      opts.secret
-    );
-
-  const generatedHeader = [
-    't=' +  opts.timestamp,
-    opts.scheme + '=' + opts.signature,
-  ].join(',');
-
-  return generatedHeader;
-}
-
-function _computeSignature(payload, secret) {
-  const data = hmacSHA256(payload, secret)
-  const hmacDigest = formatHex.stringify({ciphertext:data});
-  return hmacDigest
-}
-
 
 export function changeKey(
   scope: Record<any, any>,

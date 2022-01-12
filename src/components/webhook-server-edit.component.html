@@ -1,0 +1,11 @@
+<div class="flex-apart">
+  <strong class="nowrap">🪝 🔌 Webhook Servers</strong>
+  <div class="flex-1 text-center pad-left">    
+    <small class="block opacity-80 text-center">
+      <a href="https://dashboard.stripe.com/test/webhooks" target="_blank" class="text-xxs text-white opacity-half nowrap">🔗 stripe webhooks</a>
+    </small>
+  </div>
+</div>
+<div>
+  <keys-input-array [array]="storage.webhookServers" [(selected)]="storage.webhookServer" allowChange="1"></keys-input-array>
+</div>

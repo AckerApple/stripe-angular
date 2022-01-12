@@ -63,18 +63,28 @@
 <!-- api list descriptions -->
 <ng-template #apiListItems let-group="group" let-scope="scope" let-level="level">
     <a *ngFor="let api of group.apis" (click)="apiListItemToggle(api, scope, level)"
-      class="hover-bg-positive active-bg-balanced pad margin-xxs"
+      class="hover-bg-positive active-bg-balanced margin-xxs"
       [class.flex2]="!scope.showApi && !scope.scope?.showGroup"
       [class.bg-grey-3x]="scope.showApi === api" [class.bg-grey]="scope.showApi !== api"
       [class.hide-xs]="scope.showApi && scope.showApi !== api"
     >
-      {{api.title}}
-      <div *ngIf="api.request" class="pad-left opacity-70 text-xxs" style="overflow-wrap:break-word">
-        {{api.request.method}}&nbsp;/{{api.request.path}}
+      <div class="flex-wrap flex-apart">
+        <div class="pad-xs">
+          {{api.title}}
+        </div>
+        <div class="pad-xs">
+          <div *ngIf="api.request" class="pad-h text-xxs radius-5 flex-valign-center" style="overflow-wrap:break-word"
+            [class.bg-balanced] = "api.request.method === 'POST'"
+            [class.bg-positive] = "api.request.method === 'GET'"
+            [class.bg-assertive] = "api.request.method === 'DELETE'"
+          >
+            {{api.request.method}}&nbsp;/{{api.request.path}}
+          </div>
+        </div>
       </div>
 
-      <div class="flex-1 text-smx max-width-80vw">
-        <div *ngIf="api.hint" class="text-xs opacity-80 pad-left">{{api.hint}}</div>
+      <div *ngIf="api.description && !scope.showApi && !scope.scope?.showGroup" class="flex1 max-width-80vw text-xs opacity-70 pad-left">
+        {{api.description}}
       </div>
     </a>
 </ng-template>
@@ -98,6 +108,9 @@
           [class.bg-grey-3x]="scope.showGroup === group" [class.bg-grey]="scope.showGroup !== group"
         >
           <span>{{group.icon}} {{group.title}}</span>
+          <div *ngIf="group.description && !scope.showApi && !scope.showGroup" class="flex1 max-width-80vw text-xs opacity-70 pad-left pad-top-xxs">
+            {{group.description}}
+          </div>  
         </div>
       </ng-template>
     </a>

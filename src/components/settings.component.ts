@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { copyText, getSaveableStorage, localSchema } from './app.component.utils'
+import { copyText, getSaveableStorage } from './app.component.utils'
+import { localSchema } from './storage'
 
 @Component({
   selector: 'settings',
@@ -12,7 +13,6 @@ import { copyText, getSaveableStorage, localSchema } from './app.component.utils
 
   @Output() saveChange: EventEmitter<void> = new EventEmitter()
 
-  tempWebhookSigningSecret: string
   tempPublishableKey: string
   tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
   enableServerMode?: boolean
@@ -22,15 +22,10 @@ import { copyText, getSaveableStorage, localSchema } from './app.component.utils
   ngOnInit(){
     this.tempPrivateKey = this.storage.privateKey// localStorage?.stripeAngularPrivateKey;
     this.tempPublishableKey = this.storage.key
-    this.tempWebhookSigningSecret = this.storage.webhookSigningSecret
     this.enableServerMode = this.storage.savePrivateKeyLocally || this.storage.privateKey ? true : false;
   }
 
   save() {
-    /*if (this.tempPublishableKey && this.storage.key !== this.tempPublishableKey) {
-      this.loaded = false // cause everything Stripe to redraw
-    }*/
-
     this.storage.key = this.tempPublishableKey || this.storage.key
     this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
     this.saveChange.emit()
@@ -69,5 +64,9 @@ import { copyText, getSaveableStorage, localSchema } from './app.component.utils
     }
 
     this.storage.savePrivateKeyLocally = this.enableServerMode = true
+  }
+
+  updateStorageMeta(stringData: string) {
+    this.storage.metadata = JSON.parse(stringData)
   }
 }
