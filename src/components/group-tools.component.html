@@ -108,7 +108,7 @@
           [class.bg-grey-3x]="scope.showGroup === group" [class.bg-grey]="scope.showGroup !== group"
         >
           <span>{{group.icon}} {{group.title}}</span>
-          <div *ngIf="group.description && !scope.showApi && !scope.showGroup" class="flex1 max-width-80vw text-xs opacity-70 pad-left pad-top-xxs">
+          <div *ngIf="group.description && !scope.showApi && !scope.showGroup && !parentScope?.showApi" class="flex1 max-width-80vw text-xs opacity-70 pad-left pad-top-xxs">
             {{group.description}}
           </div>  
         </div>
