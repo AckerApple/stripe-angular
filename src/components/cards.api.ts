@@ -49,13 +49,15 @@ export const create_source: ISimpleRouteEditor = {
 
 export const get_paymethods: ISimpleRouteEditor = {
   title: '💳 GET Payment Methods',
+  hint: 'Fetch payments methods for a customer. ⚠️ If customer not provided response list will be empty',
   link: 'https://stripe.com/docs/api/payment_methods/list',
   request: {
     method: 'GET',
     path: 'payment_methods'
   },
   data: {
-    type: "card"
+    type: "card",
+    customer: "",
   },
   pastes: [{
     $api: () => create_customer,

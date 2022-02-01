@@ -3,10 +3,19 @@
     <div class="flex-1">
       <strong class="nowrap">🗝 Publishable Key</strong>
       <div class="flex-valign-center">
-        <div (click)="copyText(storage.key)" style="cursor: pointer;" class="hover-highlight"
-        >{{ storage.key | slice : 0 : 16 }}...</div>
+        <masked-key [value]="storage.key"></masked-key>
         <key-changer [keys]="storage.publicKeys" [(value)]="storage.key"
           (valueChange) = "tempPublishableKey=$event;save()"
+        ></key-changer>
+      </div>
+    </div>
+
+    <div class="flex-1">
+      <strong class="nowrap">🔐 Private Key</strong>
+      <div class="flex-valign-center">
+        <masked-key [value]="storage.privateKey"></masked-key>
+        <key-changer [keys]="storage.privateKeys" [(value)]="storage.privateKey"
+          (valueChange) = "save()"
         ></key-changer>
       </div>
     </div>
@@ -14,11 +23,9 @@
     <div *ngIf="storage.webhookSigningSecret" class="flex-1">
       <strong class="nowrap">🪝 Webhook Signing Secret</strong>
       <div class="flex-valign-center">
-        <div class="hover-highlight cursor-pointer"
-        (click)="copyText(storage.webhookSigningSecret)"
-        >{{ storage.webhookSigningSecret | slice : 0 : 8 }}*****************{{ storage.webhookSigningSecret | slice : -6 }}</div>
+        <masked-key [value]="storage.webhookSigningSecret"></masked-key>
         <key-changer [keys]="storage.webhookSigningSecrets" [(value)]="storage.webhookSigningSecret"
-        (valueChange) = "storage.webhookSigningSecret=$event;save()"
+          (valueChange) = "storage.webhookSigningSecret=$event;save()"
         ></key-changer>
       </div>
     </div>

@@ -25,6 +25,18 @@ body {
   border-radius:5px;background-color:#888;text-align:left;width:100%;padding:.6em;
 }
 
+.resource-link {
+  margin:.2em;padding:.2em;text-decoration: none;
+  border-radius:5px;border:1px solid rgba(233, 233, 233, 0.678);
+}
+
+.hover-highlight:hover {
+  background-color: khaki;
+}
+
+.hover-highlight:active {
+  background-color: blue;
+}
 
 /* small screens */
 @media only screen and (max-width: 1900px) {

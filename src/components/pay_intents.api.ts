@@ -4,7 +4,6 @@ import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, payment_method_get, source_get } from "./cards.api"
 import { create_customer, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
-import { removeValues } from "./removeValues.function"
 import { bank } from "./banks.api"
 
 export const payintent_create: ISimpleRouteEditor = {
@@ -331,8 +330,9 @@ export const payintent_confirm: ISimpleRouteEditor = {
     path: 'payment_intents/:id/confirm'
   },
   data: {
-    client_secret: "",
-    return_url: window.location.href
+    // 1-27-2022: For client side you don't need these details
+    // client_secret: "",
+    // return_url: window.location.href
   },
   pastes: [{
     $api: () => payintent_create,
