@@ -11,7 +11,7 @@ import { SmartRouteEditor } from "./typings"
   @Input() copy: string
 
   @Input() format: 'json' | 'small' = 'small'
-  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter
+  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
 
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>

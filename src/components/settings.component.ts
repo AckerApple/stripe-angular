@@ -12,6 +12,7 @@ import { localSchema } from './storage'
   @Output() editChange: EventEmitter<boolean> = new EventEmitter()
 
   @Output() saveChange: EventEmitter<void> = new EventEmitter()
+  @Output() metadataUpdate: EventEmitter<any> = new EventEmitter()
 
   tempPublishableKey: string
   tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
@@ -68,5 +69,6 @@ import { localSchema } from './storage'
 
   updateStorageMeta(stringData: string) {
     this.storage.metadata = JSON.parse(stringData)
+    this.metadataUpdate.emit(this.storage.metadata)
   }
 }

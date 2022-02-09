@@ -155,25 +155,5 @@
     <small *ngIf="resultAt" class="opacity-half text-xs">{{resultAt | date : 'mediumTime' }}</small>
   </div>
 
-  <div class="pos-rel">
-    <div class="pos-abs text-xxxs child-margin-1 flex" style="top:-18px;right:-6px">
-      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced bg-dark" (click)="showAll = !showAll"
-        title="hide/show all sub objects"
-      >👁</a>
-      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced" (click)="format='small';formatChange.emit(format)"
-        [class]="!format || format==='small' ? 'bg-positive' : 'bg-dark'"
-      >small</a>
-      <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced" (click)="format='json';formatChange.emit(format)"
-        [class]="format==='json' ? 'bg-positive' : 'bg-dark'"
-      >json</a>
-    </div>
-  </div>
-
-  <div class="max-height-600 overflow" *ngIf="!format || format==='small'">
-    <dump [value]="result" [showKids]="showAll"></dump>
-  </div>
-
-  <textarea *ngIf="format==='json'" disabled wrap="off" style="width:100%;min-height:400px"
-    [class.bg-danger] = "result.error"
-  >{{ result | json }}</textArea>
+  <dump [value]="result" [showKids]="showAll" [format]="format" (formatChange)="formatChange.emit($event)"></dump>
 </ng-template>

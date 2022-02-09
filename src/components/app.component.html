@@ -28,7 +28,9 @@
             <h3 class="margin-0 text-left text-white">⚙️ Settings</h3>
             <div class="text-left flex-1 radius-5" style="background-color:#888;">
               <p class="pad text-xs opacity-80">Settings <b>required</b> to properly interact with this tool</p>
-              <settings [storage]="storage" [(edit)]="changekey" (saveChange)="save()"></settings>
+              <settings [storage]="storage" [(edit)]="changekey" (saveChange)="save()"
+                (metadataUpdate)="defaultMetadata($event)"
+              ></settings>
             </div>
           </div>
 
@@ -201,6 +203,28 @@
       >🪙 create token</button>
     </div>
 
+    <div *ngIf="api.card.result.token">
+      <br />
+      <strong>↘️ Token Response</strong>
+      <dump [value]="api.card.result.token" showLevels="1"></dump>
+    </div>
+  
+    <div *ngIf="api.card.result.source">
+      <br />
+      <div style="display:flex">
+        <strong style="flex-grow:1">↘️ Source Response</strong>
+      </div>
+      <dump [value]="api.card.result.source" showLevels="1"></dump>
+    </div>
+  
+    <div *ngIf="api.card.result.payment_method">
+      <br />
+      <div class="flex">
+        <strong>↘️ Payment Method Response</strong>
+      </div>
+      <dump [value]="api.card.result.payment_method" showLevels="1"></dump>
+    </div>
+  
     <div class="text-xs pad-v">
       <h4 class="margin-bottom-xs">📋 copy/paste test card numbers</h4>
       <div class="flex-wrap child-margin-1 text-center text-xs">
@@ -286,50 +310,13 @@
 
   </div>
 
-  <br />
-
-  <div *ngIf="api.card.result.token">
+  <div *ngIf="api.card.changedEvent" class="text-smx">
     <br />
-    <strong>↘️ Token Response</strong>
-    <textarea
-      disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
-    >{{ api.card.result.token | json }}</textArea>
-  </div>
-
-  <div *ngIf="api.card.result.source">
-    <br />
-    <div style="display:flex">
-      <strong style="flex-grow:1">↘️ Source Response</strong>
-      <small style="opacity:.5;font-size: 0.8em;">
-        <a style="cursor: pointer;border:1px solid black;border-radius: 5px;padding:.2em;margin:.2em;"
-          class="hover-highlight" (click)="copyText(api.card.result.source.id)"
-        >✍️ copy id</a>
-      </small>
-    </div>
-    <textarea disabled wrap="off" style="width:100%;height:25vh;min-height:200px;">{{ api.card.result.source | json }}</textArea>
-  </div>
-
-  <div *ngIf="api.card.result.payment_method">
-    <br />
-    <div class="flex">
-      <strong>↘️ Payment Method Response</strong>
-      <small class="opacity-50 text-xxs">
-        <a class="hover-highlight cursor-pointer border radius-5 pad-xxs margin-xxs"
-          (click)="copyText(api.card.result.payment_method.id)"
-        >✍️ copy id</a>
-      </small>
-    </div>
-    <textarea
-      disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
-    >{{ api.card.result.payment_method | json }}</textArea>
-  </div>
-
-  <div *ngIf="api.card.changedEvent">
-    <strong style="opacity: 50%;">INFO: Change Event</strong>
-    <textarea
+    <strong style="opacity: 50%;">⚡️ Change Event Info</strong>
+    <dump [value]="api.card.changedEvent" showLevels="0"></dump>
+    <!--<textarea
       wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
-      (change)="changeExtraData($event.target.value)"
-    >{{ api.card.changedEvent | json }}</textArea>
+    >{{ api.card.changedEvent | json }}</textArea>-->
   </div>
 </ng-template>
 
