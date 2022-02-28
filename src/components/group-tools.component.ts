@@ -29,6 +29,7 @@ export interface GroupScope {
 
   showRelated: boolean
   @Input() scope: GroupScope = {level: 0}
+  paramSubScope = paramSubScope
 
   getGroupByApi(api: SmartRouteEditor, _group: ApiGroup[]) {
     const result = getGroupByApi(api, this.groups)
