@@ -63,7 +63,8 @@
 <!-- api list descriptions -->
 <ng-template #apiListItems let-group="group" let-scope="scope" let-level="level">
     <a *ngFor="let api of group.apis" (click)="apiListItemToggle(api, scope, level)"
-      class="hover-bg-positive active-bg-balanced margin-xxs"
+      [href] = "'#serverToolsWrap-' + api.title"
+      class="hover-bg-positive active-bg-balanced margin-xxs no-a-style"
       [class.flex2]="!scope.showApi && !scope.scope?.showGroup"
       [class.bg-grey-3x]="scope.showApi === api" [class.bg-grey]="scope.showApi !== api"
       [class.hide-xs]="scope.showApi && scope.showApi !== api"
