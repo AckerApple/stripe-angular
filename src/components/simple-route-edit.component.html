@@ -155,5 +155,5 @@
     <small *ngIf="resultAt" class="opacity-half text-xs">{{resultAt | date : 'mediumTime' }}</small>
   </div>
 
-  <dump [value]="result" [showKids]="showAll" [format]="format" (formatChange)="formatChange.emit($event)"></dump>
+  <dump [showLevels]="dumpLevels" [value]="result" [showKids]="showAll" [format]="format" (formatChange)="formatChange.emit($event)"></dump>
 </ng-template>

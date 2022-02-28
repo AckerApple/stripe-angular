@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { copyText, getSaveableStorage } from './app.component.utils'
+import { copyText, getProjectLocalStorage, getSaveableStorage } from './app.component.utils'
 import { localSchema } from './storage'
 
 @Component({
@@ -16,14 +16,16 @@ import { localSchema } from './storage'
 
   tempPublishableKey: string
   tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
-  enableServerMode?: boolean
 
   copyText = copyText
 
   ngOnInit(){
     this.tempPrivateKey = this.storage.privateKey// localStorage?.stripeAngularPrivateKey;
     this.tempPublishableKey = this.storage.key
-    this.enableServerMode = this.storage.savePrivateKeyLocally || this.storage.privateKey ? true : false;
+
+    if (!this.storage.key) {
+      this.edit = true
+    }
   }
 
   save() {
@@ -51,7 +53,7 @@ import { localSchema } from './storage'
   }
 
   toggleServerMode() {
-    if (this.enableServerMode) {
+    if (this.storage.savePrivateKeyLocally) {
       if (confirm('Confirm to delete secrets and private keys')) {
         localStorage.stripeAngularPrivateKey = null
         delete localStorage.stripeAngularPrivateKey
@@ -60,15 +62,27 @@ import { localSchema } from './storage'
         delete this.storage.webhookSigningSecret
         // delete this.tempPublishableKey
         this.save()
-        return this.storage.savePrivateKeyLocally = this.enableServerMode = false
+        return this.storage.savePrivateKeyLocally = false
       }
     }
 
-    this.storage.savePrivateKeyLocally = this.enableServerMode = true
+    this.storage.savePrivateKeyLocally = true
   }
 
   updateStorageMeta(stringData: string) {
     this.storage.metadata = JSON.parse(stringData)
     this.metadataUpdate.emit(this.storage.metadata)
+  }
+
+  deleteLocalStorage() {
+    localStorage.stripeAngular = null
+    delete localStorage.stripeAngular
+
+    // support old delete
+    localStorage.stripeAngularPrivateKey = null;
+    localStorage.stripeAngularKey = null;
+    delete localStorage.stripeAngularPrivateKey;
+    delete localStorage.stripeAngularKey;
+    this.storage = getProjectLocalStorage()
   }
 }

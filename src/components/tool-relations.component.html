@@ -5,7 +5,7 @@
   <div class="flex-wrap text-xs child-pad">
     <ng-container *ngFor="let related of api.smarts.related">
       <a *ngIf="showRelated || related.show"
-        href="#serverToolsWrap"
+        [href]="'#serverToolsWrap-' + related.title"
         class="no-a-style flex2 flex-stacked flex-left flex-valign-center hover-bg-positive active-bg-energized"
         (click)="gotoApi(related.api, related.relation)"
         [class.opacity-half]="!related.show"

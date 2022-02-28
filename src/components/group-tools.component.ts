@@ -2,11 +2,11 @@ import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angula
 import { localSchema } from "./storage"
 import { ApiGroup, SmartRouteEditor } from "./typings"
 
-interface Scope {
+export interface GroupScope {
   level: number
   showGroup?: ApiGroup
   showApi?: SmartRouteEditor
-  scope?: Scope
+  scope?: GroupScope
 }
 
 @Component({
@@ -28,57 +28,14 @@ interface Scope {
   currentLevel = 0
 
   showRelated: boolean
-  /*
-  showGroup!: ApiGroup
-  showApi!: SmartRouteEditor
-  */
-  scope: Scope = {level: 0}
+  @Input() scope: GroupScope = {level: 0}
 
-  getGroupByApi(api: SmartRouteEditor, group: ApiGroup[]) {
-    this.scope = {level: 0}
-
-    const loopGroups = (groups: ApiGroup[], scope: Scope) => {
-      const match = groups.find((group: ApiGroup) => {
-        if(group.apis) {
-          const apiFind = group.apis?.find(groupApi => groupApi === api)
-
-          if(apiFind) {
-            console.log('found', apiFind.title)
-            scope.showGroup = group
-            scope.showApi = apiFind as SmartRouteEditor
-            return apiFind
-          }
-        }
-
-        if(group.groups) {
-          const apiMatch = loopGroups(group.groups, this.paramSubScope(scope, scope.level + 1)) as any
-
-          if(apiMatch) {
-            scope.showGroup = group
-          }
-
-          return apiMatch
-        }
-      })
-
-      /*if(match) {
-        scope.showGroup = match
-      }*/
-      return match
-    }
-
-    loopGroups(this.groups, this.scope)
-
-    console.log('this.scope', this.scope)
-
-    return
+  getGroupByApi(api: SmartRouteEditor, _group: ApiGroup[]) {
+    const result = getGroupByApi(api, this.groups)
+    this.scope = result
   }
 
-  paramSubScope(scope: Scope, level): Scope {
-    return scope.scope = scope.scope || {level}
-  }
-
-  apiListItemToggle(api: SmartRouteEditor, scope: Scope, level: number) {
+  apiListItemToggle(api: SmartRouteEditor, scope: GroupScope, level: number) {
     if (scope.showApi === api) {
       delete scope.showApi
       return
@@ -93,8 +50,8 @@ interface Scope {
   }
 
   switchToGroup(
-    group: ApiGroup, scope: Scope,
-    parentScope: Scope, level: number
+    group: ApiGroup, scope: GroupScope,
+    parentScope: GroupScope, level: number
   ) {
     scope.showGroup = scope.showGroup === group ? null : group
     if (parentScope) {
@@ -108,4 +65,48 @@ interface Scope {
     }
     this.currentLevel = level + 1
   }
+}
+
+export function getGroupByApi(
+  api: SmartRouteEditor, groups: ApiGroup[]
+): GroupScope {
+  const scope = {level: 0}
+
+  const loopGroups = (groups: ApiGroup[], scope: GroupScope) => {
+    const match = groups.find((group: ApiGroup) => {
+      if(group.apis) {
+        const apiFind = group.apis?.find(groupApi => groupApi === api)
+
+        if(apiFind) {
+          scope.showGroup = group
+          scope.showApi = apiFind as SmartRouteEditor
+          return apiFind
+        }
+      }
+
+      if(group.groups) {
+        const apiMatch = loopGroups(group.groups, paramSubScope(scope, scope.level + 1)) as any
+
+        if(apiMatch) {
+          scope.showGroup = group
+        }
+
+        return apiMatch
+      }
+    })
+
+    /*if(match) {
+      scope.showGroup = match
+    }*/
+    return match
+  }
+
+  loopGroups(groups, scope)
+
+  return scope
+}
+
+
+function paramSubScope(scope: GroupScope, level): GroupScope {
+  return scope.scope = scope.scope || {level}
 }

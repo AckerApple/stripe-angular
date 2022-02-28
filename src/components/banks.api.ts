@@ -12,7 +12,14 @@ export interface BankData {
 // ach token data
 export const bank: BankData & ISimpleRouteEditor = {
   title: '🏦 Bank Account',
-  link: 'https://stripe.com/docs/api/customer_bank_accounts',
+  description: 'Test &lt;stripe-bank&gt; component by entering bank details below',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/customer_bank_accounts',
+  }, {
+    title: 'demo accounts',
+    url: 'https://stripe.com/docs/ach#testing-ach',
+  }],
   verify: {}, // used during micro deposit verification
   data: {
     country: 'US',

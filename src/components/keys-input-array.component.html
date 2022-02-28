@@ -3,7 +3,9 @@
     <div *ngFor="let item of array; let index=index" [class.bg-positive]="selected===item.value" class="flex-1">
       <div class="flex-valign-center child-margin-xxs">
         <div *ngIf="allowChange">
-          <input type="radio" [checked]="selected===item.value" (click)="selectedChange.emit(selected=item.value)" class="cursor-pointer" />
+          <input type="radio" [checked]="selected===item.value" class="cursor-pointer"
+            (click)="selectedChange.emit(selected=item.value)"
+          />
         </div>
         <input type="text" maxLength="125" [value]="item.title || ''"
           (keyup)="item.title=$event.target.value" placeholder="Title"
@@ -11,7 +13,7 @@
         /><span>=</span>
         <div>
           <input [type]="inputType" [placeholder]="inputPlaceholder" class="flex-1"
-            (keyup)="item.value=$event.target.value"
+            (keyup)="selected === item.value && selectedChange.emit(item.value=$event.target.value);item.value=$event.target.value"
             [value]="item.value || ''"
             style="width:100%;min-width:15vw"
           />
@@ -24,8 +26,8 @@
     </div>
   </div>
   <div class="pad-left-xxs pad-v-xs">
-    <a type="button" class="margin-left-xxs pad-v-xxs pad-h-xs hover-bg-balanced active-bg-dark radius-10 text-xxs bg-positive flex-valign-center"
-      title="add additional entry"
+    <a type="button" title="add additional entry"
+      class="margin-left-xxs pad-v-xxs pad-h-xs hover-bg-balanced active-bg-dark radius-10 text-xxs bg-positive flex-valign-center"
       [class.flex-1]="!array?.length"
       (click)="array.push({})"
     >add</a>

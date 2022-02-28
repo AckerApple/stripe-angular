@@ -1,4 +1,4 @@
-import { Component } from "@angular/core"
+import { Component, TemplateRef, ViewChild } from "@angular/core"
 import { StripeScriptTag } from "stripe-angular"
 import * as packageJson from "stripe-angular/package.json"
 import { bank } from "./banks.api"
@@ -11,7 +11,7 @@ import { request, requestByRouter, RequestOptions, RouterRequestOptions } from '
 // TODO: import * as allGroups from './apis.json'
 
 import {
-  sample, copyText, tryParse, stripeServer, changeKey, flatten, removeFlats, getSaveableStorage,
+  sample, copyText, tryParse, stripeServer, flatten, removeFlats, getSaveableStorage,
 } from "./app.component.utils"
 import { generateTestHeaderString } from "./webhook.utils"
 import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
@@ -19,6 +19,7 @@ import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { create_customer } from "./customers.api"
 import { card } from "./cards.api"
 import { links } from "./links"
+import { getGroupByApi, GroupScope } from "./group-tools.component"
 
 declare const Plaid: any
 
@@ -40,7 +41,8 @@ declare const Plaid: any
   localStorage = localStorage
 
   lastError:Error
-  stripeBank: stripe.Stripe
+  
+  @ViewChild('stripeBank', { static: true }) stripeBank: stripe.Stripe
 
   localServerActive: boolean
 
@@ -91,7 +93,7 @@ declare const Plaid: any
 
   create_customer = simpleRouteToSmart(create_customer, this.allGroups)
 
-  changeKey = changeKey
+  editConfig?: boolean
   copyText = copyText
 
   testNums = [{
@@ -118,17 +120,26 @@ declare const Plaid: any
   }]
 
   // temp
-  showApi: boolean
-  showRelated: boolean
+  // showApi: boolean
+  // showRelated: boolean
+  groupsScope: GroupScope = {level: 0}
 
   constructor(public StripeScriptTag: StripeScriptTag){
     (card as any).result = {} // must pre-populate this
 
     this.checkLocalServer()
 
-    this.api.confirm_pay_intent.smarts.$send.subscribe(data => this.confirmPayIntent())
+    this.api.confirm_pay_intent.smarts.$send.subscribe(() => this.confirmPayIntent())
     this.api.testHeader.smarts.$send.subscribe(data => this.createTestHeader(data))
     this.api.webhookPost.smarts.$send.subscribe(data => this.sendWebhookPost(data))
+    this.api.bank.smarts.$send.subscribe(async data => {      
+      try {
+        const result = await this.stripeBank.createToken(this.api.bank.data as any)
+        this.api.bank.smarts.$result.next(result)
+      } catch (err) {
+        this.api.bank.error = err
+      }
+    })
 
     // listen to results to flatten
     Object.values(this.api).forEach(api => this.subApi(api))
@@ -150,6 +161,11 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
+  }
+
+  getGroupByApi(api: SmartRouteEditor, _group: ApiGroup[]) {
+    const result = getGroupByApi(api, this.allGroups)
+    this.groupsScope = result
   }
 
   sendWebhookPost(data: any) {
@@ -249,17 +265,6 @@ declare const Plaid: any
     });
   }
 
-  deleteLocalStorage() {
-    localStorage.stripeAngular = null
-    delete localStorage.stripeAngular
-
-    // support old delete
-    localStorage.stripeAngularPrivateKey = null;
-    localStorage.stripeAngularKey = null;
-    delete localStorage.stripeAngularPrivateKey;
-    delete localStorage.stripeAngularKey;
-  }
-
   changeSourceRequest(data:string){
     let source;
 
@@ -286,10 +291,14 @@ declare const Plaid: any
   subApi(api: SmartRouteEditor) {
     // listen to results to flatten
     api.smarts.$result.subscribe(_data => this.afterApiResult(api))
+    if (api===this.api.bank) {
+      console.log('we registered')
+    }
     return api
   }
 
   afterApiResult(api: SmartRouteEditor) {
+    console.log('---------------')
     this.flatten(api)
 
     api.smarts.related.forEach(related => {

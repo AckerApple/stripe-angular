@@ -11,6 +11,7 @@ import { SmartRouteEditor } from "./typings"
   @Input() copy: string
 
   @Input() format: 'json' | 'small' = 'small'
+  @Input() dumpLevels: number = -1 // unfolded shown levels of depth. Default is auto decide
   @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
 
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>

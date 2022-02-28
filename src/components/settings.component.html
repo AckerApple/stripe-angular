@@ -1,4 +1,4 @@
-<div *ngIf="storage.key && !edit else storageForm">
+<div *ngIf="!edit else storageForm">
   <div class="flex flex-wrap text-smx child-margin">
     <div class="flex-1">
       <strong class="nowrap">🗝 Publishable Key</strong>
@@ -44,7 +44,7 @@
 </div>
 
 <ng-template #storageForm>
-  <form (submit)="save();editChange.emit(edit=false)">
+  <form (submit)="save();editChange.emit(edit=false)" (change)="save()">
     <div class="flex-wrap child-margin-xxs child-pad-xxs">
       
       <div class="flex1 bg-grey">
@@ -57,10 +57,12 @@
           </div>
         </div>
         <div>
-          <keys-input-array inputType="password" [array]="storage.publicKeys" [(selected)]="storage.key" allowChange="1" inputPlaceholder="🔑 value">
+          <keys-input-array inputType="password" [array]="storage.publicKeys"
+            [(selected)]="storage.key" allowChange="1" inputPlaceholder="🔑 value"
+          >
             <ng-template #valueFooter let-value="value">
               <div class="pos-rel width-full">
-                <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
                   <masked-key [value]="value"></masked-key>
                 </div>      
               </div>
@@ -71,13 +73,13 @@
 
       <div class="bg-grey flex1 nowrap">
         <div>
-          <label for="enableServerMode">
+          <label for="storage.savePrivateKeyLocally">
             <input
-              type="checkbox" name="enableServerMode" id="enableServerMode"
+              type="checkbox" name="storage.savePrivateKeyLocally" id="storage.savePrivateKeyLocally"
               (change)="toggleServerMode()"
-              [checked] = "enableServerMode"
+              [checked] = "storage.savePrivateKeyLocally"
             />
-            <span> 🔗 enable server functionality</span>
+            <span>&nbsp;🔗 enable server functionality</span>
           </label>
         </div>
         
@@ -88,13 +90,13 @@
               (change)="storage.saveKeyLocally = !storage.saveKeyLocally"
               [checked] = "storage.saveKeyLocally"
             />
-            <span> 💾 save in localStorage</span>
-          </label>  
+            <span>&nbsp;💾 save in localStorage</span>
+          </label>
         </div>
       </div>
 
-      <ng-container *ngIf="enableServerMode || storage.saveKeyLocally">
-        <div *ngIf="enableServerMode" class="flex1 bg-grey">
+      <ng-container *ngIf="storage.savePrivateKeyLocally">
+        <div *ngIf="storage.savePrivateKeyLocally" class="flex1 bg-grey">
           <div class="flex-apart">
             <strong class="nowrap">🔐 Private Keys</strong>
             <div class="flex-1 text-center pad-left">
@@ -107,7 +109,7 @@
             <keys-input-array inputType="password" [array]="storage.privateKeys" [(selected)]="storage.privateKey" allowChange="1" inputPlaceholder="🔑 value">
               <ng-template #valueFooter let-value="value">
                 <div class="pos-rel">
-                  <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                  <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
                     <masked-key [value]="value"></masked-key>
                   </div>      
                 </div>
@@ -124,7 +126,7 @@
           <webhook-server-edit (save)="save()"></webhook-server-edit>
         </div>
 
-        <fieldset class="radius-10">
+        <fieldset class="radius-10 width-full">
           <legend>🏦 Plaid</legend>
           <div class="flex-wrap child-margin-xxs child-pad-xs">
             <div class="flex1 bg-grey">
@@ -136,7 +138,7 @@
                 <keys-input-array inputType="password" [array]="storage.plaid.clientIds" [(selected)]="storage.plaid.client_id" allowChange="1" inputPlaceholder="🔑 value">
                   <ng-template #valueFooter let-value="value">
                     <div class="pos-rel width-full">
-                      <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                      <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
                         <masked-key [value]="value"></masked-key>
                       </div>      
                     </div>
@@ -145,7 +147,7 @@
               </div>
             </div>
 
-            <div *ngIf="enableServerMode" class="flex1 bg-grey">
+            <div *ngIf="storage.savePrivateKeyLocally" class="flex1 bg-grey">
               <strong class="nowrap">👂 Secrets</strong>
               <small class="block opacity-half text-xxxs text-center">
                 Store multiple keys for convenient switching
@@ -154,7 +156,7 @@
                 <keys-input-array inputType="password" [array]="storage.plaid.secrets" [selected]="storage.plaid.secret" allowChange="1" inputPlaceholder="🔑 value">
                   <ng-template #valueFooter let-value="value">
                     <div class="pos-rel width-full">
-                      <div class="pos-abs opacity-70 text-xxxs text-center width-full" style="top:-.9em">
+                      <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
                         <masked-key [value]="value"></masked-key>
                       </div>      
                     </div>
@@ -181,7 +183,7 @@
             </label>
           </strong>
         </div>
-        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:25vh;min-height:200px;"
+        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:20vh;min-height:200px;"
           (change)="updateStorageMeta($event.target.value)"
         >{{ storage.metadata | json }}</textArea>
       </div>
@@ -198,16 +200,18 @@
     -->
 
     <div class="flex-wrap child-margin-xxs flex-center child-flex-1">
-      <button *ngIf="storage.privateKey || storage.key"
+      <button *ngIf="storage.privateKey || storage.key || storage.saveKeyLocally"
         type="button" (click)="deleteLocalStorage()"
         class="hover-bg-positive active-bg-balanced bg-black text-white"
       >🗑 clear localStorage</button>
 
-      <button type="button" (click)="editChange.emit(edit = !edit)"
+      <button *ngIf="storage.key" type="button" (click)="editChange.emit(edit = !edit)"
         class="bg-grey text-white hover-bg-positive active-bg-balanced"
-      >❌ cancel</button>
+      >❌ CLOSE</button>
 
-      <button type="submit" class="bg-balanced hover-bg-positive active-bg-energized">💾 save</button>
+      <!-- saves on changes
+        <button type="submit" class="bg-balanced hover-bg-positive active-bg-energized">💾 save</button>
+      -->
     </div>
   </form>
 </ng-template>
