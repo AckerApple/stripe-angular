@@ -12,7 +12,7 @@ export interface BankData {
 // ach token data
 export const bank: BankData & ISimpleRouteEditor = {
   title: '🏦 Bank Account',
-  description: 'Test &lt;stripe-bank&gt; component by entering bank details below',
+  description: 'Test saving bank details using the <stripe-bank> component',
   links: [{
     title: '📕 api docs',
     url: 'https://stripe.com/docs/api/customer_bank_accounts',

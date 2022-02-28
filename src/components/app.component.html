@@ -12,10 +12,13 @@
       <br />
       <div class="margin pad text-white text-center">
         <h1 style="margin:0;" (click)="downloadAllGroupsJson()">🐠 stripe-angular {{version}}</h1>
-        <div class="flex-center flex-wrap child-margin flex-valign-center">
-          <p>🎛 Dashboard for testing Stripe with Angular. Includes testing for many related work flows.</p>
-          <div class="text-xxs">
-            👀 <a class="underline" (click)="showMore = !showMore">read more about this tool</a>
+        <div class="text-center">
+          <div>🎛 Dashboard for testing many common Stripe work flows.</div>
+          <div class="text-xs opacity-80">
+            <small>Display elements are managed by Stripe-Angular components.</small>
+            <div class="text-xxs">
+              👀 <a class="underline" (click)="showMore = !showMore">read more about this tool</a>
+            </div>
           </div>
         </div>
         <div class="flex-center">
@@ -305,7 +308,6 @@
       <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
     </div>
 
-
     <div *ngIf="editOptions">
       <br />
       <div style="display:flex;justify-content:space-between">
@@ -329,6 +331,12 @@
     <!--<textarea
       wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
     >{{ api.card.changedEvent | json }}</textArea>-->
+  </div>
+
+  <div class="text-xs opacity-80 text-center">
+    <span class="underline">
+      <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
+    </span>
   </div>
 </ng-template>
 <!--
@@ -490,11 +498,8 @@ npm run start
 
 <ng-template #cardTemplate>
   <div class="tool-wrap flex1">
-    <label for="card-like-element" class="flex flex-wrap flex-valign-center color-white">
+    <label for="card-like-element" class="color-white">
       <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
-      <small class="underline">
-        <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
-      </small>
     </label>
 
     <div class="tool-panel">
@@ -505,24 +510,6 @@ npm run start
 </ng-template>
 
 <ng-template #bankTemplate>
-  <!--
-  <div class="tool-wrap flex1">
-    <div class="flex flex-wrap flex-valign-bottom text-white">
-      <h3 class="margin-0 pad-0 flex-1">
-        <label for="card-like-element">🏦 Bank Account</label>
-      </h3>
-      <small class="underline">
-        <a href="https://stripe.com/docs/ach#testing-ach" target="_blank" class="text-xs no-a-style"
-        >demo accounts</a>
-      </small>
-    </div>
-    <div class="tool-panel">
-      <p class="text-xs text-xs opacity-80">Test &lt;stripe-bank&gt; component by entering bank details below</p>
-      <ng-container *ngTemplateOutlet="bankUi"></ng-container>
-    </div>
-  </div>
-  -->
-
   <tool-wrap class="flex1" [id]="'serverToolsWrap' + api.bank.title" [name]="'serverToolsWrap' + api.bank.title"
     [api]="api.bank" [(format)]="storage.format" [allowHide]="false" [dumpLevels]="0"
   >
