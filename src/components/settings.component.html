@@ -47,7 +47,7 @@
   <form (submit)="save();editChange.emit(edit=false)" (change)="save()">
     <div class="flex-wrap child-margin-xxs child-pad-xxs">
       
-      <div class="flex1 bg-grey">
+      <div class="flex2 bg-grey" style="min-width:30vw">
         <div class="flex-apart">
           <strong class="nowrap">👁 🗝 Public Keys</strong>
           <div class="flex-1 text-center pad-left">
@@ -58,7 +58,8 @@
         </div>
         <div>
           <keys-input-array inputType="password" [array]="storage.publicKeys"
-            [(selected)]="storage.key" allowChange="1" inputPlaceholder="🔑 value"
+            [(value)]="storage.key" allowChange="1" inputPlaceholder="🔑 value"
+            (selectedChange)="publicKeyChange.emit($event)"
           >
             <ng-template #valueFooter let-value="value">
               <div class="pos-rel width-full">
@@ -106,7 +107,7 @@
             </div>
           </div>
           <div>
-            <keys-input-array inputType="password" [array]="storage.privateKeys" [(selected)]="storage.privateKey" allowChange="1" inputPlaceholder="🔑 value">
+            <keys-input-array inputType="password" [array]="storage.privateKeys" [(value)]="storage.privateKey" allowChange="1" inputPlaceholder="🔑 value">
               <ng-template #valueFooter let-value="value">
                 <div class="pos-rel">
                   <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
@@ -135,7 +136,7 @@
                 Store multiple keys for convenient switching
               </small>
               <div>
-                <keys-input-array inputType="password" [array]="storage.plaid.clientIds" [(selected)]="storage.plaid.client_id" allowChange="1" inputPlaceholder="🔑 value">
+                <keys-input-array inputType="password" [array]="storage.plaid.clientIds" [(value)]="storage.plaid.client_id" allowChange="1" inputPlaceholder="🔑 value">
                   <ng-template #valueFooter let-value="value">
                     <div class="pos-rel width-full">
                       <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">
@@ -153,7 +154,12 @@
                 Store multiple keys for convenient switching
               </small>
               <div>
-                <keys-input-array inputType="password" [array]="storage.plaid.secrets" [selected]="storage.plaid.secret" allowChange="1" inputPlaceholder="🔑 value">
+                <keys-input-array inputType="password"
+                  [array]="storage.plaid.secrets"
+                  [value]="storage.plaid.secret"
+                  inputPlaceholder="🔑 value"
+                  allowChange="1"
+                >
                   <ng-template #valueFooter let-value="value">
                     <div class="pos-rel width-full">
                       <div class="pos-abs opacity-70 text-xxxs text-center width-full pad-top-xs" style="top:-.9em">

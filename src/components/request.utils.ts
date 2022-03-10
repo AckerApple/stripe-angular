@@ -19,45 +19,55 @@ export function requestByRouter(
   delete route.result
   delete route.error
 
-  if (!route.request) {
+  const req = route.request || {} as any
+
+  if (!req) {
     return console.warn('🟠 not an api request')
   }
 
   ++route.smarts.load
 
-  let url: string = options.baseUrl || route.request.host || ''
+  let url: string = options.baseUrl || req.host || ''
 
   if (options.id) {
-    const idSearch = /\$\{\s*id\s*\}/.exec(route.request.path)
+    const idSearch = /\$\{\s*id\s*\}/.exec(req.path)
     if (idSearch.length > 0) {
-      url = url + route.request.path.slice(0, idSearch.index) + options.id + route.request.path.slice(idSearch.index + idSearch[0].length, url.length)
+      url = url + req.path.slice(0, idSearch.index) + options.id + req.path.slice(idSearch.index + idSearch[0].length, url.length)
     } else {
       url = url + options.id
     }
   } else {
-    url = url + route.request.path
+    url = url + req.path
   }
 
   const rawData = options.post || options.json || route.data
   const data = rawData ? JSON.parse(JSON.stringify(rawData)) : {} // clone
 
-  const params = route.request.params
+  const params = req.params
   const replaced = replaceStringVars(url, params)
   url = replaced.url
 
-  let headers = {...options.request.headers, ...route.request.headers}
+  let headers = {}
 
-  if (route.request.removeHeaderValues) {
+  if (options.request?.headers) {
+    Object.assign(headers, options.request.headers)
+  }
+
+  if (req.headers) {
+    Object.assign(headers, req.headers)
+  }
+
+  if (req.removeHeaderValues) {
     headers = JSON.parse(JSON.stringify(headers)) // clone before deletes occur
     Object.entries(headers).forEach(([key, value]) => {
-      if (route.request.removeHeaderValues.includes(value)) {
+      if (req.removeHeaderValues.includes(value)) {
         delete headers[key]
       }
     })
   }
 
   const reqOptions: RequestOptions = {
-    url, method: route.request.method, headers,
+    url, method: req.method, headers,
     authorizationBearer: options.request?.authorizationBearer,
   }
 
@@ -70,7 +80,7 @@ export function requestByRouter(
   }
 
   // GET convert POST to query params
-  if (route.request.method === 'GET' && reqOptions.post) {
+  if (req.method === 'GET' && reqOptions.post) {
     options.query = reqOptions.post
   }
 

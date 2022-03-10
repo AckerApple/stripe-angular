@@ -97,6 +97,27 @@ export const persons_update = {
   }]
 }
 
+const persons_retrieve: ISimpleRouteEditor = {
+  title: '1️⃣ Person retrieve',
+  links: [{
+    url: 'https://stripe.com/docs/api/persons/retrieve',
+    title: 'docs',
+  }],
+  request:{
+    method: 'GET',
+    path: 'accounts/:account/persons/:person'
+  },
+  pastes:[{
+    $api: () => persons_list,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.person',
+    pastes:[{
+      valueKey: 'result.data.0.account',
+      pasteKey: 'request.params.account',
+    }]
+  }]
+}
+
 export const apis = [
-  persons_create, persons_update, persons_list
+  persons_create, persons_update, persons_list, persons_retrieve
 ]

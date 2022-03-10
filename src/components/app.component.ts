@@ -259,7 +259,7 @@ declare const Plaid: any
   loadStripe(): Promise<stripe.Stripe> {
     return this.StripeScriptTag.setPublishableKey(this.storage.key || 'xyz')
     .then(stripe => {
-      this.stripe=stripe
+      this.stripe = stripe
       setTimeout(() => this.loaded = true, 200)
       return stripe
     });
@@ -551,6 +551,15 @@ declare const Plaid: any
     } catch (err) {
       this.api.confirm_pay_intent.error = err
     }
+  }
+
+  hideShowStripe() {
+    delete this.stripe
+    delete this.api.card.error
+
+    setTimeout(() => {
+      this.loadStripe()
+    }, 1000)
   }
 }
 

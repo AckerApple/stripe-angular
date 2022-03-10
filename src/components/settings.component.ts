@@ -13,6 +13,7 @@ import { localSchema } from './storage'
 
   @Output() saveChange: EventEmitter<void> = new EventEmitter()
   @Output() metadataUpdate: EventEmitter<any> = new EventEmitter()
+  @Output() publicKeyChange: EventEmitter<string> = new EventEmitter()
 
   tempPublishableKey: string
   tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;

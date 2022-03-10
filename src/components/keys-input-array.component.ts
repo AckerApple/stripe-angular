@@ -6,7 +6,8 @@ import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, Templ
 }) export class KeysInputArrayComponent {
   @Input() array: any[]
   
-  @Input() selected: any
+  @Input() value: any
+  @Output() valueChange: EventEmitter<any> = new EventEmitter()
   @Output() selectedChange: EventEmitter<any> = new EventEmitter()
   
   @Input() inputType: string = 'text'

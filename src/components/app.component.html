@@ -34,11 +34,13 @@
 
       <ng-container *ngIf="loaded">
         <div class="flex-wrap flex-center">
-          <div class="tool-wrap" [ngClass]="settings.edit || !storage.key ? 'flex2' : 'flex1'">
+          <!--- ⚙️ Settings -->
+          <div class="tool-wrap" [ngClass]="settings.edit || !storage.key ? 'flex2' : 'flex1'" style="min-width:35vw">
             <h3 class="margin-0 text-left text-white">⚙️ Settings</h3>
             <div class="text-left flex-1 radius-5" style="background-color:#888;">
               <p class="pad text-xs opacity-80">Settings <b>required</b> to properly interact with Stripe and this tool</p>
               <settings #settings [storage]="storage" [(edit)]="editConfig" (saveChange)="save()"
+                (publicKeyChange)="hideShowStripe()"
                 (metadataUpdate)="defaultMetadata($event)"
               ></settings>
             </div>
@@ -164,294 +166,195 @@
   </tr>
 </table>
 
-<ng-template #cardUi>
-  <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
-    <stripe-card
-      #stripeCard
-      (changed) = "api.card.changedEvent = $event"
-      [options] = "options"
-      [(complete)]="cardComplete"
-      (catch)="api.card.error=$event;sending=false;lastError=$event"
-      (invalidChange)="sending=false;lastError=$event"
-      (cardMounted) = "setCardElements($event)"
+<ng-template #cardTemplate>
+  <div class="tool-wrap flex1">
+    <label for="card-like-element" class="color-white">
+      <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
+    </label>
 
-      [(token)]="api.card.result.token"
-      (tokenChange)="sending=false;flatten(api.card)"
+    <div class="tool-panel">
+      <p class="text-xs text-xs opacity-80">Test &lt;stripe-card&gt; component by entering card details below</p> 
+      <div id="card-like-element" style="background-color:white;border-radius: 5px;border:1px solid #DDD;padding:.33em;">
+        <stripe-card
+          #stripeCard
+          (changed) = "api.card.changedEvent = $event"
+          [options] = "options"
+          [(complete)]="cardComplete"
+          (catch)="api.card.error=$event;sending=false;lastError=$event"
+          (invalidChange)="sending=false;lastError=$event"
+          (cardMounted) = "setCardElements($event)"
 
-      [(source)]="api.card.result.source"
-      (sourceChange)="flatten(api.card)"
+          [(token)]="api.card.result.token"
+          (tokenChange)="sending=false;flatten(api.card)"
 
-      [(paymentMethod)]="api.card.result.payment_method"
-      (paymentMethodChange)="flatten(api.card)"
-    ></stripe-card>
-  </div>
+          [(source)]="api.card.result.source"
+          (sourceChange)="flatten(api.card)"
 
-  <!--<div *ngIf="!cardComplete;" class="opacity-half text-center pad-v">
-    ...awaiting card entry above...
-  </div>-->
-
-  <div *ngIf="api.card.error" class="margin-xs pad-xs bg-danger">
-    {{ api.card.error.message ? api.card.error.message : (api.card.error | json) }}
-  </div>
-
-  <div class="text-center opacity-70">
-    <small
-      [class.text-assertive]="!cardComplete"
-      [class.text-balanced]="cardComplete"
-    ><strong>card entry status</strong>: {{ cardComplete ? 'complete' : 'incomplete' }}</small>
-  </div>
-
-  <div class="pad-top">
-    <div class="flex-wrap child-margin-1">
-      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
-        (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
-      >💳 create pay method</button>
-
-      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
-        (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
-        title="Using Payment Method instead is recommended"
-      >💳 create source</button>
-
-      <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
-        (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
-        title="Using Payment Method instead is recommended"
-      >🪙 create token</button>
-    </div>
-
-    <div *ngIf="api.card.result.token">
-      <br />
-      <strong>↘️ Token Response</strong>
-      <dump [value]="api.card.result.token" showLevels="1"></dump>
-    </div>
-  
-    <div *ngIf="api.card.result.source">
-      <br />
-      <div style="display:flex">
-        <strong style="flex-grow:1">↘️ Source Response</strong>
+          [(paymentMethod)]="api.card.result.payment_method"
+          (paymentMethodChange)="flatten(api.card)"
+        ></stripe-card>
       </div>
-      <dump [value]="api.card.result.source" showLevels="1"></dump>
-    </div>
-  
-    <div *ngIf="api.card.result.payment_method">
-      <br />
-      <div class="flex">
-        <strong>↘️ Payment Method Response</strong>
+
+      <!--<div *ngIf="!cardComplete;" class="opacity-half text-center pad-v">
+        ...awaiting card entry above...
+      </div>-->
+
+      <div *ngIf="api.card.error" class="margin-xs pad-xs bg-assertive text-sm">
+        {{ api.card.error.message ? api.card.error.message : (api.card.error | json) }}
       </div>
-      <dump [value]="api.card.result.payment_method" showLevels="1"></dump>
-    </div>
-  
-    <div class="text-xs pad-v">
-      <h4 class="margin-bottom-xs">📋 copy/paste test card numbers</h4>
-      <div class="flex-wrap child-margin-1 text-center text-xs">
-        <ng-container *ngFor="let item of testNums">
-          <a (click)="copyText(item.number)" class="flex-1 hover-bg-positive active-bg-balanced radius-10 bg-dark"
-            [title]="item.description"
-          >
-            <div [class.pad-h-2x]="item.icon">
-              <span *ngIf="item.icon" class="pos-rel">
-                <span class="pos-abs" style="right:3px;bottom:-.7em">{{item.icon}}</span>
-              </span>
-              <span>{{item.number}}</span>
-            </div>
-            <div class="text-sm opacity-half line-height-90">{{item.hint}}</div>
-          </a>
-        </ng-container>
+
+      <div class="text-center opacity-70">
+        <small
+          [class.text-assertive]="!cardComplete"
+          [class.text-balanced]="cardComplete"
+        ><strong>card entry status</strong>: {{ cardComplete ? 'complete' : 'incomplete' }}</small>
       </div>
-    </div>
 
-    <br />
+      <div class="pad-top">
+        <div class="flex-wrap child-margin-1">
+          <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
+            (click)="lastError=null;sending=true;stripeCard.createPaymentMethod(storage.requests.paymentMethod)"
+          >💳 create pay method</button>
 
-    <!--<h4>Additional functionality</h4>-->
-    <div class="flex-wrap">
-      <button type="button" class="flex-1 hover-bg-positive active-bg-balanced"
-        (click)="editOptions=!editOptions"
-        [style.background-color] = "editOptions && '#0099CC' || null"
-      >🔧 options</button>
-      <ng-container *ngTemplateOutlet="optionalCardControls"></ng-container>
-    </div>
+          <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
+            (click)="lastError=null;sending=true;stripeCard.createSource(storage.requests.source)"
+            title="This is the one method that causes a webhook to fire. You can then upgrade to a payment method by associating that source with a customer."
+          >💳 create source</button>
 
-    <div *ngIf="editExtraData">
-      <br />
-      <div class="flex-apart">
-        <strong title="Card specific way of providing token related info (includes metadata)"
-        >🪙 token data</strong>
-        <small>
-          <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
-        </small>
-      </div>
-      <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
-        (change)="changeExtraData($event.target.value)"
-      >{{ extraData | json }}</textArea>
-    </div>
-
-    <div *ngIf="editPaymentMethodRequest">
-      <br />
-      <div class="flex-apart">
-        <div>💳 payment method data</div>
-        <small>
-          <a href="https://stripe.com/docs/payments/payment-methods/overview" target="_blank">overview</a>&nbsp;
-          <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
-        </small>
-      </div>
-      <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
-      <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any webhooks. Use Source instead</div>
-    </div>
-
-    <div *ngIf="editSourceRequest">
-      <br />
-      <div style="display:flex;justify-content:space-between">
-        <strong [style.color]="storage.temp.invalidSourceData && 'red'">source data</strong>
-        <small>
-          <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
-        </small>
-      </div>
-      <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
-    </div>
-
-    <div *ngIf="editOptions">
-      <br />
-      <div style="display:flex;justify-content:space-between">
-        <strong>options</strong>
-        <small>
-          <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
-        </small>
-      </div>
-      <textarea
-        wrap="off" style="width:100%;height:25vh;min-height:200px;"
-        (change)="changeOptions($event.target.value)"
-      >{{ options | json }}</textArea>
-    </div>
-
-  </div>
-
-  <div *ngIf="api.card.changedEvent" class="text-smx">
-    <br />
-    <strong style="opacity: 50%;">⚡️ Change Event Info</strong>
-    <dump [value]="api.card.changedEvent" showLevels="0"></dump>
-    <!--<textarea
-      wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
-    >{{ api.card.changedEvent | json }}</textArea>-->
-  </div>
-
-  <div class="text-xs opacity-80 text-center">
-    <span class="underline">
-      <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
-    </span>
-  </div>
-</ng-template>
-<!--
-<ng-template #bankUi>
-  <textarea
-    wrap="off" style="width:100%;height:25vh;min-height:200px;"
-    (change)="changeKey(api.bank, $event.target.value)"
-  >{{ api.bank.data | json }}</textArea>
-
-  <br />
-
-  <div style="text-align:right;">
-    <button type="button" class="hover-bg-positive active-bg-balanced"
-      (click)="lastError=null;sending=true;stripeBank.createToken(api.bank.data)"
-    >🪙 create bank token</button>
-  </div>
-
-  <div *ngIf="api.bank.result">
-    <br />
-    <strong>Bank Token</strong>
-    <dump [value]="api.bank.result" showLevels="0"></dump>
-  </div>
-
-  <ng-container *ngIf="storage.privateKey && api.bank.result?.bank_account?.id">
-    <br />
-    <div style="display:flex;flex-wrap: wrap;align-items: baseline;">
-      <h3 style="flex-grow:1;color:orange;">Bank Server Functions</h3>
-      <small class="opacity-half text-xs">uses 🔐 privateKey</small>
-    </div>
-
-    <table cellPadding="3" cellSpacing="0" border="0" class="width-full">
-      <tHead>
-        <tr>
-          <th class="border-bottom">action</th>
-          <th class="border-bottom">route</th>
-          <th class="border-bottom text-right">docs</th>
-        </tr>
-      </tHead>
-      <tr class="text-xs">
-        <td>
-          <button type="button" class="hover-bg-positive active-bg-balanced"
-            (click)="createCustomerByToken(api.bank.result)"
-            title = "Connect the bank token created above with a Stripe customer"
-          >👤 new customer by 🪙 token</button>
-        </td>
-        <td>POST /customers</td>
-        <td class="text-right">
-          <a target="_blank" href="https://stripe.com/docs/ach#manually-collecting-and-verifying-bank-accounts">📄</a>
-        </td>
-      </tr>
-    </table>
-
-    <div *ngIf="create_customer.result?.id">
-      <br />
-      <div style="display:flex;flex-wrap:wrap;align-items:baseline;">
-        <h3 class="margin-0">👀 Verify customer micro deposits</h3>
-        <div class="flex-wrap child-margin">
-          <small class="flex-1">
-            Use privateKey to mimic backend server calls to Stripe to validate verification amounts
-          </small>
-          <small>
-            <a style="color:white;" href="https://stripe.com/docs/ach#testing-ach" target="_blank">test data</a>
-          </small>
+          <button type="button" class="flex-1  hover-bg-positive active-bg-balanced" [disabled]="!cardComplete"
+            (click)="lastError=null;sending=true;stripeCard.createToken(extraData)"
+            title="Typically used for creating Stripe Connected Account external_accounts"
+          >🪙 create token</button>
         </div>
-      </div>
-      <div class="flex flex-wrap">
-        <div class="flex-1 margin-xxs">
-          <div class="flex flex-space-between flex-left">
-            <span>Verify Amount 1</span>
-            <sup>
-              <a (click)="api.bank.verify.amount1=32" class="opacity-70 text-xxs border radius-10 pad-xxs cursor"
-              >↙️ 32</a>
-            </sup>
+
+        <div *ngIf="api.card.result.token">
+          <br />
+          <strong>↘️ Token Response</strong>
+          <dump [value]="api.card.result.token" showLevels="1"></dump>
+        </div>
+      
+        <div *ngIf="api.card.result.source">
+          <br />
+          <div style="display:flex">
+            <strong style="flex-grow:1">↘️ Source Response</strong>
           </div>
-          <input style="width:100%" type="number"
-            [value]="api.bank.verify.amount1"
-            (keyup)="api.bank.verify.amount1=$event.target.value"
-            placeholder="Enter 32 here"
-          />
+          <dump [value]="api.card.result.source" showLevels="1"></dump>
         </div>
-        <div style="flex-grow: 1;margin:0.4em;">
-          <div style="display:flex;justify-content: space-between;align-items: flex-start;">
-            <span>Verify Amount 2</span>
-            <sup>
-              <a (click)="api.bank.verify.amount2=45" class="opacity-70 text-xxs border radius-10 pad-xxs cursor"
-              >↙️ 45</a>
-            </sup>
+      
+        <div *ngIf="api.card.result.payment_method">
+          <br />
+          <div class="flex">
+            <strong>↘️ Payment Method Response</strong>
           </div>
-          <input
-            style="width:100%" type="number"
-            [value]="api.bank.verify.amount2"
-            (keyup)="api.bank.verify.amount2=$event.target.value"
-            placeholder="Enter 45 here"
-          />
+          <dump [value]="api.card.result.payment_method" showLevels="1"></dump>
         </div>
-      </div>
-      <button type="button" (click)="verifyBank()" class="hover-bg-positive active-bg-balanced">verify</button>
+      
+        <div class="text-xs pad-v">
+          <h4 class="margin-bottom-xs">📋 copy/paste test card numbers</h4>
+          <div class="flex-wrap child-margin-1 text-center text-xs">
+            <ng-container *ngFor="let item of testNums">
+              <a (click)="copyText(item.number)" class="flex-1 hover-bg-positive active-bg-balanced radius-10 bg-dark"
+                [title]="item.description"
+              >
+                <div [class.pad-h-2x]="item.icon">
+                  <span *ngIf="item.icon" class="pos-rel">
+                    <span class="pos-abs" style="right:3px;bottom:-.7em">{{item.icon}}</span>
+                  </span>
+                  <span>{{item.number}}</span>
+                </div>
+                <div class="text-sm opacity-half line-height-90">{{item.hint}}</div>
+              </a>
+            </ng-container>
+          </div>
+        </div>
 
-      <div *ngIf="api.bank.verifyResponse">
         <br />
-        <strong>Verification Result</strong>
-        <textarea
-          disabled wrap="off" style="width:100%;height:25vh;min-height:200px;"
-        >{{ api.bank.verifyResponse | json }}</textArea>
+
+        <!--<h4>Additional functionality</h4>-->
+        <div class="flex-wrap">
+          <button type="button" class="flex-1 hover-bg-positive active-bg-balanced"
+            (click)="editOptions=!editOptions"
+            [style.background-color] = "editOptions && '#0099CC' || null"
+          >🔧 options</button>
+          <ng-container *ngTemplateOutlet="optionalCardControls"></ng-container>
+        </div>
+
+        <div *ngIf="editExtraData">
+          <br />
+          <div class="flex-apart">
+            <strong title="Card specific way of providing token related info (includes metadata)"
+            >🪙 token data</strong>
+            <small>
+              <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
+            </small>
+          </div>
+          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
+            (change)="changeExtraData($event.target.value)"
+          >{{ extraData | json }}</textArea>
+        </div>
+
+        <div *ngIf="editPaymentMethodRequest">
+          <br />
+          <div class="flex-apart">
+            <div>💳 payment method data</div>
+            <small>
+              <a href="https://stripe.com/docs/payments/payment-methods/overview" target="_blank">overview</a>&nbsp;
+              <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
+            </small>
+          </div>
+          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
+          <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any webhooks. Use Source instead</div>
+        </div>
+
+        <div *ngIf="editSourceRequest">
+          <br />
+          <div style="display:flex;justify-content:space-between">
+            <strong [style.color]="storage.temp.invalidSourceData && 'red'">source data</strong>
+            <small>
+              <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
+            </small>
+          </div>
+          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
+        </div>
+
+        <div *ngIf="editOptions">
+          <br />
+          <div style="display:flex;justify-content:space-between">
+            <strong>options</strong>
+            <small>
+              <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
+            </small>
+          </div>
+          <textarea
+            wrap="off" style="width:100%;height:25vh;min-height:200px;"
+            (change)="changeOptions($event.target.value)"
+          >{{ options | json }}</textArea>
+        </div>
+
+      </div>
+
+      <div *ngIf="api.card.changedEvent" class="text-smx">
+        <br />
+        <strong style="opacity: 50%;">⚡️ Change Event Info</strong>
+        <dump [value]="api.card.changedEvent" showLevels="0"></dump>
+        <!--<textarea
+          wrap="off" style="width:100%;height:25vh;min-height:200px;" disabled
+        >{{ api.card.changedEvent | json }}</textArea>-->
+      </div>
+
+      <div class="text-xs opacity-80 text-center">
+        <span class="underline">
+          <a href="https://stripe.com/docs/testing#cards" target="_blank" class="text-xs no-a-style">demo card nums</a>
+        </span>
       </div>
     </div>
-  </ng-container>
+  </div>
 </ng-template>
--->
 
 <ng-template #optionalCardControls>
   <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
     (click)="editSourceRequest=!editSourceRequest"
     [style.background-color] = "editSourceRequest && '#0099CC' || null"
-    title="Using Payment Method instead is recommended"
   >💳 source data</button>
 
   <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
@@ -462,7 +365,6 @@
   <button type="button" class="hover-bg-positive active-bg-balanced flex-1"
     (click)="editExtraData=!editExtraData"
     [style.background-color] = "editExtraData && '#0099CC' || null"
-    title="Using Payment Method instead is recommended"
   >🪙 token data</button>
 </ng-template>
 
@@ -492,19 +394,6 @@ npm run start
       <button (click)="localServerActive = true" class="hover-bg-positive active-bg-balanced">
         🔧 show tools anyways
       </button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #cardTemplate>
-  <div class="tool-wrap flex1">
-    <label for="card-like-element" class="color-white">
-      <h3 style="flex-grow:1;margin:0;text-align:left;">💳 Card Element</h3>
-    </label>
-
-    <div class="tool-panel">
-      <p class="text-xs text-xs opacity-80">Test &lt;stripe-card&gt; component by entering card details below</p>
-      <ng-container *ngTemplateOutlet="cardUi"></ng-container>
     </div>
   </div>
 </ng-template>

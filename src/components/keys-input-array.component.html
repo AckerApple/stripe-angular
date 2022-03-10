@@ -1,10 +1,10 @@
 <div class="flex-valign-bottom">
   <div class="flex-1 child-pad-xxs flex-wrap" *ngIf="array?.length">
-    <div *ngFor="let item of array; let index=index" [class.bg-positive]="selected===item.value" class="flex-1">
+    <div *ngFor="let item of array; let index=index" [class.bg-positive]="value===item.value" class="flex-1">
       <div class="flex-valign-center child-margin-xxs">
         <div *ngIf="allowChange">
-          <input type="radio" [checked]="selected===item.value" class="cursor-pointer"
-            (click)="selectedChange.emit(selected=item.value)"
+          <input type="radio" [checked]="value===item.value" class="cursor-pointer"
+            (click)="valueChange.emit(value=item.value);selectedChange.emit(item.value)"
           />
         </div>
         <input type="text" maxLength="125" [value]="item.title || ''"
@@ -13,7 +13,8 @@
         /><span>=</span>
         <div>
           <input [type]="inputType" [placeholder]="inputPlaceholder" class="flex-1"
-            (keyup)="selected === item.value && selectedChange.emit(item.value=$event.target.value);item.value=$event.target.value"
+            (keyup)="value === item.value && valueChange.emit(item.value=$event.target.value);item.value=$event.target.value"
+            (change)="valueChange.emit(value=item.value);selectedChange.emit(item.value)"
             [value]="item.value || ''"
             style="width:100%;min-width:15vw"
           />
