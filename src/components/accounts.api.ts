@@ -1,9 +1,10 @@
-import { plaid_stripeBankCreate } from "./plaid.apis"
 import { apis as persons, persons_create, persons_list, persons_update } from './persons.api'
+import { apis as transferApis } from "./transfers.api"
+import { plaid_stripeBankCreate } from "./plaid.apis"
+import { apis as payoutApis } from './payouts.api'
 import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card } from "./cards.api"
-
 
 export const accounts_create: ISimpleRouteEditor = {
   title: '🆕 Create account',
@@ -670,7 +671,6 @@ export const accountsGroup = {
       title: '📕 API Docs',
       url: 'https://stripe.com/docs/api/application_fees'
     }]
-
   },{
     title: 'External Accounts',
     icon: '↔️',
@@ -680,7 +680,21 @@ export const accountsGroup = {
       title: '📕 API Docs',
       url: 'https://stripe.com/docs/api/external_accounts'
     }]
-
+  },{
+    icon: '💸',
+    title: 'Payouts',
+    description: 'A Payout object is created when you receive funds from Stripe, or when you initiate a payout to either a bank account or debit card of a connected Stripe account.',
+    apis: payoutApis,
+    links: [{
+      url: 'https://stripe.com/docs/api/payouts',
+      title: '📕 API docs'
+    },{
+      url: 'https://stripe.com/docs/connect/testing#payouts',
+      title: '🔬 test payout account numbers'
+    }, {
+      url: 'https://stripe.com/docs/connect/manage-payout-schedule',
+      title: 'Managing payout schedule'
+    }]
   }, {
     title: 'Persons',
     icon: '🙍',
@@ -692,6 +706,18 @@ export const accountsGroup = {
     }, {
       url: 'https://stripe.com/docs/connect/identity-verification-api#person-information',
       title: 'Person info guide'
+    }]
+  }, {
+    icon: '🤝',
+    title: 'Transfers',
+    description: 'A Transfer object is created when you move funds between Stripe accounts as part of Connect.',
+    apis: transferApis,
+    links: [{
+      title: '📕 API docs',
+      url: 'https://stripe.com/docs/api/transfers'
+    },{
+      title: '📦 💵 👤 💰 🛳 multiple charges & transfers',
+      url: 'https://stripe.com/docs/connect/charges-transfers'
     }]
   }]
 }

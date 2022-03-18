@@ -91,7 +91,9 @@
   <div class="flex1 text-xs text-dark">
     <div *ngIf="key" class="strong text-xxs border-white border-bottom" style="line-height: 95%;">{{key}}</div>
     <ng-container *ngIf="value.search && (value.slice(0,8)==='https://' || value.slice(0,7)==='http://');else simpleValue">
-      <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized">{{value}}</a>
+      <a (click)="copyText(value)" [href]="value" target="_blank" class="hover-bg-warning active-bg-energized"
+        title = "tap to copy"
+      >{{value}}</a>
     </ng-container>
     <ng-template #simpleValue>
       <div (click)="copyText(value)" class="cursor-pointer hover-bg-warning active-bg-energized"

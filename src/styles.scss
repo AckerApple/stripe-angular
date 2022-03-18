@@ -1,7 +1,7 @@
 /* Commonly used classes */
 @import "node_modules/ack-css-boot/scss/ack-css-boot"; // may require ../ ref
 
-* {box-sizing:border-box;line-height: 1.5em}
+body *:not(iframe) {box-sizing:border-box;line-height: 1.5em}
 html, body{width:100%;height:100%;padding:0;margin:0;}
 html {
   scroll-behavior:smooth;font-size:calc(22px + .4vw);

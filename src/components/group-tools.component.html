@@ -24,7 +24,7 @@
   <!-- list of apis within currently selected group -->
   <div *ngIf="scope.showGroup && !scope.showGroup.groups && scope.showGroup.apis"
     style="align-content: start;"
-    [ngClass]="scope.showApi ? selectedGroupClass : 'flex-wrap flex-center flex-valign-top'"
+    [ngClass]="scope.showApi ? selectedGroupClass : 'flex-wrap flex-center'"
     [class.flex1] = "!scope.showApi && !scope.scope?.showGroup"
     [class.flex-stacked]="scope.showApi"
   >

@@ -1,10 +1,8 @@
 import { payintents } from './pay_intents.api'
 import { apis as customerApis } from './customers.api'
-import { apis as transferApis } from "./transfers.api"
 import { disputes } from './disputes.api'
 import { accountsGroup, apis as accountsApis } from './accounts.api'
 import { apis as chargesApis } from "./charges.api"
-import { apis as payoutApis } from './payouts.api'
 import { apis as refundApis } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { apis as bankApis } from "./banks.api"
@@ -39,21 +37,6 @@ export const apiGroups: ApiGroup[] = [{
     title: 'tracing & failed refunds'
   }]
 },customers, disputes, payintents,{
-  icon: '💸',
-  title: 'Payouts',
-  description: 'A Payout object is created when you receive funds from Stripe, or when you initiate a payout to either a bank account or debit card of a connected Stripe account.',
-  apis: payoutApis,
-  links: [{
-    url: 'https://stripe.com/docs/api/payouts',
-    title: '📕 API docs'
-  },{
-    url: 'https://stripe.com/docs/connect/testing#payouts',
-    title: '🔬 test payout account numbers'
-  }, {
-    url: 'https://stripe.com/docs/connect/manage-payout-schedule',
-    title: 'Managing payout schedule'
-  }]
-},{
   title: 'Refunds',
   icon: '↩️',
   description: 'refund a charge that has previously been created but not yet refunded. Funds will be refunded to the credit or debit card that was originally charged.',
@@ -67,18 +50,6 @@ export const apiGroups: ApiGroup[] = [{
   }, {
     title: 'takes 5-10 business days',
     url: 'https://stripe.com/docs/refunds#tracing-refunds'
-  }]
-},{
-  icon: '🤝',
-  title: 'Transfers',
-  description: 'A Transfer object is created when you move funds between Stripe accounts as part of Connect.',
-  apis: transferApis,
-  links: [{
-    title: '📕 API docs',
-    url: 'https://stripe.com/docs/api/transfers'
-  },{
-    title: '📦 💵 👤 💰 🛳 multiple charges & transfers',
-    url: 'https://stripe.com/docs/connect/charges-transfers'
   }]
 }]
 
