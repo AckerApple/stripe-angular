@@ -8,6 +8,7 @@ import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, Templ
   
   @Input() value: any
   @Output() valueChange: EventEmitter<any> = new EventEmitter()
+  
   @Output() selectedChange: EventEmitter<any> = new EventEmitter()
   
   @Input() inputType: string = 'text'
@@ -16,4 +17,13 @@ import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, Templ
 
   @ContentChild('valueFooter', { static: false }) valueFooter: TemplateRef<ElementRef>
   @ContentChild('footer', { static: false }) footer: TemplateRef<ElementRef>
+
+  changeValue(value) {
+    this.valueChange.emit(this.value = value)
+    this.selectedChange.emit(value)
+    /*setTimeout(() => {
+      this.valueChange.emit(this.value = value)
+      this.selectedChange.emit(value)
+    }, 0)*/
+  }
 }

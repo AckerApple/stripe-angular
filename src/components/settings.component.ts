@@ -15,14 +15,14 @@ import { localSchema } from './storage'
   @Output() metadataUpdate: EventEmitter<any> = new EventEmitter()
   @Output() publicKeyChange: EventEmitter<string> = new EventEmitter()
 
-  tempPublishableKey: string
-  tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
+  // tempPublishableKey: string
+  // tempPrivateKey: string// localStorage?.stripeAngularPrivateKey;
 
   copyText = copyText
 
   ngOnInit(){
-    this.tempPrivateKey = this.storage.privateKey// localStorage?.stripeAngularPrivateKey;
-    this.tempPublishableKey = this.storage.key
+    // this.tempPrivateKey = this.storage.privateKey// localStorage?.stripeAngularPrivateKey;
+    // this.tempPublishableKey = this.storage.key
 
     if (!this.storage.key) {
       this.edit = true
@@ -30,8 +30,8 @@ import { localSchema } from './storage'
   }
 
   save() {
-    this.storage.key = this.tempPublishableKey || this.storage.key
-    this.storage.privateKey = this.tempPrivateKey || this.storage.privateKey
+    this.storage.key = this.storage.key // this.tempPublishableKey || this.storage.key
+    this.storage.privateKey = this.storage.privateKey // this.tempPrivateKey || this.storage.privateKey
     this.saveChange.emit()
   }
 

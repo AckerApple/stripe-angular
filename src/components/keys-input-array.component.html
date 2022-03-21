@@ -4,7 +4,7 @@
       <div class="flex-valign-center child-margin-xxs">
         <div *ngIf="allowChange">
           <input type="radio" [checked]="value===item.value" class="cursor-pointer"
-            (click)="valueChange.emit(value=item.value);selectedChange.emit(item.value)"
+            (click)="changeValue(item.value)"
           />
         </div>
         <input type="text" maxLength="125" [value]="item.title || ''"
