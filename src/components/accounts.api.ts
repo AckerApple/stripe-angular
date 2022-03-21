@@ -562,6 +562,10 @@ export const accounts_external_list: ISimpleRouteEditor = {
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.account',
+  }, {
+    $api: () => accounts_retrieve,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.account',
   }]
 }
 
