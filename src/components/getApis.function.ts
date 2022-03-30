@@ -3,7 +3,7 @@ import { ISimpleRouteEditor, SmartRouteEditor } from "./typings"
 
 import { plaid_createPublicToken } from './plaid.apis'
 import { bank } from './banks.api'
-import { card } from "./cards.api"
+import { card } from "./sources.api"
 import { payintent_create, payintent_retrieve } from "./pay_intents.api"
 import { testHeader, webhookPost } from "./webhook.apis"
 

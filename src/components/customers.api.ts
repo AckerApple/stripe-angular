@@ -1,8 +1,8 @@
 import { sample } from "./app.component.utils"
 import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
-// import { plaid_stripeBankCreate, bank, cardApis } from "./getApis.function"
-import { card, create_source, payment_method_get, source_get } from "./cards.api"
+import { card, create_source, source_get } from "./sources.api"
+import { payment_method_get } from "./payment_methods.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
 
 // create

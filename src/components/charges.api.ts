@@ -1,7 +1,7 @@
 import { sample } from "./app.component.utils"
 import { ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
-import { card, create_source, source_get } from "./cards.api"
+import { card, create_source, source_get } from "./sources.api"
 import { create_customer, customer_attach_source, customer_get, customer_get_sources, customer_list_all } from "./customers.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
 

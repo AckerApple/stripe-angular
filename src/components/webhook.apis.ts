@@ -292,13 +292,13 @@ export const webhookGroup: ApiGroup = {
   apis: [testHeader, webhookPost],
   description: 'Helpful tools ONLY available in this demo by using entered webhookSigningSecret',
   links: [{
-    title: 'webhooks signatures',
+    title: '✍️ webhooks signatures',
     url: 'https://stripe.com/docs/webhooks/signatures'
   }, {
-    title: 'event types',
+    title: '⚡️ event types',
     url: 'https://stripe.com/docs/api/events/types'
   }, {
-    title: 'your stripe webhooks',
+    title: '🎛 your stripe webhooks',
     url: 'https://dashboard.stripe.com/test/webhooks'
   }],
 }

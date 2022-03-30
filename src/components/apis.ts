@@ -6,10 +6,11 @@ import { apis as chargesApis } from "./charges.api"
 import { apis as refundApis } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { apis as bankApis } from "./banks.api"
-import { apis as cardApis } from "./cards.api"
+import { apis as cardApis } from "./sources.api"
 import { webhookGroup } from "./webhook.apis"
 import { ApiGroup } from "./typings"
 import { plaidApis } from "./plaid.apis"
+import { apis as pmApis } from './payment_methods.api'
 
 const customers: ApiGroup = {
   icon: '👤',
@@ -23,8 +24,13 @@ export const apiGroups: ApiGroup[] = [{
   title: 'Banks', apis: bankApis,
   icon: '🏦',
 },{
-  title: 'Cards', apis: cardApis,
+  title: 'Sources', apis: cardApis,
+  icon: '💳 🏦',
+  description: 'Cards, banks, and credit-transfer/wires',
+},{
+  title: 'Payment Methods', apis: pmApis,
   icon: '💳',
+  description: 'Cards',
 },{
   title: 'Charges', apis: chargesApis,
   icon: '💵',

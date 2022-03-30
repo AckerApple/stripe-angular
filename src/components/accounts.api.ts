@@ -4,7 +4,7 @@ import { plaid_stripeBankCreate } from "./plaid.apis"
 import { apis as payoutApis } from './payouts.api'
 import { ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
-import { card } from "./cards.api"
+import { card } from "./sources.api"
 
 export const accounts_create: ISimpleRouteEditor = {
   title: '🆕 Create account',

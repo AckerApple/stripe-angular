@@ -17,7 +17,7 @@ import { generateTestHeaderString } from "./webhook.utils"
 import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
 import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { create_customer } from "./customers.api"
-import { card } from "./cards.api"
+import { card } from "./sources.api"
 import { links } from "./links"
 import { getGroupByApi, GroupScope } from "./group-tools.component"
 
@@ -45,6 +45,7 @@ declare const Plaid: any
   @ViewChild('stripeBank', { static: true }) stripeBank: stripe.Stripe
 
   localServerActive: boolean
+  apiEditorMode: boolean // api json editor functionality
 
   showMore: boolean // more documentation near title
 
@@ -189,6 +190,14 @@ declare const Plaid: any
     console.log('options', options)
 
     return requestByRouter(this.api.webhookPost, options)
+  }
+
+  saveApisJson() {
+    request({
+      url:'http://localhost:3000/save-apis',
+      method: 'POST',
+      json: this.getAllGroupsSave()
+    })
   }
 
   downloadAllGroupsJson() {
@@ -560,6 +569,17 @@ declare const Plaid: any
     setTimeout(() => {
       this.loadStripe()
     }, 1000)
+  }
+
+  valueTimers: {[index: string]: any} = {}
+  startValueTimer(name, value, time=2000) {
+    this.valueTimers[name] = setTimeout(() => {
+      this[name] = value
+    }, 2000)
+  }
+
+  stopValueTimer(name) {
+    clearTimeout(this.valueTimers[name])
   }
 }
 
