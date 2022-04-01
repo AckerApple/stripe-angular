@@ -65,11 +65,14 @@ export const source_get: ISimpleRouteEditor = {
     pasteKey: 'request.params.id',
   }, {
     $api: () => create_source,
-    valueKey: 'create_source.result.id',
+    valueKey: 'result.id',
     pasteKey: 'request.params.id',
-  },{
+  }, {
+    $api: () => source_transactions,
+    valueKey: 'request.params.id',
+    pasteKey: 'request.params.id',
+  }, {
     $api: () => customer_get_sources,
-    title: 'GET customer.sources[0].id',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.source'
   }, {

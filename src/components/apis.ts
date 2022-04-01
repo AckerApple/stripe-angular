@@ -2,7 +2,7 @@ import { payintents } from './pay_intents.api'
 import { apis as customerApis } from './customers.api'
 import { disputes } from './disputes.api'
 import { accountsGroup, apis as accountsApis } from './accounts.api'
-import { apis as chargesApis } from "./charges.api"
+import { apis as chargesApis, balance_transactions } from "./charges.api"
 import { apis as refundApis } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { apis as bankApis } from "./banks.api"
@@ -41,7 +41,8 @@ export const apiGroups: ApiGroup[] = [{
   }, {
     url: 'https://stripe.com/docs/refunds#tracing-refunds',
     title: 'tracing & failed refunds'
-  }]
+  }],
+  groups: [ balance_transactions ],
 },customers, disputes, payintents,{
   title: 'Refunds',
   icon: '↩️',

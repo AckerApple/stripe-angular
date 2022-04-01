@@ -1,5 +1,5 @@
 import { sample } from "./app.component.utils"
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, create_source, source_get } from "./sources.api"
 import { create_customer, customer_attach_source, customer_get, customer_get_sources, customer_list_all } from "./customers.api"
@@ -52,22 +52,18 @@ export const charge: ISimpleRouteEditor = {
   }],
   pastes: [{
     $api: () => accounts_list,
-    title: 'Accounts list 1️⃣',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.data.0.id'
   },{
     $api: () => accounts_retrieve,
-    title: 'Accounts retrieve by id',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.id'
   },{
     $api: () => accounts_list,
-    title: 'Accounts list 1️⃣',
     pasteKey: 'data.source',
     valueKey: 'result.data.0.id'
   },{
     $api: () => accounts_retrieve,
-    title: 'Accounts retrieve by id',
     pasteKey: 'data.source',
     valueKey: 'result.id'
   },{
@@ -109,7 +105,6 @@ export const charge: ISimpleRouteEditor = {
     title: '👤 GET Customer',
   },{
     $api: () => source_get,
-    title: 'source GET customer',
     valueKey: 'result.customer',
     pasteKey: 'data.customer',
   },{
@@ -122,17 +117,14 @@ export const charge: ISimpleRouteEditor = {
     }]
   },{
     $api: () => customer_list_all,
-    title: '👤 🧾 Customer list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.customer',
   },{
     $api: () => create_customer,
-    title: 'new 👤 customer default_source',
     valueKey: 'result.default_source',
     pasteKey: 'data.source'
   },{
     $api: () => customer_get,
-    title: 'new 👤 customer default_source',
     valueKey: 'result.default_source',
     pasteKey: 'data.source'
   }]
@@ -151,17 +143,14 @@ const charges_list: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => payintent_create,
-    title: '🆕 Pay intent create',
     pasteKey: 'data.payment_intent',
     valueKey: 'result.id'
   },{
     $api: () => payintent_retrieve,
-    title: '1️⃣ Pay intent retrieve',
     pasteKey: 'data.payment_intent',
     valueKey: 'result.id'
   },{
     $api: () => payintent_list,
-    title: '🧾 Pay intent list 1️⃣',
     pasteKey: 'data.payment_intent',
     valueKey: 'result.data.0.id'
   }]
@@ -177,7 +166,6 @@ const charges_retrieve: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => charges_list,
-    title: '🧾 Charges list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
   }]
@@ -196,12 +184,10 @@ const charges_update: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => charges_list,
-    title: '🧾 Charges list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
   },{
     $api: () => charges_retrieve,
-    title: '1️⃣ Charges GET',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
   }]
@@ -220,13 +206,11 @@ const charges_capture: ISimpleRouteEditor = {
   },
   pastes: [{
     $api: () => charges_list,
-    title: '🧾 Charges list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
   },{
     $api: () => charges_retrieve,
-    title: '1️⃣ Charges GET',
-    valueKey: 'result.data.0.id',
+    valueKey: 'result.id',
     pasteKey: 'request.params.id'
   }]
 }
@@ -234,3 +218,71 @@ const charges_capture: ISimpleRouteEditor = {
 export const apis = [
   charge, charges_list, charges_retrieve, charges_update, charges_capture,
 ]
+
+const balance_transactions_list: ISimpleRouteEditor = {
+  title: '🧾 Balance transaction list',
+  links: [{
+    title: '📕 Api docs',
+    url: 'https://stripe.com/docs/api/balance_transactions/list',
+  }],
+   request: {
+    method: 'GET',
+    path: 'balance_transactions'
+  },
+  data: {
+    limit: 3,
+  }
+}
+
+const balance_transactions_retrieve: ISimpleRouteEditor = {
+  title: '1️⃣ Balance transaction retrieve',
+  links: [{
+    title: '📕 Api docs',
+    url: 'https://stripe.com/docs/api/balance_transactions/retrieve',
+  }],
+  request: {
+    method: 'GET',
+    path: 'balance_transactions/:id'
+  },
+  pastes: [{
+    $api: () => charges_list,
+    valueKey: 'result.data.0.balance_transaction',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => charges_retrieve,
+    valueKey: 'result.balance_transaction',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => payintent_list,
+    valueKey: 'result.data.0.charges.data.0.balance_transaction',
+    pasteKey: 'request.params.id'
+  },{
+    $api: () => payintent_retrieve,
+    valueKey: 'result.charges.0.balance_transaction',
+    pasteKey: 'request.params.id'
+  }]
+}
+
+const balance_transactions_apis: ISimpleRouteEditor[] = [
+  balance_transactions_list,
+  balance_transactions_retrieve,
+]
+
+export const balance_transactions: ApiGroup = {
+  title: '⚖️ Balance Transactions',
+  description: 'Balance transactions represent funds moving through your Stripe account. They\'re created for every type of transaction that comes into or flows out of your Stripe account balance.',
+  apis: balance_transactions_apis,
+  links: [{
+    title: '📕 Api docs',
+    url: 'https://stripe.com/docs/api/customer_balance_transactions',
+  },{
+    title: 'Balance transaction types',
+    url: 'https://stripe.com/docs/reports/balance-transaction-types',
+  },{
+    title: 'Balance report',
+    url: 'https://stripe.com/docs/reports/balance',
+  }, {
+    title: 'List balance transactions by customer',
+    url: 'https://stripe.com/docs/api/customer_balance_transactions/list',
+  }]
+}
