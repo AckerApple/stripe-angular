@@ -183,11 +183,12 @@
                 type="checkbox" name="saveRequestsLocal" id="saveRequestsLocal"
                 (change)="storage.saveRequestsLocal = !storage.saveRequestsLocal"
                 [checked] = "storage.saveRequestsLocal"
-              /> Reuse metadata in all requests
+              /> Reuse metadata in requests
             </label>
           </strong>
         </div>
-        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off" style="width:100%;height:20vh;min-height:200px;"
+        <textarea [disabled]="!storage.saveRequestsLocal" wrap="off"
+          spellcheck="false" style="width:100%;height:20vh;min-height:200px;"
           (change)="updateStorageMeta($event.target.value)"
         >{{ storage.metadata | json }}</textArea>
       </div>
