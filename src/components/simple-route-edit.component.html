@@ -16,7 +16,7 @@
     <div class="pos-abs right-0 top-0 text-xxxs pad-xxs opacity-half"
     >🔗 path parameters</div>
   </div>
-  <textarea wrap="off" style="width:100%;height:10vh;min-height:125px;"
+  <textarea spellcheck="false" wrap="off" style="width:100%;height:10vh;min-height:125px;"
     (change)="changeByString(config.request, 'params', $event.target.value)"
     [value] = "config.request.params || {} | json"
   ></textArea>
@@ -26,7 +26,7 @@
   <div class="pos-rel">
     <div class="pos-abs right-0 top-0 text-xxxs pad-xxs opacity-half">🈁 http headers</div>
   </div>
-  <textarea wrap="off" style="width:100%;height:10vh;min-height:125px;"
+  <textarea spellcheck="false" wrap="off" style="width:100%;height:10vh;min-height:125px;"
     (change)="changeByString(config.request, 'headers', $event.target.value)"
     [value] = "config.request.headers || {} | json"
   ></textArea>
@@ -53,7 +53,7 @@
       </a>
     </div>
   </div>
-  <textarea wrap="off" style="width:100%;min-height:300px;"
+  <textarea spellcheck="false" wrap="off" style="width:100%;min-height:300px;"
     (change)="changeByString(config, 'data', $event.target.value)"
     [value] = "config.data || {} | json"
   ></textArea>
@@ -64,12 +64,6 @@
     <strong>🐛 Error</strong>
     <dump [value]="config.error"></dump>
   </div>
-  <!--
-    <textarea wrap="off"
-      disabled style="background-color:rgba(228, 134, 134, 0.678);width:100%;height:25vh;min-height:275px;"
-      [value] = "config.error | json"
-    ></textArea>
-  -->
 
   <ng-container *ngIf="config.error.doc_url">
     <ng-container *ngTemplateOutlet="linkButton;context:{title:'🔗 error doc', url:config.error.doc_url}"></ng-container>

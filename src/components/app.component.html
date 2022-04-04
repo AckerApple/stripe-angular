@@ -295,7 +295,7 @@
               <a href="https://stripe.com/docs/api/tokens" target="_blank">token data</a>
             </small>
           </div>
-          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;"
+          <textarea spellcheck="false" wrap="off" style="width:100%;height:25vh;min-height:200px;"
             (change)="changeExtraData($event.target.value)"
           >{{ extraData | json }}</textArea>
         </div>
@@ -309,7 +309,9 @@
               <a href="https://stripe.com/docs/js/payment_methods/create_payment_method" target="_blank">docs</a>
             </small>
           </div>
-          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changePaymentMethodRequest($event.target.value)">{{ storage.requests.paymentMethod | json }}</textArea>
+          <textarea spellcheck="false" wrap="off" style="width:100%;height:25vh;min-height:200px;"
+            (change)="changePaymentMethodRequest($event.target.value)"
+          >{{ storage.requests.paymentMethod | json }}</textArea>
           <div style="opacity: 0.5;font-size:0.7em;padding:1em 0;">creating a payment method alone does not fire any webhooks. Use Source instead</div>
         </div>
 
@@ -321,7 +323,10 @@
               <a href="https://stripe.com/docs/js/tokens_sources/create_source" target="_blank">docs</a>
             </small>
           </div>
-          <textarea wrap="off" style="width:100%;height:25vh;min-height:200px;" (change)="changeSourceRequest($event.target.value)">{{ storage.requests.source | json }}</textArea>
+          <textarea wrap="off" spellcheck="false"
+            style="width:100%;height:25vh;min-height:200px;"
+            (change)="changeSourceRequest($event.target.value)"
+          >{{ storage.requests.source | json }}</textArea>
         </div>
 
         <div *ngIf="editOptions">
@@ -332,7 +337,7 @@
               <a href="https://stripe.com/docs/js/elements_object/create_element?type=card" target="_blank">docs</a>
             </small>
           </div>
-          <textarea
+          <textarea spellcheck="false"
             wrap="off" style="width:100%;height:25vh;min-height:200px;"
             (change)="changeOptions($event.target.value)"
           >{{ options | json }}</textArea>
