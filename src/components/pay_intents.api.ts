@@ -1,7 +1,7 @@
 import { sample } from "./app.component.utils"
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
-import { card, source_get } from "./sources.api"
+import { card, create_source, source_get } from "./sources.api"
 import { payment_method_get } from "./payment_methods.api"
 import { create_customer, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
@@ -107,13 +107,15 @@ export const payintent_create: ISimpleRouteEditor = {
     pasteKey: 'data.payment_method',
     value: 'pm_card_createDispute'
   },{
+    $api: () => create_source,
+    pasteKey: 'data.source',
+    valueKey: 'result.id'
+  },{
     $api: () => accounts_retrieve,
-    title: 'Accounts retrieve by id',
     pasteKey: 'data.transfer_data.destination',
     valueKey: 'result.id'
   },{
     $api: () => customer_list_all,
-    title: '🧾 customer list 1️⃣',
     valueKey: 'result.data.0.id',
     pasteKey: 'data.customer',
     pastes: [{
@@ -238,6 +240,11 @@ export const payintent_create: ISimpleRouteEditor = {
       valueKey: 'result.customer',
       pasteKey: 'data.customer',
     }]
+  },{
+    title: 'ach_credit_transfer',
+    pasteKey: 'data.payment_method_types',
+    value: ["ach_credit_transfer"],
+    removeKeys: ['setup_future_usage']
   },{
     title: 'ach_debit',
     pasteKey: 'data.payment_method_types',
