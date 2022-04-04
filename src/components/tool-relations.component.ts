@@ -18,8 +18,6 @@ import { Paste, SmartRouteEditor } from "./typings"
     this.showRelated = false
     const lastApi = this.showApi || this.api
     this.showApiChange.emit(this.showApi = api)
-
-    console.log('relation, lastApi, api', lastApi.smarts)
     pasteFromOnto(relation, lastApi, api)
   }
 }

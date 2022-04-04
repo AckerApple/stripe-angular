@@ -81,7 +81,8 @@ export interface Paste {
   pastes?: Paste[] // sub pastes (paste two things for one)
 
   // paste?: (thisApi: ISimpleRouteEditor) => any
-  removeKeys?: string[] // ex: {balance, secret, ...keepTheRest}
+  removeKeys?: string[] // ex: ['remove_key_from_copy']
+  afterRemoveKeys?: string[] // ex: ['data.remove_key_from_end_paste']
   removeValues?: any[] // deletes any values with null
 }
 

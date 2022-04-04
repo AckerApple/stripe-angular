@@ -1,6 +1,7 @@
 import { Component, Input } from "@angular/core"
 import { ISimpleRouteEditor, Paste, PasteMatch, SmartApiPaste, SmartRouteEditor } from "./typings"
 import { removeValues } from './removeValues.function'
+import { cardRemoveKeys } from "./sources.api"
 
 // declare type PasteFav = [string, string, string | ((data: any) => any)]
 
@@ -27,7 +28,9 @@ import { removeValues } from './removeValues.function'
 }
 
 export function pasteFromOnto(
-  pasteConfig: Paste, apiFrom: ISimpleRouteEditor, apiOnto: ISimpleRouteEditor
+  pasteConfig: Paste,
+  apiFrom: ISimpleRouteEditor,
+  apiOnto: ISimpleRouteEditor
 ) {
   if (pasteConfig.pasteKey) {
     pasteKeyFromOnto(pasteConfig.pasteKey, pasteConfig, apiFrom, apiOnto)
@@ -39,12 +42,15 @@ export function pasteFromOnto(
   }
 }
 
-export function removeKeys(keys: string[], cleanData: any) {
+export function cloneRemoveKeys(keys: string[], cleanData: any) {
   const deepClone = JSON.parse(JSON.stringify(cleanData))
+  return removeKeys(keys, deepClone)
+}
 
+export function removeKeys(keys: string[], value: any) {
   keys.map(varName => {
     const name = varName.trim()
-    delete deepClone[name] // flattened delete 'something' or 'something.something'
+    delete value[name] // flattened delete 'something' or 'something.something'
 
     // delete by dot notation
     const dotNotation = name.split('.')
@@ -58,17 +64,20 @@ export function removeKeys(keys: string[], cleanData: any) {
       }
 
       return all[now]
-    }, deepClone)
+    }, value)
 
     return varName
   })
 
-  return deepClone
+  return value
 }
 
 
 function pasteKeyFromOnto(
-  pasteKey: string, item: Paste, from: any, onto: ISimpleRouteEditor
+  pasteKey: string,
+  item: Paste,
+  from: any,
+  onto: ISimpleRouteEditor
 ): void {
   const keyName: string = pasteKey // || 'id'
   const value = getPasteValueFrom(item, from)
@@ -83,6 +92,10 @@ function pasteKeyFromOnto(
   }
 
   pasteValueOnto(onto, keyName, value)
+
+  if (item.afterRemoveKeys) {
+    removeKeys(item.afterRemoveKeys, onto)
+  }
 }
 
 function getPasteValueFrom(item: Paste | PasteMatch, from: any) {
@@ -97,7 +110,7 @@ function getPasteValueFrom(item: Paste | PasteMatch, from: any) {
   }
 
   if (asPaste.removeKeys) {
-    value = removeKeys(asPaste.removeKeys, value) // remove keys from value
+    value = cloneRemoveKeys(asPaste.removeKeys, value) // remove keys from value
   }
 
   if (asPaste.removeValues) {

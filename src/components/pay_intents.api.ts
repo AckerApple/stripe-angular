@@ -244,12 +244,12 @@ export const payintent_create: ISimpleRouteEditor = {
     title: 'ach_credit_transfer',
     pasteKey: 'data.payment_method_types',
     value: ["ach_credit_transfer"],
-    removeKeys: ['setup_future_usage']
+    afterRemoveKeys: ['data.setup_future_usage']
   },{
     title: 'ach_debit',
     pasteKey: 'data.payment_method_types',
     value: ["ach_debit"],
-    removeKeys: ['setup_future_usage']
+    afterRemoveKeys: ['data.setup_future_usage']
   },{
     $api: ()=> bank,
     valueKey: 'result.bank_account.id',
