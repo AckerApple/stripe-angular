@@ -20,7 +20,9 @@ const customers: ApiGroup = {
 
 export const apiGroups: ApiGroup[] = [{
   title: 'Common', apis: commonApis,
-}, accountsGroup,{
+},
+accountsGroup, // Accounts
+{
   title: 'Banks', apis: bankApis,
   icon: '🏦',
 },{

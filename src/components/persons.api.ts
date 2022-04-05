@@ -2,7 +2,7 @@ import { accounts_create, accounts_list, accounts_retrieve } from "./accounts.ap
 import { ISimpleRouteEditor } from "./typings"
 
 export const persons_create: ISimpleRouteEditor = {
-  title: '🆕 Create account person',
+  title: '🙍 🆕 Create account person',
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/persons/create'
@@ -22,7 +22,7 @@ export const persons_create: ISimpleRouteEditor = {
     address: {
       city: "Cupertino",
       country: "US",
-      line1: "One Apple Park Way",
+      line1: "address_full_match​", // One Apple Park Way
       line2: null,
       postal_code: "95014",
       state: "CA"
@@ -33,6 +33,26 @@ export const persons_create: ISimpleRouteEditor = {
   },
   examples: [],
   pastes: [{
+    value: 'address_full_match​',
+    pasteKey: 'data.address.line1',
+    title: 'Successful verification'
+  }, {
+    value: 'address_no_match',
+    pasteKey: 'data.address.line1',
+    title: 'Unsuccessful verification'
+  }, {
+    value: '111111111',
+    pasteKey: 'data.id_number',
+    title: 'Unsuccessful verification (identity mismatch).',
+    pastes: [{
+      value: '1111',
+      pasteKey: 'data.ssn_last_4'
+    }]
+  }, {
+    value: {day:'01', month: '01', year: '1900'},
+    pasteKey: 'data.dob',
+    title: 'DOB triggers OFAC alert'
+  }, {
     $api: () => accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'request.params.id'
@@ -48,7 +68,7 @@ export const persons_create: ISimpleRouteEditor = {
 }
 
 export const persons_list: ISimpleRouteEditor = {
-  title: '📖 list persons by account',
+  title: '🙍 📖 list persons by account',
   description: 'Returns a list of people associated with the account’s legal entity. The people are returned sorted by creation date, with the most recent people appearing first.',
   links: [{
     title: 'docs',
@@ -71,7 +91,7 @@ export const persons_list: ISimpleRouteEditor = {
 }
 
 export const persons_update = {
-  title: "⬆️ Update a person",
+  title: "🙍 ⬆️ Update a person",
   links: [{
     title: 'docs',
     url: 'https://stripe.com/docs/api/persons/update'
@@ -98,7 +118,7 @@ export const persons_update = {
 }
 
 const persons_retrieve: ISimpleRouteEditor = {
-  title: '1️⃣ Person retrieve',
+  title: '🙍 1️⃣ Person retrieve',
   links: [{
     url: 'https://stripe.com/docs/api/persons/retrieve',
     title: 'docs',

@@ -29,7 +29,16 @@ export const bank: BankData & ISimpleRouteEditor = {
     account_holder_name: 'Jenny Rosen',
     account_holder_type: 'individual',
     metadata: sample.metadata
-  } as (stripe.BankAccountTokenOptions) // The stripe-v3 types are missing the metadata property.
+  } as (stripe.BankAccountTokenOptions), // The stripe-v3 types are missing the metadata property.
+  pastes: [{
+    title: 'Trigger bank account ownership verification process after a short delay (connect accounts)',
+    value: '110000000',
+    pasteKey: 'data.routing_number',
+    pastes: [{
+      pasteKey: 'data.account_number',
+      value: '000999999991'
+    }]
+  }]
 }
 
 

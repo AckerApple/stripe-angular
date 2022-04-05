@@ -9,16 +9,22 @@ import { card } from "./sources.api"
 export const accounts_create: ISimpleRouteEditor = {
   title: '🆕 Create account',
   links: [{
-    title: 'docs',
+    title: '📕 api docs',
     url: 'https://stripe.com/docs/api/accounts/create'
+  }, {
+    title: '🔎 required verification info',
+    url: 'https://stripe.com/docs/connect/required-verification-information'
   },{
     title: '🔬 testing data',
     url: 'https://stripe.com/docs/connect/testing'
+  },{
+    title: '🔬 testing verification',
+    url: 'https://stripe.com/docs/connect/testing-verification'
   }, {
+    title: '🗓 Managing payout schedule',
     url: 'https://stripe.com/docs/connect/manage-payout-schedule',
-    title: 'Managing payout schedule'
   }, {
-    title: 'mcc (merchant category code)',
+    title: '🏪 mcc (merchant category code)',
     url: 'https://stripe.com/docs/connect/setting-mcc',
   }],
   // warn: '⚠️ From a web page, only live keys can access this method. Goto "Server-side communications only" section, below.',
@@ -73,7 +79,7 @@ export const accounts_create: ISimpleRouteEditor = {
         address: {
           city: "Cupertino",
           country: "US",
-          line1: "One Apple Park Way",
+          line1: "address_full_match​", // One Apple Park Way
           line2: null,
           postal_code: "95014",
           state: "CA"
@@ -85,6 +91,15 @@ export const accounts_create: ISimpleRouteEditor = {
       },
       metadata: {
         'stripe-angular': 'demo'
+      },
+      settings: {
+        payouts: {
+          debit_negative_balances: true,
+          schedule: {
+            delay_days: 2,
+            interval: 'daily'
+          }
+        },
       }
     }
   },{
@@ -110,7 +125,7 @@ export const accounts_create: ISimpleRouteEditor = {
         ssn_last_4: '0000',
         dob: {day:'01', month: '01', year: '1901'},
         address: {
-          line1: "One Apple Park Way", // address_full_match​
+          line1: "address_full_match​", // One Apple Park Way
           city: "Cupertino",
           country: "US",
           postal_code: "95014",
@@ -126,8 +141,17 @@ export const accounts_create: ISimpleRouteEditor = {
       },
       metadata: {
         order_id: '6735' // value in Stripe docs
+      },
+      settings: {
+        payouts: {
+          debit_negative_balances: true,
+          schedule: {
+            delay_days: 2,
+            interval: 'daily'
+          }
+        },
       }
-    },
+    }
   }],
   pastes: [{
     title: 'manual payouts',
@@ -228,7 +252,7 @@ export const accounts_update: ISimpleRouteEditor = {
     title: 'apples address',
     pasteKey: 'data.individual.address',
     value: {
-      line1: "One Apple Park Way", // address_full_match​
+      line1: "address_full_match​", // One Apple Park Way
       city: "Cupertino",
       country: "US",
       postal_code: "95014",
@@ -281,7 +305,6 @@ export const accounts_update: ISimpleRouteEditor = {
     }]
   },{
     $api: () => accounts_retrieve,
-    title: '1️⃣ Accounts retrieve',
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
     pastes: [{
@@ -659,6 +682,9 @@ export const accountsGroup = {
   links: [{
     title: '📕 API docs',
     url: 'https://stripe.com/docs/api/accounts'
+  }, {
+    title: '🔎 required verification information',
+    url: 'https://stripe.com/docs/connect/required-verification-information'
   }, {
     title: '👁 Verify custom account identity',
     url: 'https://stripe.com/docs/connect/identity-verification'
