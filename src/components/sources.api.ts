@@ -1,6 +1,6 @@
 // import { customerApis } from './getApis.function'
 import { customer_get_payment_methods, customer_get_sources } from './customers.api'
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 
 export const cardRemoveKeys = [
   'wallet', 'checks', 'three_d_secure_usage', 'fingerprint', 'last4', 'generated_from',
@@ -25,7 +25,13 @@ export const card: ISimpleRouteEditor = {
 
 export const create_source: ISimpleRouteEditor = {
   title: '🆕 💳 Create source',
-  link: 'https://stripe.com/docs/sources/ach-credit-transfer',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/sources/create'
+  }, {
+    title: 'ach credit transfer',
+    url: 'https://stripe.com/docs/sources/ach-credit-transfer'
+  }],
   // hint: '',
   description: 'Typically used for creating credit-transfer/wire account details',
   favKeys: [{valueKey: 'result.id'}],
@@ -126,7 +132,10 @@ export const source_update: ISimpleRouteEditor = {
 const source_transactions: ISimpleRouteEditor = {
   title: '🧾 ⚡️ List source transactions',
   description: 'See the transactions for an ach-credit-transfer/wire account',
-  link: 'https://stripe.com/docs/sources/ach-credit-transfer#retrieving-transaction-history',
+  links: [{
+    title: 'retrieving transaction history',
+    url: 'https://stripe.com/docs/sources/ach-credit-transfer#retrieving-transaction-history'
+  }],
   request: {
     method: 'GET',
     path: 'sources/:id/source_transactions'
@@ -154,3 +163,13 @@ export const apis = [
   create_source, source_get, source_update,
   source_transactions,
 ]
+
+export const sourcesApi: ApiGroup = {
+  title: 'Sources', apis: apis,
+  icon: '💳 🏦',
+  links: [{
+    title: '📕 api docs',
+    url: 'https://stripe.com/docs/api/sources'
+  }],
+  description: 'Cards, banks, and credit-transfer/wires',
+}

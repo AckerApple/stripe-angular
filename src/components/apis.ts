@@ -6,7 +6,7 @@ import { apis as chargesApis, balance_transactions } from "./charges.api"
 import { apis as refundApis } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { apis as bankApis } from "./banks.api"
-import { apis as cardApis } from "./sources.api"
+import { sourcesApi } from "./sources.api"
 import { webhookGroup } from "./webhook.apis"
 import { ApiGroup } from "./typings"
 import { plaidApis } from "./plaid.apis"
@@ -25,11 +25,7 @@ accountsGroup, // Accounts
 {
   title: 'Banks', apis: bankApis,
   icon: '🏦',
-},{
-  title: 'Sources', apis: cardApis,
-  icon: '💳 🏦',
-  description: 'Cards, banks, and credit-transfer/wires',
-},{
+}, sourcesApi, {
   title: 'Payment Methods', apis: pmApis,
   icon: '💳',
   description: 'Cards',
