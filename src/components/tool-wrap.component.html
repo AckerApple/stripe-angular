@@ -30,7 +30,9 @@
     >show</a>
 
     <ng-container *ngIf="!allowHide || showForm">
-      <simple-route-edit [dumpLevels]="dumpLevels" [config]="api" [(format)]="format" (formatChange)="formatChange.emit($event)">
+      <simple-route-edit [dumpLevels]="dumpLevels" [config]="api" [(format)]="format"
+        (formatChange)="formatChange.emit($event)"
+      >
         <ng-template #requestHeaderItems>
           <ng-container *ngTemplateOutlet="requestHeaderItemsTemplate"></ng-container>
         </ng-template>

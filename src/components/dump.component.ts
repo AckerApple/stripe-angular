@@ -3,7 +3,7 @@ import { copyText } from "./app.component.utils"
 
 @Component({
   selector: 'dump',
-  templateUrl: './dump.component.html'
+  templateUrl: './dump.component.html',
 }) export class DumpComponent {
   @Input() value: any
   @Input() showLevels: number = -1 // unfolded shown levels of depth. Default is auto decide
@@ -19,7 +19,7 @@ import { copyText } from "./app.component.utils"
   copyText = copyText
 
   ngOnChanges( changes:any ){
-    this.typing = typeof(this.value)
+    this.typing = this.value === null ? 'null' : typeof(this.value)
 
     if (!this.key) {
       this.evalShowKids()

@@ -1,7 +1,7 @@
 import { sample } from "./app.component.utils"
 import { charge } from "./charges.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 
 export const refund_create: ISimpleRouteEditor = {
   title: '🆕 Create Refund',
@@ -121,3 +121,18 @@ export const refunds_retrieve: ISimpleRouteEditor = {
 export const apis = [
   refund_create, refunds_list, refunds_retrieve, refunds_update
 ]
+
+export const refundsGroup: ApiGroup = {
+  title: 'Refunds', icon: '↩️', apis,
+  description: 'refund a charge that has previously been created but not yet refunded. Funds will be refunded to the credit or debit card that was originally charged.',
+  links: [{
+    title: '📕 API docs',
+    url: 'https://stripe.com/docs/api/refunds'
+  }, {
+    title: 'guide',
+    url: 'https://stripe.com/docs/refunds'
+  }, {
+    title: 'takes 5-10 business days',
+    url: 'https://stripe.com/docs/refunds#tracing-refunds'
+  }]
+}

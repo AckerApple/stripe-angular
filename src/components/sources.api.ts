@@ -31,6 +31,9 @@ export const create_source: ISimpleRouteEditor = {
   }, {
     title: 'ach credit transfer',
     url: 'https://stripe.com/docs/sources/ach-credit-transfer'
+  }, {
+    title: 'credit transfers',
+    url: 'https://stripe.com/docs/payments/sources/credit-transfers'
   }],
   // hint: '',
   description: 'Typically used for creating credit-transfer/wire account details',

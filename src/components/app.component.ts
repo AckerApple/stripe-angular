@@ -307,7 +307,6 @@ declare const Plaid: any
   }
 
   afterApiResult(api: SmartRouteEditor) {
-    console.log('---------------')
     this.flatten(api)
 
     api.smarts.related.forEach(related => {

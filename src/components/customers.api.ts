@@ -1,5 +1,5 @@
 import { sample } from "./app.component.utils"
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card, create_source, source_get } from "./sources.api"
 import { payment_method_get } from "./payment_methods.api"
@@ -407,6 +407,19 @@ export function getCustomerUpdatePayMethodPaste(
 
 export const apis = [
   customer_list_all, create_customer, customer_get, customer_update, delete_customer,
-  customer_get_payment_methods, customer_attach_method, customer_detach_method,
-  customer_attach_source, customer_get_sources, customer_get_source, customer_delete_source,
 ]
+
+export const customerApi: ApiGroup = {
+  icon: '👤',
+  title: 'Customers', apis,
+  description: 'Customer objects allow you to perform recurring charges, and to track multiple charges, that are associated with the same customer. The API allows you to create, delete, and update your customers. You can retrieve individual customers as well as a list of all your customers.',
+  groups: [{
+    title: 'payment methods',
+    description: 'end points only usable within the context of a customer',
+    apis: [customer_get_payment_methods, customer_attach_method, customer_detach_method]
+  },{
+    title: 'sources',
+    description: 'end points only usable within the context of a customer',
+    apis: [customer_attach_source, customer_get_sources, customer_get_source, customer_delete_source]
+  }]
+}

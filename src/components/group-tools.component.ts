@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, Input, TemplateRef } from "@angular/core"
+import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
 import { localSchema } from "./storage"
 import { ApiGroup, SmartRouteEditor } from "./typings"
 
@@ -20,6 +20,7 @@ export interface GroupScope {
 
   // styles
   @Input() selectedGroupClass = 'text-xs'
+  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
 
   /* passed in templates */
   @ContentChild('groupTemplate', { static: false }) groupTemplate:TemplateRef<ElementRef>

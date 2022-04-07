@@ -119,8 +119,10 @@
 </ng-template>
 
 <ng-template #toolWrap let-api="api" let-scope="scope">
-  <tool-wrap *ngIf="api" class="flex1" [id]="'serverToolsWrap-' + api.title" [name]="'serverToolsWrap-' + api.title"
+  <tool-wrap *ngIf="api" class="flex1" [id]="'serverToolsWrap-' + api.title"
+    [name]="'serverToolsWrap-' + api.title"
     [api]="api" [(format)]="storage.format" [allowHide]="false"
+    (formatChange)="formatChange.emit($event)"
   >
     <ng-template #footer>
       <tool-relations [api]="api" [showRelated]="showRelated"

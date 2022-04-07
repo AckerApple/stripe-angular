@@ -2,7 +2,7 @@ import { apis as persons, persons_create, persons_list, persons_update } from '.
 import { apis as transferApis } from "./transfers.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
 import { apis as payoutApis } from './payouts.api'
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card } from "./sources.api"
 
@@ -79,7 +79,7 @@ export const accounts_create: ISimpleRouteEditor = {
         address: {
           city: "Cupertino",
           country: "US",
-          line1: "address_full_match​", // One Apple Park Way
+          line1: "One Apple Park Way", // address_full_match​
           line2: null,
           postal_code: "95014",
           state: "CA"
@@ -125,7 +125,7 @@ export const accounts_create: ISimpleRouteEditor = {
         ssn_last_4: '0000',
         dob: {day:'01', month: '01', year: '1901'},
         address: {
-          line1: "address_full_match​", // One Apple Park Way
+          line1: "One Apple Park Way", // address_full_match​
           city: "Cupertino",
           country: "US",
           postal_code: "95014",
@@ -252,7 +252,7 @@ export const accounts_update: ISimpleRouteEditor = {
     title: 'apples address',
     pasteKey: 'data.individual.address',
     value: {
-      line1: "address_full_match​", // One Apple Park Way
+      line1: "One Apple Park Way", // address_full_match​
       city: "Cupertino",
       country: "US",
       postal_code: "95014",
@@ -675,7 +675,7 @@ const applicationFees = [
   application_fees_refunds_create, application_fees_refunds_retrieve, application_fees_refunds_update, application_fees_refunds
 ]
 
-export const accountsGroup = {
+export const accountsGroup: ApiGroup = {
   title: 'Accounts', apis,
   icon: '♣️',
   description: 'This is an object representing a Stripe account. You can retrieve it to see properties on the account like its current e-mail address or if the account is enabled yet to make live charges.',

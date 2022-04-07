@@ -6,6 +6,7 @@ export interface KeyInfo {title: string, value: string}
 
 export interface localSchema {
   key: string
+  format?: 'json' | 'small' // json dump format
 
   privateKey: string
   privateKeys: KeyInfo[] // switchable keys

@@ -69,7 +69,9 @@
       </ng-container>
 
       <div>
-        <group-tools [scope]="groupsScope" [groups]="allGroups" [storage]="storage" selectedGroupClass="text-xs bg-grey-2x margin-1">
+        <group-tools [scope]="groupsScope" [groups]="allGroups" [storage]="storage" selectedGroupClass="text-xs bg-grey-2x margin-1"
+          (formatChange)="storage.format = $event;save()"
+        >
           <!--change default group displays-->
           <ng-template #groupTemplate let-defaultTemplate="defaultTemplate" let-group="group" let-selected="selected" let-current="current">
             <ng-container [ngSwitch]="group.title">

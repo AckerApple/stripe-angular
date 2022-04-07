@@ -1,6 +1,6 @@
 import { card, cardRemoveKeys } from './sources.api'
 import { create_customer, customer_get_payment_methods, customer_get_sources } from './customers.api'
-import { ISimpleRouteEditor } from "./typings"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
 
 export const cleanPayMethodKeys = [
   ...cardRemoveKeys,
@@ -84,3 +84,9 @@ export const payment_method_update: ISimpleRouteEditor = {
 export const apis = [
   get_paymethods, payment_method_get, payment_method_update,
 ]
+
+export const paymentMethodsGroup: ApiGroup = {
+  title: 'Payment Methods', apis,
+  icon: '💳',
+  description: 'Cards',
+}

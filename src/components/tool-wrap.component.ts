@@ -10,7 +10,7 @@ import { SmartRouteEditor } from "./typings"
   @Input() api: SmartRouteEditor
   @Input() format: 'json' | 'small' = 'small'
   @Input() dumpLevels: number = -1 // unfolded shown levels of depth. Default is auto decide
-  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter
+  @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
   @ContentChild('footer', { static: false }) footerTemplate:TemplateRef<ElementRef>
   @ContentChild('prependFormFooter', { static: false }) prependFormFooterTemplate:TemplateRef<ElementRef>
   @ContentChild('requestHeaderItems', { static: false }) requestHeaderItemsTemplate:TemplateRef<ElementRef>

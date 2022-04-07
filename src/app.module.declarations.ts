@@ -12,9 +12,10 @@ import { ToolWrapComponent } from "./components/tool-wrap.component"
 import { SettingsComponent } from "./components/settings.component"
 import { DumpComponent } from "./components/dump.component"
 import { AppComponent } from "./components/app.component"
-
+import { KeysPipe } from './keys.pipe'
 
 export const declarations = [
+  KeysPipe,
   AppComponent,
   PastesMenuComponent,
   MenuOptionsComponent,

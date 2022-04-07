@@ -22,7 +22,7 @@ export const persons_create: ISimpleRouteEditor = {
     address: {
       city: "Cupertino",
       country: "US",
-      line1: "address_full_match​", // One Apple Park Way
+      line1: "One Apple Park Way", // address_full_match​
       line2: null,
       postal_code: "95014",
       state: "CA"
@@ -33,7 +33,7 @@ export const persons_create: ISimpleRouteEditor = {
   },
   examples: [],
   pastes: [{
-    value: 'address_full_match​',
+    value: 'One Apple Park Way', // address_full_match​
     pasteKey: 'data.address.line1',
     title: 'Successful verification'
   }, {
