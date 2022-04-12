@@ -7,7 +7,13 @@ import { sample } from "./app.component.utils"
 
 export const transfer_create: ISimpleRouteEditor = {
   title: '🆕 Create Transfer',
-  link: 'https://stripe.com/docs/api/transfers/create',
+  links: [{
+    url: 'https://stripe.com/docs/api/transfers/create',
+    title: '📕 Api docs',
+  }, {
+    url: 'https://stripe.com/docs/connect/charges-transfers',
+    title: 'relate charges to transfers',
+  }],
   request: {
     method: 'POST',
     path: 'transfers',

@@ -1,5 +1,5 @@
 import { card, cardRemoveKeys } from './sources.api'
-import { create_customer, customer_get_payment_methods, customer_get_sources } from './customers.api'
+import { create_customer, customer_get_payment_methods, customer_get_sources, customer_list_all } from './customers.api'
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 
 export const cleanPayMethodKeys = [
@@ -25,8 +25,9 @@ export const payment_method_get: ISimpleRouteEditor = {
   }]
 }
 
+
 export const get_paymethods: ISimpleRouteEditor = {
-  title: '💳 GET Payment Methods',
+  title: '💳 ➡️ 👤 List by customer',
   hint: 'Fetch payments methods for a customer. ⚠️ If customer not provided response list will be empty',
   link: 'https://stripe.com/docs/api/payment_methods/list',
   request: {
@@ -34,13 +35,23 @@ export const get_paymethods: ISimpleRouteEditor = {
     path: 'payment_methods'
   },
   data: {
-    type: "card",
     customer: "",
+    limit: 3,
+    type: 'card',
   },
   pastes: [{
     $api: () => create_customer,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
+  },{
+    $api: () => payment_method_get,
+    valueKey: 'result.customer',
+    pasteKey: 'data.customer'
+  },{
+    $api: () => customer_list_all,
+    title: '🧾 Customer list 1️⃣',
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.customer'
   }]
 }
 

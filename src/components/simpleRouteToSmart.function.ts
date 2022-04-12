@@ -3,13 +3,33 @@ import { ApiGroup } from "./typings"
 import { getStringIdentifiers, getStringInterpolations } from "./app.component.utils"
 import { ApiPaste, ISimpleRouteEditor, Paste, RouteRequest, SmartApiPaste, SmartRouteEditor } from "./typings"
 
+function paramRouteId(routeRef: ISimpleRouteEditor): number {
+  const typed = routeRef as SmartRouteEditor
+  return typed._id = typed._id || performance.now()
+}
+
 export function simpleRouteToSmart(
   route: ISimpleRouteEditor,
   allGroups: ApiGroup[], // for relation lookups
 ): SmartRouteEditor {
-  const routeRef = route as SmartRouteEditor
+  let routeRef = route as SmartRouteEditor
 
-  routeRef._id = routeRef._id || performance.now()
+  // first thing, make sure an export id reference is available (even if api is just a reference to another api it needs a unique _id)
+  paramRouteId(routeRef)
+
+  if (routeRef.$api) {
+    const targetApi = routeRef.$api()
+
+    // linkage details
+    routeRef._api = {
+      knownTitle: targetApi.title,
+      _id: paramRouteId(targetApi),
+      original: routeRef, // save for edit/export purpose (we do not edit/export this newly created route, only the original gets edited/exported)
+    }
+
+    routeRef = {...targetApi, ...routeRef} as SmartRouteEditor
+  }
+  // todo: need to add support for routeRef._api reference (will come in json)
 
   if (routeRef.smarts && routeRef.smarts.smartAt) {
     return routeRef // already has been made smart

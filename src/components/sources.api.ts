@@ -161,10 +161,16 @@ const source_transactions: ISimpleRouteEditor = {
   }]
 }
 
-export const apis = [
+const sources_list: ISimpleRouteEditor = {
+  description: 'Only way to list sources is scoped by customer',
+  title: '🧾 💳 ➡️ 👤 List sources by customer',
+  $api: ()=> customer_get_sources
+}
+
+export const apis: ISimpleRouteEditor[] = [
   // card,
   create_source, source_get, source_update,
-  source_transactions,
+  sources_list, source_transactions,
 ]
 
 export const sourcesApi: ApiGroup = {

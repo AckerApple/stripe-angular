@@ -2,7 +2,7 @@ import { sample } from "./app.component.utils"
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card, create_source, source_get } from "./sources.api"
-import { payment_method_get } from "./payment_methods.api"
+import { get_paymethods, payment_method_get } from "./payment_methods.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
 
 // create
@@ -256,32 +256,32 @@ export const customer_get_sources: ISimpleRouteEditor = {
   link: 'https://stripe.com/docs/api/cards/list',
   request: {
     method: 'GET',
-    path: 'customers/:id/sources'
+    path: 'customers/:customer/sources'
   },
   pastes: [{
     $api: () => create_customer,
     valueKey: 'result.id',
-    pasteKey: 'request.params.id',
+    pasteKey: 'request.params.customer',
   },{
     $api: () => payment_method_get,
     valueKey: 'result.customer',
-    pasteKey: 'request.params.id'
+    pasteKey: 'request.params.customer'
   },{
     $api: () => customer_list_all,
     valueKey: 'result.data.0.id',
-    pasteKey: 'request.params.id'
+    pasteKey: 'request.params.customer'
   },{
     $api: () => customer_get,
     valueKey: 'result.id',
-    pasteKey: 'request.params.id'
+    pasteKey: 'request.params.customer'
   }, {
     $api: () => customer_attach_source,
     valueKey: 'result.data.customer',
-    pasteKey: 'request.params.id'
+    pasteKey: 'request.params.customer'
   }, {
     $api: () => customer_delete_source,
     valueKey: 'request.params.customer',
-    pasteKey: 'request.params.id'
+    pasteKey: 'request.params.customer'
   }]
 }
 
@@ -365,30 +365,7 @@ const customer_delete_source: ISimpleRouteEditor = {
 
 export const customer_get_payment_methods: ISimpleRouteEditor = {
   title: '🧾 💳 list payment methods',
-  link: 'https://stripe.com/docs/api/payment_methods/list',
-  request: {
-    method: 'GET',
-    path: 'payment_methods'
-  },
-  data: {
-    customer: "",
-    limit: 3,
-    type: 'card',
-  },
-  pastes: [{
-    $api: () => create_customer,
-    valueKey: 'result.id',
-    pasteKey: 'data.customer',
-  },{
-    $api: () => payment_method_get,
-    valueKey: 'result.customer',
-    pasteKey: 'data.customer'
-  },{
-    $api: () => customer_list_all,
-    title: '🧾 Customer list 1️⃣',
-    valueKey: 'result.data.0.id',
-    pasteKey: 'data.customer'
-  }]
+  $api: () => get_paymethods,
 }
 /*
 export function getCustomerUpdatePayMethodPaste(

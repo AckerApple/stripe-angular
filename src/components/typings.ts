@@ -114,6 +114,16 @@ export interface ISimpleRouteEditor {
     valueKey: string
     get?: (data: any) => any
   }[] // ['link_token']
+
+  // optional ability to reference an entirely other existing api (avoid duplication)
+  $api?: () => ISimpleRouteEditor
+  _api?: ApiReference,
+}
+
+export interface ApiReference {
+  _id: number
+  knownTitle: string
+  original?: ISimpleRouteEditor // runtime reference to original symbolic link definition
 }
 
 export interface ToolSmarts {
