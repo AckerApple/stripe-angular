@@ -34,11 +34,11 @@ export const transfer_create: ISimpleRouteEditor = {
     $api: () => accounts_list,
     pasteKey: 'data.destination',
     valueKey: 'result.data.0.id',
-  },{
+  }/*,{
     $api: () => accounts_retrieve,
     pasteKey: 'data.destination',
     valueKey: 'data.id',
-  },{
+  }*/,{
     $api: () => account_get,
     pasteKey: 'data.destination',
     valueKey: 'result.id',
