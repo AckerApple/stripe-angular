@@ -34,6 +34,9 @@ export const create_source: ISimpleRouteEditor = {
   }, {
     title: 'credit transfers',
     url: 'https://stripe.com/docs/payments/sources/credit-transfers'
+  }, {
+    url: 'https://stripe.com/docs/sources/ach-credit-transfer#testing-ach-credit-transfer-payments',
+    title: 'set amount to send'
   }],
   // hint: '',
   description: 'Typically used for creating credit-transfer/wire account details',
@@ -46,7 +49,7 @@ export const create_source: ISimpleRouteEditor = {
     type: "ach_credit_transfer",
     currency: "usd",
     owner: {
-      email: "jenny.rosen@example.com"
+      email: "amount_4242@example.com"
     },
     metadata: {},
   }
@@ -95,14 +98,22 @@ export const source_get: ISimpleRouteEditor = {
 
 export const source_update: ISimpleRouteEditor = {
   title: '⬆️ 💳 UPDATE Source',
-  link: 'https://stripe.com/docs/api/sources/update',
+  links: [{
+    url: 'https://stripe.com/docs/sources/ach-credit-transfer#testing-ach-credit-transfer-payments',
+    title: 'test sending more money'
+  }, {
+    url: 'https://stripe.com/docs/api/sources/update',
+    title: 'api docs'
+  }],
   request: {
     method: 'POST',
     path: 'sources/:id'
   },
   data: {
     metadata: {},
-    owner: {},
+    owner: {
+      email: 'amount_3000@example.com'
+    },
   },
   pastes:[{
     $api: () => source_get,

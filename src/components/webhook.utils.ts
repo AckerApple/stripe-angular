@@ -16,27 +16,26 @@ import * as formatHex from 'crypto-js/format-hex'
   if (!opts) {
     throw new Error('Options are required');
   }
-
+  
   opts.timestamp = Math.floor(opts.timestamp) || Math.floor(Date.now() / 1000);
   opts.scheme = opts.scheme || 'v1';
-
-  opts.signature =
-    opts.signature ||
-    _computeSignature(
+  
+  opts.signature = opts.signature || _computeSignature(
       opts.timestamp + '.' + opts.payload,
       opts.secret
-    );
+    )
 
   const generatedHeader = [
     't=' +  opts.timestamp,
     opts.scheme + '=' + opts.signature,
-  ].join(',');
+  ].join(',')
 
   return generatedHeader;
 }
 
 function _computeSignature(payload, secret) {
-  const data = hmacSHA256(payload, secret)
+  const sha = hmacSHA256.default || hmacSHA256 // import style has been known to change on us
+  const data = sha(payload, secret)
   const hmacDigest = formatHex.stringify({ciphertext:data});
   return hmacDigest
 }

@@ -187,8 +187,6 @@ declare const Plaid: any
     }
     // options.request.authorizationBearer = options.privateKey
 
-    console.log('options', options)
-
     return requestByRouter(this.api.webhookPost, options)
   }
 
@@ -300,9 +298,6 @@ declare const Plaid: any
   subApi(api: SmartRouteEditor) {
     // listen to results to flatten
     api.smarts.$result.subscribe(_data => this.afterApiResult(api))
-    if (api===this.api.bank) {
-      console.log('we registered')
-    }
     return api
   }
 
@@ -343,8 +338,10 @@ declare const Plaid: any
     const result = generateTestHeaderString({
       payload, secret: this.storage.webhookSigningSecret
     })
+
     // const result = stripe.webhooks.generateTestHeaderString(data)
     this.api.testHeader.result = {result}
+
     return result
   }
 

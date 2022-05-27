@@ -258,7 +258,7 @@ const balance_transactions_retrieve: ISimpleRouteEditor = {
     pasteKey: 'request.params.id'
   },{
     $api: () => payintent_retrieve,
-    valueKey: 'result.charges.0.balance_transaction',
+    valueKey: 'result.charges.data.0.balance_transaction',
     pasteKey: 'request.params.id'
   }]
 }
