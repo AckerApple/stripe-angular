@@ -102,14 +102,14 @@
           <ng-template #groupBody let-selected="selected" let-group="group" let-defaultTemplate="defaultTemplate">
             <ng-container [ngSwitch]="group?.title">
               <ng-container *ngSwitchCase="'🐠 Stripe Functionality'">
-                <div *ngIf="!selected && !storage.key" class=" width-full bg-warning pad text-dark margin">
+                <div *ngIf="!selected && !storage.privateKey" class=" width-full bg-warning pad text-dark margin">
                   ⚠️ To continue, you must enter a <b>privateKey</b> in the ⚙️ Settings form
                 </div>
                 <ng-container *ngTemplateOutlet="defaultTemplate"></ng-container>
               </ng-container>
 
               <ng-container *ngSwitchCase="'🪝 Webhook Functionality'">
-                <div *ngIf="!selected && !storage.plaid.client_id" class="width-full bg-warning pad text-dark margin">
+                <div *ngIf="!selected && !storage.webhookSigningSecret" class="width-full bg-warning pad text-dark margin">
                   ⚠️ To continue, you must enter a <b>webhookSigningSecret</b> in the ⚙️ Settings form
                 </div>
                 <div *ngIf="!selected" class="text-white width-full">

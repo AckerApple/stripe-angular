@@ -1,4 +1,5 @@
-import { accounts_external_list, accounts_list, accounts_retrieve } from "./accounts.api"
+import { accounts_list, accounts_retrieve } from "./accounts.api"
+import { external_accounts_list } from "./external_accounts.api"
 import { balance_get } from "./common.api"
 import { ISimpleRouteEditor } from "./typings"
 
@@ -83,7 +84,7 @@ export const payouts_post: ISimpleRouteEditor = {
     pasteKey: 'request.headers.Stripe-Account'
   },{
     title: 'External accounts 1️⃣',
-    $api: () => accounts_external_list,
+    $api: () => external_accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.destination',
     pastes: [{
@@ -124,7 +125,7 @@ export const payouts_update: ISimpleRouteEditor = {
     valueKey: 'result.id',
     pasteKey: 'request.headers.Stripe-Account'
   },{
-    $api: () => accounts_external_list,
+    $api: () => external_accounts_list,
     valueKey: 'result.data.0.id',
     pasteKey: 'data.destination',
     pastes: [{
