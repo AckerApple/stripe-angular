@@ -472,6 +472,19 @@ export const payintent_update: ISimpleRouteEditor = {
   }]
 }
 
+export const payintent_search: ISimpleRouteEditor = {
+  title: '🔎 search payment intents',
+  link: 'https://stripe.com/docs/api/payment_intents/search',
+  request: {
+    method: 'GET',
+    path: 'payment_intents/search',
+  },
+  pastes: [],
+  data: {
+    limit: 3, query: "metadata['key']:'value'"
+  }
+}
+
 export const payintent_list: ISimpleRouteEditor = {
   title: '🧾 List all PaymentIntents',
   link: 'https://stripe.com/docs/api/payment_intents/retrieve',
@@ -506,6 +519,7 @@ export const payintent_list: ISimpleRouteEditor = {
 export const apis = [
   payintent_create,
   payintent_retrieve,
+  payintent_search,
   payintent_list,
   payintent_update,
   payintent_confirm,

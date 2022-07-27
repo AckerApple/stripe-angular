@@ -11,7 +11,7 @@
   <div class="tool-panel">
     <div class="flex-wrap flex-apart">
       <span *ngIf="api.request" class="opacity-80 text-xs" style="overflow-wrap:break-word">
-        {{api.request.method}}&nbsp;/{{api.request.path}}
+        {{api.request.method}}&nbsp;/<span [(contentModel)]="api.request.path" placeholder="path"></span>
       </span>
 
       <!-- 💠 pastes -->

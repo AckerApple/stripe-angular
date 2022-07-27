@@ -75,6 +75,19 @@ export const customer_list_all: ISimpleRouteEditor = {
   }
 }
 
+export const customer_search: ISimpleRouteEditor = {
+  title: '🔎 search customers',
+  link: 'https://stripe.com/docs/search#query-fields-for-customers',
+  request: {
+    method: 'GET',
+    path: 'customers/search',
+  },
+  pastes: [],
+  data: {
+    limit: 3, query: "metadata['key']:'value'"
+  }
+}
+
 export const delete_customer: ISimpleRouteEditor = {
   title: '❌ Delete Customer',
   link: 'https://stripe.com/docs/api/customers/delete',
@@ -383,7 +396,8 @@ export function getCustomerUpdatePayMethodPaste(
 */
 
 export const apis = [
-  customer_list_all, create_customer, customer_get, customer_update, delete_customer,
+  customer_search, create_customer, customer_get, customer_update, delete_customer,
+  customer_list_all,
 ]
 
 export const customerApi: ApiGroup = {
