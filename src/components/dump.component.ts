@@ -50,4 +50,8 @@ import { copyText } from "./app.component.utils"
   }
 
   unsorted() {} // ensure keyvalue pipe maintains order
+
+  copyAsJsonText(value: any) {
+    copyText( JSON.stringify(value, null, 2) )
+  }
 }

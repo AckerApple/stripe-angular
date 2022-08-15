@@ -37,6 +37,10 @@
               (click)="formatChange.emit(format='json')"
               [class]="format==='json' ? 'bg-positive' : 'bg-dark'"
             >json</a>
+            <a class="flex-valign-center radius-5 text-white pad-h-xxs hover-bg-balanced active-bg-energized"
+              (click)="copyAsJsonText(value)"
+              [class]="format==='json' ? 'bg-positive' : 'bg-dark'"
+            >copy</a>
           </div>
         </div>
         <textarea *ngIf="format==='json'" disabled wrap="off" style="width:100%;height:25vh;min-height:400px"
