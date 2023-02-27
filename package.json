@@ -36,17 +36,17 @@
   "homepage": "https://github.com/AckerApple/stripe-angular#readme",
   "private": true,
   "devDependencies": {
-    "@angular/animations": "^14.1.0",
-    "@types/stripe-v3": "^3.1.26",
-    "ack-angular": "^3.0.2",
-    "ack-angular-fx": "^4.2.1",
-    "ack-css-boot": "^3.0.9",
-    "ack-x": "^2.1.1",
-    "nodemon": "^2.0.15",
-    "rxjs": "^7.5.5",
+    "@angular/animations": "^12.1.0",
+    "@types/stripe-v3": "^3.1.27",
+    "ack-angular": "^4.1.7",
+    "ack-angular-fx": "^5.0.2",
+    "ack-css-boot": "^3.0.11",
+    "ack-x": "^3.0.2",
+    "nodemon": "^2.0.20",
+    "rxjs": "^7.8.0",
     "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
     "typescript": "4.2.3",
-    "zone.js": "^0.11.5"
+    "zone.js": "^0.11.4"
   },
   "dependencies": {
     "@angular-devkit/build-angular": "~12.2.11",
@@ -58,10 +58,10 @@
     "@angular/core": "^12.2.11",
     "@angular/platform-browser": "^12.2.11",
     "@angular/platform-browser-dynamic": "^12.2.11",
-    "axios": "^0.26.1",
-    "body-parser": "^1.20.0",
+    "axios": "^1.3.4",
+    "body-parser": "^1.20.2",
     "crypto-js": "^4.1.1",
-    "express": "^4.17.3",
-    "form-urlencoded": "^6.0.6"
+    "express": "^4.18.2",
+    "form-urlencoded": "^6.1.0"
   }
 }
