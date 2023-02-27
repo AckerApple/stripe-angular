@@ -1,5 +1,11 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
+## [1.8.0] - (2023-02)
+- Upgraded devDependencies with MAJOR and MINOR version changes
+- Upgraded from Angular 11 to 12
+
+## [1.7.0] - (2021-03-23)
+- Support SSR by injecting Document instead of openly using window variable
 
 ## [1.6.0] - (2021-02-11)
 
@@ -11,12 +17,15 @@ All notable changes to this project will be documented here.
 ## [1.5.1] - (2021-01-04)
 - Create Card Payment Method
 - Stripe data typings instead of created ones
+  - Errors like `has no exported member StripeToken` means you need to use `stripe.Token` instead as your typing
+  - See issue #51
 - Demo area has much more testing functionality
 - installing `@types/stripe-v3` is now a required peerDependency
 
 ## [1.4.3] - (2020-11-19)
 - more demo support
 - fixes
+
 ## [1.4.0] - (2020-11-19)
 - stripe-card now has [(complete)], [complete] and (completeChange) bindings
 - Better typings

@@ -1,4 +1,6 @@
-import { InjectionToken, ɵɵdefineInjectable, ɵɵinject, Injectable, Inject, EventEmitter, Component, Output, Input, ElementRef, NgModule } from '@angular/core';
+import * as i0 from '@angular/core';
+import { InjectionToken, Injectable, Inject, EventEmitter, Component, Output, Input, ElementRef, NgModule } from '@angular/core';
+import * as i1 from '@angular/common';
 import { DOCUMENT, CommonModule } from '@angular/common';
 
 const STRIPE_PUBLISHABLE_KEY = new InjectionToken('Stripe Publishable Key');
@@ -57,7 +59,7 @@ class StripeScriptTag {
         return this.document.getElementsByTagName("body")[0];
     }
 }
-StripeScriptTag.ɵprov = ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(ɵɵinject(DOCUMENT), ɵɵinject(STRIPE_PUBLISHABLE_KEY), ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
+StripeScriptTag.ɵprov = i0.ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(i0.ɵɵinject(i1.DOCUMENT), i0.ɵɵinject(STRIPE_PUBLISHABLE_KEY), i0.ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
 StripeScriptTag.decorators = [
     { type: Injectable, args: [{ providedIn: 'root' },] }
 ];
