@@ -1,9 +1,12 @@
 # stripe-angular - Change Log
 All notable changes to this project will be documented here.
 
-## [1.8.0] - (2023-03)
+## [1.9.1] - (2023-03)
 - Upgraded devDependencies with MAJOR and MINOR version changes
 - Upgraded from Angular 12 to 13
+- tsconfig.json.target changed from es5 to es6
+- tsconfig.json.lib replace es2015 for es2020
+
 
 ## [1.8.0] - (2023-02)
 - Upgraded devDependencies with MAJOR and MINOR version changes
