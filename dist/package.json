@@ -1,8 +1,8 @@
 {
   "name": "stripe-angular",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
-  "main": "bundles/stripe-angular.umd.js",
+  "main": "dist/index.js",
   "typings": "stripe-angular.d.ts",
   "repository": {
     "type": "git",
@@ -26,13 +26,26 @@
   "peerDependencies": {
     "@types/stripe-v3": "^3.1.23"
   },
-  "module": "fesm2015/stripe-angular.js",
-  "es2015": "fesm2015/stripe-angular.js",
-  "esm2015": "esm2015/stripe-angular.js",
-  "fesm2015": "fesm2015/stripe-angular.js",
-  "metadata": "stripe-angular.metadata.json",
+  "module": "fesm2015/stripe-angular.mjs",
+  "es2020": "fesm2020/stripe-angular.mjs",
+  "esm2020": "esm2020/stripe-angular.mjs",
+  "fesm2020": "fesm2020/stripe-angular.mjs",
+  "fesm2015": "fesm2015/stripe-angular.mjs",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./stripe-angular.d.ts",
+      "esm2020": "./esm2020/stripe-angular.mjs",
+      "es2020": "./fesm2020/stripe-angular.mjs",
+      "es2015": "./fesm2015/stripe-angular.mjs",
+      "node": "./fesm2015/stripe-angular.mjs",
+      "default": "./fesm2020/stripe-angular.mjs"
+    }
+  },
   "sideEffects": false,
   "dependencies": {
-    "tslib": "^2.2.0"
+    "tslib": "^2.3.0"
   }
 }

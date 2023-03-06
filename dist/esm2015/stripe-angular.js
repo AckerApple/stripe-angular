@@ -1,6 +1,0 @@
-/**
- * Generated bundle index. Do not edit.
- */
-export * from './index';
-export { StripeComponent as ɵa } from './components/StripeComponent';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3RyaXBlLWFuZ3VsYXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvc3RyaXBlLWFuZ3VsYXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLFNBQVMsQ0FBQztBQUV4QixPQUFPLEVBQUMsZUFBZSxJQUFJLEVBQUUsRUFBQyxNQUFNLDhCQUE4QixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcblxuZXhwb3J0IHtTdHJpcGVDb21wb25lbnQgYXMgybVhfSBmcm9tICcuL2NvbXBvbmVudHMvU3RyaXBlQ29tcG9uZW50JzsiXX0=

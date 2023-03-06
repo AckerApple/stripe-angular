@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 
 import { STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY } from './StripeTypes'
 import { StripeComponent } from "./components/StripeComponent"
+export { StripeComponent } from "./components/StripeComponent"
 
 import { StripeScriptTag } from "./StripeScriptTag"
 export { StripeScriptTag } from "./StripeScriptTag"

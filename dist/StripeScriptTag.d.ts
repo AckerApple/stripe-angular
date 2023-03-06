@@ -1,5 +1,6 @@
 /// <reference types="stripe-v3" />
 import { Stripe } from "./StripeTypes";
+import * as i0 from "@angular/core";
 export declare class StripeScriptTag {
     private document;
     src: string;
@@ -14,4 +15,6 @@ export declare class StripeScriptTag {
     injectIntoHead(): Promise<Stripe>;
     grabStripe(): Stripe;
     getTargetTagDropElement(): any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<StripeScriptTag, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<StripeScriptTag>;
 }

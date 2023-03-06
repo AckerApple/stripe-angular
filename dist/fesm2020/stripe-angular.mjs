@@ -1,6 +1,6 @@
 import * as i0 from '@angular/core';
-import { InjectionToken, Injectable, Inject, EventEmitter, Component, Output, Input, ElementRef, NgModule } from '@angular/core';
-import * as i1 from '@angular/common';
+import { InjectionToken, Injectable, Inject, EventEmitter, Component, Output, Input, NgModule } from '@angular/core';
+import * as i2 from '@angular/common';
 import { DOCUMENT, CommonModule } from '@angular/common';
 
 const STRIPE_PUBLISHABLE_KEY = new InjectionToken('Stripe Publishable Key');
@@ -59,15 +59,21 @@ class StripeScriptTag {
         return this.document.getElementsByTagName("body")[0];
     }
 }
-StripeScriptTag.ɵprov = i0.ɵɵdefineInjectable({ factory: function StripeScriptTag_Factory() { return new StripeScriptTag(i0.ɵɵinject(i1.DOCUMENT), i0.ɵɵinject(STRIPE_PUBLISHABLE_KEY), i0.ɵɵinject(STRIPE_OPTIONS)); }, token: StripeScriptTag, providedIn: "root" });
-StripeScriptTag.decorators = [
-    { type: Injectable, args: [{ providedIn: 'root' },] }
-];
-StripeScriptTag.ctorParameters = () => [
-    { type: undefined, decorators: [{ type: Inject, args: [DOCUMENT,] }] },
-    { type: String, decorators: [{ type: Inject, args: [STRIPE_PUBLISHABLE_KEY,] }] },
-    { type: undefined, decorators: [{ type: Inject, args: [STRIPE_OPTIONS,] }] }
-];
+StripeScriptTag.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeScriptTag, deps: [{ token: DOCUMENT }, { token: STRIPE_PUBLISHABLE_KEY }, { token: STRIPE_OPTIONS }], target: i0.ɵɵFactoryTarget.Injectable });
+StripeScriptTag.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeScriptTag, providedIn: 'root' });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeScriptTag, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: 'root' }]
+        }], ctorParameters: function () { return [{ type: undefined, decorators: [{
+                    type: Inject,
+                    args: [DOCUMENT]
+                }] }, { type: undefined, decorators: [{
+                    type: Inject,
+                    args: [STRIPE_PUBLISHABLE_KEY]
+                }] }, { type: undefined, decorators: [{
+                    type: Inject,
+                    args: [STRIPE_OPTIONS]
+                }] }]; } });
 
 class StripeComponent {
     constructor(StripeScriptTag) {
@@ -83,19 +89,21 @@ class StripeComponent {
             .then(i => this.stripe = i);
     }
 }
-StripeComponent.decorators = [
-    { type: Component, args: [{
-                selector: "stripe-component", template: ``
-            },] }
-];
-StripeComponent.ctorParameters = () => [
-    { type: StripeScriptTag }
-];
-StripeComponent.propDecorators = {
-    catcher: [{ type: Output, args: ["catch",] }],
-    invalid: [{ type: Input }],
-    invalidChange: [{ type: Output }]
-};
+StripeComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeComponent, deps: [{ token: StripeScriptTag }], target: i0.ɵɵFactoryTarget.Component });
+StripeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "13.3.12", type: StripeComponent, selector: "stripe-component", inputs: { invalid: "invalid" }, outputs: { catcher: "catch", invalidChange: "invalidChange" }, ngImport: i0, template: ``, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: "stripe-component", template: ``
+                }]
+        }], ctorParameters: function () { return [{ type: StripeScriptTag }]; }, propDecorators: { catcher: [{
+                type: Output,
+                args: ["catch"]
+            }], invalid: [{
+                type: Input
+            }], invalidChange: [{
+                type: Output
+            }] } });
 
 class StripeSource extends StripeComponent {
     constructor(StripeScriptTag) {
@@ -151,26 +159,32 @@ class StripeSource extends StripeComponent {
         }
     }
 }
-StripeSource.decorators = [
-    { type: Component, args: [{
-                selector: "stripe-source",
-                template: `
+StripeSource.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeSource, deps: [{ token: StripeScriptTag }], target: i0.ɵɵFactoryTarget.Component });
+StripeSource.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "13.3.12", type: StripeSource, selector: "stripe-source", inputs: { source: "source", paymentMethod: "paymentMethod" }, outputs: { sourceChange: "sourceChange", paymentMethodChange: "paymentMethodChange" }, exportAs: ["StripeSource"], usesInheritance: true, ngImport: i0, template: `
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+          <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
+      </ng-container>
+  `, isInline: true, directives: [{ type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeSource, decorators: [{
+            type: Component,
+            args: [{
+                    selector: "stripe-source",
+                    template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-                exportAs: "StripeSource"
-            },] }
-];
-StripeSource.ctorParameters = () => [
-    { type: StripeScriptTag }
-];
-StripeSource.propDecorators = {
-    source: [{ type: Input }],
-    sourceChange: [{ type: Output }],
-    paymentMethod: [{ type: Input }],
-    paymentMethodChange: [{ type: Output }]
-};
+                    exportAs: "StripeSource"
+                }]
+        }], ctorParameters: function () { return [{ type: StripeScriptTag }]; }, propDecorators: { source: [{
+                type: Input
+            }], sourceChange: [{
+                type: Output
+            }], paymentMethod: [{
+                type: Input
+            }], paymentMethodChange: [{
+                type: Output
+            }] } });
 
 class StripeCard extends StripeSource {
     constructor(ElementRef, StripeScriptTag) {
@@ -234,31 +248,40 @@ class StripeCard extends StripeSource {
         });
     }
 }
-StripeCard.decorators = [
-    { type: Component, args: [{
-                selector: "stripe-card",
-                template: `
+StripeCard.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeCard, deps: [{ token: i0.ElementRef }, { token: StripeScriptTag }], target: i0.ɵɵFactoryTarget.Component });
+StripeCard.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "13.3.12", type: StripeCard, selector: "stripe-card", inputs: { createOptions: "createOptions", options: "options", token: "token", complete: "complete" }, outputs: { tokenChange: "tokenChange", cardMounted: "cardMounted", completeChange: "completeChange", changed: "changed" }, exportAs: ["StripeCard"], usesInheritance: true, usesOnChanges: true, ngImport: i0, template: `
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+          <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
+      </ng-container>
+  `, isInline: true, directives: [{ type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeCard, decorators: [{
+            type: Component,
+            args: [{
+                    selector: "stripe-card",
+                    template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-                exportAs: "StripeCard"
-            },] }
-];
-StripeCard.ctorParameters = () => [
-    { type: ElementRef },
-    { type: StripeScriptTag }
-];
-StripeCard.propDecorators = {
-    createOptions: [{ type: Input }],
-    options: [{ type: Input }],
-    token: [{ type: Input }],
-    tokenChange: [{ type: Output }],
-    cardMounted: [{ type: Output }],
-    complete: [{ type: Input }],
-    completeChange: [{ type: Output }],
-    changed: [{ type: Output }]
-};
+                    exportAs: "StripeCard"
+                }]
+        }], ctorParameters: function () { return [{ type: i0.ElementRef }, { type: StripeScriptTag }]; }, propDecorators: { createOptions: [{
+                type: Input
+            }], options: [{
+                type: Input
+            }], token: [{
+                type: Input
+            }], tokenChange: [{
+                type: Output
+            }], cardMounted: [{
+                type: Output
+            }], complete: [{
+                type: Input
+            }], completeChange: [{
+                type: Output
+            }], changed: [{
+                type: Output
+            }] } });
 
 class StripeBank extends StripeComponent {
     constructor(StripeScriptTag) {
@@ -287,25 +310,30 @@ class StripeBank extends StripeComponent {
         });
     }
 }
-StripeBank.decorators = [
-    { type: Component, args: [{
-                selector: "stripe-bank",
-                template: `
+StripeBank.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeBank, deps: [{ token: StripeScriptTag }], target: i0.ɵɵFactoryTarget.Component });
+StripeBank.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "13.3.12", type: StripeBank, selector: "stripe-bank", inputs: { options: "options", token: "token" }, outputs: { tokenChange: "tokenChange" }, exportAs: ["StripeBank"], usesInheritance: true, ngImport: i0, template: `
+      <ng-container *ngIf="!StripeScriptTag.StripeInstance">
+          <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
+      </ng-container>
+  `, isInline: true, directives: [{ type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeBank, decorators: [{
+            type: Component,
+            args: [{
+                    selector: "stripe-bank",
+                    template: `
       <ng-container *ngIf="!StripeScriptTag.StripeInstance">
           <div style="color:red;">Stripe PublishableKey NOT SET. Use method StripeScriptTag.setPublishableKey()</div>
       </ng-container>
   `,
-                exportAs: "StripeBank"
-            },] }
-];
-StripeBank.ctorParameters = () => [
-    { type: StripeScriptTag }
-];
-StripeBank.propDecorators = {
-    options: [{ type: Input }],
-    token: [{ type: Input }],
-    tokenChange: [{ type: Output }]
-};
+                    exportAs: "StripeBank"
+                }]
+        }], ctorParameters: function () { return [{ type: StripeScriptTag }]; }, propDecorators: { options: [{
+                type: Input
+            }], token: [{
+                type: Input
+            }], tokenChange: [{
+                type: Output
+            }] } });
 
 const declarations = [
     StripeComponent,
@@ -331,16 +359,28 @@ class StripeModule {
         };
     }
 }
-StripeModule.decorators = [
-    { type: NgModule, args: [{
-                imports: [
-                    CommonModule
-                ],
-                declarations,
-                // providers: [ StripeScriptTag ],
-                exports: [...declarations]
-            },] }
-];
+StripeModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+StripeModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeModule, declarations: [StripeComponent,
+        StripeSource,
+        StripeCard,
+        StripeBank], imports: [CommonModule], exports: [StripeComponent,
+        StripeSource,
+        StripeCard,
+        StripeBank] });
+StripeModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeModule, imports: [[
+            CommonModule
+        ]] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.3.12", ngImport: i0, type: StripeModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    imports: [
+                        CommonModule
+                    ],
+                    declarations,
+                    // providers: [ StripeScriptTag ],
+                    exports: [...declarations]
+                }]
+        }] });
 /**
  * @deprecated Please import `StripeModule` directly
  */
@@ -350,5 +390,5 @@ const Module = StripeModule;
  * Generated bundle index. Do not edit.
  */
 
-export { Module, STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY, StripeBank, StripeCard, StripeModule, StripeScriptTag, StripeSource, StripeComponent as ɵa };
-//# sourceMappingURL=stripe-angular.js.map
+export { Module, STRIPE_OPTIONS, STRIPE_PUBLISHABLE_KEY, StripeBank, StripeCard, StripeComponent, StripeModule, StripeScriptTag, StripeSource };
+//# sourceMappingURL=stripe-angular.mjs.map
