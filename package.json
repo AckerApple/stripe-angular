@@ -65,8 +65,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "ts-helpers": "^1.1.2",
-    "typescript": "4.3.5",
-    "zone.js": "~0.11.4"
+    "typescript": "4.3.5"
   },
   "private": true,
   "ngPackage": {
