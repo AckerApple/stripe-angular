@@ -14,7 +14,6 @@
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
     "lib": [
-      "es2015",
       "es2020",
       "dom"
     ]

@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
@@ -9,7 +9,7 @@
     "start:server": "node .",
     "watch:server": "nodemon .",
     "watch": "npm run watch:server & npm run start:app",
-    "build": "ng build src --stats-json --prod --output-hashing=none",
+    "build": "ng build src --stats-json --output-hashing=none",
     "save": "git add . && git commit -m 'update' && git push",
     "deploy": "npm run patch:version && npm run build && npm run copy:www && npm run save",
     "copy:www": "cp -R www/. .",
@@ -44,7 +44,7 @@
     "ack-x": "^3.0.2",
     "nodemon": "^2.0.20",
     "rxjs": "^7.8.0",
-    "stripe-angular": "git+https://github.com/ackerapple/stripe-angular.git",
+    "stripe-angular": "file:../development/dist",
     "typescript": "4.6.4",
     "zone.js": "^0.11.4"
   },
