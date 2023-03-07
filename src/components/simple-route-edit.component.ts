@@ -1,21 +1,21 @@
 import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from "@angular/core"
 import { flatten, removeFlats, changeKey, copyText } from "./app.component.utils"
-import { SmartRouteEditor } from "./typings"
+import { ApiMessage, SmartRouteEditor } from "./typings"
 
 @Component({
   selector: 'simple-route-edit',
   templateUrl: './simple-route-edit.component.html'
 }) export class SimpleRouteEditComponent {
-  @Input() key: string
-  @Input() config: SmartRouteEditor
-  @Input() copy: string
+  @Input() key!: string
+  @Input() config!: SmartRouteEditor
+  @Input() copy!: string
 
   @Input() format: 'json' | 'small' = 'small'
   @Input() dumpLevels: number = -1 // unfolded shown levels of depth. Default is auto decide
   @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
 
-  @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems:TemplateRef<ElementRef>
-  @ContentChild('prependFormFooter', { static: false }) prependFormFooter:TemplateRef<ElementRef>
+  @ContentChild('requestHeaderItems', { static: false }) requestHeaderItems!: TemplateRef<ElementRef>
+  @ContentChild('prependFormFooter', { static: false }) prependFormFooter!: TemplateRef<ElementRef>
 
   showAll?: boolean
   showPost?: boolean
@@ -40,29 +40,31 @@ import { SmartRouteEditor } from "./typings"
   }
 
   updateMessages() {
-    const messages = []
+    const messages: ApiMessage[] = []
 
     if (this.config.messages) {
+      const pushMessages = this.config.messages.filter(config => {
+        if (!config.valueKey) {
+          return true // simple message
+        }
+
+        const value = this.config[config.valueKey]
+        const notDefined = [undefined,null].includes(value)
+
+        if ( notDefined ) {
+          return false // value is not defined, no message
+        }
+
+        if (!config.valueExpression) {
+          return config // value is defined and has no conditions to display
+        }
+
+        const expression = new RegExp(config.valueExpression, 'gi')
+        return value.search(expression) >= 0
+      })
+
       messages.push(
-        ...this.config.messages.filter(config => {
-          if (!config.valueKey) {
-            return true // simple message
-          }
-
-          const value = this.config[config.valueKey]
-          const notDefined = [undefined,null].includes(value)
-
-          if ( notDefined ) {
-            return false // value is not defined, no message
-          }
-
-          if (!config.valueExpression) {
-            return config // value is defined and has no conditions to display
-          }
-
-          const expression = new RegExp(config.valueExpression, 'gi')
-          return value.search(expression) >= 0
-        })
+        ...pushMessages
       )
     }
 

@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "es6",
-    "module": "commonjs",
+    "baseUrl": "./",
+    "target": "es2020",
+    "module": "es2020",
     "moduleResolution": "node",
     "sourceMap": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
     "inlineSources": false,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -16,7 +21,10 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@angular/*": [ "./node_modules/@angular/*"]
+    },
   },
   "include":[
     "index.ts",

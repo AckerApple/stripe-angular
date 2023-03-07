@@ -4,7 +4,7 @@ import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, Templ
   selector: 'keys-input-array',
   templateUrl: './keys-input-array.component.html',
 }) export class KeysInputArrayComponent {
-  @Input() array: any[]
+  @Input() array!: any[]
   
   @Input() value: any
   @Output() valueChange: EventEmitter<any> = new EventEmitter()
@@ -15,8 +15,8 @@ import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, Templ
   @Input() inputPlaceholder: string = 'Value'
   @Input() allowChange: any
 
-  @ContentChild('valueFooter', { static: false }) valueFooter: TemplateRef<ElementRef>
-  @ContentChild('footer', { static: false }) footer: TemplateRef<ElementRef>
+  @ContentChild('valueFooter', { static: false }) valueFooter!: TemplateRef<ElementRef>
+  @ContentChild('footer', { static: false }) footer!: TemplateRef<ElementRef>
 
   changeValue(value) {
     this.valueChange.emit(this.value = value)

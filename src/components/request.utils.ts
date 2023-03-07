@@ -31,7 +31,7 @@ export function requestByRouter(
 
   if (options.id) {
     const idSearch = /\$\{\s*id\s*\}/.exec(req.path)
-    if (idSearch.length > 0) {
+    if (idSearch && idSearch.length > 0) {
       url = url + req.path.slice(0, idSearch.index) + options.id + req.path.slice(idSearch.index + idSearch[0].length, url.length)
     } else {
       url = url + options.id
@@ -84,8 +84,9 @@ export function requestByRouter(
     options.query = reqOptions.post
   }
 
-  if (options.query) {
-    const queryString = Object.keys(options.query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${options.query[key]}`,'')
+  const query = options.query
+  if ( query ) {
+    const queryString = Object.keys(query).reduce((all, key) => all + (all.length && '&' || '') + `${key}=${query[key]}`,'')
     reqOptions.url = reqOptions.url + '?' + queryString
   }
 
@@ -106,9 +107,9 @@ export interface RequestOptions {
   authorizationBearer?: string
 }
 
-export function request(
-  {url, method, post, json, headers, authorizationBearer}: RequestOptions
-) {
+export function request({
+    url, method, post, json, headers, authorizationBearer
+}: RequestOptions) {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
     const endMethod = method || (post || json ? 'POST' : 'GET')
@@ -156,10 +157,16 @@ function replaceStringVars(url: string, data: any): {url:string, data: any} {
   const array = [...url.matchAll(regexp)]
   for (let index = array.length - 1; index >= 0; --index) {
     const result = array[index]
+    const rIndex = result.index
+    
+    if ( rIndex === undefined ) {
+      continue
+    }
+
     const key = result[0].slice(2, result[0].length-1).trim() // remove brackets and trim
     const value = data[key]
     // delete data[key] // remove from body data
-    url = url.slice(0, result.index) + value + url.slice(result.index + result[0].length, url.length)
+    url = url.slice(0, rIndex) + value + url.slice(rIndex + result[0].length, url.length)
   }
 
   // :identifiers
@@ -167,9 +174,15 @@ function replaceStringVars(url: string, data: any): {url:string, data: any} {
   const idArray = [...url.matchAll(idRegexp)]
   for (let index = idArray.length - 1; index >= 0; --index) {
     const result = idArray[index]
+    const rIndex = result.index
+
+    if ( rIndex === undefined ) {
+      continue
+    }
+
     const key = result[0].slice(2, result[0].length).trim() // remove :
     const value = data[key]
-    url = url.slice(0, result.index+1) + value + url.slice(result.index + result[0].length, url.length)
+    url = url.slice(0, rIndex+1) + value + url.slice(rIndex + result[0].length, url.length)
   }
 
   return {url, data}

@@ -22,7 +22,7 @@ export function simpleRouteToSmart(
 
     // linkage details
     routeRef._api = {
-      knownTitle: targetApi.title,
+      knownTitle: targetApi.title as string,
       _id: paramRouteId(targetApi),
       original: routeRef, // save for edit/export purpose (we do not edit/export this newly created route, only the original gets edited/exported)
     }
@@ -77,7 +77,7 @@ function smartPastes(
 ): SmartApiPaste[] {
   return pastes.map((paste, index) => {
     const newPaste = JSON.parse(JSON.stringify(paste)) as SmartApiPaste
-    let pasteApi: SmartRouteEditor = (paste as SmartApiPaste).api
+    let pasteApi = (paste as SmartApiPaste).api as SmartRouteEditor
 
     // lookup by identifier
     if (paste._api) {
@@ -107,7 +107,7 @@ function smartPastes(
     if(!selfReferencing) {
       paste._api = {
         _id: pasteApi._id || (pasteApi._id = performance.now()),
-        knownTitle: pasteApi.title
+        knownTitle: pasteApi.title as string,
       }
 
       // find the group this api belongs to for icon title purposes
@@ -197,24 +197,24 @@ function paramRequestUrlParams(request: RouteRequest) {
   const interps = getStringInterpolations(request.path)
 
   if (interps.length) {
-    request.params = request.params || {}
+    const params = request.params = request.params || {}
 
     // create data points for path interps
     interps.forEach(result => {
       const nameString = result[0]
       const name = nameString.slice(2, nameString.length-1)
-      request.params[name] = request.params[name] || ''
+      params[name] = params[name] || ''
     })
   }
 
   if (identifiers.length) {
-    request.params = request.params || {}
+    const params = request.params = request.params || {}
 
     // create data points for path identifiers
     identifiers.forEach(result => {
       const nameString = result[0]
       const name = nameString.slice(2, nameString.length) // remove /:
-      request.params[name] = request.params[name] || ''
+      params[name] = params[name] || ''
     })
   }
 }

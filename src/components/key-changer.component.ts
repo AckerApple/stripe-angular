@@ -5,8 +5,8 @@ import { KeyInfo } from './storage'
   selector: 'key-changer',
   templateUrl: './key-changer.component.html'
 }) export class KeyChangerComponent {
-  @Input() keys: KeyInfo[]
+  @Input() keys!: KeyInfo[]
 
-  @Input() value: string
+  @Input() value!: string
   @Output() valueChange: EventEmitter<string> = new EventEmitter()
 }

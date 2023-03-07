@@ -14,21 +14,21 @@ export interface GroupScope {
   templateUrl: './group-tools.component.html'
 }) export class GroupToolsComponent {
 
-  @Input() groups: ApiGroup[]
+  @Input() groups!: ApiGroup[]
   @Input() api: any
-  @Input() storage: localSchema
+  @Input() storage!: localSchema
 
   // styles
   @Input() selectedGroupClass = 'text-xs'
   @Output() formatChange: EventEmitter<'json' | 'small'> = new EventEmitter()
 
   /* passed in templates */
-  @ContentChild('groupTemplate', { static: false }) groupTemplate:TemplateRef<ElementRef>
-  @ContentChild('groupBody', { static: false }) groupBody:TemplateRef<ElementRef>
+  @ContentChild('groupTemplate', { static: false }) groupTemplate!: TemplateRef<ElementRef>
+  @ContentChild('groupBody', { static: false }) groupBody!: TemplateRef<ElementRef>
 
   currentLevel = 0
 
-  showRelated: boolean
+  showRelated?: boolean
   @Input() scope: GroupScope = {level: 0}
   paramSubScope = paramSubScope
 
@@ -45,8 +45,8 @@ export interface GroupScope {
 
     scope.showApi = api
     if (scope.scope) {
-      scope.scope.showApi = null
-      scope.scope.showGroup = null
+      delete scope.scope.showApi
+      delete scope.scope.showGroup
     }
     this.currentLevel = level
   }
@@ -55,7 +55,7 @@ export interface GroupScope {
     group: ApiGroup, scope: GroupScope,
     parentScope: GroupScope, level: number
   ) {
-    scope.showGroup = scope.showGroup === group ? null : group
+    scope.showGroup = scope.showGroup === group ? undefined : group
     if (parentScope) {
       delete parentScope.showApi
     }

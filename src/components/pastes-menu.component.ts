@@ -9,14 +9,15 @@ import { cardRemoveKeys } from "./sources.api"
   selector: 'pastes-menu',
   templateUrl: './pastes-menu.component.html'
 }) export class PastesMenuComponent {
-  @Input() pastes: SmartApiPaste[]
-  @Input() api: SmartRouteEditor
+  @Input() pastes!: SmartApiPaste[]
+  @Input() api!: SmartRouteEditor
 
   showPastes?: boolean
 
   pasteByPaste(item: SmartApiPaste) {
     try {
-      this.pasteFrom(item, item.api || item.$api())
+      const api = (item.api || item.$api && item.$api()) as ISimpleRouteEditor
+      this.pasteFrom(item, api)
     } catch (err) {
       console.error(`🔴 Failed to paste by config`, {api: this.api, paste:item}, err);
     }
@@ -121,7 +122,10 @@ function getPasteValueFrom(item: Paste | PasteMatch, from: any) {
 }
 
 function pasteValueFromMatches(item: Paste, from: any): boolean {
-  // const value = getPasteValueFrom(item, from)
+  if ( !item.valueMatches ) {
+    return false
+  }
+
   return item.valueMatches.find(valConfig => {
     const value = getPasteValueFrom(valConfig, from)
     const found = value.search(new RegExp(valConfig.expression, 'gi')) >= 0

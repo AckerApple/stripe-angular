@@ -7,9 +7,9 @@ import { Paste, SmartRouteEditor } from "./typings"
   selector:"tool-relations",
   templateUrl: './tool-relations.component.html'
 }) export class ToolRelationsComponent {
-  @Input() storage: localSchema
+  @Input() storage!: localSchema
   @Input() api!: SmartRouteEditor
-  @Input() showRelated: boolean
+  @Input() showRelated!: boolean
 
   @Input() showApi!: SmartRouteEditor
   @Output() showApiChange: EventEmitter<SmartRouteEditor> = new EventEmitter()

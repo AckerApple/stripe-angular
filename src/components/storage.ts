@@ -8,7 +8,7 @@ export interface localSchema {
   key: string
   format?: 'json' | 'small' // json dump format
 
-  privateKey: string
+  privateKey?: string
   privateKeys: KeyInfo[] // switchable keys
   publicKeys: KeyInfo[] // switchable keys
   

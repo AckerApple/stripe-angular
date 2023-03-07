@@ -178,13 +178,13 @@ export function changeKey(
   let current: any = scope;
 
   while(keys.length > 2) {
-    current = current[ keys.shift() ]
+    current = current[ keys.shift() as string ]
   }
 
   try {
     eval('value = ' + value) // allow loose js to be cast to json
     current[ keys[0] ] = value
-  } catch (err) {
+  } catch (err: any) {
      // stripe-angular only
     scope.error = Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
     console.error(`failed to parse object key ${keys[0]}`);

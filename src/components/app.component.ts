@@ -1,6 +1,6 @@
-import { Component, TemplateRef, ViewChild } from "@angular/core"
+import { Component, ViewChild } from "@angular/core"
 import { StripeScriptTag } from "stripe-angular"
-import * as packageJson from "stripe-angular/package.json"
+import packageJson from "stripe-angular/package.json"
 import { bank } from "./banks.api"
 import { getApis } from './getApis.function'
 
@@ -28,26 +28,26 @@ declare const Plaid: any
   templateUrl: './app.component.html'
 }) export class AppComponent {
   links = links
-  stripe:stripe.Stripe
+  stripe?: stripe.Stripe
   cardElement: any // StripeJs Element (TODO: DataType this)
 
-  version: string = (packageJson as any).version;
+  version: string = packageJson.version
 
-  loaded: boolean
-  sending: boolean // when stripe.js is communicating card/bank form entry
+  loaded?: boolean
+  sending?: boolean // when stripe.js is communicating card/bank form entry
   cardComplete = false
 
   storage: localSchema = storage
   localStorage = localStorage
 
-  lastError:Error
+  lastError?: Error
   
-  @ViewChild('stripeBank', { static: true }) stripeBank: stripe.Stripe
+  @ViewChild('stripeBank', { static: true }) stripeBank!: stripe.Stripe
 
-  localServerActive: boolean
-  apiEditorMode: boolean // api json editor functionality
+  localServerActive?: boolean
+  apiEditorMode?: boolean // api json editor functionality
 
-  showMore: boolean // more documentation near title
+  showMore?: boolean // more documentation near title
 
   // card elements options
   options: stripe.elements.ElementsOptions = {
@@ -157,8 +157,9 @@ declare const Plaid: any
         this.subApi(api) && api.smarts.$send.subscribe(data => this.plaidRouteRequest(api,data))
       )
 
-    if (Object.keys(storage.metadata).length) {
-      this.defaultMetadata(storage.metadata)
+    const metadata = storage.metadata
+    if (metadata && Object.keys(metadata).length) {
+      this.defaultMetadata(metadata)
     }
 
     storage.plaid = storage.plaid || {}
@@ -228,7 +229,7 @@ declare const Plaid: any
     try {
       await this.tryLoadStripe()
       this.loaded = true
-    } catch (err) {
+    } catch (err: any) {
       this.lastError = err
       return Promise.reject(err)
     }
@@ -275,8 +276,13 @@ declare const Plaid: any
   changeSourceRequest(data:string){
     let source;
 
+    const requests = this.storage.requests
+    if ( !requests ) {
+      return
+    }
+
     try {
-      source = this.storage.requests.source = JSON.parse(data)
+      source = requests.source = JSON.parse(data)
     } catch (err) {
       this.storage.temp.invalidSourceData = true
       this.log(err);
@@ -290,7 +296,7 @@ declare const Plaid: any
     }
 
     if (this.storage.saveRequestsLocal) {
-      this.storage.requests.source = source
+      requests.source = source
       this.save()
     }
   }
@@ -305,7 +311,8 @@ declare const Plaid: any
     this.flatten(api)
 
     api.smarts.related.forEach(related => {
-      const value = api[ related.relation.valueKey ]
+      const index = related.relation.valueKey as string
+      const value = api[ index ]
       let valid = true
 
       if (related.relation.valueMatches) {
@@ -322,15 +329,16 @@ declare const Plaid: any
     })
   }
 
-  checkLocalServer() {
-    return request({url: 'http://localhost:3000/health-check'})
-    .then((res: {name: string}) =>
+  async checkLocalServer() {
+    try {
+      const res: {name: string} = await request({
+        url: 'http://localhost:3000/health-check'
+      }) as any
       this.localServerActive = res?.name === 'stripe-angular'
-    )
-    .catch(() => {
+    } catch (err) {
       console.warn('🟠 Connection to local server unavailable')
       this.localServerActive = false
-    })
+    }
   }
 
   createTestHeader(data: any): string {
@@ -347,8 +355,14 @@ declare const Plaid: any
 
   /** crawls all data points that may contain metadata and converts to set metadata */
   defaultMetadata(meta: Record<string, any>) {
-    storage.requests.source.metadata = meta
-    storage.requests.paymentMethod.metadata = meta
+    const requests = storage.requests
+    
+    if ( !requests ) {
+      return
+    }
+
+    requests.source.metadata = meta
+    requests.paymentMethod.metadata = meta
 
     const metaCheck = (data: any) => {
       if (data?.metadata) {
@@ -394,14 +408,20 @@ declare const Plaid: any
   }
 
   changePaymentMethodRequest(data:string){
-    const pmr = this.storage.requests.paymentMethod = JSON.parse(data)
+    const requests = this.storage.requests
+    
+    if ( !requests ) {
+      return
+    }
+
+    const pmr = requests.paymentMethod = JSON.parse(data)
 
     if (pmr.metadata) {
       this.extraData.metadata = pmr.metadata
     }
 
     if (this.storage.saveRequestsLocal) {
-      this.storage.requests.paymentMethod = pmr
+      requests.paymentMethod = pmr
       this.save()
     }
   }
@@ -424,7 +444,8 @@ declare const Plaid: any
   }
 
   stripeRouteRequest(route: SmartRouteEditor, post: any) {
-    return stripeRequestByRouter(route, {post, privateKey: this.storage.privateKey})
+    const privateKey = this.storage.privateKey as string
+    return stripeRequestByRouter(route, {post, privateKey})
   }
 
   flatten(ob: any) {
@@ -496,19 +517,32 @@ declare const Plaid: any
   // a source or token converted into a customer
   createCustomerByToken(token: stripe.Token) {
     const customer = this.create_customer.data;
+    
+    if ( !customer ) {
+      return
+    }
+    
     customer.source = token.id;
     // customer.payment_method = token.id; // does NOT work
     this.createCustomer(customer);
   }
 
   createCustomer(data: any) {
-    return stripeRequestByRouter(this.create_customer, {post: data, privateKey: this.storage.privateKey})
+    const privateKey = this.storage.privateKey as string
+    return stripeRequestByRouter(this.create_customer, {
+      post: data, privateKey })
   }
 
   /** TODO: upgrade to newer simpleRouteEditor */
   verifyBank() {
     const base = stripeServer + 'customers/'
-    const cusId = this.create_customer.result.id;
+    const result = this.create_customer.result
+    
+    if ( !result ) {
+      return
+    }
+
+    const cusId = result.id;
     const bankId = (bank as any).result.bank_account.id;
     const url = base + `${cusId}/sources/${bankId}/verify`;
 
@@ -530,11 +564,17 @@ declare const Plaid: any
   }
 
   async confirmPayIntent() {
-    const return_url = this.api.confirm_pay_intent.data.return_url // window.location.href
+    const data = this.api.confirm_pay_intent.data
+    
+    if ( !data || !this.stripe ) {
+      return
+    }
+
+    const return_url = data.return_url // window.location.href
 
     try {
       const result = await this.stripe.confirmCardPayment(
-        this.api.confirm_pay_intent.data.client_secret,
+        data.client_secret,
         {
           payment_method: {card: this.cardElement}, return_url
         },
@@ -594,8 +634,8 @@ export function stripeRequestByRouter(
   options: StripeRouterRequestOptions
 ) {
   options.baseUrl = stripeServer
-  options.request = options.request || {} as any
-  options.request.authorizationBearer = options.privateKey
+  const request = options.request = options.request || {} as any
+  request.authorizationBearer = options.privateKey
   return requestByRouter(route, options)
 }
 
@@ -627,7 +667,7 @@ function getAllGroupsSave(groups: SmartApiGroup[]) {
     if (newGroup.apis) {
       newGroup.apis = newGroup.apis.map(api => {
         const newApi = {...api}
-        delete newApi.smarts
+        delete (newApi as any).smarts
         delete newApi.result
 
         Object.keys(newApi).forEach(key => {

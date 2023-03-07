@@ -6,9 +6,9 @@ import { localSchema } from './storage'
   selector: 'settings',
   templateUrl: './settings.component.html'
 }) export class SettingsComponent {
-  @Input() storage: localSchema
+  @Input() storage!: localSchema
 
-  @Input() edit: boolean
+  @Input() edit!: boolean
   @Output() editChange: EventEmitter<boolean> = new EventEmitter()
 
   @Output() saveChange: EventEmitter<void> = new EventEmitter()
