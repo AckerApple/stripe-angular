@@ -3,6 +3,7 @@ import { StripeScriptTag } from "stripe-angular"
 import packageJson from "stripe-angular/package.json"
 import { bank } from "./banks.api"
 import { getApis } from './getApis.function'
+import { download, getAllGroupsSave, isObject, simpleGroupsToSmart, stripeRequestByRouter } from './app.utils'
 
 // TODO: end up with apis.json
 import { allGroups } from './apis'
@@ -14,9 +15,9 @@ import {
   sample, copyText, tryParse, stripeServer, flatten, removeFlats, getSaveableStorage,
 } from "./app.component.utils"
 import { generateTestHeaderString } from "./webhook.utils"
-import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
+import { ApiGroup, SmartRouteEditor } from "./typings"
 import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
-import { create_customer } from "./customers.api"
+import { customer_create } from "./customers.api"
 import { card } from "./sources.api"
 import { links } from "./links"
 import { getGroupByApi, GroupScope } from "./group-tools.component"
@@ -28,8 +29,10 @@ declare const Plaid: any
   templateUrl: './app.component.html'
 }) export class AppComponent {
   links = links
-  stripe?: stripe.Stripe
   cardElement: any // StripeJs Element (TODO: DataType this)
+  
+  // Added in by stripe-angular StripeScriptTag.ts via document.createElement('script') to https://js.stripe.com/v3/
+  stripe?: stripe.Stripe
 
   version: string = packageJson.version
 
@@ -42,6 +45,7 @@ declare const Plaid: any
 
   lastError?: Error
   
+  // load the <stripe-bank> element
   @ViewChild('stripeBank', { static: true }) stripeBank!: stripe.Stripe
 
   localServerActive?: boolean
@@ -92,7 +96,7 @@ declare const Plaid: any
   plaidServerApis = this.allGroups.find(group => group.title === '🏦 Plaid Functionality').apis as SmartRouteEditor[]
   apiGroups = this.allGroups.find(group => group.title === '🐠 Stripe Functionality').groups
 
-  create_customer = simpleRouteToSmart(create_customer, this.allGroups)
+  create_customer = simpleRouteToSmart(customer_create, this.allGroups)
 
   editConfig?: boolean
   copyText = copyText
@@ -130,17 +134,7 @@ declare const Plaid: any
 
     this.checkLocalServer()
 
-    this.api.confirm_pay_intent.smarts.$send.subscribe(() => this.confirmPayIntent())
-    this.api.testHeader.smarts.$send.subscribe(data => this.createTestHeader(data))
-    this.api.webhookPost.smarts.$send.subscribe(data => this.sendWebhookPost(data))
-    this.api.bank.smarts.$send.subscribe(async data => {      
-      try {
-        const result = await this.stripeBank.createToken(this.api.bank.data as any)
-        this.api.bank.smarts.$result.next(result)
-      } catch (err) {
-        this.api.bank.error = err
-      }
-    })
+    this.hookIntoUiApis()
 
     // listen to results to flatten
     Object.values(this.api).forEach(api => this.subApi(api))
@@ -163,6 +157,65 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
+  }
+
+  hookIntoUiApis() {
+    // UI only apis that we need to hook into
+    this.api.confirm_pay_intent.smarts.$send.subscribe(() => this.confirmPayIntent())
+    this.api.testHeader.smarts.$send.subscribe(data => this.createTestHeader(data))
+    this.api.webhookPost.smarts.$send.subscribe(data => this.sendWebhookPost(data))
+    this.api.bank.smarts.$send.subscribe(async data => {      
+      try {
+        const result = await this.stripeBank.createToken(this.api.bank.data as any)
+        this.api.bank.smarts.$result.next(result)
+      } catch (err) {
+        this.api.bank.error = err
+      }
+    })
+
+    this.api.collectFinancialConnectionsAccounts.smarts.$send.subscribe(async data => {
+      if ( !data.clientSecret ) {
+        this.api.collectFinancialConnectionsAccounts.error = 'clientSecret is required'
+        return
+      }
+
+      try {
+        const result = await (this.stripe as any).collectFinancialConnectionsAccounts(data)
+        if (result.error) {
+          this.api.collectFinancialConnectionsAccounts.error = result.error
+          return
+        } else if (result.financialConnectionsSession.accounts.length === 0) {
+          this.api.collectFinancialConnectionsAccounts.error = 'No accounts were linked'
+        }
+
+        this.api.collectFinancialConnectionsAccounts.result = result
+        this.api.collectFinancialConnectionsAccounts.smarts.$result.next(result)
+      } catch (err) {
+        this.api.collectFinancialConnectionsAccounts.error = err
+      }
+    })
+
+    this.api.collectBankAccountToken.smarts.$send.subscribe(async data => {
+      if ( !data.clientSecret ) {
+        this.api.collectBankAccountToken.error = 'clientSecret is required'
+        return
+      }
+
+      try {
+        const result = await (this.stripe as any).collectBankAccountToken(data)
+        if (result.error) {
+          this.api.collectBankAccountToken.error = result.error
+          return
+        } else if (result.financialConnectionsSession.accounts.length === 0) {
+          this.api.collectBankAccountToken.error = 'No accounts were linked'
+        }
+
+        this.api.collectBankAccountToken.result = result
+        this.api.collectBankAccountToken.smarts.$result.next(result)
+      } catch (err) {
+        this.api.collectBankAccountToken.error = err
+      }
+    })
   }
 
   getGroupByApi(api: SmartRouteEditor, _group: ApiGroup[]) {
@@ -617,89 +670,4 @@ declare const Plaid: any
   stopValueTimer(name) {
     clearTimeout(this.valueTimers[name])
   }
-}
-
-export interface CardsData {
-  token?:any
-  source?:any
-  payment_method?: stripe.paymentMethod.PaymentMethod
-}
-
-interface StripeRouterRequestOptions extends RouterRequestOptions {
-  privateKey: string
-}
-
-export function stripeRequestByRouter(
-  route: SmartRouteEditor,
-  options: StripeRouterRequestOptions
-) {
-  options.baseUrl = stripeServer
-  const request = options.request = options.request || {} as any
-  request.authorizationBearer = options.privateKey
-  return requestByRouter(route, options)
-}
-
-function simpleGroupsToSmart(groups: ApiGroup[]) {
-  const groupMapper = group => {
-    if (group.groups) {
-      group.groups = group.groups.map(groupMapper)
-    }
-
-    if (group.apis) {
-      group.apis = group.apis.map(api => simpleRouteToSmart(api, groups)) as any
-    }
-
-    return group
-  }
-
-  return groups.map(groupMapper)
-}
-
-function isObject(obj: any) {
-  return obj && typeof(obj) === 'object' && !(obj instanceof Array)
-}
-
-function getAllGroupsSave(groups: SmartApiGroup[]) {
-  return groups.map(group => {
-    const newGroup = {...group}
-
-    // remove apis smarts
-    if (newGroup.apis) {
-      newGroup.apis = newGroup.apis.map(api => {
-        const newApi = {...api}
-        delete (newApi as any).smarts
-        delete newApi.result
-
-        Object.keys(newApi).forEach(key => {
-          if (key.indexOf('result.') === 0
-          || key.indexOf('request.') === 0
-          ) {
-            delete newApi[key]
-          }
-        })
-
-        return newApi
-      })
-    }
-
-    // recurse
-    if (newGroup.groups) {
-      newGroup.groups = getAllGroupsSave(newGroup.groups)
-    }
-
-    return newGroup
-  })
-}
-
-export function download(filename: string, text: string) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
 }

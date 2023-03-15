@@ -1,18 +1,35 @@
-<div *ngIf="api.smarts.related.length" class="radius-5 bg-dark text-center margin-top">
+<div *ngIf="api.smarts.related.length || api.smarts.relatedTo.length"
+  class="radius-5 bg-dark text-center margin-top"
+>
   <a class="pad-smx block" (click)="showRelated = !showRelated">
-    {{ api.smarts.related.length }} related tasks
+    {{ api.smarts.related.length + api.smarts.relatedTo.length }} related tasks
   </a>
   <div class="flex-wrap text-xs child-pad">
-    <ng-container *ngFor="let related of api.smarts.related">
-      <a *ngIf="showRelated || related.show"
-        [href]="'#serverToolsWrap-' + related.title"
-        class="no-a-style flex2 flex-stacked flex-left flex-valign-center hover-bg-positive active-bg-energized"
-        (click)="gotoApi(related.api, related.relation)"
-        [class.opacity-half]="!related.show"
-      >
-        {{related.group?.icon ? related.group.icon + ' ' : ''}}{{related.title}}
-        <div class="pad-left-2x opacity-half text-xxs">{{related.relation.pasteKey}} = {{related.relation.valueKey}}</div>
-      </a>
+    <ng-container *ngTemplateOutlet="loopRelated;context:{items:api.smarts.related}"></ng-container>
+    <ng-container *ngIf="showRelated && api.smarts.relatedTo.length">
+      <div class="width-full text-left opacity-80">
+        APIs that point here
+      </div>
+      <ng-container *ngTemplateOutlet="loopRelated;context:{
+        items:api.smarts.relatedTo,
+        readShow: false
+      }"></ng-container>
     </ng-container>
   </div>
 </div>
+
+<ng-template #loopRelated let-items="items" let-readShow="readShow">
+  <ng-container *ngFor="let related of items">
+    <a *ngIf="showRelated || related.show"
+      [href]="'#serverToolsWrap-' + related.title"
+      class="no-a-style flex2 flex-stacked flex-left flex-valign-center hover-bg-positive active-bg-energized"
+      (click)="gotoApi(related.api, related.relation)"
+      [class.opacity-half]="readShow && !related.show"
+    >
+      {{related.group?.icon ? related.group.icon + ' ' : ''}}{{related.title}}
+      <div class="pad-left-2x opacity-half text-xxs"
+        *ngIf="related.relation.pasteKey || related.relation.valueKey"
+      >{{related.relation.pasteKey}} = {{related.relation.valueKey}}</div>
+    </a>
+  </ng-container>
+</ng-template>

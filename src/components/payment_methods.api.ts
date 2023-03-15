@@ -1,5 +1,5 @@
 import { card, cardRemoveKeys } from './sources.api'
-import { create_customer, customer_get_payment_methods, customer_get_sources, customer_list_all } from './customers.api'
+import { customer_create, customer_get_payment_methods, customer_list_all } from './customers.api'
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 
 export const cleanPayMethodKeys = [
@@ -40,7 +40,7 @@ export const get_paymethods: ISimpleRouteEditor = {
     type: 'card',
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
   },{

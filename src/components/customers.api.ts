@@ -6,7 +6,7 @@ import { get_paymethods, payment_method_get } from "./payment_methods.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
 
 // create
-export const create_customer: ISimpleRouteEditor = {
+export const customer_create: ISimpleRouteEditor = {
   title: '🆕 Create Customer',
   link: 'https://stripe.com/docs/api/customers',
   favKeys: [{valueKey: 'result.id'}],
@@ -65,7 +65,7 @@ export const customer_list_all: ISimpleRouteEditor = {
     pasteKey: 'data.starting_after',
     title: 'next customer'
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'data.starting_after',
     title: '🆕 created customer'
@@ -96,7 +96,7 @@ export const delete_customer: ISimpleRouteEditor = {
     path: 'customers/:id'
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     pasteKey: 'request.params.id',
     valueKey: 'result.id',
   },{
@@ -118,12 +118,12 @@ export const customer_update: ISimpleRouteEditor = {
     metadata: sample.metadata
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     title: 'created customer id',
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     title: 'created customer data',
     valueKey: 'result',
     pasteKey: 'data',
@@ -160,7 +160,7 @@ export const customer_get: ISimpleRouteEditor = {
     path: 'customers/:id'
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
     title: '🆕 created customer'
@@ -192,7 +192,7 @@ export const customer_attach_method: ISimpleRouteEditor = {
     // metadata: sample.metadata // not supported here
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     title: 'created customer',
     valueKey: 'result.id',
     pasteKey: 'data.customer'
@@ -239,7 +239,7 @@ export const customer_attach_source: ISimpleRouteEditor = {
     pasteKey: 'data.source',
     title: 'plaid bank token',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.id',
     title: '🆕 Created customer',
@@ -272,7 +272,7 @@ export const customer_get_sources: ISimpleRouteEditor = {
     path: 'customers/:customer/sources'
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
@@ -306,7 +306,7 @@ export const customer_get_source: ISimpleRouteEditor = {
     path: 'customers/:customer/sources/:source'
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
@@ -340,7 +340,7 @@ const customer_delete_source: ISimpleRouteEditor = {
     path: 'customers/:customer/sources/:source'
   },
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',
   },{
@@ -396,7 +396,7 @@ export function getCustomerUpdatePayMethodPaste(
 */
 
 export const apis = [
-  customer_search, create_customer, customer_get, customer_update, delete_customer,
+  customer_search, customer_create, customer_get, customer_update, delete_customer,
   customer_list_all,
 ]
 

@@ -1,9 +1,10 @@
 import { apis as chargesApis, balance_transactions } from "./charges.api"
-import { accountsGroup, apis as accountsApis } from './accounts.api'
+import { accountsGroup } from './accounts.api'
 import { paymentMethodsGroup } from './payment_methods.api'
 import { refundsGroup } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { payintents } from './pay_intents.api'
+import { financialConnections } from './financial-connections.api'
 import { apis as bankApis } from "./banks.api"
 import { customerApi } from './customers.api'
 import { webhookGroup } from "./webhook.apis"
@@ -12,14 +13,11 @@ import { disputes } from './disputes.api'
 import { plaidApis } from "./plaid.apis"
 import { ApiGroup } from "./typings"
 
-export const apiGroups: ApiGroup[] = [{
+const common = {
   title: 'Common', apis: commonApis,
-},
-accountsGroup, // Accounts
-{
-  title: 'Banks', apis: bankApis,
-  icon: '🏦',
-}, sourcesApi, paymentMethodsGroup,{
+}
+
+const charges = {
   title: 'Charges', apis: chargesApis,
   icon: '💵',
   description: 'To charge a credit or a debit card, you create a Charge object. You can retrieve and refund individual charges as well as list all charges. Charges are identified by a unique, random ID.',
@@ -31,7 +29,19 @@ accountsGroup, // Accounts
     title: 'tracing & failed refunds'
   }],
   groups: [ balance_transactions ],
-}, customerApi, disputes, payintents, refundsGroup]
+}
+
+const banks = {
+  title: 'Banks', apis: bankApis,
+  icon: '🏦',
+}
+
+export const apiGroups: ApiGroup[] = [
+  common,
+  accountsGroup, // Accounts
+  banks, sourcesApi, paymentMethodsGroup,charges,
+  customerApi, disputes, payintents, financialConnections, refundsGroup
+]
 
 export const stripeGroup = {
   title: '🐠 Stripe Functionality',

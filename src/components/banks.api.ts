@@ -1,6 +1,6 @@
 import { sample } from "./app.component.utils"
 import { ISimpleRouteEditor } from "./typings"
-import { create_customer, customer_list_all } from "./customers.api"
+import { customer_create, customer_list_all } from "./customers.api"
 
 export interface BankData {
   data: stripe.BankAccountTokenOptions,
@@ -9,7 +9,7 @@ export interface BankData {
   token?: any
 }
 
-// ach token data
+// UI ach token data
 export const bank: BankData & ISimpleRouteEditor = {
   title: '🏦 Bank Account',
   description: 'Test saving bank details using the <stripe-bank> component',
@@ -69,7 +69,7 @@ const verify_micro_deposits: ISimpleRouteEditor = {
     pasteKey: 'request.params.bank_token',
     title: 'bank token',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     pasteKey: 'request.params.customer',
     valueKey: 'result.id',
   },{
@@ -93,7 +93,7 @@ export const bank_source_get: ISimpleRouteEditor = {
     message: '⚠️ It appears you are using a bank token which is NOT usable here. Use bank account id \"ba_\" instead',
   }],
   pastes: [{
-    $api: () => create_customer,
+    $api: () => customer_create,
     title: 'created customer',
     valueKey: 'result.id',
     pasteKey: 'request.params.customer',

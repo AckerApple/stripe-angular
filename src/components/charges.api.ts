@@ -2,7 +2,7 @@ import { sample } from "./app.component.utils"
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { card, create_source, source_get } from "./sources.api"
-import { create_customer, customer_attach_source, customer_get, customer_get_sources, customer_list_all } from "./customers.api"
+import { customer_create, customer_attach_source, customer_get, customer_get_sources, customer_list_all } from "./customers.api"
 import { payintent_create, payintent_list, payintent_retrieve } from "./pay_intents.api"
 
 export const charge: ISimpleRouteEditor = {
@@ -67,7 +67,7 @@ export const charge: ISimpleRouteEditor = {
     pasteKey: 'data.source',
     valueKey: 'result.id'
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.sources.data.0.bank_name',
     pasteKey: 'data.source',
   },{
@@ -91,11 +91,11 @@ export const charge: ISimpleRouteEditor = {
     valueKey: 'result.source.id',
     pasteKey: 'data.source',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.id',
     pasteKey: 'data.customer',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.sources.0.id',
     pasteKey: 'data.source',
   },{
@@ -120,7 +120,7 @@ export const charge: ISimpleRouteEditor = {
     valueKey: 'result.data.0.id',
     pasteKey: 'data.customer',
   },{
-    $api: () => create_customer,
+    $api: () => customer_create,
     valueKey: 'result.default_source',
     pasteKey: 'data.source'
   },{

@@ -1,8 +1,7 @@
 import { ISimpleRouteEditor } from "./typings"
 import { accounts_list, accounts_retrieve } from "./accounts.api"
 import { payintent_create, payintent_list } from "./pay_intents.api"
-import { bank } from "./banks.api"
-import { menu } from "./getApis.function"
+import { menu } from "./ui-apis"
 import { transfer_create } from "./transfers.api"
 import { payouts_post } from "./payouts.api"
 

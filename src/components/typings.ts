@@ -129,12 +129,14 @@ export interface ApiReference {
 export interface ToolSmarts {
   smartAt?: number // prevents being made smart twice which will corrupt if done twice
   pastes: SmartApiPaste[]
-  related: RelatedApi[]
   runtimeMessages: ApiMessage[]
   resultAt?: number
   $result: Subject<any>
   load: number
   $send: EventEmitter<{[index:string]: any}>
+  
+  related: RelatedApi[] // from relationships
+  relatedTo: RelatedApi[]
 }
 
 export interface SmartRouteEditor extends ISimpleRouteEditor {

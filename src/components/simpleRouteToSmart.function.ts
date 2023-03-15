@@ -1,5 +1,5 @@
 import { EventEmitter } from "@angular/core"
-import { ApiGroup } from "./typings"
+import { ApiGroup, ToolSmarts } from "./typings"
 import { getStringIdentifiers, getStringInterpolations } from "./app.component.utils"
 import { ApiPaste, ISimpleRouteEditor, Paste, RouteRequest, SmartApiPaste, SmartRouteEditor } from "./typings"
 
@@ -53,16 +53,21 @@ export function simpleRouteToSmart(
 
   // runtime tie memory paste-able data points
   if (routeRef.pastes) {
-    routeRef.smarts.pastes = smartPastes(routeRef.pastes, routeRef, allGroups)
+    routeRef.smarts.pastes = smartPastes(
+      routeRef.pastes,
+      routeRef,
+      allGroups
+    )
   }
 
   return routeRef
 }
 
-function newSmarts() {
+function newSmarts(): ToolSmarts {
   return {
     pastes: [],
     related: [],
+    relatedTo: [],
     runtimeMessages: [],
     $result: new EventEmitter(),
     $send: new EventEmitter(),
@@ -117,6 +122,13 @@ function smartPastes(
       pasteApi.smarts.related.push({
         api, relation: newPaste, group,
         title: api.title || newPaste.title,
+      })
+
+      api.smarts.relatedTo.push({
+        api: pasteApi,
+        relation: {}, // do not attempt to backwards relate,
+        group,
+        title: pasteApi.title || newPaste.title,
       })
     }
 
