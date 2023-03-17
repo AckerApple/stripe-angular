@@ -5,6 +5,7 @@ import { refundsGroup } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { payintents } from './pay_intents.api'
 import { financialConnections } from './financial-connections.api'
+import { setupIntents } from './setup-intents.api'
 import { apis as bankApis } from "./banks.api"
 import { customerApi } from './customers.api'
 import { webhookGroup } from "./webhook.apis"
@@ -40,7 +41,9 @@ export const apiGroups: ApiGroup[] = [
   common,
   accountsGroup, // Accounts
   banks, sourcesApi, paymentMethodsGroup,charges,
-  customerApi, disputes, payintents, financialConnections, refundsGroup
+  customerApi, disputes,
+  payintents, setupIntents,
+  financialConnections, refundsGroup
 ]
 
 export const stripeGroup = {

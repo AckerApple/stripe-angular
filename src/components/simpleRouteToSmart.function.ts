@@ -190,11 +190,12 @@ function makePasteSmart(paste: Paste): SmartApiPaste {
   }
 
 
-  if (paste.valueKey == undefined && paste.value == undefined) {
+  // allow undefined and nulls
+  /*if (paste.valueKey == undefined && paste.value == undefined) {
     const err = new Error('Issue exists with paste');
     (err as any).paste = paste
     throw err
-  }
+  }*/
 
 
   if (paste.pastes) {

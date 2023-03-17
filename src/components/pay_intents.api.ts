@@ -6,6 +6,8 @@ import { payment_method_get } from "./payment_methods.api"
 import { customer_create, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
 import { bank } from "./banks.api"
+import { collectBankAccountToken, collectFinancialConnectionsAccounts } from "./financial-connections.api"
+import { setup_intent_create } from "./setup-intents.api"
 
 export const payintent_create: ISimpleRouteEditor = {
   title: '🆕 Create Pay Intent',
@@ -46,8 +48,7 @@ export const payintent_create: ISimpleRouteEditor = {
     metadata: sample.metadata,
     statement_descriptor: 'stripe-angular data',
     transfer_group: 'TEST_ORDER',
-    // payment_method: 'pm_card_visa',
-    // application_fee_amount: 0, // only usable with transfer
+    payment_method_types: ["ach_debit","us_bank_account","card"]
   },
   examples: [{
     title: 'Transfer to Stripe Account',
@@ -260,8 +261,95 @@ export const payintent_create: ISimpleRouteEditor = {
       value: ["ach_debit"],  
     }],
     removeKeys: ['setup_future_usage']
+  },{
+    $api: () => collectFinancialConnectionsAccounts,
+    pasteKey: 'data.payment_method_data',
+    value: {
+      type: "us_bank_account",
+      billing_details: {
+        name: "billing_details_name"
+      },
+      us_bank_account:{
+        account_holder_type: 'company'
+      }
+    },
+    pastes:[{
+      pasteKey: 'data.payment_method_types',
+      value: ['us_bank_account']
+    },{
+      pasteKey: 'data.payment_method_data.us_bank_account.financial_connections_account',
+      valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    },{
+      pasteKey: 'data.currency',
+      value: 'usd'
+    },{
+      pasteKey: 'data.setup_future_usage',
+      value: undefined // cause it to be deleted
+    },{
+      pasteKey: 'data.mandate_data',
+      value: {
+        customer_acceptance: {
+          accepted_at: 1647448692,
+          type: "online",
+          online: {
+            ip_address: "71.183.194.54",
+            user_agent: "Mozilla/5.0"
+          }
+        }
+      }
+    }]
+  },{
+    $api: () => collectBankAccountToken,
+    pasteKey: 'data.payment_method_data.us_bank_account.financial_connections_account',
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pastes:[{
+      pasteKey: 'data.payment_method_types',
+      value: ['us_bank_account']
+    },{
+      pasteKey: 'data.currency',
+      value: 'usd'
+    },{
+      pasteKey: 'data.payment_method_data.type',
+      value: 'us_bank_account'
+    },{
+      pasteKey: 'data.payment_method_data.billing_details.name',
+      value: 'billing_details_name'
+    },{
+      pasteKey: 'data.setup_future_usage',
+      value: undefined // cause it to be deleted
+    },{
+      pasteKey: 'data.mandate_data',
+      value: {
+        customer_acceptance: {
+          accepted_at: 1647448692,
+          type: "online",
+          online: {
+            ip_address: "71.183.194.54",
+            user_agent: "Mozilla/5.0"
+          }
+        }
+      }
+    }]
+  }, {
+    $api: () => setup_intent_create,
+    pasteKey: 'data.payment_method',
+    valueKey: 'result.payment_method',
+    pastes: [{
+      pasteKey: 'data.customer',
+      valueKey: 'result.customer'
+    },{
+      pasteKey: 'data.setup_future_usage',
+      // value: undefined // no value, we want this deleted
+    }]
   }]
 }
+      /*payment_method_data: {
+        us_bank_account: {financial_connections_account: 'fca_...'},
+        // billing_details: {name: 'J. Customer'},
+      },
+      amount: 100,
+      currency: 'usd',*/
+
 
 const payintent_cancel: ISimpleRouteEditor = {
   title: '🚫 Cancel Pay Intent',

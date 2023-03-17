@@ -52,10 +52,14 @@
             <ng-container *ngTemplateOutlet="bankTemplate"></ng-container>
             
             <tool-wrap class="flex1 flex-center"
+              [id]="'serverToolsWrap-' + api.confirm_pay_intent.title"
+              [name]="'serverToolsWrap-' + api.confirm_pay_intent.title"        
               [api]="api.confirm_pay_intent" [(format)]="storage.format" showForm="1"
             ></tool-wrap>        
             
             <tool-wrap class="flex1 flex-center"
+              [id]="'serverToolsWrap-' + api.collectFinancialConnectionsAccounts.title"
+              [name]="'serverToolsWrap-' + api.collectFinancialConnectionsAccounts.title"
               [api]="api.collectFinancialConnectionsAccounts" [(format)]="storage.format" showForm="1"
             >
               <ng-template #footer>
@@ -67,6 +71,8 @@
             </tool-wrap>
 
             <tool-wrap class="flex1 flex-center"
+              [id]="'serverToolsWrap-' + api.collectBankAccountToken.title"
+              [name]="'serverToolsWrap-' + api.collectBankAccountToken.title"
               [api]="api.collectBankAccountToken" [(format)]="storage.format" showForm="1"
             >
               <ng-template #footer>
@@ -443,8 +449,8 @@ npm run start
 
 <ng-template #bankTemplate>
   <tool-wrap class="flex1"
-    [id]="'serverToolsWrap' + api.bank.title"
-    [name]="'serverToolsWrap' + api.bank.title"
+    [id]="'serverToolsWrap-' + api.bank.title"
+    [name]="'serverToolsWrap-' + api.bank.title"
     [api]="api.bank" [(format)]="storage.format"
     [allowHide]="false" [dumpLevels]="0"
   >

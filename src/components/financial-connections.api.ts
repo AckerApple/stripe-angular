@@ -1,4 +1,4 @@
-import { customer_create } from "./customers.api"
+import { customer_create, customer_get } from "./customers.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const collectFinancialConnectionsAccounts: ISimpleRouteEditor = {
@@ -58,6 +58,14 @@ export const session_create: ISimpleRouteEditor = {
       pasteKey: 'data.account_holder.type',
       value: 'customer'
     }]
+  },{
+    $api: () => customer_get,
+    valueKey: 'result.id',
+    pasteKey: 'data.account_holder.customer',
+    pastes: [{
+      pasteKey: 'data.account_holder.type',
+      value: 'customer'
+    }]
   }]
 }
 
@@ -76,8 +84,54 @@ export const session_get: ISimpleRouteEditor = {
   }]
 }
 
+export const account_get: ISimpleRouteEditor = {
+  title: '1️⃣ GET account',
+  description: 'Retrieves the details of an Financial Connections Account.',
+  link: 'https://stripe.com/docs/api/financial_connections/accounts/retrieve',
+  request:{
+    method: 'GET',
+    path: 'financial_connections/accounts/:accountId'
+  },
+  pastes: [{
+    $api: () => collectFinancialConnectionsAccounts,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => collectBankAccountToken,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => account_refresh,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.accountId'
+  }]
+}
+
+export const account_refresh: ISimpleRouteEditor = {
+  title: '🔄 account refresh',
+  description: 'Retrieves the token with the given ID',
+  link: 'https://stripe.com/docs/api/financial_connections/accounts/refresh',
+  request:{
+    method: 'POST',
+    path: 'financial_connections/accounts/:accountId/refresh'
+  },
+  data: {
+    features: ['balance']
+  },
+  pastes: [{
+    $api: () => collectFinancialConnectionsAccounts,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => collectBankAccountToken,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }]
+}
+
 const apis = [
-  session_create, session_get
+  session_create, session_get,
+  account_get, account_refresh,
 ]
 
 export const financialConnections = {
@@ -105,5 +159,11 @@ export const financialConnections = {
   },{
     title: 'ACH Direct Debit part 2',
     url: 'https://stripe.com/docs/financial-connections/other-data-powered-products?platform=web#accept-ach-direct-debit'
+  },{
+    title: 'pricing details',
+    url: 'https://stripe.com/pricing#pricing-details'
+  },{
+    title: 'fetching/refreshing bank balance',
+    url: 'https://stripe.com/docs/financial-connections/balances'
   }]
 }
