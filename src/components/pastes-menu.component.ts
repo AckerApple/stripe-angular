@@ -133,11 +133,17 @@ function pasteValueFromMatches(item: Paste, from: any): boolean {
   }) ? true : false
 }
 
-function pasteValueOnto(onto: any, keyName: string, value: any) {
-  const keys = keyName.split('.')
+function pasteValueOnto(
+  onto: any,
+  keyName: string,
+  value: any
+) {
   // paste flattened value
   onto[keyName] = value
 
+  
+  // paste by dot notation walking
+  const keys = keyName.split('.')
   keys.forEach((key, index) => {
     if (index + 1 === keys.length) {
       return onto[key] = value

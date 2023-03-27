@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
