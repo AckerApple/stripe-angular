@@ -37,6 +37,9 @@ export const create_source: ISimpleRouteEditor = {
   }, {
     url: 'https://stripe.com/docs/sources/ach-credit-transfer#testing-ach-credit-transfer-payments',
     title: 'set amount to send'
+  }, {
+    url: 'https://stripe.com/pricing/local-payment-methods',
+    title: 'pricing (scroll to bank transfers)'
   }],
   // hint: '',
   description: 'Typically used for creating credit-transfer/wire account details',

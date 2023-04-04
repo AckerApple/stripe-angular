@@ -15,12 +15,13 @@ import {
   sample, copyText, tryParse, stripeServer, flatten, removeFlats, getSaveableStorage,
 } from "./app.component.utils"
 import { generateTestHeaderString } from "./webhook.utils"
-import { ApiGroup, SmartRouteEditor } from "./typings"
+import { ApiGroup, SmartApiGroup, SmartRouteEditor } from "./typings"
 import { simpleRouteToSmart } from "./simpleRouteToSmart.function"
 import { customer_create } from "./customers.api"
 import { card } from "./sources.api"
 import { links } from "./links"
 import { getGroupByApi, GroupScope } from "./group-tools.component"
+import { Location } from "@angular/common"
 
 declare const Plaid: any
 
@@ -90,11 +91,11 @@ declare const Plaid: any
   }
 
   // every end point within groups
-  allGroups = simpleGroupsToSmart(allGroups as ApiGroup[])
+  allGroups: SmartApiGroup[] = simpleGroupsToSmart(allGroups as ApiGroup[])
 
   api = getApis() // common apis (UI confirm_pay_intent, web hook testHeader, and plaid_createPublicToken)
-  plaidServerApis = this.allGroups.find(group => group.title === '🏦 Plaid Functionality').apis as SmartRouteEditor[]
-  apiGroups = this.allGroups.find(group => group.title === '🐠 Stripe Functionality').groups
+  plaidServerApis = (this.allGroups.find(group => group.title === '🏦 Plaid Functionality') as SmartApiGroup).apis as SmartRouteEditor[]
+  apiGroups = (this.allGroups.find(group => group.title === '🐠 Stripe Functionality') as SmartApiGroup).groups
 
   create_customer = simpleRouteToSmart(customer_create, this.allGroups)
 
@@ -129,7 +130,11 @@ declare const Plaid: any
   // showRelated: boolean
   groupsScope: GroupScope = {level: 0}
 
-  constructor(public StripeScriptTag: StripeScriptTag){
+  constructor(
+    public StripeScriptTag: StripeScriptTag,
+    private location: Location,
+  ){
+    // getGroupByApi
     (card as any).result = {} // must pre-populate this
 
     this.checkLocalServer()
@@ -218,7 +223,22 @@ declare const Plaid: any
     })
   }
 
-  getGroupByApi(api: SmartRouteEditor, _group: ApiGroup[]) {
+  readUrlHash(hash: string) {
+    const cleanHash = decodeURIComponent(hash)
+    const [groupName, apiName] = cleanHash.split('*')
+    console.log('hash', groupName, apiName)
+    
+    const result = findGroupAndApiByName(groupName, apiName, this.allGroups)
+    if ( !result ) {
+      console.warn('Could not match url hash with a group and api')
+      return
+    }
+    
+    this.getGroupByApi(result.api)
+  }
+
+  /** dynamically controls which api group to show */
+  getGroupByApi(api: SmartRouteEditor) {
     const result = getGroupByApi(api, this.allGroups)
     this.groupsScope = result
   }
@@ -289,6 +309,12 @@ declare const Plaid: any
 
     if (typeof Plaid === 'undefined') {
       console.warn('🟠 🏦 Plaid JS has not been loaded!')
+    }
+
+    const url = this.location.path(true)
+    const hash = url.split('#').pop()
+    if ( hash ) {
+      this.readUrlHash(hash)
     }
   }
 
@@ -669,5 +695,44 @@ declare const Plaid: any
 
   stopValueTimer(name) {
     clearTimeout(this.valueTimers[name])
+  }
+}
+
+interface GroupApiFind {
+  api: SmartRouteEditor
+  group: SmartApiGroup
+  level: number
+}
+
+function findGroupAndApiByName(
+  groupName: string,
+  apiName: string,
+  allGroups: SmartApiGroup[],
+  level = 0
+): (GroupApiFind | undefined) {
+  for (const group of allGroups) {
+    if ( groupName !== group.title ) {
+      if ( group.groups ) {
+        const subGroup = findGroupAndApiByName(groupName, apiName, group.groups, level + 1)
+
+        if ( subGroup ) {
+          return subGroup
+        }
+      }
+
+      continue // not for us
+    }
+
+
+    if ( !group.apis ) {
+      continue // nothing deeper to review
+    }
+
+    const api = group.apis.find(api => api.title === apiName)
+    if ( !api ) {
+      continue // nothing left for us here
+    }
+    
+    return {group, api, level}
   }
 }

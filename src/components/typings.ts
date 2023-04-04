@@ -16,6 +16,11 @@ export interface ApiGroup {
   apis?: ISimpleRouteEditor[]
 }
 
+export interface SmartApiGroup extends ApiGroup {
+  groups?: SmartApiGroup[]
+  apis?: SmartRouteEditor[]
+}
+
 export interface RouteRequest {
   params?: {[name: string]: string}
   query?: {[name: string]: string}

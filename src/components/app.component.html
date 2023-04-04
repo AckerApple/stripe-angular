@@ -52,15 +52,16 @@
             <ng-container *ngTemplateOutlet="bankTemplate"></ng-container>
             
             <tool-wrap class="flex1 flex-center"
-              [id]="'serverToolsWrap-' + api.confirm_pay_intent.title"
-              [name]="'serverToolsWrap-' + api.confirm_pay_intent.title"        
+              [id]="api.title + '*' + api.confirm_pay_intent.title"
+              [name]="api.title + '*' + api.confirm_pay_intent.title"        
               [api]="api.confirm_pay_intent" [(format)]="storage.format" showForm="1"
             ></tool-wrap>        
             
             <tool-wrap class="flex1 flex-center"
-              [id]="'serverToolsWrap-' + api.collectFinancialConnectionsAccounts.title"
-              [name]="'serverToolsWrap-' + api.collectFinancialConnectionsAccounts.title"
-              [api]="api.collectFinancialConnectionsAccounts" [(format)]="storage.format" showForm="1"
+              [id]="api.title + '*' + api.collectFinancialConnectionsAccounts.title"
+              [name]="api.title + '*' + api.collectFinancialConnectionsAccounts.title"
+              [api]="api.collectFinancialConnectionsAccounts"
+              [(format)]="storage.format" showForm="1"
             >
               <ng-template #footer>
                 <tool-relations [api]="api.collectFinancialConnectionsAccounts"
@@ -71,8 +72,8 @@
             </tool-wrap>
 
             <tool-wrap class="flex1 flex-center"
-              [id]="'serverToolsWrap-' + api.collectBankAccountToken.title"
-              [name]="'serverToolsWrap-' + api.collectBankAccountToken.title"
+              [id]="api.title + '*' + api.collectBankAccountToken.title"
+              [name]="api.title + '*' + api.collectBankAccountToken.title"
               [api]="api.collectBankAccountToken" [(format)]="storage.format" showForm="1"
             >
               <ng-template #footer>
@@ -186,6 +187,24 @@
         <h2 style="margin:0;text-align:left;color:white;"
           (mousedown)="startValueTimer('apiEditorMode', true)"
           (mouseup)="stopValueTimer('apiEditorMode')"
+        >⤴️ Popular routines</h2>
+
+        <div style="border-radius:5px;background-color:#888;text-align:left;padding:1em;">
+          <div class="text-center flex-center flex-wrap">
+            <a href="#Sources*%F0%9F%86%95%20%F0%9F%92%B3%20Create%20source" class="resource-link no-a-style hover-bg-positive active-bg-balanced"
+              (click)="readUrlHash('Sources*%F0%9F%86%95%20%F0%9F%92%B3%20Create%20source')"
+              title="Create account for funds to be wired into using by creating a Stripe source"
+            >Create ACH Credit Transfer</a>
+          </div>
+        </div>
+      </div>
+
+      <br /><br />
+
+      <div class="tool-wrap" style="align-items: center;">
+        <h2 style="margin:0;text-align:left;color:white;"
+          (mousedown)="startValueTimer('apiEditorMode', true)"
+          (mouseup)="stopValueTimer('apiEditorMode')"
         >📕 Best of Resources</h2>
         
         <div *ngIf="localServerActive && apiEditorMode">
@@ -195,11 +214,11 @@
 
         <div style="border-radius:5px;background-color:#888;text-align:left;padding:1em;">
           <div class="text-center flex-center flex-wrap">
-              <a *ngFor="let item of links" [href]="item.url"
-                target="_blank" class="resource-link no-a-style hover-bg-positive active-bg-balanced"
-              >{{item.title}}</a>
-            </div>
+            <a *ngFor="let item of links" [href]="item.url"
+              target="_blank" class="resource-link no-a-style hover-bg-positive active-bg-balanced"
+            >{{item.title}}</a>
           </div>
+        </div>
       </div>
       <br />
     </td>
@@ -449,8 +468,8 @@ npm run start
 
 <ng-template #bankTemplate>
   <tool-wrap class="flex1"
-    [id]="'serverToolsWrap-' + api.bank.title"
-    [name]="'serverToolsWrap-' + api.bank.title"
+    [id]="api.title + '*' + api.bank.title"
+    [name]="api.title + '*' + api.bank.title"
     [api]="api.bank" [(format)]="storage.format"
     [allowHide]="false" [dumpLevels]="0"
   >

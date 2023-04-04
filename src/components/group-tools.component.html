@@ -2,7 +2,13 @@
   <ng-container *ngTemplateOutlet="groupsDisplay;context:{groups: groups, scope: scope, level:0}"></ng-container>
 </div>
 
-<ng-template #groupsDisplay let-groups="groups" let-scope="scope" let-level="level" let-parentGroup="parentGroup" let-parentScope="parentScope">
+<ng-template #groupsDisplay
+  let-groups="groups"
+  let-scope="scope"
+  let-level="level"
+  let-parentGroup="parentGroup"
+  let-parentScope="parentScope"
+>
   <div *ngIf="currentLevel < level + 3"
     [ngClass]="(scope.showGroup || parentScope?.showApi) ? selectedGroupClass : 'flex-wrap flex-center flex1'"
     [class.flex-stacked]="(scope.showGroup || parentScope?.showApi || scope.scope?.showApi) ? true : false"
@@ -57,13 +63,17 @@
   </ng-container>
 
   <!-- one api interaction -->
-  <ng-container *ngTemplateOutlet="toolWrap;context:{api: scope.showApi || undefined, scope: scope}"></ng-container>
+  <ng-container *ngTemplateOutlet="toolWrap;context:{
+    group: scope.showGroup,
+    api: scope.showApi || undefined,
+    scope: scope
+  }"></ng-container>
 </ng-template>
 
 <!-- api list descriptions -->
 <ng-template #apiListItems let-group="group" let-scope="scope" let-level="level">
     <a *ngFor="let api of group.apis" (click)="apiListItemToggle(api, scope, level)"
-      [href] = "'#serverToolsWrap-' + api.title"
+      [href] = "'#' + group.title + '*' + api.title"
       class="hover-bg-positive active-bg-balanced margin-xxs no-a-style"
       [class.flex2]="!scope.showApi && !scope.scope?.showGroup"
       [class.bg-grey-3x]="scope.showApi === api" [class.bg-grey]="scope.showApi !== api"
@@ -91,7 +101,13 @@
 </ng-template>
 
 <!-- output each group within an array of groups-->
-<ng-template #innerGroupsDisplay let-groups="groups" let-scope="scope" let-level="level" let-parentGroup="parentGroup" let-parentScope="parentScope">
+<ng-template #innerGroupsDisplay
+  let-groups="groups"
+  let-scope="scope"
+  let-level="level"
+  let-parentGroup="parentGroup"
+  let-parentScope="parentScope"
+>
   <ng-container *ngTemplateOutlet="groupBody || groupTopDefault;context:{selected:scope.showGroup, group:parentGroup, defaultTemplate:groupTopDefault}"></ng-container>
 
   <ng-template #groupTopDefault>
@@ -118,9 +134,10 @@
   </ng-template>
 </ng-template>
 
-<ng-template #toolWrap let-api="api" let-scope="scope">
-  <tool-wrap *ngIf="api" class="flex1" [id]="'serverToolsWrap-' + api.title"
-    [name]="'serverToolsWrap-' + api.title"
+<ng-template #toolWrap let-group="group" let-api="api" let-scope="scope">
+  <tool-wrap *ngIf="api" class="flex1"
+    [id]="group.title + '*' + api.title"
+    [name]="group.title + '*' + api.title"
     [api]="api" [(format)]="storage.format" [allowHide]="false"
     (formatChange)="formatChange.emit($event)"
   >

@@ -4,6 +4,8 @@ import { paymentMethodsGroup } from './payment_methods.api'
 import { refundsGroup } from "./refunds.api"
 import { apis as commonApis } from "./common.api"
 import { payintents } from './pay_intents.api'
+import { invoices } from './invoices.api'
+import { prices } from './prices.api'
 import { financialConnections } from './financial-connections.api'
 import { setupIntents } from './setup-intents.api'
 import { apis as bankApis } from "./banks.api"
@@ -42,7 +44,10 @@ export const apiGroups: ApiGroup[] = [
   accountsGroup, // Accounts
   banks, sourcesApi, paymentMethodsGroup,charges,
   customerApi, disputes,
-  payintents, setupIntents,
+  invoices,
+  payintents,
+  prices,
+  setupIntents,
   financialConnections, refundsGroup
 ]
 

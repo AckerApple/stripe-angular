@@ -24,7 +24,9 @@ export function stripeRequestByRouter(
   return requestByRouter(route, options)
 }
 
-export function simpleGroupsToSmart(groups: ApiGroup[]) {
+export function simpleGroupsToSmart(
+  groups: ApiGroup[]
+): SmartApiGroup[] {
   const groupMapper = group => {
     if (group.groups) {
       group.groups = group.groups.map(groupMapper)

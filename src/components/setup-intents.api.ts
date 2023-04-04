@@ -6,12 +6,19 @@ export const setup_intent_create: ISimpleRouteEditor = {
   title: '🆕 Create setup intent',
   description: 'Creates a SetupIntent object.',
   hint: 'After the SetupIntent is created, attach a payment method and confirm to collect any required permissions to charge the payment method later.',
-  link: 'https://stripe.com/docs/api/setup_intents/create',
+  links: [{
+    url: 'https://stripe.com/docs/api/setup_intents/create',
+    title: 'api docs'
+  },{
+    url: 'https://stripe.com/docs/api/mandates',
+    title: 'mandate data'
+  }],
   request:{
     method: 'POST',
     path: 'setup_intents'
   },
   data: {
+    customer: "",
     confirm: true,
     usage: 'off_session',
     payment_method_types: [

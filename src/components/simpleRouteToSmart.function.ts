@@ -1,5 +1,5 @@
 import { EventEmitter } from "@angular/core"
-import { ApiGroup, ToolSmarts } from "./typings"
+import { ApiGroup, SmartApiGroup, ToolSmarts } from "./typings"
 import { getStringIdentifiers, getStringInterpolations } from "./app.component.utils"
 import { ApiPaste, ISimpleRouteEditor, Paste, RouteRequest, SmartApiPaste, SmartRouteEditor } from "./typings"
 
@@ -10,7 +10,7 @@ function paramRouteId(routeRef: ISimpleRouteEditor): number {
 
 export function simpleRouteToSmart(
   route: ISimpleRouteEditor,
-  allGroups: ApiGroup[], // for relation lookups
+  allGroups: (ApiGroup | SmartApiGroup)[], // for relation lookups
 ): SmartRouteEditor {
   let routeRef = route as SmartRouteEditor
 
@@ -78,7 +78,7 @@ function newSmarts(): ToolSmarts {
 function smartPastes(
   pastes: ApiPaste[],
   api: SmartRouteEditor,
-  allGroups: ApiGroup[], // for relation lookups & title reference icons
+  allGroups: (ApiGroup | SmartApiGroup)[], // for relation lookups & title reference icons
 ): SmartApiPaste[] {
   return pastes.map((paste, index) => {
     const newPaste = JSON.parse(JSON.stringify(paste)) as SmartApiPaste
