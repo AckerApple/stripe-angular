@@ -1,5 +1,5 @@
 import { customer_create, customer_get } from "./customers.api"
-import { collectBankAccountToken, collectFinancialConnectionsAccounts, session_create, session_get } from "./financial-connections.api"
+import { collectBankAccountToken, collectFinancialConnectionsAccounts, session_get } from "./financial-connections.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const setup_intent_create: ISimpleRouteEditor = {
@@ -90,7 +90,7 @@ export const setup_intent_create: ISimpleRouteEditor = {
 }
 
 export const setup_intent_get: ISimpleRouteEditor = {
-  title: '1️⃣ GET session',
+  title: '1️⃣ GET Setup Intent',
   description: 'Retrieves the token with the given ID',
   link: 'https://stripe.com/docs/api/setup_intents/retrieve',
   request:{

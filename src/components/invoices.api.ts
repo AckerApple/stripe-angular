@@ -1,43 +1,12 @@
-import { ApiGroup, ISimpleRouteEditor } from "./typings"
-import { accounts_list, accounts_retrieve } from "./accounts.api"
-import { card, source_get } from "./sources.api"
-import { payment_method_get } from "./payment_methods.api"
 import { customer_create, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
-
-export const invoice_item_create: ISimpleRouteEditor = {
-  title: '🆕 Create Invoice Item',
-  description: 'Creates a Invoice Item object',
-  links: [{
-    title: '📕 API docs',
-    url: 'https://stripe.com/docs/api/invoiceitems'
-  }],
-  favKeys: [{
-    valueKey: 'result.id',
-  }],
-  request: {
-    method: 'POST',
-    path: 'invoiceitems',
-  },
-  data: {
-    customer: '',
-    price: ''
-  },
-  examples: [],
-  pastes: [{
-    $api: () => customer_list_all,
-    valueKey: 'result.data.0.id',
-    pasteKey: 'data.customer'
-  },{
-    $api: () => customer_create,
-    valueKey: 'result.id',
-    pasteKey: 'data.customer'
-  },{
-    $api: () => customer_get,
-    valueKey: 'data.id',
-    pasteKey: 'data.customer',
-  }]
-}
+import { invoice_item_list, invoice_items } from "./invoice-items.api"
+import { accounts_list, accounts_retrieve } from "./accounts.api"
+import { payment_method_get } from "./payment_methods.api"
+import { ApiGroup, ISimpleRouteEditor } from "./typings"
+import { card, source_get } from "./sources.api"
+import { products } from "./products.api"
+import { prices } from "./prices.api"
 
 export const invoice_create: ISimpleRouteEditor = {
   title: '🆕 Create Invoice',
@@ -57,6 +26,7 @@ export const invoice_create: ISimpleRouteEditor = {
     customer: '',
     description: 'stripe-angular test tool',
     metadata: {},
+    auto_advance: false
   },
   examples: [],
   pastes: [{
@@ -159,6 +129,10 @@ export const invoice_create: ISimpleRouteEditor = {
       valueKey: 'result.customer',
       pasteKey: 'data.customer',
     }]
+  },{
+    $api: () => invoice_item_list,
+    valueKey: 'result.data.0.customer',
+    pasteKey: 'data.customer',
   }]
 }
 
@@ -359,10 +333,12 @@ export const apis = [
 
 export const invoices: ApiGroup = {
   icon: '✍️',
-  title: 'Invoices', apis,
+  title: 'Invoices',
+  apis,
   description: 'A Invoice guides you through the process of collecting a payment from your customer.',
   links: [{
     title: '📕 API docs',
     url: 'https://stripe.com/docs/api/invoices'
   }],
+  groups: [invoice_items,prices, products]
 }

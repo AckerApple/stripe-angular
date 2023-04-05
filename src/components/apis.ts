@@ -1,19 +1,21 @@
 import { apis as chargesApis, balance_transactions } from "./charges.api"
-import { accountsGroup } from './accounts.api'
-import { paymentMethodsGroup } from './payment_methods.api'
-import { refundsGroup } from "./refunds.api"
-import { apis as commonApis } from "./common.api"
-import { payintents } from './pay_intents.api'
-import { invoices } from './invoices.api'
-import { prices } from './prices.api'
 import { financialConnections } from './financial-connections.api'
+import { paymentMethodsGroup } from './payment_methods.api'
 import { setupIntents } from './setup-intents.api'
+import { apis as commonApis } from "./common.api"
+import { accountsGroup } from './accounts.api'
+import { payintents } from './pay_intents.api'
 import { apis as bankApis } from "./banks.api"
 import { customerApi } from './customers.api'
 import { webhookGroup } from "./webhook.apis"
+import { refundsGroup } from "./refunds.api"
 import { sourcesApi } from "./sources.api"
+import { invoices } from './invoices.api'
+import { mandates } from "./mandates.api"
 import { disputes } from './disputes.api'
 import { plaidApis } from "./plaid.apis"
+// import { products } from './products.api'
+// import { prices } from './prices.api'
 import { ApiGroup } from "./typings"
 
 const common = {
@@ -42,12 +44,17 @@ const banks = {
 export const apiGroups: ApiGroup[] = [
   common,
   accountsGroup, // Accounts
-  banks, sourcesApi, paymentMethodsGroup,charges,
+  banks,
+  charges,
   customerApi, disputes,
   invoices,
+  mandates,
   payintents,
-  prices,
+  paymentMethodsGroup,
+  // prices,
+  // products,
   setupIntents,
+  sourcesApi,
   financialConnections, refundsGroup
 ]
 
@@ -67,4 +74,6 @@ export const plaidGroup = {
   }]
 }
 
-export const allGroups: ApiGroup[] = [stripeGroup, webhookGroup, plaidGroup]
+export const allGroups: ApiGroup[] = [
+  stripeGroup, webhookGroup, plaidGroup
+]
