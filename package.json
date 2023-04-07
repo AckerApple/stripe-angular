@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
@@ -44,7 +44,6 @@
     "ack-x": "^3.0.2",
     "nodemon": "^2.0.20",
     "rxjs": "^7.8.0",
-    "stripe-angular": "file:../development/dist",
     "typescript": "4.6.4",
     "zone.js": "^0.11.4"
   },
@@ -63,6 +62,7 @@
     "body-parser": "^1.20.2",
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
-    "form-urlencoded": "^6.1.0"
+    "form-urlencoded": "^6.1.0",
+    "stripe-angular": "^1.9.2"
   }
 }

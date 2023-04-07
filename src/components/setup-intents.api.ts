@@ -1,4 +1,4 @@
-import { customer_create, customer_get } from "./customers.api"
+import { customer_create, customer_get, customer_list_all } from "./customers.api"
 import { collectBankAccountToken, collectFinancialConnectionsAccounts, session_get } from "./financial-connections.api"
 import { ISimpleRouteEditor } from "./typings"
 
@@ -70,6 +70,10 @@ export const setup_intent_create: ISimpleRouteEditor = {
   },{
     $api: () => customer_get,
     valueKey: 'result.id',
+    pasteKey: 'data.customer'
+  },{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
     pasteKey: 'data.customer'
   },{
     $api: () => collectFinancialConnectionsAccounts,

@@ -1,1 +1,0 @@
-{"ast":null,"code":"export { FxTracker } from './components/FxTracker.directive';\nexport { AckFxModule } from './AckFx.module';\nexport { animations } from './allFx';","map":null,"metadata":{},"sourceType":"module"}

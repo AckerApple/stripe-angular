@@ -1,6 +1,7 @@
 import { card, cardRemoveKeys } from './sources.api'
 import { customer_create, customer_get_payment_methods, customer_list_all } from './customers.api'
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
+import { setup_intent_create } from './setup-intents.api'
 
 export const cleanPayMethodKeys = [
   ...cardRemoveKeys,
@@ -22,6 +23,10 @@ export const payment_method_get: ISimpleRouteEditor = {
   }, {
     $api: () => customer_get_payment_methods, // TODO: must replace with string reference
     valueKey: 'result.data.0.id'
+  }, {
+    $api: () => setup_intent_create,
+    valueKey: 'result.payment_method',
+    pasteKey: 'request.params.id'
   }]
 }
 

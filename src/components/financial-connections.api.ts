@@ -1,4 +1,4 @@
-import { customer_create, customer_get } from "./customers.api"
+import { customer_create, customer_get, customer_list_all } from "./customers.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const collectFinancialConnectionsAccounts: ISimpleRouteEditor = {
@@ -61,6 +61,14 @@ export const session_create: ISimpleRouteEditor = {
   },{
     $api: () => customer_get,
     valueKey: 'result.id',
+    pasteKey: 'data.account_holder.customer',
+    pastes: [{
+      pasteKey: 'data.account_holder.type',
+      value: 'customer'
+    }]
+  },{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
     pasteKey: 'data.account_holder.customer',
     pastes: [{
       pasteKey: 'data.account_holder.type',

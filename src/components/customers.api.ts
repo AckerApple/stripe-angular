@@ -71,8 +71,15 @@ export const customer_list_all: ISimpleRouteEditor = {
     title: '🆕 created customer'
   }],
   data: {
-    limit: 3, "created[lte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
-  }
+    limit: 3,
+  },
+  examples: [{
+    title: 'search by created date',
+    data: {
+      limit: 3,
+      "created[lte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
+    }
+  }]
 }
 
 export const customer_search: ISimpleRouteEditor = {
@@ -396,8 +403,12 @@ export function getCustomerUpdatePayMethodPaste(
 */
 
 export const apis = [
-  customer_search, customer_create, customer_get, customer_update, delete_customer,
   customer_list_all,
+  customer_create,
+  customer_get,
+  customer_update,
+  delete_customer,
+  customer_search,
 ]
 
 export const customerApi: ApiGroup = {
