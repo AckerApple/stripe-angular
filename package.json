@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -14,10 +14,11 @@
     "test": "ng test src --browsers PhantomJS --watch=false",
     "copy:dist": "cp -R dist/. ../dist",
     "save:deploy": "npm-run-all save deploy",
-    "deploy": "npm-run-all build deploy:npm deploy:gh-pages",
+    "deploy": "npm-run-all patch:version build deploy:npm deploy:gh-pages",
     "deploy:npm": "npm run save:dist && cd ../dist/ && npm publish",
     "save:dist": "npm run copy:dist && cd ../dist/ && git add . && git commit -m 'update' && git push",
-    "deploy:gh-pages": "cd ../gh-pages && rm -rf node_modules && rm -f package-lock.json && npm install && npm run deploy"
+    "deploy:gh-pages": "cd ../gh-pages && rm -rf node_modules && rm -f package-lock.json && npm install && npm run deploy",
+    "patch:version": "npm --no-git-tag-version version patch"
   },
   "repository": {
     "type": "git",
