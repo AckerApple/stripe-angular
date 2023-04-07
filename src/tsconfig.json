@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "rootDir": ".",
     "outDir": "../dist",
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -16,7 +16,7 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "suppressImplicitAnyIndexErrors": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["es2020", "dom"],
     "declaration": true
   },
   "exclude": ["node_modules"],
