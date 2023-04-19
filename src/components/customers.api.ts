@@ -8,7 +8,13 @@ import { plaid_stripeBankCreate } from "./plaid.apis"
 // create
 export const customer_create: ISimpleRouteEditor = {
   title: '🆕 Create Customer',
-  link: 'https://stripe.com/docs/api/customers',
+  links: [{
+    url: 'https://stripe.com/docs/api/customers',
+    title: 'api docs'
+  }, {
+    url: 'https://stripe.com/docs/billing/customer#minimum-customer-profile',
+    title: 'minimum profile docs, however customer can created with no info'
+  }],
   favKeys: [{valueKey: 'result.id'}],
   request: {
     method: 'POST',
@@ -415,6 +421,10 @@ export const customerApi: ApiGroup = {
   icon: '👤',
   title: 'Customers', apis,
   description: 'Customer objects allow you to perform recurring charges, and to track multiple charges, that are associated with the same customer. The API allows you to create, delete, and update your customers. You can retrieve individual customers as well as a list of all your customers.',
+  links: [{
+    url: 'https://stripe.com/docs/billing/customer#minimum-customer-profile',
+    title: 'minimum profile docs, however customer can created with no info'
+  }],
   groups: [{
     title: 'payment methods',
     description: 'end points only usable within the context of a customer',

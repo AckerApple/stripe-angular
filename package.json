@@ -1,6 +1,6 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
@@ -63,6 +63,6 @@
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "form-urlencoded": "^6.1.0",
-    "stripe-angular": "^1.9.2"
+    "stripe-angular": "^1.9.3"
   }
 }
