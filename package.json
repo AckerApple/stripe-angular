@@ -1,10 +1,10 @@
 {
   "name": "stripe-angular-gh-pages",
-  "version": "1.0.11",
+  "version": "1.0.13",
   "main": "server",
   "description": "Angular to Stripe module containing useful providers, components, and directives",
   "scripts": {
-    "start": "npm run start:server & npm run start:app",
+    "start": "npm-run-all --parallel start:server start:app",
     "start:app": "ng serve --open --host 0.0.0.0 --disable-host-check",
     "start:server": "node .",
     "watch:server": "nodemon .",
@@ -43,6 +43,7 @@
     "ack-css-boot": "^3.0.11",
     "ack-x": "^3.0.2",
     "nodemon": "^2.0.20",
+    "npm-run-all": "^4.1.5",
     "rxjs": "^7.8.0",
     "typescript": "4.6.4",
     "zone.js": "^0.11.4"

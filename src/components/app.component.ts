@@ -162,6 +162,22 @@ declare const Plaid: any
     }
 
     storage.plaid = storage.plaid || {}
+
+    this.loadUrlSearch()
+  }
+
+  loadUrlSearch() {
+    const urlQuery = new URLSearchParams(window.location.search)
+    const finConnClientSecret = urlQuery.get('finConnClientSecret')
+
+    const api = this.api.collectFinancialConnectionsAccounts
+    const data = api.data
+    if(data && finConnClientSecret) {
+      data.clientSecret = finConnClientSecret
+      setTimeout(() => {
+        api.smarts.$send.emit(api.data)
+      }, 1000);
+    }
   }
 
   hookIntoUiApis() {
@@ -183,7 +199,7 @@ declare const Plaid: any
         this.api.collectFinancialConnectionsAccounts.error = 'clientSecret is required'
         return
       }
-
+      
       try {
         const result = await (this.stripe as any).collectFinancialConnectionsAccounts(data)
         if (result.error) {
@@ -226,8 +242,6 @@ declare const Plaid: any
   readUrlHash(hash: string) {
     const cleanHash = decodeURIComponent(hash)
     const [groupName, apiName] = cleanHash.split('*')
-    console.log('hash', groupName, apiName)
-    
     const result = findGroupAndApiByName(groupName, apiName, this.allGroups)
     if ( !result ) {
       console.warn('Could not match url hash with a group and api')
