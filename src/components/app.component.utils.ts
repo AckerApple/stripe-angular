@@ -119,7 +119,12 @@ function getLocalStorage() {
 }
 
 export function getProjectLocalStorage(): localSchema {
-  const storage = getUrlStorage() || getLocalStorage() || {}
+  const urlStorage = getUrlStorage()
+  const storage = getLocalStorage() || {}
+
+  if(urlStorage) {
+    Object.assign(storage, urlStorage)
+  }
 
   storage.key = storage.key || localStorage?.stripeAnguarKey;
   storage.privateKey = storage.privateKey || localStorage?.stripeAngularPrivateKey
