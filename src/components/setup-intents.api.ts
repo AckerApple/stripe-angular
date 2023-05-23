@@ -88,6 +88,9 @@ export const setup_intent_create: ISimpleRouteEditor = {
     },{
       pasteKey: 'data.payment_method_data.billing_details.name',
       value: 'billing_details_name'
+    },{
+      pasteKey: 'data.payment_method_data.metadata',
+      value: {}
     }]
   }]
   // collectBankAccountToken
