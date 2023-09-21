@@ -1,4 +1,6 @@
 import { customer_create, customer_get, customer_list_all } from "./customers.api"
+import { payment_method_get } from "./payment_methods.api"
+import { setup_intent_create, setup_intent_get } from "./setup-intents.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const collectFinancialConnectionsAccounts: ISimpleRouteEditor = {
@@ -34,6 +36,34 @@ export const collectBankAccountToken: ISimpleRouteEditor = {
     pasteKey: 'data.clientSecret'
   }, {
     $api: () => session_get,
+    valueKey: 'result.client_secret',
+    pasteKey: 'data.clientSecret'
+  }]
+}
+
+export const collectBankAccountForSetup: ISimpleRouteEditor = {
+  title: '🏦 Collect Bank Account for Setup',
+  description: ' Save bank details flow for the ACH Direct Debit payment method to collect the customer\'s bank account in your payment form. When called, it will automatically load an on-page modal UI to collect bank account details and verification, and attach the PaymentMethod to the SetupIntent.',
+  hint: 'A lot like collectBankAccountToken and collectFinancialConnectionsAccounts but with params such as ability to restrict to ACH only and no credit cards',
+  link: 'https://stripe.com/docs/js/setup_intents/collect_bank_account_for_setup',
+  data: {
+    clientSecret: '',
+    params: {
+      payment_method_type: 'us_bank_account',
+      payment_method_data: {
+        billing_details: {
+          name: "business company name",
+          email: "email@email.com"
+        },
+      }
+    }
+  },
+  pastes:[{
+    $api: () => setup_intent_create,
+    valueKey: 'result.client_secret',
+    pasteKey: 'data.clientSecret'
+  }, {
+    $api: () => setup_intent_get,
     valueKey: 'result.client_secret',
     pasteKey: 'data.clientSecret'
   }]
@@ -109,8 +139,47 @@ export const account_get: ISimpleRouteEditor = {
     valueKey: 'result.financialConnectionsSession.accounts.0.id',
     pasteKey: 'request.params.accountId'
   }, {
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
     $api: () => account_refresh,
     valueKey: 'result.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => payment_method_get,
+    valueKey: 'result.us_bank_account.financial_connections_account',
+    pasteKey: 'request.params.accountId'
+  }]
+}
+
+const account_disconnect: ISimpleRouteEditor = {
+  title: '❌ Disconnect account',
+  description: 'Disables your access to a Financial Connections Account. You will no longer be able to access data associated with the account.',
+  link: 'https://stripe.com/docs/api/financial_connections/accounts/disconnect',
+  request:{
+    method: 'POST',
+    path: 'financial_connections/accounts/:accountId/disconnect'
+  },
+  pastes: [{
+    $api: () => collectFinancialConnectionsAccounts,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => collectBankAccountToken,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => account_refresh,
+    valueKey: 'result.id',
+    pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => payment_method_get,
+    valueKey: 'result.us_bank_account.financial_connections_account',
     pasteKey: 'request.params.accountId'
   }]
 }
@@ -134,12 +203,16 @@ export const account_refresh: ISimpleRouteEditor = {
     $api: () => collectBankAccountToken,
     valueKey: 'result.financialConnectionsSession.accounts.0.id',
     pasteKey: 'request.params.accountId'
+  }, {
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pasteKey: 'request.params.accountId'
   }]
 }
 
 const apis = [
   session_create, session_get,
-  account_get, account_refresh,
+  account_get, account_disconnect, account_refresh,
 ]
 
 export const financialConnections = {

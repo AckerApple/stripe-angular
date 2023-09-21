@@ -83,6 +83,19 @@
                 ></tool-relations>
               </ng-template>
             </tool-wrap>
+
+            <tool-wrap class="flex1 flex-center"
+              [id]="api.title + '*' + api.collectBankAccountForSetup.title"
+              [name]="api.title + '*' + api.collectBankAccountForSetup.title"
+              [api]="api.collectBankAccountForSetup" [(format)]="storage.format" showForm="1"
+            >
+              <ng-template #footer>
+                <tool-relations [api]="api.collectBankAccountForSetup"
+                  [(showApi)] = "groupsScope.showApi"
+                  (showApiChange)="groupsScope.showGroup = getGroupByApi($event, groupsScope.showGroup)"
+                ></tool-relations>
+              </ng-template>
+            </tool-wrap>
           </ng-container>
         </div>
 

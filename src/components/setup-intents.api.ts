@@ -1,5 +1,5 @@
 import { customer_create, customer_get, customer_list_all } from "./customers.api"
-import { collectBankAccountToken, collectFinancialConnectionsAccounts, session_get } from "./financial-connections.api"
+import { collectBankAccountForSetup, collectBankAccountToken, collectFinancialConnectionsAccounts, session_get } from "./financial-connections.api"
 import { ISimpleRouteEditor } from "./typings"
 
 export const setup_intent_create: ISimpleRouteEditor = {
@@ -45,8 +45,33 @@ export const setup_intent_create: ISimpleRouteEditor = {
     },
     metadata: {},
   },
+  examples: [{
+    title: 'Bank Account for Setup',
+    data: {
+      customer: '',
+      usage: 'off_session',
+      payment_method_types: [
+        'us_bank_account'
+      ],
+      metadata: {}    
+    }
+  }],
   pastes:[{
     $api: () => collectBankAccountToken,
+    pasteKey: 'data.payment_method_data.us_bank_account.financial_connections_account',
+    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    pastes: [{
+      pasteKey: 'data.payment_method_types',
+      value: ['us_bank_account']
+    },{
+      pasteKey: 'data.payment_method_data.type',
+      value: 'us_bank_account'
+    },{
+      pasteKey: 'data.payment_method_data.billing_details.name',
+      value: 'billing_details_name'
+    }]
+  },{
+    $api: () => collectBankAccountForSetup,
     pasteKey: 'data.payment_method_data.us_bank_account.financial_connections_account',
     valueKey: 'result.financialConnectionsSession.accounts.0.id',
     pastes: [{
@@ -93,7 +118,6 @@ export const setup_intent_create: ISimpleRouteEditor = {
       value: {}
     }]
   }]
-  // collectBankAccountToken
 }
 
 export const setup_intent_get: ISimpleRouteEditor = {

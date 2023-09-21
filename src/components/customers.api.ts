@@ -2,8 +2,9 @@ import { sample } from "./app.component.utils"
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { bank } from "./banks.api"
 import { card, create_source, source_get } from "./sources.api"
-import { get_paymethods, payment_method_get } from "./payment_methods.api"
+import { detach, get_paymethods, payment_method_get } from "./payment_methods.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
+import { collectBankAccountForSetup } from "./financial-connections.api"
 
 // create
 export const customer_create: ISimpleRouteEditor = {
@@ -218,6 +219,10 @@ export const customer_attach_method: ISimpleRouteEditor = {
     $api: () => card,
     valueKey: 'result.payment_method.id',
     pasteKey: 'request.params.paymentMethodId'
+  },{
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.setupIntent.payment_method',
+    pasteKey: 'request.params.paymentMethodId',
   }]
 }
 
@@ -266,15 +271,6 @@ export const customer_attach_source: ISimpleRouteEditor = {
     valueKey: 'result.data.0.customer',
     pasteKey: 'request.params.id',
   }],
-}
-
-export const customer_detach_method: ISimpleRouteEditor = {
-  title: '❌ 💳 delete/detach payment method',
-  request: {
-    method: 'POST',
-    path: 'payment_methods/:id/detach'
-  },
-  data: {} // not used currently
 }
 
 export const customer_get_sources: ISimpleRouteEditor = {
@@ -393,20 +389,6 @@ export const customer_get_payment_methods: ISimpleRouteEditor = {
   title: '🧾 💳 list payment methods',
   $api: () => get_paymethods,
 }
-/*
-export function getCustomerUpdatePayMethodPaste(
-  customer: any
-) {
-  const payMethodId = (card as any).result.payment_method?.id
-  const clone = {
-    ...customer
-  }
-  clone.payment_method = payMethodId
-  clone.invoice_settings = customer.invoice_settings || {}
-  clone.invoice_settings.default_payment_method = payMethodId
-  return clone
-}
-*/
 
 export const apis = [
   customer_list_all,
@@ -428,7 +410,7 @@ export const customerApi: ApiGroup = {
   groups: [{
     title: 'payment methods',
     description: 'end points only usable within the context of a customer',
-    apis: [customer_get_payment_methods, customer_attach_method, customer_detach_method]
+    apis: [customer_get_payment_methods, customer_attach_method, detach]
   },{
     title: 'sources',
     description: 'end points only usable within the context of a customer',

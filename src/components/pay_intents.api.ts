@@ -6,7 +6,7 @@ import { payment_method_get } from "./payment_methods.api"
 import { customer_create, customer_attach_method, customer_get, customer_get_payment_methods, customer_get_source, customer_get_sources, customer_list_all } from "./customers.api"
 import { refunds_list, refunds_retrieve, refund_create } from "./refunds.api"
 import { bank } from "./banks.api"
-import { collectBankAccountToken, collectFinancialConnectionsAccounts } from "./financial-connections.api"
+import { collectBankAccountForSetup, collectBankAccountToken, collectFinancialConnectionsAccounts } from "./financial-connections.api"
 import { setup_intent_create } from "./setup-intents.api"
 
 export const payintent_create: ISimpleRouteEditor = {
@@ -314,6 +314,32 @@ export const payintent_create: ISimpleRouteEditor = {
     },{
       pasteKey: 'data.payment_method_data.billing_details.name',
       value: 'billing_details_name'
+    },{
+      pasteKey: 'data.setup_future_usage',
+      value: undefined // cause it to be deleted
+    },{
+      pasteKey: 'data.mandate_data',
+      value: {
+        customer_acceptance: {
+          accepted_at: 1647448692,
+          type: "online",
+          online: {
+            ip_address: "71.183.194.54",
+            user_agent: "Mozilla/5.0"
+          }
+        }
+      }
+    }]
+  },{
+    $api: () => collectBankAccountForSetup,
+    pasteKey: 'data.payment_method',
+    valueKey: 'result.setupIntent.payment_method',
+    pastes:[{
+      pasteKey: 'data.payment_method_types',
+      value: ['us_bank_account']
+    },{
+      pasteKey: 'data.currency',
+      value: 'usd'
     },{
       pasteKey: 'data.setup_future_usage',
       value: undefined // cause it to be deleted

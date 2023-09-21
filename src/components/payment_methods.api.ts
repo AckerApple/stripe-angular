@@ -97,8 +97,20 @@ export const payment_method_update: ISimpleRouteEditor = {
   }]
 }
 
+export const detach: ISimpleRouteEditor = {
+  title: '❌ 💳 detach payment method',
+  description: 'Detaches a PaymentMethod object from a Customer. After a PaymentMethod is detached, it can no longer be used for a payment or re-attached to a Customer.',
+  link: 'https://stripe.com/docs/api/payment_methods/detach',
+  request: {
+    method: 'POST',
+    path: 'payment_methods/:id/detach'
+  },
+  // data: {} // not used currently
+}
+
 export const apis = [
   get_paymethods, payment_method_get, payment_method_update,
+  detach
 ]
 
 export const paymentMethodsGroup: ApiGroup = {
