@@ -53,7 +53,15 @@ export const setup_intent_create: ISimpleRouteEditor = {
       payment_method_types: [
         'us_bank_account'
       ],
-      metadata: {}    
+      payment_method_options: {
+        us_bank_account: {
+          verification_method: 'instant',
+          financial_connections: {
+            permissions: ['payment_method', 'ownership', 'balances']
+          }
+        }
+      },
+      metadata: {},
     }
   }],
   pastes:[{

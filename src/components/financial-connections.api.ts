@@ -204,8 +204,8 @@ export const account_refresh: ISimpleRouteEditor = {
     valueKey: 'result.financialConnectionsSession.accounts.0.id',
     pasteKey: 'request.params.accountId'
   }, {
-    $api: () => collectBankAccountForSetup,
-    valueKey: 'result.financialConnectionsSession.accounts.0.id',
+    $api: () => payment_method_get,
+    valueKey: 'result.us_bank_account.financial_connections_account',
     pasteKey: 'request.params.accountId'
   }]
 }

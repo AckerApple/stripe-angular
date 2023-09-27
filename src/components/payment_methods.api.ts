@@ -2,6 +2,7 @@ import { card, cardRemoveKeys } from './sources.api'
 import { customer_create, customer_get_payment_methods, customer_list_all } from './customers.api'
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
 import { setup_intent_create } from './setup-intents.api'
+import { collectBankAccountForSetup } from './financial-connections.api'
 
 export const cleanPayMethodKeys = [
   ...cardRemoveKeys,
@@ -10,7 +11,7 @@ export const cleanPayMethodKeys = [
 ]
 
 export const payment_method_get: ISimpleRouteEditor = {
-  title: '1️⃣ 💳 GET Payment Method',
+  title: '1️⃣ 💳 GET by Id',
   link: 'https://stripe.com/docs/api/payment_methods/retrieve',
   request: {
     method: 'GET',
@@ -26,6 +27,10 @@ export const payment_method_get: ISimpleRouteEditor = {
   }, {
     $api: () => setup_intent_create,
     valueKey: 'result.payment_method',
+    pasteKey: 'request.params.id'
+  }, {
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.setupIntent.payment_method',
     pasteKey: 'request.params.id'
   }]
 }
