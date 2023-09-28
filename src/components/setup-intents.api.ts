@@ -140,6 +140,10 @@ export const setup_intent_get: ISimpleRouteEditor = {
     $api: () => setup_intent_create,
     valueKey: 'result.id',
     pasteKey: 'request.params.setupIntentId'
+  },{
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'result.setupIntent.id',
+    pasteKey: 'request.params.setupIntentId'
   }]
 }
 
@@ -184,8 +188,34 @@ export const setup_intent_update: ISimpleRouteEditor = {
   }]
 }
 
+export const setup_intent_list: ISimpleRouteEditor = {
+  title: '🧾 list setup intents',
+  description: 'Returns a list of SetupIntents.',
+  link: 'https://stripe.com/docs/api/setup_intents/list',
+  request:{
+    method: 'GET',
+    path: 'setup_intents'
+  },
+  data:{
+    limit: 3
+  },
+  pastes: [{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.customer'
+  },{
+    $api: () => customer_create,
+    valueKey: 'result.id',
+    pasteKey: 'data.customer'
+  },{
+    $api: () => customer_get,
+    valueKey: 'result.id',
+    pasteKey: 'data.customer'
+  }]
+}
+
 const apis = [
-  setup_intent_create, setup_intent_get, setup_intent_update,
+  setup_intent_create, setup_intent_list, setup_intent_get, setup_intent_update,
 ]
 
 export const setupIntents = {

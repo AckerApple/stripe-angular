@@ -1,7 +1,7 @@
 import { card, cardRemoveKeys } from './sources.api'
 import { customer_create, customer_get_payment_methods, customer_list_all } from './customers.api'
 import { ApiGroup, ISimpleRouteEditor } from "./typings"
-import { setup_intent_create } from './setup-intents.api'
+import { setup_intent_create, setup_intent_get } from './setup-intents.api'
 import { collectBankAccountForSetup } from './financial-connections.api'
 
 export const cleanPayMethodKeys = [
@@ -31,6 +31,10 @@ export const payment_method_get: ISimpleRouteEditor = {
   }, {
     $api: () => collectBankAccountForSetup,
     valueKey: 'result.setupIntent.payment_method',
+    pasteKey: 'request.params.id'
+  }, {
+    $api: () => setup_intent_get,
+    valueKey: 'result.payment_method',
     pasteKey: 'request.params.id'
   }]
 }

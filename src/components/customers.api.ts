@@ -5,6 +5,7 @@ import { card, create_source, source_get } from "./sources.api"
 import { detach, get_paymethods, payment_method_get } from "./payment_methods.api"
 import { plaid_stripeBankCreate } from "./plaid.apis"
 import { collectBankAccountForSetup } from "./financial-connections.api"
+import { setup_intent_get } from "./setup-intents.api"
 
 // create
 export const customer_create: ISimpleRouteEditor = {
@@ -187,6 +188,10 @@ export const customer_get: ISimpleRouteEditor = {
     $api: () => customer_list_all,
     title: '🧾 customer list 1️⃣',
     valueKey: 'result.data.0.id',
+    pasteKey: 'request.params.id',
+  },{
+    $api: () => setup_intent_get,
+    valueKey: 'result.customer',
     pasteKey: 'request.params.id',
   }]
 }

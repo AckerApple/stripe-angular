@@ -122,6 +122,57 @@ export const session_get: ISimpleRouteEditor = {
   }]
 }
 
+export const account_list: ISimpleRouteEditor = {
+  title: '🧾 list accounts',
+  description: 'Returns a list of Financial Connections Account objects.',
+  link: 'https://stripe.com/docs/api/financial_connections/accounts/list',
+  request:{
+    method: 'GET',
+    path: 'financial_connections/accounts'
+  },
+  data: {
+    limit: 3, // "created[lte]": Date.now() - 1000 * 60 * 5 // greater than last five minutes
+  },
+  examples: [{
+    title: 'By Customer',
+    data: {
+      limit: 3,
+      "account_holder[customer]": ''
+    }
+  },{
+    title: 'By Account',
+    data: {
+      limit: 3,
+      "account_holder[account]": ''
+    }
+  }],
+  pastes: [{
+    $api: () => customer_create,
+    valueKey: 'result.id',
+    pasteKey: 'data.account_holder[customer]',
+    pastes: [{
+      pasteKey: 'data.account_holder.type',
+      value: 'customer'
+    }]
+  },{
+    $api: () => customer_get,
+    valueKey: 'result.id',
+    pasteKey: 'data.account_holder[customer]',
+    pastes: [{
+      pasteKey: 'data.account_holder.type',
+      value: 'customer'
+    }]
+  },{
+    $api: () => customer_list_all,
+    valueKey: 'result.data.0.id',
+    pasteKey: 'data.account_holder[customer]',
+    pastes: [{
+      pasteKey: 'data.account_holder.type',
+      value: 'customer'
+    }]
+  }]
+}
+
 export const account_get: ISimpleRouteEditor = {
   title: '1️⃣ GET account',
   description: 'Retrieves the details of an Financial Connections Account.',
@@ -212,7 +263,7 @@ export const account_refresh: ISimpleRouteEditor = {
 
 const apis = [
   session_create, session_get,
-  account_get, account_disconnect, account_refresh,
+  account_list, account_get, account_disconnect, account_refresh,
 ]
 
 export const financialConnections = {
