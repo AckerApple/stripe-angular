@@ -15,6 +15,7 @@ import { copyText } from "./app.component.utils"
   @Input() key!: string // dump a key within the provided value
   @Input() isRootDump: boolean = true // do not pass in, used to detect when first dump
 
+  arrayView?: 'table'
   typing?: string
   copyText = copyText
 

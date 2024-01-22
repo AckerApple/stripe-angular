@@ -257,6 +257,26 @@ declare const Plaid: any
         this.api.collectBankAccountForSetup.error = err
       }
     })
+
+    this.api.confirmUsBankAccountSetup.smarts.$send.subscribe(async data => {
+      if ( !data.clientSecret ) {
+        this.api.confirmUsBankAccountSetup.error = 'clientSecret is required'
+        return
+      }
+
+      try {
+        const result = await (this.stripe as any).confirmUsBankAccountSetup(data.clientSecret)
+        if (result.error) {
+          this.api.confirmUsBankAccountSetup.error = result.error
+          return
+        }
+
+        this.api.confirmUsBankAccountSetup.result = result
+        this.api.confirmUsBankAccountSetup.smarts.$result.next(result)
+      } catch (err) {
+        this.api.confirmUsBankAccountSetup.error = err
+      }
+    })
   }
 
   readUrlHash(hash: string) {

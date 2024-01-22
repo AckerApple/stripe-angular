@@ -53,16 +53,15 @@
           <div class="border border-radius-5 bg-danger flex-stacked text-dark">
             <a class="text-white text-xxs border-white pad-xxs bg-assertive flex-1 flex-apart"
               [class.border-bottom] = "show"
-              (click)="show = !show"
             >
-              <strong>{{key}}</strong>
+              <strong (click)="show = !show" class="flex-1">{{key}}</strong>
+              <sup class="opacity-80 text-xs pad-left-xs">
+                <a (click)="arrayView = arrayView === 'table' ? undefined : 'table'">table</a>
+              </sup>
               <sup class="opacity-80 text-xs pad-left-xs">[{{value.length}}]</sup>
             </a>
             <div *ngIf="showAll || show || showKids || (show==undefined && showLevels > 0)" class="flex-wrap child-margin-xxs">
-              <ng-container *ngFor="let item of value">
-                <!-- recurse -->
-                <dump [value]="item" [showLevels]="showLevels" [showKids]="showAll || showKids" [isRootDump]="false"></dump>
-              </ng-container>
+              <ng-container *ngTemplateOutlet="arrayTable;context:{array:value}"></ng-container>
             </div>
           </div>
         </ng-container>
@@ -84,7 +83,7 @@
                 <ng-container *ngFor="let item of value | keyvalue : unsorted">
                   <!-- recurse -->
                   <dump [value]="item.value" [key]="item.key" [showLevels]="showLevels - 1" [showKids]="showAll || showKids"
-                    class="flex-wrap child-margin-xxs pad-xxs"
+                    class="flex-1 overflow flex-wrap child-margin-xxs pad-xxs"
                     [class.flex1] = "!item.value || typeof(item.value) !== 'object'"
                     [isRootDump]="false"
                   ></dump>
@@ -116,3 +115,41 @@
     </ng-template>
   </div>
 </ng-template>
+
+<ng-template #arrayTable let-array="array">  
+  <ng-container *ngIf="arrayView === 'table';else arrayDisplay">
+    <div style="max-height: 800px;overflow-y: scroll;">
+      <table cellPadding="2" cellSpacing="2" border="0">
+        <ng-container *ngIf="array.length">
+          <thead style="position: sticky;top: 0;font-size: 0.8em;">
+            <tr>
+              <ng-container *ngFor="let item of array[0] | keyvalue">
+                <th>{{item.key}}</th>
+              </ng-container>
+            </tr>
+          </thead>
+        </ng-container>
+        <tbody>
+          <ng-container *ngFor="let row of array">        
+            <tr>
+              <ng-container *ngFor="let item of row | keyvalue">
+                <td>
+                  <dump [value]="item.value" [showLevels]="showLevels" [showKids]="showAll || showKids" [isRootDump]="false"></dump>
+                </td>
+              </ng-container>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <ng-template #arrayDisplay>
+    <ng-container *ngFor="let item of array">
+      <!-- recurse -->
+      <dump [value]="item" [showLevels]="showLevels" [showKids]="showAll || showKids" [isRootDump]="false"></dump>
+    </ng-container>
+  </ng-template>
+</ng-template>
+
+

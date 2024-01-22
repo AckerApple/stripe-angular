@@ -69,6 +69,29 @@ export const collectBankAccountForSetup: ISimpleRouteEditor = {
   }]
 }
 
+export const confirmUsBankAccountSetup: ISimpleRouteEditor = {
+  title: '🏦 ✅ Confirm Us Bank Account Setup',
+  description: 'Use stripe.confirmUsBankAccountSetup in the Save bank details flow for the ACH Direct Debit payment method to record the customer’s authorization for future payments.',
+  hint: '',
+  link: 'https://stripe.com/docs/js/setup_intents/confirm_us_bank_account_setup',
+  data: {
+    clientSecret: ''
+  },
+  pastes:[{
+    $api: () => setup_intent_create,
+    valueKey: 'result.client_secret',
+    pasteKey: 'data.clientSecret'
+  }, {
+    $api: () => setup_intent_get,
+    valueKey: 'result.client_secret',
+    pasteKey: 'data.clientSecret'
+  }, {
+    $api: () => collectBankAccountForSetup,
+    valueKey: 'data.clientSecret',
+    pasteKey: 'data.clientSecret'
+  }]
+}
+
 export const session_create: ISimpleRouteEditor = {
   title: '🆕 create session',
   description: 'Retrieves the token with the given ID',

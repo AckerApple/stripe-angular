@@ -1,7 +1,7 @@
 import { plaid_createPublicToken } from './plaid.apis'
 import { bank } from './banks.api'
 import { card } from "./sources.api"
-import { collectBankAccountForSetup, collectBankAccountToken, collectFinancialConnectionsAccounts } from "./financial-connections.api"
+import { confirmUsBankAccountSetup, collectBankAccountForSetup, collectBankAccountToken, collectFinancialConnectionsAccounts } from "./financial-connections.api"
 import { testHeader, webhookPost } from "./webhook.apis"
 import { payintent_create, payintent_retrieve } from './pay_intents.api'
 import { ISimpleRouteEditor } from './typings'
@@ -41,6 +41,7 @@ export const menu = {
   collectFinancialConnectionsAccounts,
   collectBankAccountToken,
   collectBankAccountForSetup,
+  confirmUsBankAccountSetup,
 
   testHeader, // webhhooks signing testing
   webhookPost, // webhhooks POST testing
