@@ -102,8 +102,14 @@ export interface ISimpleRouteEditor {
   link?: string // documentation link
 
   // Input data. For POST requests, its the request post body. For GET its the URL variables (this may need to change)
-  data?: {[index:string]: any}
-  examples?: {[index:string]: any}[]
+  data?: {
+    [index:string]: any
+  }
+  examples?: {
+    [index:string]: any
+    title: string
+    data: Record<string, unknown>
+  }[]
 
   // last result
   pastes?: ApiPaste[]

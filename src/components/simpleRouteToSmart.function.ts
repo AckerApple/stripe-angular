@@ -36,6 +36,20 @@ export function simpleRouteToSmart(
   }
 
   if (routeRef.data && routeRef.examples) {
+    // look for dynamic
+    Object.values(routeRef.examples).forEach(example => {
+      if(!example.data) {
+        return
+      }
+      
+      Object.entries(example.data).forEach(([key, value]) => {
+        if(typeof(example.data[key]) !== 'string') {
+          return
+        }
+
+        example.data[key] = interpolate(value)
+      })
+    })
     routeRef.examples.push({title: 'original data', data: routeRef.data})
   }
 
@@ -239,4 +253,25 @@ export function simpleMenuToSmart(
     end[ key ] = simpleRouteToSmart(value, [])
     return end
   }, menu as any)
+}
+
+const defaultEvalContext = {
+  Date, Math,
+}
+
+function interpolate(template, ctx = defaultEvalContext) {
+  // Use a regular expression to find and replace placeholders
+  return template.replace(/\${(.*?)}/g, (match, p1) => {
+    // Use the matched placeholder as a key to get the replacement value
+    return sandboxEval(p1.trim(), ctx) || match;
+  });
+}
+
+// execute script in private context
+function sandboxEval(src, ctx){
+  ctx = new Proxy(ctx, {
+      has: () => true
+  })
+  let func = (new Function("with(this) { return " + src + "}"));
+  return func.call(ctx)
 }

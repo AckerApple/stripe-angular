@@ -279,7 +279,7 @@ export const invoice_update: ISimpleRouteEditor = {
 }
 
 export const invoice_search: ISimpleRouteEditor = {
-  title: '🔎 search payment intents',
+  title: '🔎 search invoices',
   link: 'https://stripe.com/docs/api/invoices/search',
   request: {
     method: 'GET',

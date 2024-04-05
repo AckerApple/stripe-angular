@@ -594,6 +594,19 @@ export const payintent_search: ISimpleRouteEditor = {
     path: 'payment_intents/search',
   },
   pastes: [],
+  examples: [{
+    title: 'succeeded last 14 days',
+    data: {
+      limit: 20,
+      query: "status:'succeeded' AND created>${Math.ceil((Date.now() - 86400000 * 14) / 1000)}"
+    }
+  },{
+    title: 'not succeeded last 14 days',
+    data: {
+      limit: 20,
+      query: "-status:'succeeded' AND created>${Math.ceil((Date.now() - 86400000 * 14) / 1000)}"
+    }
+  }],
   data: {
     limit: 3, query: "metadata['key']:'value'"
   }

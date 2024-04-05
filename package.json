@@ -64,6 +64,9 @@
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "form-urlencoded": "^6.1.0",
-    "stripe-angular": "^1.9.3"
+    "stripe-angular": "^1.9.3",
+    "taggedjs": "github:ackerapple/taggedjs",
+    "taggedjs-dump": "github:ackerapple/taggedjs-dump",
+    "taggedjs-gateway": "github:ackerapple/taggedjs-gateway"
   }
 }

@@ -1,5 +1,6 @@
 import { ISimpleRouteEditor } from './typings'
 import { localSchema } from './storage'
+export { copyText } from './copyText.function'
 
 export const stripeServer = 'https://api.stripe.com/v1/'
 const sampleAddress = {
@@ -155,23 +156,6 @@ export function getProjectLocalStorage(): localSchema {
   storage.temp = {}
 
   return storage
-}
-
-export function copyText(text: string) {
-  /* Get the text field */
-  var copyText = document.createElement('textarea');
-  copyText.value = text
-  document.body.appendChild(copyText)
-
-  /* Select the text field */
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); /* For mobile devices */
-
-  /* Copy the text inside the text field */
-  document.execCommand("copy");
-
-  document.body.removeChild(copyText)
-  // copyText.parentNode.removeChild(copyText)
 }
 
 export function changeKey(
