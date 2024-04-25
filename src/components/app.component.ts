@@ -22,6 +22,9 @@ import { card } from "./sources.api"
 import { links } from "./links"
 import { getGroupByApi, GroupScope } from "./group-tools.component"
 import { Location } from "@angular/common"
+// El$ unmask below
+// import { tagGateway } from "taggedjs-gateway"
+// import { dataTools } from "./dataTools.tag"
 
 declare const Plaid: any
 
@@ -29,6 +32,9 @@ declare const Plaid: any
   selector:"app",
   templateUrl: './app.component.html'
 }) export class AppComponent {
+  // El$ unmask below
+  // dataToolsTag = tagGateway(dataTools)
+  
   links = links
   cardElement: any // StripeJs Element (TODO: DataType this)
   
