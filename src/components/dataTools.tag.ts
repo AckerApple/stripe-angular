@@ -1,37 +1,105 @@
-import { html, letState, providers, tag } from "taggedjs"
+import { html, letState, tag } from "taggedjs"
 
-// El$ work within this file
+const STRIPE_HOSTS = {
+  'SANDBOX': 'https://dashboard.stripe.com/test',
+  'PROD': 'https://dashboard.stripe.com'
+};
 
-/** This tag is put onto Angular stage of Stripe tool */
+const STRIPE_ENDPOINTS = {
+  'PI': '/payments',
+  'PY': '/payments',
+  'CUS': '/customers',
+  'EVT': '/events'
+};
+
 export const dataTools = tag(() => {
-  // demo useState replacement
-  let counter = letState(0)(x => [counter, counter = x])
-  
-  // demo dependency creation
-  let provider = providers.create(CounterProvider)
-
   return html`
-    <h2>hello El$</h2>
-    <p>Code new stripe tools here</p>
-
-    <button onclick=${() => ++counter}>increase counter to ${counter + 1}</button>
-    <button onclick=${() => ++provider.counter}>increase provider counter to ${provider.counter + 1}</button>
-    <hr />
-    ${child({counter, increaseCounter: () => ++counter})}
+    <div class="flex-wrap flex-center flex1 gap">
+      ${stripeIdLookup()}
+      ${dateConversions()}
+    </div>
   `
 })
 
-// TEST PROVIDER, can be deleted when done
-const CounterProvider = () => ({counter: 0})
+export const stripeIdLookup = tag(() => {
+  const isValidId = (id: string) => {
+    const prefix = id.split('_')[0].toUpperCase();
+    return STRIPE_ENDPOINTS[prefix];
+  };
+  
+  const getStripeURL = (host: string, id: string) => {
+    const uri = STRIPE_HOSTS[host];
+    const url = isValidId(id);
+    return url && uri + url + '/' + id;
+  };
 
-// TEST CHILD TAG with props, can be deleted when done
-const child = tag((
-  {counter, increaseCounter}: {counter: number, increaseCounter: () => unknown}
-) => {
-  let provider = providers.inject(CounterProvider) // demo dependency injection
+  let inputVal = letState('')(x => [inputVal, inputVal = x])
+  let selectVal = letState('SANDBOX')(x => [selectVal, selectVal = x])
+  const isValid = isValidId(inputVal)
 
   return html`
-    <button onclick=${increaseCounter}>increase counter to ${counter + 1}</button>
-    <button onclick=${() => ++provider.counter}>increase provider counter to ${provider.counter + 1}</button>
+    <div class="flex2 flex-wrap bg-grey pad">
+      <h2 class="lookup m-0 mb-2">🔎 ⭐️ Stripe ID Lookup <em><span>pi_*</span> <span>py_*</span> <span>cus_*</span> <span>evt_*</span></em></h2>
+      <div class="flex flex-wrap flex1">
+        <select class="flex-1 mr-2" onchange=${e => selectVal = e.target.value}>
+          <option value="SANDBOX">Sandbox</option>
+          <option value="PROD">Production</option>
+        </select>
+        <input type="text" maxLength="125" value=${inputVal} onkeyup=${e => inputVal = e.target.value} placeholder="Enter Stripe ID" class="flex-1 mr-2" />
+        <a href=${getStripeURL(selectVal, inputVal)} target="_blank">
+          <button disabled=${!isValid} class.opacity-50=${!isValid} class.bg-balanced=${isValid}>GO</button>
+        </a>
+      </div>
+    </div>
+  `
+})
+
+export const dateConversions = tag(() => {
+  let toStripeVal = letState('')(x => [toStripeVal, toStripeVal = x])
+  let fromStripeVal = letState('')(x => [fromStripeVal, fromStripeVal = x])
+
+  const convertDate = () => {
+    if (toStripeVal) {
+      const date = new Date(toStripeVal);
+      const unixString = Math.floor(date.getTime() / 1000);
+      toStripeVal = String(unixString);
+    }
+
+    if (fromStripeVal) {
+      const date = new Date(Number(fromStripeVal) * 1000);
+      const isoString = date.toISOString();
+      fromStripeVal = isoString;
+    }
+  };
+
+  const isValidInputs = (to: string, from: string) => {
+    if (toStripeVal) {
+      const date = new Date(toStripeVal);
+      return isNaN(date.getTime()) ? false : true;
+    } else if (fromStripeVal) {
+      const date = new Date(Number(fromStripeVal) * 1000);
+      return isNaN(date.getTime()) ? false : true;
+    }
+
+    return false;
+  }
+
+  const isValid = isValidInputs(toStripeVal, fromStripeVal);
+
+  return html`
+    <div class="flex2 flex-wrap bg-grey pad">
+      <h2 class="m-0 mb-2">📅 🔁 Stripe Date Conversions</h2>
+      <div class="flex flex-wrap flex1">
+        <input type="text" maxLength="125" value=${toStripeVal} onkeyup=${e => {
+          toStripeVal = e.target.value;
+          fromStripeVal = '';
+        }} placeholder="Convert to Stripe Date" class="flex-1 mr-2" />
+        <input type="text" maxLength="125" value=${fromStripeVal} onkeyup=${e => {
+          fromStripeVal = e.target.value;
+          toStripeVal = '';
+        }} placeholder="Convert from Stripe Date" class="flex-1 mr-2" />
+        <button onclick=${convertDate} disabled=${!isValid} class.opacity-50=${!isValid} class.bg-balanced=${isValid}>Convert</button>
+      </div>
+    </div>
   `
 })

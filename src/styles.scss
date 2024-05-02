@@ -7,11 +7,29 @@ html {
   scroll-behavior:smooth;font-size:calc(22px + .4vw);
 }
 input[type="radio"],input[type="checkbox"] {width:1em;height:1em;}
-textarea, button, input {padding:.5vw;border-radius:.5vw;font-size:.7em;}
+textarea, button, input, select {padding:.5vw;border-radius:.5vw;font-size:.7em;}
 
 body {
   font-family:Helvetica;
   background-color:#555;
+}
+
+.lookup {
+  width: 100%;
+  overflow: hidden;
+
+  > em {
+    display: block;
+    float: right;
+    span {
+      font-size: 16px;
+      display: inline-block;
+      background: #333;
+      color: #EEE;
+      margin: 0 5px;
+      padding: 5px;
+    }
+  }
 }
 
 tool-wrap, .tool-wrap {
@@ -56,7 +74,7 @@ tool-wrap, .tool-wrap {
   body {
     color:#EEE
   }
-  button, input, textarea {
+  button, input, textarea, select {
     background-color: #222;color:#EEE
   }
 }
