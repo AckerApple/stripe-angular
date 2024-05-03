@@ -108,7 +108,7 @@ export const dateConversions = tag(() => {
           `}
           <input type="text" maxLength="125" value=${unixToIso} onkeyup=${e => {
             if (unixToIso === e.target.value) return;
-            dateToUnix = e.target.value;
+            unixToIso = e.target.value;
             convertUnixToIso();
           }} placeholder="Convert from Stripe Date" class="width-full" />
         </div>

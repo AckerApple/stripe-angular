@@ -318,7 +318,7 @@ var uq=Object.defineProperty,dq=(Ee,ue,fe)=>ue in Ee?uq(Ee,ue,{enumerable:!0,con
           ${n&&Gt`
             <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${()=>(0,WS.z)(n)}>📋</a>
           `}
-          <input type="text" maxLength="125" value=${n} onkeyup=${i=>{n!==i.target.value&&(e=i.target.value,(()=>{if(n.length>9){const i=new Date(1e3*Number(n));isNaN(i.getTime())||(e=i.toISOString())}})())}} placeholder="Convert from Stripe Date" class="width-full" />
+          <input type="text" maxLength="125" value=${n} onkeyup=${i=>{n!==i.target.value&&(n=i.target.value,(()=>{if(n.length>9){const i=new Date(1e3*Number(n));isNaN(i.getTime())||(e=i.toISOString())}})())}} placeholder="Convert from Stripe Date" class="width-full" />
         </div>
       </div>
     </div>
