@@ -284,7 +284,7 @@ var cq=Object.defineProperty,uq=(Ee,ue,fe)=>ue in Ee?cq(Ee,ue,{enumerable:!0,con
       ${fU()}
       ${pU()}
     </div>
-  `),fU=Ni(()=>{const e=i=>{const o=i.split("_");if(o.length<2||!o[1].length)return!1;const s=o[0].toUpperCase();return uU[s]},n=(i,o)=>{const s=cU[i],a=e(o);return a&&s+a+"/"+o};let t=Nr("")(i=>[t,t=i]);const r=e(t);return console.log("inputVal",{inputVal:t,isValid:r}),Gt`
+  `),fU=Ni(()=>{const e=i=>{const o=i.split("_");if(o.length<2||!o[1].length)return!1;const s=o[0].toUpperCase();return uU[s]},n=(i,o)=>{const s=cU[i],a=e(o);return a&&s+a+"/"+o};let t=Nr("")(i=>[t,t=i]);const r=e(t);return Gt`
     <div class="flex2 flex-wrap bg-grey pad">
       <h2 class="lookup m-0 mb-2">🔎 ⭐️ Stripe ID Linking <em><span>pi_*</span> <span>py_*</span> <span>cus_*</span> <span>evt_*</span></em></h2>
       <div class="flex flex-wrap flex1 gap">
@@ -312,14 +312,13 @@ var cq=Object.defineProperty,uq=(Ee,ue,fe)=>ue in Ee?cq(Ee,ue,{enumerable:!0,con
           ${e&&Gt`
             <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${()=>(0,WS.z)(e)}>📋</a>
           `}
-          <input type="text" maxLength="125" value=${e} onkeyup=${i=>{e!==i.target.value&&(e=i.target.value,(()=>{const i=new Date(e),o=Math.floor(i.getTime()/1e3);n=String(o)})())}} placeholder="Convert to Stripe Date" class="width-full" />
+          <input type="text" maxLength="125" value=${e} onkeyup=${i=>{e!==i.target.value&&(e=i.target.value,(()=>{if(e.length>9){const i=new Date(e);if(!isNaN(i.getTime())){const o=Math.floor(i.getTime()/1e3);e=String(o)}}})())}} placeholder="Convert to Stripe Date" class="width-full" />
         </div>
-        
         <div class="flex1 pos-rel">
           ${n&&Gt`
             <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${()=>(0,WS.z)(n)}>📋</a>
           `}
-          <input type="text" maxLength="125" value=${n} onkeyup=${i=>{n!==i.target.value&&(n=i.target.value,e=new Date(1e3*Number(n)).toISOString())}} placeholder="Convert from Stripe Date" class="width-full" />
+          <input type="text" maxLength="125" value=${n} onkeyup=${i=>{n!==i.target.value&&(n=i.target.value,(()=>{if(n.length>9){const i=new Date(1e3*Number(n));isNaN(i.getTime())||(n=i.toISOString())}})())}} placeholder="Convert from Stripe Date" class="width-full" />
         </div>
       </div>
     </div>
