@@ -31,7 +31,7 @@ export const stripeIdLookup = tag(() => {
     const prefix = split[0].toUpperCase();
     return STRIPE_ENDPOINTS[prefix];
   };
-  
+
   const getStripeURL = (host: string, id: string) => {
     const uri = STRIPE_HOSTS[host];
     const url = isValidId(id);
@@ -39,10 +39,7 @@ export const stripeIdLookup = tag(() => {
   };
 
   let inputVal = letState('')(x => [inputVal, inputVal = x])
-  // let selectVal = letState('SANDBOX')(x => [selectVal, selectVal = x])
   const isValid = isValidId(inputVal)
-
-  console.log('inputVal', {inputVal, isValid})
 
   return html`
     <div class="flex2 flex-wrap bg-grey pad">
@@ -68,19 +65,27 @@ export const stripeIdLookup = tag(() => {
 })
 
 export const dateConversions = tag(() => {
-  let toStripeVal = letState('')(x => [toStripeVal, toStripeVal = x])
-  let fromStripeVal = letState('')(x => [fromStripeVal, fromStripeVal = x])
+  let dateToUnix = letState('')(x => [dateToUnix, dateToUnix = x])
+  let unixToIso = letState('')(x => [unixToIso, unixToIso = x])
 
-  const convertDate = () => {
-    const date = new Date(toStripeVal);
-    const unixString = Math.floor(date.getTime() / 1000);
-    fromStripeVal = String(unixString);
+  const convertDateToUnix = () => {
+    if (dateToUnix.length > 9) {
+      const date = new Date(dateToUnix);
+      if (!isNaN(date.getTime())) {
+        const unixString = Math.floor(date.getTime() / 1000);
+        dateToUnix = String(unixString);
+      }
+    }
   }
 
-  const convertStripeNumber = () => {
-    const date = new Date(Number(fromStripeVal) * 1000);
-    const isoString = date.toISOString();
-    toStripeVal = isoString;
+  const convertUnixToIso = () => {
+    if (unixToIso.length > 9) {
+      const date = new Date(Number(unixToIso) * 1000);
+      if (!isNaN(date.getTime())) {
+        const isoString = date.toISOString();
+        unixToIso = isoString;
+      }
+    }
   }
 
   return html`
@@ -88,26 +93,23 @@ export const dateConversions = tag(() => {
       <h2 class="m-0 mb-2">📅 🔁 Stripe Date Conversions</h2>
       <div class="flex flex-wrap gap">
         <div class="flex1 pos-rel">
-          ${toStripeVal && html`
-            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(toStripeVal)}>📋</a>
+          ${dateToUnix && html`
+            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(dateToUnix)}>📋</a>
           `}
-          <input type="text" maxLength="125" value=${toStripeVal} onkeyup=${e => {
-            const same = toStripeVal === e.target.value
-            if(same)return;
-            toStripeVal = e.target.value;
-            convertDate()
+          <input type="text" maxLength="125" value=${dateToUnix} onkeyup=${e => {
+            if (dateToUnix === e.target.value) return;
+            dateToUnix = e.target.value;
+            convertDateToUnix();
           }} placeholder="Convert to Stripe Date" class="width-full" />
         </div>
-        
         <div class="flex1 pos-rel">
-          ${fromStripeVal && html`
-            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(fromStripeVal)}>📋</a>
+          ${unixToIso && html`
+            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(unixToIso)}>📋</a>
           `}
-          <input type="text" maxLength="125" value=${fromStripeVal} onkeyup=${e => {
-            const same = fromStripeVal === e.target.value
-            if(same)return;
-            fromStripeVal = e.target.value;
-            convertStripeNumber()
+          <input type="text" maxLength="125" value=${unixToIso} onkeyup=${e => {
+            if (unixToIso === e.target.value) return;
+            unixToIso = e.target.value;
+            convertUnixToIso();
           }} placeholder="Convert from Stripe Date" class="width-full" />
         </div>
       </div>
