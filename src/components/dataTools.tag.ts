@@ -1,4 +1,5 @@
 import { html, letState, tag } from "taggedjs"
+import { copyText } from "./copyText.function";
 
 const STRIPE_HOSTS = {
   'SANDBOX': 'https://dashboard.stripe.com/test',
@@ -23,7 +24,11 @@ export const dataTools = tag(() => {
 
 export const stripeIdLookup = tag(() => {
   const isValidId = (id: string) => {
-    const prefix = id.split('_')[0].toUpperCase();
+    const split = id.split('_')
+    if(split.length < 2 || !split[1].length) {
+      return false
+    }
+    const prefix = split[0].toUpperCase();
     return STRIPE_ENDPOINTS[prefix];
   };
   
@@ -34,21 +39,29 @@ export const stripeIdLookup = tag(() => {
   };
 
   let inputVal = letState('')(x => [inputVal, inputVal = x])
-  let selectVal = letState('SANDBOX')(x => [selectVal, selectVal = x])
+  // let selectVal = letState('SANDBOX')(x => [selectVal, selectVal = x])
   const isValid = isValidId(inputVal)
+
+  console.log('inputVal', {inputVal, isValid})
 
   return html`
     <div class="flex2 flex-wrap bg-grey pad">
-      <h2 class="lookup m-0 mb-2">🔎 ⭐️ Stripe ID Lookup <em><span>pi_*</span> <span>py_*</span> <span>cus_*</span> <span>evt_*</span></em></h2>
-      <div class="flex flex-wrap flex1">
-        <select class="flex-1 mr-2" onchange=${e => selectVal = e.target.value}>
-          <option value="SANDBOX">Sandbox</option>
-          <option value="PROD">Production</option>
-        </select>
-        <input type="text" maxLength="125" value=${inputVal} onkeyup=${e => inputVal = e.target.value} placeholder="Enter Stripe ID" class="flex-1 mr-2" />
-        <a href=${getStripeURL(selectVal, inputVal)} target="_blank">
-          <button disabled=${!isValid} class.opacity-50=${!isValid} class.bg-balanced=${isValid}>GO</button>
-        </a>
+      <h2 class="lookup m-0 mb-2">🔎 ⭐️ Stripe ID Linking <em><span>pi_*</span> <span>py_*</span> <span>cus_*</span> <span>evt_*</span></em></h2>
+      <div class="flex flex-wrap flex1 gap">
+        <input
+          type="text"
+          maxLength="125"
+          value=${inputVal}
+          onkeyup=${e => inputVal = e.target.value}
+          placeholder="Enter Stripe ID"
+          class="flex-1"
+        />
+        ${isValid && html`
+          <div class="flex flex-wrap gap">
+            <a href=${getStripeURL('SANDBOX', inputVal)} target="_blank"><button>sandbox</button></a>
+            <a href=${getStripeURL('PROD', inputVal)} target="_blank"><button>production</button></a>
+          </div>
+        `}
       </div>
     </div>
   `
@@ -59,46 +72,44 @@ export const dateConversions = tag(() => {
   let fromStripeVal = letState('')(x => [fromStripeVal, fromStripeVal = x])
 
   const convertDate = () => {
-    if (toStripeVal) {
-      const date = new Date(toStripeVal);
-      const unixString = Math.floor(date.getTime() / 1000);
-      toStripeVal = String(unixString);
-    }
-
-    if (fromStripeVal) {
-      const date = new Date(Number(fromStripeVal) * 1000);
-      const isoString = date.toISOString();
-      fromStripeVal = isoString;
-    }
-  };
-
-  const isValidInputs = (to: string, from: string) => {
-    if (toStripeVal) {
-      const date = new Date(toStripeVal);
-      return isNaN(date.getTime()) ? false : true;
-    } else if (fromStripeVal) {
-      const date = new Date(Number(fromStripeVal) * 1000);
-      return isNaN(date.getTime()) ? false : true;
-    }
-
-    return false;
+    const date = new Date(toStripeVal);
+    const unixString = Math.floor(date.getTime() / 1000);
+    fromStripeVal = String(unixString);
   }
 
-  const isValid = isValidInputs(toStripeVal, fromStripeVal);
+  const convertStripeNumber = () => {
+    const date = new Date(Number(fromStripeVal) * 1000);
+    const isoString = date.toISOString();
+    toStripeVal = isoString;
+  }
 
   return html`
-    <div class="flex2 flex-wrap bg-grey pad">
+    <div class="flex2 bg-grey pad">
       <h2 class="m-0 mb-2">📅 🔁 Stripe Date Conversions</h2>
-      <div class="flex flex-wrap flex1">
-        <input type="text" maxLength="125" value=${toStripeVal} onkeyup=${e => {
-          toStripeVal = e.target.value;
-          fromStripeVal = '';
-        }} placeholder="Convert to Stripe Date" class="flex-1 mr-2" />
-        <input type="text" maxLength="125" value=${fromStripeVal} onkeyup=${e => {
-          fromStripeVal = e.target.value;
-          toStripeVal = '';
-        }} placeholder="Convert from Stripe Date" class="flex-1 mr-2" />
-        <button onclick=${convertDate} disabled=${!isValid} class.opacity-50=${!isValid} class.bg-balanced=${isValid}>Convert</button>
+      <div class="flex flex-wrap gap">
+        <div class="flex1 pos-rel">
+          ${toStripeVal && html`
+            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(toStripeVal)}>📋</a>
+          `}
+          <input type="text" maxLength="125" value=${toStripeVal} onkeyup=${e => {
+            const same = toStripeVal === e.target.value
+            if(same)return;
+            toStripeVal = e.target.value;
+            convertDate()
+          }} placeholder="Convert to Stripe Date" class="width-full" />
+        </div>
+        
+        <div class="flex1 pos-rel">
+          ${fromStripeVal && html`
+            <a class="pos-abs right-0 pad-right-xs active-text-2x" onclick=${() => copyText(fromStripeVal)}>📋</a>
+          `}
+          <input type="text" maxLength="125" value=${fromStripeVal} onkeyup=${e => {
+            const same = fromStripeVal === e.target.value
+            if(same)return;
+            fromStripeVal = e.target.value;
+            convertStripeNumber()
+          }} placeholder="Convert from Stripe Date" class="width-full" />
+        </div>
       </div>
     </div>
   `
