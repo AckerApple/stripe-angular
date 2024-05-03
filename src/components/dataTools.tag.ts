@@ -73,7 +73,7 @@ export const dateConversions = tag(() => {
       const date = new Date(dateToUnix);
       if (!isNaN(date.getTime())) {
         const unixString = Math.floor(date.getTime() / 1000);
-        dateToUnix = String(unixString);
+        unixToIso = String(unixString);
       }
     }
   }
@@ -83,7 +83,7 @@ export const dateConversions = tag(() => {
       const date = new Date(Number(unixToIso) * 1000);
       if (!isNaN(date.getTime())) {
         const isoString = date.toISOString();
-        unixToIso = isoString;
+        dateToUnix = isoString;
       }
     }
   }
@@ -108,7 +108,7 @@ export const dateConversions = tag(() => {
           `}
           <input type="text" maxLength="125" value=${unixToIso} onkeyup=${e => {
             if (unixToIso === e.target.value) return;
-            unixToIso = e.target.value;
+            dateToUnix = e.target.value;
             convertUnixToIso();
           }} placeholder="Convert from Stripe Date" class="width-full" />
         </div>
