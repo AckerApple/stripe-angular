@@ -22,22 +22,37 @@ export const dataTools = tag(() => {
   `
 })
 
+function isValidId(id: string) {
+  const split = id.split('_')
+  if(split.length < 2 || !split[1].length) {
+    return false
+  }
+  const prefix = split[0].toUpperCase()
+  return STRIPE_ENDPOINTS[prefix]
+}
+
+export function valueOrStripeLink(
+  value: any
+) {
+  const isString = value && typeof(value) === 'string'
+  const stripeMatch = isString && isValidId(value)
+
+  if(!stripeMatch) {
+    return value
+  }
+
+  return html`
+    <a href=${getStripeURL('SANDBOX', value)} target="_blank">${value}</a>
+  `
+}
+
+function getStripeURL(host: string, id: string) {
+  const uri = STRIPE_HOSTS[host]
+  const url = isValidId(id)
+  return url && uri + url + '/' + id
+}
+
 export const stripeIdLookup = tag(() => {
-  const isValidId = (id: string) => {
-    const split = id.split('_')
-    if(split.length < 2 || !split[1].length) {
-      return false
-    }
-    const prefix = split[0].toUpperCase();
-    return STRIPE_ENDPOINTS[prefix];
-  };
-
-  const getStripeURL = (host: string, id: string) => {
-    const uri = STRIPE_HOSTS[host];
-    const url = isValidId(id);
-    return url && uri + url + '/' + id;
-  };
-
   let inputVal = letState('')(x => [inputVal, inputVal = x])
   const isValid = isValidId(inputVal)
 

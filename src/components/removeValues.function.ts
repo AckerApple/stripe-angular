@@ -28,16 +28,3 @@ export function removeValues(data: any, values: any[], options: {seen?:any[]}={}
 
   return data
 }
-
-
-
-/*const x = removeValues({
-  a: null,
-  b: 22,
-  array: [{
-    a: null,
-    b:33
-  }]
-}, [null])
-
-console.log('x',x)*/
